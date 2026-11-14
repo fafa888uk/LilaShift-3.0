@@ -10,7 +10,7 @@
 
 [![License](https://img.shields.io/badge/license-GPLv3-blue)](LICENSE)
 
-[English](README.md) · [简体中文](README_ZH-CN.md)
+[English](README.md) · [简体中文](README_ZH-CN.md) · [加入 Telegram 更新频道](https://t.me/+U-e7tGOvoJU3ODE1)
 
 国行 iPhone 一键解锁：eSIM、地区码、Apple Intelligence，一次点按完成。这是完整源码的 LilaShift 2.0 项目，基于官方 GestaltX v1.0.7。
 

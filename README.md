@@ -10,7 +10,7 @@
 
 [![License](https://img.shields.io/badge/license-GPLv3-blue)](LICENSE)
 
-[English](README.md) · [简体中文](README_ZH-CN.md)
+[English](README.md) · [简体中文](README_ZH-CN.md) · [Join the Telegram updates channel](https://t.me/+U-e7tGOvoJU3ODE1)
 
 One-tap eSIM, region code and Apple Intelligence setup for China-model iPhones — the full-source LilaShift 2.0 project, based on upstream GestaltX v1.0.7.
 
