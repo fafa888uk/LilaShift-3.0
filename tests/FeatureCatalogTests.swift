@@ -73,6 +73,13 @@ final class FeatureCatalogTests: XCTestCase {
         XCTAssertEqual(presetIDs, Set(PresetCatalog.all.map(\.featureID)))
     }
 
+    func testCategoryFilterOrder() {
+        XCTAssertEqual(FeatureCatalogCategory.allCases.map(\.rawValue), [
+            "smartUnlock", "appleIntelligence", "esimRegion", "screenLock", "systemSettings",
+            "personalization", "launchArtwork", "deviceDiagnostics", "modifiedRecords", "backupRestore", "advancedTools",
+        ])
+    }
+
     func testCatalogCategoryCounts() {
         let counts = Dictionary(grouping: FeatureCatalog.allItems, by: \.category)
             .mapValues(\.count)
@@ -288,6 +295,32 @@ final class FeatureCatalogTests: XCTestCase {
         try store.save(changed)
         XCTAssertEqual(store.load().settings, changed)
         XCTAssertNil(store.load().error)
+    }
+
+    func testPersistedCatalogKeepsHiddenFavoriteOutAndRestoresItsFavoriteRank() throws {
+        let directory = try tempDirectory()
+        let favorites = PresetFavoritesStore(directory: directory, deviceID: "test-device")
+        let store = FeatureCatalogSettingsStore(directory: directory, deviceID: "test-device")
+        try favorites.save(["ai"])
+        try store.save(FeatureCatalogSettings(
+            customOrder: ["audioIntelligence", "esim", "ai"], hiddenIDs: ["ai"], recentIDs: ["esim"]))
+
+        let persistedFavorites = PresetFavoritesStore(directory: directory, deviceID: "test-device").load()
+        let persistedSettings = FeatureCatalogSettingsStore(directory: directory, deviceID: "test-device").load()
+        XCTAssertNil(persistedFavorites.error)
+        XCTAssertNil(persistedSettings.error)
+        XCTAssertEqual(persistedFavorites.ids, ["ai"])
+        let items = FeatureCatalog.allItems.filter { ["ai", "audioIntelligence", "esim"].contains($0.id) }
+        func visibleIDs(_ settings: FeatureCatalogSettings) -> [String] {
+            FeatureCatalog.apply(
+                items, query: "", category: nil, riskLevel: nil, settings: settings,
+                catalogSort: .byCategory, favoritesFirst: true, favoriteIDs: Set(persistedFavorites.ids)).map(\.id)
+        }
+        XCTAssertEqual(visibleIDs(persistedSettings.settings), ["audioIntelligence", "esim"])
+        var unhidden = persistedSettings.settings
+        unhidden.hiddenIDs.remove("ai")
+        try store.save(unhidden)
+        XCTAssertEqual(visibleIDs(store.load().settings), ["ai", "audioIntelligence", "esim"])
     }
 
     func testSettingsLoadCorruptFileIsDefaultsWithError() throws {
