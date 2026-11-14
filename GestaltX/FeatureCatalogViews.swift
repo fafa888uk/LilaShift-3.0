@@ -5,14 +5,23 @@
 // favorites store, and writes only its own settings files. It never
 // stages, writes, or reads the MobileGestalt cache.
 //
+// Navigation (fix2): page rows navigate by ENUM VALUE
+// (`NavigationLink(value:)`), and the destination view is resolved
+// by the ancestor NavigationStack's `.navigationDestination(for:)`
+// in ContentView. The catalog deliberately takes NO destination
+// closure: passing one that called `dashboardDestination` from
+// inside `dashboardDestination` made that function's `some View`
+// return type refer to itself (opaque-type inference failure,
+// Tests #147 / IPA #148 on 33c690a). A value-based link renders
+// identically and keeps the catalog's type concrete.
+//
 // Eligibility is deliberately NOT shown here: the catalog is
 // browsable before any device read, and per-device eligibility
 // lives on the Preset Catalog card, which layers the device report
 // on top. A row never claims a feature is available on this device.
 import SwiftUI
 
-struct FeatureCatalogView<DestinationView: View>: View {
-    let destination: (DashboardV3Destination) -> DestinationView
+struct FeatureCatalogView: View {
 
     /// The shared diagnostics cache (nil when the view renders
     /// without it). Its device report is the ONLY source of
@@ -169,9 +178,13 @@ struct FeatureCatalogView<DestinationView: View>: View {
         case .preset:
             presetRow(item)
         case .page:
-            NavigationLink {
-                destination(item.destination)
-            } label: {
+            // Value-based navigation: the destination is the enum
+            // value itself, resolved by the ancestor
+            // NavigationStack's `.navigationDestination(for:)`.
+            // No destination closure is passed in (see the file
+            // header — a closure back into `dashboardDestination`
+            // made its opaque return type self-referential).
+            NavigationLink(value: item.destination) {
                 catalogRowContent(item)
             }
             .buttonStyle(.plain)

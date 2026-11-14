@@ -55,6 +55,17 @@ struct ContentView: View {
                     dashboardDestination(section)
                 }
             }
+                // fix2: enum-value navigation for the catalog.
+                // FeatureCatalogView's page rows are
+                // NavigationLink(value:) over DashboardV3Destination;
+                // the destination view is resolved HERE, by the
+                // NavigationStack, and never by a closure passed
+                // into the catalog or into dashboardDestination
+                // itself (that closure was the recursive opaque-type
+                // cycle that failed the build on 33c690a).
+                .navigationDestination(for: DashboardV3Destination.self) { section in
+                    dashboardDestination(section)
+                }
                 .tabItem { Label(L("Tools"), systemImage: "square.grid.2x2") }.tag(0)
             NavigationStack { FieldsView() }
                 .tabItem { Label(L("MG Control"), systemImage: "slider.horizontal.3") }.tag(1)
@@ -427,7 +438,16 @@ struct ContentView: View {
                     // filter, sort, favorites, recent use, hide and
                     // custom order over the same catalog the home
                     // sections and the card below are built from.
-                    FeatureCatalogView { section in dashboardDestination(section) }
+                    // fix2: the catalog navigates by enum value
+                    // (NavigationLink(value:) + .navigationDestination
+                    // on the NavigationStack below) — it takes NO
+                    // destination closure. Passing one that called
+                    // dashboardDestination() from inside
+                    // dashboardDestination() made this function's
+                    // `some View` return type refer to itself and
+                    // the build failed (OpaqueTypeInference, :51
+                    // and :384, Tests #147 / IPA #148 on 33c690a).
+                    FeatureCatalogView()
                     PresetCatalogCard()
                     PersonalizationCenterCard()
                     SafePatchCard()

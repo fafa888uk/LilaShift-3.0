@@ -3,7 +3,15 @@
 // All device readings remain sourced from GestaltManager, never placeholders.
 import SwiftUI
 
-enum DashboardV3Destination: String, CaseIterable, Identifiable {
+/// A 3.0 navigation destination. `Hashable` so the catalog can
+/// navigate by enum value (`NavigationLink(value:)` +
+/// `.navigationDestination(for:)`): the destination view is
+/// resolved by the NavigationStack, never by a closure passed
+/// back into the view that builds the destination (see fix2 in
+/// ContentView — a closure that called `dashboardDestination`
+/// from inside `dashboardDestination` made its `some View`
+/// return type refer to itself and the build failed).
+enum DashboardV3Destination: String, CaseIterable, Identifiable, Hashable {
     case unlock, diagnostics, restore, presets, advanced
 
     var id: String { rawValue }
