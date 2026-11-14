@@ -2,9 +2,40 @@
 
 [English](CHANGELOG.md) | 简体中文
 
+## [3.0.0-rc.1] - 预发布（非稳定版）
+
+由 `feature/lilashift-3.0-dashboard` 分支构建，提交 `37c4a36`
+（`37c4a368c73ec80654c8b395387abea9a24915f6`，包含 fix4 提交 `7020964`）。App 内版本号 `3.0.0`，build
+`30000002`；IPA 文件 `LilaShift_3.0.0.ipa`（包名 `com.huami.gestultx`，
+最低 iOS `26.0`）。`rc.1` 是发布/标签层面的命名；Xcode 工程里的
+marketing version 仍为 `3.0.0`。
+
+### 新增（相对 2.0 / 1.0.7）
+- LilaShift 3.0 首页：轻量首页（真实设备读取与待应用更改状态）；53 项 11 分类的功能目录（40 个预设项 + 13 个页面项，版本化 JSON + SHA-256 sidecar 排序）；8 状态统一兼容性模型（`nativeSupported`、`modifiable`、`enabled`、`staged`、`needsRestart`、`unverified`、`unsupported`、`readFailed`）；带二次确认的历史恢复视图；诊断缓存（`HomeDiagnosticsCache`，11 张诊断卡移至二级页、`LazyVStack`、移除 iOS 26+ 阴影）。
+- 本预发布文档：`README.md` / `README_ZH-CN.md` 重写为 3.0.0-rc.1 产品主页，`docs/` 下新增简体中文安装 / 使用 / 兼容性 / 备份还原 / 故障排查 / 功能 / FAQ 一步一步教程，以及 `COMMUNITY.md`、`SECURITY.md`、`CONTRIBUTING.md`。各安装方式的验证状态见 `docs/INSTALL_ZH-CN.md`。
+- 开源审计（2026-11-14）：逐项来源记录 `docs/OPEN_SOURCE_REFERENCES.md`（16 个项目）与逐功能来源映射 `docs/FEATURE_ORIGIN_MATRIX.md`；关于页重建为开源贡献者中心；20 个文件完成版权头规范化；新增 `scripts/check-licenses.py` 与 Check Licenses 工作流。
+
+### 修复
+- AboutView 标题栏：3 处 `Section(L(...))` + `footer:` 写法没有对应的 SwiftUI 重载，现已改用显式 `header:` / `footer:` 视图（提交 `7020964`）。
+- HomeDiagnosticsCache / 并发测试修复（提交 `7020964`）：测试夹具改用真实的 `GestaltKeys.*` 键，不再用字面 `"regionCode"` / `"productType"` 字符串；`LilaRecommendation` 相等比较忽略 `id` / `createdAt`，`DeviceFingerprint` 相等比较忽略 `recordedAt`（与摘要规则一致）；新增回归测试 `tests/DiagnosticsEquatableTests.swift`。
+- `HomeDiagnosticsCache.swift` 已补 `import Combine`，`ObservableObject` / `@Published` 可在 CI 中解析（此前修复见 `0a429e9`）。
+
+### 移除
+- NeoSpring/Ketamine WebKit 注销实现已移除（删除 `GestaltX/NeoSpringView.swift`，2026-11-14）：NeoSpring 在任何地方均未声明许可证，因此不再随本版分发。改为手动重启设备提示，绝不假装自行重启 SpringBoard。
+
+### 本 HEAD 已知缺口（2026-11-15，提交 `37c4a36`）
+- **本版无真机验证。** 安装、eSIM 开通、Apple Intelligence 开通与还原均未在真机上为 3.0.0-rc.1 测试过。`docs/INSTALL_ZH-CN.md` 中无法从仓库核实的安装步骤均已标为待验证。
+- **本提交的 CI 状态尚未在本日志中确认。** fix4 提交（`7020964`）落在上次记录的测试运行之后；发布前请先看 `README.md` 里的 workflow 徽章确认最新运行结果。此前记录：Tests #129 在整合前 HEAD（`096330e`）通过；Tests #137 与 IPA #138 在整合后 HEAD（`86e32b4`）失败（缺 `import Combine`，已修）。
+- 8 张快照基线待 CI 渲染新图后重录（阴影移除与新增排序/隐藏 UI）；10 张新增 Phase H 快照参考在首次 CI 运行时录制，须在后续提交中提交。
+- `Package.resolved` 只锁定了 ZIPFoundation，工程同时要求 SnapshotTesting 1.19.7——须在 Xcode 环境中运行 `xcodebuild -resolvePackageDependencies` 解决。
+- 尚无真实 3.0.0-rc.1 构建的截图；此处不声称有。
+- 写本文档时 `v3.0.0-rc.1` 标签与 GitHub Release 尚不存在，随预发布发布时创建。
+
 ## [Unreleased]
 
 ## [3.0.0] - 开发预览版（未正式发布）
+
+> 已被上方的 [3.0.0-rc.1] 取代（针对当前 HEAD）。以下条目保留为 3.0 开发预览版的历史记录。
 
 ### 新增
 - 全新 3.0 轻量首页：展示真实设备读取状态和待应用更改数量，避免首次打开即渲染所有复杂诊断卡。

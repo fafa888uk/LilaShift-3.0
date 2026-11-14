@@ -62,6 +62,7 @@ Capability flags cannot add missing hardware. Some changes require a device rest
 Use only devices you own or are authorized to manage. You are responsible for the changes you choose to apply.	仅在你拥有或获授权管理的设备上使用，并自行承担所选修改带来的风险。
 This software is provided without warranty. Read the included license before use.	本软件不提供任何担保，使用前请阅读随附的开源许可证。
 GitHub Repository	GitHub 仓库
+Telegram Updates Channel	Telegram 更新频道
 License	许可证
 Read Again	重新读取
 A device restart may be required.	可能需要重新启动设备才能生效。

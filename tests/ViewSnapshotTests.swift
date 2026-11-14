@@ -33,10 +33,13 @@
 //   snapshots cannot be generated here. They are recorded on the
 //   FIRST CI RUN: `record: .missing` means only missing references
 //   are recorded (an existing reference is compared, never
-//   overwritten), so the first run records and passes. The recorded
-//   files live in `tests/__Snapshots__/ViewSnapshotTests/` and must
-//   be committed to the branch in a follow-up commit (the CI workflow
-//   uploads them as an artifact so they can be downloaded). Until
+//   overwritten). Recording a new reference FAILS that assertion:
+//   the first run records the missing references and fails those
+//   assertions. The recorded files live in
+//   `tests/__Snapshots__/ViewSnapshotTests/` and must be committed
+//   to the branch in a follow-up commit (the CI workflow uploads them
+//   as an artifact so they can be downloaded); only once they are
+//   committed does a later run compare against them and pass. Until
 //   they are committed, the tests record but do not yet guard against
 //   regressions — say so in any report that mentions these tests.
 //   To update a reference after a legitimate UI change, delete the

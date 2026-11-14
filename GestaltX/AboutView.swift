@@ -61,6 +61,9 @@ struct AboutView: View {
                             .frame(width: 22, height: 22).foregroundStyle(Color(uiColor: .label))
                     }
                 }
+                Link(destination: URL(string: "https://t.me/LilaShiftUpdates")!) {
+                    Label(L("Telegram Updates Channel"), systemImage: "paperplane.fill")
+                }
             }
             Section {
                 LabeledContent(L("Supported OS"), value: VersionSupport.range)
@@ -102,6 +105,7 @@ struct AboutView: View {
                     .font(.footnote)
             }
             Section {
+                licenseRow("Third-Party Notices", file: "ThirdPartyNotices")
                 licenseRow("GNU GPL v3", file: "GestaltX-GPL-3.0")
                 licenseRow("Erosion · GPL v3", file: "Erosion-GPL-3.0")
                 licenseRow("Gester · MIT", file: "Gester-MIT")
