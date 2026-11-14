@@ -1,0 +1,47 @@
+name: Capture Simplified Chinese UI
+on:
+  push:
+    branches: [codex/chinese-preview-fc02289]
+permissions:
+  contents: read
+jobs:
+  capture:
+    runs-on: xcode-27
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: fc0228932b895dfc63029e5ac3ba4dbab2f3a425
+          persist-credentials: false
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - name: Render the existing SwiftUI snapshots in Simplified Chinese
+        shell: bash
+        run: |
+          xcodebuild test \
+            -project GestaltX.xcodeproj \
+            -scheme GestaltX \
+            -destination 'platform=iOS Simulator,name=iPhone 17' \
+            -testLanguage zh-Hans -testRegion CN \
+            -parallel-testing-enabled NO \
+            -only-testing:GestaltXTests/DashboardV3SnapshotTests
+        continue-on-error: true
+      - name: Check the newly rendered files
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path('tests/__Snapshots__/DashboardV3SnapshotTests')
+          snapshots = sorted(root.glob('*.png'))
+          assert len(snapshots) == 10, [path.name for path in snapshots]
+          for path in snapshots:
+              assert path.read_bytes().startswith(b'\x89PNG\r\n\x1a\n'), path
+              print(path.name)
+          PY
+      - uses: actions/upload-artifact@v7
+        with:
+          name: LilaShift-fc02289-zh-Hans
+          path: tests/__Snapshots__/DashboardV3SnapshotTests/*.png
+          if-no-files-found: error
+          retention-days: 7
