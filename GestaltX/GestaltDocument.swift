@@ -916,7 +916,7 @@ actor GestaltFileStore {
         try removeBackupItem(backupDirectory.appendingPathComponent(record.id.uuidString + ".json"))
     }
 
-    private func validateRestoreLayout(_ document: GestaltDocument, against current: GestaltDocument) throws {
+    static func validateRestoreLayout(_ document: GestaltDocument, against current: GestaltDocument) throws {
         let failure = GestaltFailure("This plist uses a different system cache layout and cannot be restored.")
         guard let uuid = document.root["CacheUUID"] as? String, !uuid.isEmpty,
               current.root["CacheUUID"] as? String == uuid,
@@ -942,7 +942,7 @@ actor GestaltFileStore {
         guard imported.source == .local, imported.ownershipVerified, expected.source == .device else {
             throw GestaltFailure("This plist's device proof could not be verified on this device.")
         }
-        try validateRestoreLayout(imported.document, against: expected.document)
+        try Self.validateRestoreLayout(imported.document, against: expected.document)
         if imported.document.matches(expected.document) {
             return try withAccess {
                 _ = try currentData(matching: expected)
@@ -989,7 +989,7 @@ actor GestaltFileStore {
             }
             // Device ownership alone does not make an older OS cache compatible.
             // Apply the same layout checks to saved backups and verified imports.
-            try validateRestoreLayout(edited, against: expected.document)
+            try Self.validateRestoreLayout(edited, against: expected.document)
         }
         return try withAccess {
             let current = try currentData(matching: expected)

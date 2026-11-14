@@ -346,6 +346,43 @@ final class RestoreIntelligenceTests: XCTestCase {
         XCTAssertEqual(results[0].layoutMatchesCurrent, false)
     }
 
+    func testBackupVerificationRejectsSameLayoutWithDifferentCacheVersion() throws {
+        let directory = try tempDirectory()
+        let data = try backupData()
+        let id = UUID()
+        try writeBackupFile(data, id: id, in: directory)
+        let record = backupRecord(id: id, byteCount: data.count,
+                                  sha256: GestaltFileStore.sha256Hex(of: data))
+        var root = try CoreModuleFixtures.document().root
+        root["CacheVersion"] = "new-cache-version"
+        let current = try GestaltDocument(data: PropertyListSerialization.data(
+            fromPropertyList: root, format: .binary, options: 0))
+
+        let backup = try XCTUnwrap(RestoreIntelligence.verifyBackups(
+            [record], against: current, directory: directory).first)
+        XCTAssertEqual(backup.status, .verified)
+        XCTAssertEqual(backup.layoutMatchesCurrent, false)
+        XCTAssertFalse(backup.permitsDeviceRestore(deviceID: record.deviceID))
+    }
+
+    func testBackupCardRequiresDigestAndMatchingInstallation() {
+        let record = backupRecord(id: UUID(), byteCount: 42, sha256: "digest")
+        let verification = BackupVerification(record: record, status: .verified, layoutMatchesCurrent: true)
+        XCTAssertTrue(verification.permitsDeviceRestore(deviceID: record.deviceID))
+        XCTAssertFalse(verification.permitsDeviceRestore(deviceID: "other-installation"))
+        let legacy = backupRecord(id: record.id, byteCount: record.byteCount, sha256: nil)
+        let legacyVerification = BackupVerification(record: legacy, status: .verified, layoutMatchesCurrent: true)
+        XCTAssertFalse(legacyVerification.permitsDeviceRestore(deviceID: legacy.deviceID))
+    }
+
+    func testAudioIntelligenceCacheDataDoesNotUseCacheExtraRestore() {
+        let change = makeChange(key: DeviceCacheOptions.audioIntelligenceKey, layer: .cacheData,
+                                original: .bool(false), new: .bool(true))
+        guard case .previewOnly = RestoreAction.forChange(change) else {
+            return XCTFail("A CacheData slot must not be sent to a CacheExtra write path")
+        }
+    }
+
     /// Same byte count, same parseable plist shape, but the bytes
     /// differ from the recorded digest: the digest leg must fail.
     /// The file holds a different region (LL instead of CH) so the

@@ -1045,11 +1045,12 @@ final class GestaltManager: ObservableObject {
     func reloadBackups() async {
         do { backups = try await files.backups() } catch { failed(error) }
     }
-    func restore(_ record: BackupRecord) async {
-        guard !isBusy, let snapshot else { return }
+    @discardableResult
+    func restore(_ record: BackupRecord) async -> Bool {
+        guard !isBusy, let snapshot else { return false }
         guard changeCount == 0 else {
             message = L("Save or discard your current changes before opening another plist.")
-            return
+            return false
         }
         isBusy = true; defer { isBusy = false }
         do {
@@ -1060,11 +1061,18 @@ final class GestaltManager: ObservableObject {
             let result = try await files.commit(restored, expected: snapshot, restoring: record)
             let changed = !result.document.matches(snapshot.document)
             accept(result); needsRespring = result.source == .device && (needsRespring || changed)
-            message = L(result.source == .device
+            let resultMessage = L(result.source == .device
                         ? (changed ? "Backup restored and verified." : "This backup already matches the device. No changes were made.")
                         : "Backup opened as a local document.")
-            log(message ?? ""); await reloadBackups()
-        } catch { failed(error); await reloadBackups() }
+            await reloadBackups()
+            message = resultMessage
+            log(resultMessage)
+            return true
+        } catch {
+            await reloadBackups()
+            failed(error)
+            return false
+        }
     }
     func openBackup(_ record: BackupRecord) async {
         guard !isBusy else { return }
