@@ -12,7 +12,7 @@ name: Run Swift Tests
 
 on:
   push:
-    branches: [main, dev/p0-security-fixes, feature/lilashift-3.0-dashboard]
+    branches: [main, dev/p0-security-fixes, feature/lilashift-3.0-dashboard, codex/lilashift-3.0-assist]
   pull_request:
     branches: [main]
   workflow_dispatch:

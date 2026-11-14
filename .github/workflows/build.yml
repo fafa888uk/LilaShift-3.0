@@ -13,7 +13,7 @@ on:
   release:
     types: [published]
   push:
-    branches: [main, feature/lilashift-3.0-dashboard]
+    branches: [main, feature/lilashift-3.0-dashboard, codex/lilashift-3.0-assist]
     tags:
       - "v*"
   pull_request:
