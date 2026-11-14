@@ -1,4 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
+// Key mappings cross-checked against MGKeys, Nugget and mond (research
+// reference only — no code ported; see Capabilities.swift header and
+// Licenses/ThirdPartyNotices.txt §10).
 // Preset Catalog (智能预设数据库) — a structured catalog of every
 // preset the app offers, with Chinese names, descriptions, applicable
 // scope, minimum system, risk level with a specific reason, restore

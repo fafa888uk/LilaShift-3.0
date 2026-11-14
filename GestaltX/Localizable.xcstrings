@@ -2561,66 +2561,66 @@
         }
       }
     },
-    "Wallpaper added. Open the wallpaper gallery to select it. If it does not appear, restart PosterBoard or respring.": {
+    "Wallpaper added. Open the wallpaper gallery to select it. If it does not appear, restart the device.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Wallpaper added. Open the wallpaper gallery to select it. If it does not appear, restart PosterBoard or respring."
+            "value": "Wallpaper added. Open the wallpaper gallery to select it. If it does not appear, restart the device."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "壁纸已添加，请打开图库选择。若未出现，可重新启动 PosterBoard 或执行注销。"
+            "value": "壁纸已添加，请打开图库选择。若未出现，请重新启动设备。"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Fondo añadido. Selecciónalo en la galería. Si no aparece, reinicia PosterBoard o haz respring."
+            "value": "Fondo añadido. Abre la galería de fondos para seleccionarlo. Si no aparece, reinicia el dispositivo."
           }
         },
         "fa": {
           "stringUnit": {
             "state": "translated",
-            "value": "تصویر زمینه اضافه شد. آن را در گالری انتخاب کنید. اگر نمایش داده نشد، PosterBoard یا SpringBoard را دوباره راه‌اندازی کنید."
+            "value": "تصویر زمینه اضافه شد. گالری تصویر زمینه را باز کنید تا آن را انتخاب کنید. اگر ظاهر نشد، دستگاه را راه‌اندازی مجدد کنید."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "壁紙を追加しました。壁紙ギャラリーで選択してください。表示されない場合はPosterBoardを再起動するか、リスプリングしてください。"
+            "value": "壁紙を追加しました。ギャラリーを開いて選択してください。表示されない場合は、デバイスを再起動してください。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "배경화면을 추가했습니다. 갤러리에서 선택하세요. 표시되지 않으면 PosterBoard를 다시 시작하거나 리스프링하세요."
+            "value": "배경화면이 추가되었습니다. 갤러리를 열어 선택하세요. 나타나지 않으면 기기를 다시 시작하세요."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Обои добавлены. Выберите их в галерее. Если они не появились, перезапустите PosterBoard или SpringBoard."
+            "value": "Обои добавлены. Откройте галерею обоев, чтобы выбрать их. Если они не появились, перезапустите устройство."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Đã thêm hình nền. Mở bộ sưu tập để chọn. Nếu chưa thấy, hãy khởi động lại PosterBoard hoặc respring."
+            "value": "Đã thêm hình nền. Mở thư viện hình nền để chọn. Nếu không xuất hiện, hãy khởi động lại thiết bị."
           }
         },
         "zh-Hant-HK": {
           "stringUnit": {
             "state": "translated",
-            "value": "已新增背景圖片，請開啟圖庫選取。若未出現，可重新啟動 PosterBoard 或執行註銷。"
+            "value": "已新增桌布，請開啟圖庫選擇。若未出現，請重新啟動裝置。"
           }
         },
         "zh-Hant-TW": {
           "stringUnit": {
             "state": "translated",
-            "value": "已新增背景圖片，請開啟圖庫選取。若未出現，可重新啟動 PosterBoard 或執行註銷。"
+            "value": "已新增桌布，請開啟圖庫選擇。若未出現，請重新啟動裝置。"
           }
         }
       }
@@ -2941,70 +2941,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "還原原值"
-          }
-        }
-      }
-    },
-    "Special Thanks": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Special Thanks"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "特别鸣谢"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Agradecimientos especiales"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "سپاس ویژه"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "謝辞"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "감사의 글"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Особая благодарность"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Đặc biệt cảm ơn"
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "特別鳴謝"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "特別感謝"
           }
         }
       }
@@ -3905,70 +3841,6 @@
         }
       }
     },
-    "Credits & Licenses": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Credits & Licenses"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "鸣谢与许可"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Créditos y licencias"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "سپاسگزاری و مجوزها"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "クレジットとライセンス"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "크레딧 및 라이선스"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Благодарности и лицензии"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ghi công và giấy phép"
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "鳴謝與授權"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "致謝與授權"
-          }
-        }
-      }
-    },
     "License": {
       "localizations": {
         "en": {
@@ -4029,70 +3901,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "授權條款"
-          }
-        }
-      }
-    },
-    "Respring Technique": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Respring Technique"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "注销方法"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Técnica de respring"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "روش ری‌اسپرینگ"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Respring方法"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "리스프링 방식"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Метод респринга"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Phương pháp respring"
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "註銷方法"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "登出方法"
           }
         }
       }
@@ -4481,66 +4289,66 @@
         }
       }
     },
-    "Respring first. Restart the device if the change does not appear.": {
+    "Restart the device if the change does not appear.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Respring first. Restart the device if the change does not appear."
+            "value": "Restart the device if the change does not appear."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "先执行注销，若未生效则重新启动设备。"
+            "value": "若未生效，请重新启动设备。"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Haz un respring primero. Reinicia el dispositivo si el cambio no aparece."
+            "value": "Si el cambio no aparece, reinicia el dispositivo."
           }
         },
         "fa": {
           "stringUnit": {
             "state": "translated",
-            "value": "ابتدا ری‌اسپرینگ کنید. اگر تغییر دیده نشد، دستگاه را دوباره راه‌اندازی کنید."
+            "value": "اگر تغییر ظاهر نشد، دستگاه را راه‌اندازی مجدد کنید."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "まずRespringしてください。変更が表示されない場合はデバイスを再起動してください。"
+            "value": "変更が反映されない場合は、デバイスを再起動してください。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "먼저 리스프링을 실행하십시오. 변경 사항이 나타나지 않으면 기기를 재시동하십시오."
+            "value": "변경 사항이 나타나지 않으면 기기를 다시 시작하세요."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Сначала выполните респринг. Если изменения не появились, перезагрузите устройство."
+            "value": "Если изменение не вступило в силу, перезапустите устройство."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Hãy respring trước. Nếu thay đổi chưa xuất hiện, hãy khởi động lại thiết bị."
+            "value": "Nếu thay đổi không xuất hiện, hãy khởi động lại thiết bị."
           }
         },
         "zh-Hant-HK": {
           "stringUnit": {
             "state": "translated",
-            "value": "先執行註銷，若未生效則重新啓動設備。"
+            "value": "若未生效，請重新啟動裝置。"
           }
         },
         "zh-Hant-TW": {
           "stringUnit": {
             "state": "translated",
-            "value": "先執行登出，若未生效則重新啟動裝置。"
+            "value": "若未生效，請重新啟動裝置。"
           }
         }
       }
@@ -5249,70 +5057,6 @@
         }
       }
     },
-    "Respring Required": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Respring Required"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "需要注销"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Se requiere respring"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ری‌اسپرینگ لازم است"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Respringが必要"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "리스프링 필요"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Требуется респринг"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cần respring"
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "需要註銷"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "需要登出"
-          }
-        }
-      }
-    },
     "Log": {
       "localizations": {
         "en": {
@@ -5565,70 +5309,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "每次寫入前會自動備份。"
-          }
-        }
-      }
-    },
-    "This will attempt to restart SpringBoard using NeoSpring.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This will attempt to restart SpringBoard using NeoSpring."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "将通过 NeoSpring 尝试重新启动 SpringBoard。"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Esto intentará reiniciar SpringBoard mediante NeoSpring."
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "با استفاده از NeoSpring برای راه‌اندازی مجدد SpringBoard تلاش می‌شود."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpringを使用してSpringBoardの再起動を試みます。"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring을 사용하여 SpringBoard 재시작을 시도합니다."
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Будет выполнена попытка перезапустить SpringBoard с помощью NeoSpring."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Thao tác này sẽ thử khởi động lại SpringBoard bằng NeoSpring."
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "將通過 NeoSpring 嘗試重新啓動 SpringBoard。"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "將透過 NeoSpring 嘗試重新啟動 SpringBoard。"
           }
         }
       }
@@ -8573,134 +8253,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "匯出 plist"
-          }
-        }
-      }
-    },
-    "Respring": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Respring"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "注销"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Respring"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ری‌اسپرینگ"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Respring"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "리스프링"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Респринг"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Respring"
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "註銷"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "登出"
-          }
-        }
-      }
-    },
-    "Changes are verified. Respring when you are ready.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Changes are verified. Respring when you are ready."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "更改已验证，准备好后可执行注销。"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Los cambios están verificados. Haz respring cuando estés listo."
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تغییرات تأیید شدند. هر وقت آماده بودید ری‌اسپرینگ کنید."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "変更は検証済みです。準備ができたらRespringしてください。"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "변경 사항이 검증되었습니다. 준비되면 리스프링하십시오."
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Изменения проверены. Выполните респринг, когда будете готовы."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Thay đổi đã được xác minh. Hãy respring khi sẵn sàng."
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "更改已驗證，準備好後可執行註銷。"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "更改已驗證，準備好後可執行登出。"
           }
         }
       }
@@ -12545,66 +12097,66 @@
         }
       }
     },
-    "Incorrect system values can affect device behavior. A verified backup will be kept. No respring is triggered automatically.": {
+    "Incorrect system values can affect device behavior. A verified backup will be kept. No restart is triggered automatically.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Incorrect system values can affect device behavior. A verified backup will be kept. No respring is triggered automatically."
+            "value": "Incorrect system values can affect device behavior. A verified backup will be kept. No restart is triggered automatically."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "错误的系统值可能影响设备运行。应用会保留经过验证的备份，且不会自动执行注销。"
+            "value": "错误的系统值可能影响设备运行。应用会保留经过验证的备份，且不会自动触发重启。"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Los valores incorrectos del sistema pueden afectar el comportamiento del dispositivo. Se conservará un respaldo verificado. No se ejecutará respring automáticamente."
+            "value": "Los valores incorrectos del sistema pueden afectar al dispositivo. Se conservará una copia de seguridad verificada. No se inicia ningún reinicio automáticamente."
           }
         },
         "fa": {
           "stringUnit": {
             "state": "translated",
-            "value": "مقدارهای نادرست سیستم ممکن است بر عملکرد دستگاه اثر بگذارند. نسخهٔ پشتیبان تأییدشده نگه داشته می‌شود. ری‌اسپرینگ به‌طور خودکار اجرا نمی‌شود."
+            "value": "مقادیر نادرست سیستم ممکن است بر عملکرد دستگاه تأثیر بگذارد. یک نسخه پشتیبان تأییدشده نگه داشته می‌شود. هیچ راه‌اندازی مجددی به‌صورت خودکار انجام نمی‌شود."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "システム値を誤るとデバイスの動作に影響する可能性があります。検証済みのバックアップが保持されます。Respringは自動実行されません。"
+            "value": "誤ったシステム値はデバイスの動作に影響する可能性があります。検証済みのバックアップが保持されます。自動で再起動されることはありません。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "잘못된 시스템 값을 입력하면 기기 동작에 문제가 생길 수 있습니다. 검증된 백업이 안전하게 유지되며 리스프링은 자동으로 실행되지 않습니다."
+            "value": "잘못된 시스템 값은 기기 동작에 영향을 줄 수 있습니다. 검증된 백업이 유지됩니다. 자동으로 다시 시작되지 않습니다."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Неверные системные значения могут повлиять на работу устройства. Проверенная резервная копия будет сохранена. Респринг автоматически не запускается."
+            "value": "Неверные системные значения могут повлиять на работу устройства. Проверенная резервная копия будет сохранена. Перезапуск автоматически не выполняется."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Giá trị hệ thống sai có thể ảnh hưởng đến hoạt động của thiết bị. Một bản sao lưu đã xác minh sẽ được giữ lại. Respring không tự động diễn ra."
+            "value": "Giá trị hệ thống không chính xác có thể ảnh hưởng đến hoạt động của thiết bị. Bản sao lưu đã xác minh sẽ được giữ lại. Không có lần khởi động lại nào được kích hoạt tự động."
           }
         },
         "zh-Hant-HK": {
           "stringUnit": {
             "state": "translated",
-            "value": "錯誤的系統值可能影響設備運行。應用會保留經過驗證的備份，且不會自動執行註銷。"
+            "value": "錯誤的系統值可能影響裝置運作。應用程式會保留經驗證的備份，且不會自動觸發重新啟動。"
           }
         },
         "zh-Hant-TW": {
           "stringUnit": {
             "state": "translated",
-            "value": "錯誤的系統值可能影響裝置執行。應用會保留經過驗證的備份，且不會自動執行登出。"
+            "value": "錯誤的系統值可能影響裝置運作。應用程式會保留經驗證的備份，且不會自動觸發重新啟動。"
           }
         }
       }
@@ -14077,134 +13629,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "清空"
-          }
-        }
-      }
-    },
-    "Respring now?": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Respring now?"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "立即注销？"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¿Hacer respring ahora?"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "اکنون ری‌اسپرینگ شود؟"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "今すぐRespringしますか？"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "지금 리스프링하시겠습니까?"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Выполнить респринг сейчас?"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Respring ngay?"
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "立即註銷？"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "立即登出？"
-          }
-        }
-      }
-    },
-    "NeoSpring will attempt to restart SpringBoard. Save your work first. It may not work on every OS build.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring will attempt to restart SpringBoard. Save your work first. It may not work on every OS build."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring 将尝试重新启动 SpringBoard，请先保存其他应用中的工作。部分系统版本可能不适用。"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring intentará reiniciar SpringBoard. Guarda tu trabajo primero. Podría no funcionar en todas las versiones del SO."
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring برای راه‌اندازی مجدد SpringBoard تلاش می‌کند. ابتدا کار خود را ذخیره کنید. ممکن است در همهٔ نسخه‌های سیستم‌عامل کار نکند."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpringはSpringBoardの再起動を試みます。先に作業内容を保存してください。すべてのOSビルドで動作するとは限りません。"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring이 SpringBoard 재시작을 시도합니다. 진행 중인 작업 내용을 미리 저장하십시오. 사용하는 OS 빌드 버전에 따라 이 기능이 작동하지 않을 수 있습니다."
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring попытается перезапустить SpringBoard. Сначала сохраните работу. Метод может работать не во всех сборках ОС."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring sẽ thử khởi động lại SpringBoard. Hãy lưu công việc trước. Một số bản hệ điều hành có thể không hỗ trợ."
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring 將嘗試重新啓動 SpringBoard，請先保存其他應用中的工作。部分系統版本可能不適用。"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring 將嘗試重新啟動 SpringBoard，請先儲存其他應用中的工作。部分系統版本可能不適用。"
           }
         }
       }
@@ -16769,70 +16193,6 @@
         }
       }
     },
-    "Changes verified on device. Respring to refresh supported features.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Changes verified on device. Respring to refresh supported features."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "本机更改已验证，可执行注销以刷新受支持的功能。"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cambios verificados en el dispositivo. Haz respring para actualizar las funciones compatibles."
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تغییرات روی دستگاه تأیید شدند. برای تازه‌سازی قابلیت‌های پشتیبانی‌شده ری‌اسپرینگ کنید."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "デバイス上で変更を検証しました。対応機能を更新するにはRespringしてください。"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "기기에서 변경 사항이 검증되었습니다. 새로 지원되는 기능을 시스템에 반영하려면 리스프링을 실행하십시오."
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Изменения на устройстве проверены. Выполните респринг для обновления поддерживаемых функций."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Thay đổi trên thiết bị đã được xác minh. Respring để làm mới các tính năng được hỗ trợ."
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "本機更改已驗證，可執行註銷以刷新受支持的功能。"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "本機更改已驗證，可執行登出以重新整理受支援的功能。"
-          }
-        }
-      }
-    },
     "Local changes saved. Export the plist to keep a copy.": {
       "localizations": {
         "en": {
@@ -19137,70 +18497,6 @@
         }
       }
     },
-    "Credits": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Credits"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "鸣谢"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Créditos"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "سپاسگزاری"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "クレジット"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "크레딧"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Благодарности"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ghi công"
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "鳴謝"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "致謝"
-          }
-        }
-      }
-    },
     "worse_query sandbox escape": {
       "localizations": {
         "en": {
@@ -19261,262 +18557,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "worse_query 沙盒逃逸原語"
-          }
-        }
-      }
-    },
-    "Original WebKit respring technique": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Original WebKit respring technique"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "原始 WebKit 注销方法"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Técnica original de respring con WebKit"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "روش اصلی ری‌اسپرینگ با WebKit"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "WebKitによる従来のRespring手法"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "기존 WebKit 리스프링 방식 구현"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Исходный метод респринга через WebKit"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kỹ thuật respring WebKit gốc"
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "原始 WebKit 註銷方法"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "原始 WebKit 登出方法"
-          }
-        }
-      }
-    },
-    "Swift implementation of the respring technique": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Swift implementation of the respring technique"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "注销方法的 Swift 实现"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Implementación en Swift de la técnica de respring"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "پیاده‌سازی روش ری‌اسپرینگ در Swift"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Respring手法のSwift実装"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Swift 언어로 재구현된 리스프링 기술"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Реализация метода респринга на Swift"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bản triển khai kỹ thuật respring bằng Swift"
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "註銷方法的 Swift 實現"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "登出方法的 Swift 實現"
-          }
-        }
-      }
-    },
-    "NeoSpring project and respring research": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring project and respring research"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring 项目与注销研究"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Proyecto NeoSpring e investigación de respring"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "پروژهٔ NeoSpring و پژوهش ری‌اسپرینگ"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpringプロジェクトとRespring研究"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring 프로젝트 및 리스프링 메커니즘 연구"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Проект NeoSpring и исследование респринга"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dự án NeoSpring và nghiên cứu respring"
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring 項目與註銷研究"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring 專案與登出研究"
-          }
-        }
-      }
-    },
-    "GPL-licensed respring adaptation": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "GPL-licensed respring adaptation"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "采用 GPL 许可的注销适配实现"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Adaptación de respring bajo licencia GPL"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "نسخهٔ سازگارشدهٔ ری‌اسپرینگ با مجوز GPL"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "GPLライセンスのRespring移植"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "GPL 라이선스를 기반으로 적용된 리스프링 어댑테이션"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Адаптация респринга под лицензией GPL"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bản respring thích ứng theo giấy phép GPL"
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "採用 GPL 許可的註銷適配實現"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "採用 GPL 許可的登出適配實現"
           }
         }
       }
@@ -20353,134 +19393,6 @@
         }
       }
     },
-    "NeoSpring": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring"
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring"
-          }
-        }
-      }
-    },
-    "NeoSpring attempts a SpringBoard refresh using WebKit. Its effectiveness varies by OS build. Some MobileGestalt changes may still need a manual device restart.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring attempts a SpringBoard refresh using WebKit. Its effectiveness varies by OS build. Some MobileGestalt changes may still need a manual device restart."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring 使用 WebKit 尝试刷新 SpringBoard，效果因系统版本而异。部分 MobileGestalt 更改仍可能需要手动重新启动设备。"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring intenta refrescar SpringBoard usando WebKit. Su efectividad varía según la compilación del SO. Algunos cambios de MobileGestalt pueden requerir un reinicio manual del dispositivo."
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring با WebKit برای تازه‌سازی SpringBoard تلاش می‌کند. نتیجه به نسخهٔ سیستم‌عامل بستگی دارد. برخی تغییرات MobileGestalt همچنان ممکن است به راه‌اندازی مجدد دستی نیاز داشته باشند."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpringはWebKitを使用してSpringBoardの更新を試みます。効果はOSビルドによって異なります。一部のMobileGestalt変更では、手動でデバイスを再起動する必要があります。"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring은 WebKit를 활용하여 SpringBoard 새로고침(리스프링)을 시도합니다. 이 방식의 성공 여부는 OS 빌드에 따라 다를 수 있으며, 일부 MobileGestalt 변경 사항은 리스프링만으로 반영되지 않아 기기를 수동으로 재시동해야 할 수도 있습니다."
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring пытается обновить SpringBoard через WebKit. Эффективность зависит от сборки ОС. Некоторые изменения MobileGestalt могут потребовать ручной перезагрузки устройства."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring thử làm mới SpringBoard bằng WebKit. Hiệu quả tùy thuộc vào bản hệ điều hành. Một số thay đổi MobileGestalt vẫn có thể cần khởi động lại thiết bị thủ công."
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring 使用 WebKit 嘗試刷新 SpringBoard，效果因系統版本而異。部分 MobileGestalt 更改仍可能需要手動重新啓動設備。"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "NeoSpring 使用 WebKit 嘗試重新整理 SpringBoard，效果因系統版本而異。部分 MobileGestalt 更改仍可能需要手動重新啟動裝置。"
-          }
-        }
-      }
-    },
     "License text could not be loaded.": {
       "localizations": {
         "en": {
@@ -20541,134 +19453,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "無法載入許可文字。"
-          }
-        }
-      }
-    },
-    "Respring did not finish.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Respring did not finish."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "注销未完成。"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "El respring no finalizó."
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ری‌اسپرینگ کامل نشد."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Respringが完了しませんでした。"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "리스프링 작업이 정상적으로 완료되지 않았습니다."
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Респринг не завершился."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Respring chưa hoàn tất."
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "註銷未完成。"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "登出未完成。"
-          }
-        }
-      }
-    },
-    "Refreshing SpringBoard…": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Refreshing SpringBoard…"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "正在刷新 SpringBoard…"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Reiniciando SpringBoard…"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "در حال تازه‌سازی SpringBoard…"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "SpringBoardを更新中…"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "SpringBoard 시스템을 새로고침하는 중…"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Обновление SpringBoard…"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Đang làm mới SpringBoard…"
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "正在刷新 SpringBoard…"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "正在重新整理 SpringBoard…"
           }
         }
       }
@@ -32449,134 +31233,6 @@
         }
       }
     },
-    "Source Code": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Source Code"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "源代码"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Código fuente"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "کد منبع"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ソースコード"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "소스 코드"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Исходный код"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mã nguồn"
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "原始碼"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "原始碼"
-          }
-        }
-      }
-    },
-    "The enhanced version is distributed under the GNU GPL v3.0. Its complete source is distributed with the release as the pristine v1.0.7 source plus the modification patch.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The enhanced version is distributed under the GNU GPL v3.0. Its complete source is distributed with the release as the pristine v1.0.7 source plus the modification patch."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "增强版遵循 GNU GPL v3.0 发布。完整源代码随发布一同提供，即官方 v1.0.7 原始源码加修改补丁。"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "La versión mejorada se distribuye bajo la GNU GPL v3.0. Su código fuente completo se distribuye con la versión como el código fuente original de v1.0.7 más el parche de modificaciones."
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "نسخه بهبودیافته تحت مجوز GNU GPL نسخه ۳٫۰ منتشر می‌شود. کد منبع کامل آن همراه با انتشار، به‌صورت کد منبع اصلی نسخه ۱٫۰٫۷ به‌علاوه وصله تغییرات ارائه می‌شود."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "拡張版は GNU GPL v3.0 の下で配布されます。完全なソースコードは、公式 v1.0.7 のソースに修正パッチを加えた形でリリースとともに配布されます。"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "향상된 버전은 GNU GPL v3.0에 따라 배포됩니다. 전체 소스 코드는 공식 v1.0.7 원본 소스에 수정 패치를 더한 형태로 릴리스와 함께 배포됩니다."
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Улучшенная версия распространяется по лицензии GNU GPL v3.0. Её полный исходный код распространяется вместе с выпуском как исходный код официальной версии v1.0.7 с патчем изменений."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bản nâng cao được phân phối theo GNU GPL v3.0. Mã nguồn đầy đủ của bản này được phân phối cùng bản phát hành dưới dạng mã nguồn gốc v1.0.7 cộng với bản vá sửa đổi."
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "增強版遵循 GNU GPL v3.0 發佈。完整原始碼隨發佈一同提供，即官方 v1.0.7 原始源碼加修改補丁。"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "增強版遵循 GNU GPL v3.0 發佈。完整原始碼隨發佈一同提供，即官方 v1.0.7 原始源碼加修改補丁。"
-          }
-        }
-      }
-    },
     "Reading device data…": {
       "localizations": {
         "en": {
@@ -34049,66 +32705,66 @@
         }
       }
     },
-    "Respring first. Restart the device if the change does not appear. Display behavior depends on the panel and may increase power use and burn-in risk.": {
+    "Restart the device if the change does not appear. Display behavior depends on the panel and may increase power use and burn-in risk.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Respring first. Restart the device if the change does not appear. Display behavior depends on the panel and may increase power use and burn-in risk."
+            "value": "Restart the device if the change does not appear. Display behavior depends on the panel and may increase power use and burn-in risk."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "先执行注销，若未生效则重新启动设备。显示效果取决于屏幕面板，可能增加耗电与烧屏风险。"
+            "value": "若未生效，请重新启动设备。显示效果取决于屏幕面板，可能增加耗电与烧屏风险。"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Haz un respring primero. Reinicia el dispositivo si el cambio no aparece. El comportamiento de la pantalla depende del panel y puede aumentar el consumo de batería y el riesgo de retención de imagen."
+            "value": "Si el cambio no aparece, reinicia el dispositivo. El comportamiento de la pantalla depende del panel y puede aumentar el consumo y el riesgo de quemado."
           }
         },
         "fa": {
           "stringUnit": {
             "state": "translated",
-            "value": "ابتدا ری‌اسپرینگ کنید. اگر تغییر دیده نشد، دستگاه را دوباره راه‌اندازی کنید. رفتار نمایشگر به پنل بستگی دارد و ممکن است مصرف انرژی و خطر سوختگی تصویر افزایش یابد."
+            "value": "اگر تغییر ظاهر نشد، دستگاه را راه‌اندازی مجدد کنید. رفتار نمایشگر به پنل بستگی دارد و ممکن است مصرف برق و خطر سوختگی را افزایش دهد."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "まずRespringしてください。変更が表示されない場合はデバイスを再起動してください。ディスプレイの動作はパネルに依存し、電力消費や焼き付きのリスクが増える可能性があります。"
+            "value": "変更が反映されない場合は、デバイスを再起動してください。表示の挙動はパネルに依存し、消費電力の増加や焼き付きのリスクがあります。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "먼저 리스프링을 실행하십시오. 변경 사항이 나타나지 않으면 기기를 재시동하십시오. 디스플레이 동작은 탑재된 패널 종류에 따라 다르며, 전력 소모량 증가와 번인 위험이 커질 수 있습니다."
+            "value": "변경 사항이 나타나지 않으면 기기를 다시 시작하세요. 표시 동작은 패널에 따라 다르며 전력 사용량 증가 및 번인 위험이 있을 수 있습니다."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Сначала выполните респринг. Если изменения не появились, перезагрузите устройство. Работа экрана зависит от панели; возможны повышенное энергопотребление и выгорание."
+            "value": "Если изменение не вступило в силу, перезапустите устройство. Поведение дисплея зависит от панели и может увеличить энергопотребление и риск выгорания."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Hãy respring trước. Nếu thay đổi chưa xuất hiện, hãy khởi động lại thiết bị. Hiển thị tùy thuộc vào tấm nền, có thể tăng mức tiêu thụ điện và nguy cơ lưu ảnh."
+            "value": "Nếu thay đổi không xuất hiện, hãy khởi động lại thiết bị. Hành vi hiển thị phụ thuộc vào tấm nền và có thể làm tăng mức tiêu thụ điện và nguy cơ lưu ảnh."
           }
         },
         "zh-Hant-HK": {
           "stringUnit": {
             "state": "translated",
-            "value": "先執行註銷，若未生效則重新啓動設備。顯示效果取決於屏幕面板，可能增加耗電與燒屏風險。"
+            "value": "若未生效，請重新啟動裝置。顯示效果取決於屏幕面板，可能增加耗電與烙印風險。"
           }
         },
         "zh-Hant-TW": {
           "stringUnit": {
             "state": "translated",
-            "value": "先執行登出，若未生效則重新啟動裝置。顯示效果取決於螢幕面板，可能增加耗電與燒屏風險。"
+            "value": "若未生效，請重新啟動裝置。顯示效果取決於螢幕面板，可能增加耗電與烙印風險。"
           }
         }
       }
@@ -34305,66 +32961,66 @@
         }
       }
     },
-    "Respring first. Restart the device if the change does not appear. Requires iOS 26 or later.": {
+    "Restart the device if the change does not appear. Requires iOS 26 or later.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Respring first. Restart the device if the change does not appear. Requires iOS 26 or later."
+            "value": "Restart the device if the change does not appear. Requires iOS 26 or later."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "先执行注销，若未生效则重新启动设备。需要 iOS 26 或更高版本。"
+            "value": "若未生效，请重新启动设备。需要 iOS 26 或更高版本。"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Haz un respring primero. Reinicia el dispositivo si el cambio no aparece. Requiere iOS 26 o posterior."
+            "value": "Si el cambio no aparece, reinicia el dispositivo. Requiere iOS 26 o posterior."
           }
         },
         "fa": {
           "stringUnit": {
             "state": "translated",
-            "value": "ابتدا ری‌اسپرینگ کنید. اگر تغییر دیده نشد، دستگاه را دوباره راه‌اندازی کنید. به iOS 26 یا جدیدتر نیاز دارد."
+            "value": "اگر تغییر ظاهر نشد، دستگاه را راه‌اندازی مجدد کنید. به iOS 26 یا جدیدتر نیاز دارد."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "まずRespringしてください。変更が表示されない場合はデバイスを再起動してください。iOS 26以降が必要です。"
+            "value": "変更が反映されない場合は、デバイスを再起動してください。iOS 26 以降が必要です。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "먼저 리스프링을 실행하십시오. 변경 사항이 나타나지 않으면 기기를 재시동하십시오. iOS 26 이상이 필요합니다."
+            "value": "변경 사항이 나타나지 않으면 기기를 다시 시작하세요. iOS 26 이상이 필요합니다."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Сначала выполните респринг. Если изменения не появились, перезагрузите устройство. Требуется iOS 26 или новее."
+            "value": "Если изменение не вступило в силу, перезапустите устройство. Требуется iOS 26 или новее."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Hãy respring trước. Nếu thay đổi chưa xuất hiện, hãy khởi động lại thiết bị. Cần iOS 26 trở lên."
+            "value": "Nếu thay đổi không xuất hiện, hãy khởi động lại thiết bị. Yêu cầu iOS 26 trở lên."
           }
         },
         "zh-Hant-HK": {
           "stringUnit": {
             "state": "translated",
-            "value": "先執行註銷，若未生效則重新啓動設備。需要 iOS 26 或以上版本。"
+            "value": "若未生效，請重新啟動裝置。需要 iOS 26 或以上版本。"
           }
         },
         "zh-Hant-TW": {
           "stringUnit": {
             "state": "translated",
-            "value": "先執行登出，若未生效則重新啟動裝置。需要 iOS 26 或以上版本。"
+            "value": "若未生效，請重新啟動裝置。需要 iOS 26 或以上版本。"
           }
         }
       }
@@ -73085,6 +71741,1926 @@
           "stringUnit": {
             "state": "translated",
             "value": "請檢查上方預覽，然後確認以恢復整個備份。"
+          }
+        }
+      }
+    },
+    "Technical Sources": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Technical Sources"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "技术来源"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fuentes técnicas"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "منابع فنی"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "技術情報源"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기술 출처"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Технические источники"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nguồn kỹ thuật"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "技術來源"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "技術來源"
+          }
+        }
+      }
+    },
+    "Third-Party Licenses": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Third-Party Licenses"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "第三方许可证"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Licencias de terceros"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مجوزهای شخص ثالث"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "サードパーティライセンス"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "타사 라이선스"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Лицензии третьих сторон"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giấy phép bên thứ ba"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "第三方授權"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "第三方授權"
+          }
+        }
+      }
+    },
+    "Full Source Code": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Full Source Code"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完整源代码"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Código fuente completo"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "کد منبع کامل"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完全なソースコード"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "전체 소스 코드"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Полный исходный код"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mã nguồn đầy đủ"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完整原始碼"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完整原始碼"
+          }
+        }
+      }
+    },
+    "Author": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Author"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "作者"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autor"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نویسنده"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "作者"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "저자"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Автор"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tác giả"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "作者"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "作者"
+          }
+        }
+      }
+    },
+    "Relationship": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Relationship"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "使用关系"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Relación"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "رابطه"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "関係"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "관계"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Связь"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mối quan hệ"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "使用關係"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "使用關係"
+          }
+        }
+      }
+    },
+    "Key Technology": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Key Technology"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "关键技术"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tecnología clave"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فناوری کلیدی"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "主要技術"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "핵심 기술"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ключевая технология"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Công nghệ chính"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "關鍵技術"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "關鍵技術"
+          }
+        }
+      }
+    },
+    "Shipped in IPA": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shipped in IPA"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "是否随 IPA 分发"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Incluido en el IPA"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "همراه با IPA عرضه می‌شود"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "IPA に同梱"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "IPA에 포함"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Входит в IPA"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đi kèm trong IPA"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "是否隨 IPA 發佈"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "是否隨 IPA 發佈"
+          }
+        }
+      }
+    },
+    "Yes": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yes"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "是"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sí"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بله"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "はい"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "예"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Да"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Có"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "是"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "是"
+          }
+        }
+      }
+    },
+    "No": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "否"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "خیر"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "いいえ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "아니요"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нет"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "否"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "否"
+          }
+        }
+      }
+    },
+    "Original code base": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Original code base"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "原始代码基础"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Código base original"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "پایگاه کد اصلی"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "元のコードベース"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "원본 코드베이스"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Исходная кодовая база"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mã nguồn gốc"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "原始程式碼基礎"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "原始程式碼基礎"
+          }
+        }
+      }
+    },
+    "Bundled code": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bundled code"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "直接集成的代码"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Código integrado"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "کد همراه"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同梱コード"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "번들 코드"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Встроенный код"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mã đi kèm"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "直接整合的程式碼"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "直接整合的程式碼"
+          }
+        }
+      }
+    },
+    "Adapted code": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adapted code"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "改编的代码"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Código adaptado"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "کد اقتباس‌شده"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "改変コード"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "개작된 코드"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Адаптированный код"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mã đã điều chỉnh"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "改編的程式碼"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "改編的程式碼"
+          }
+        }
+      }
+    },
+    "Reused data": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reused data"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "复用的数据"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Datos reutilizados"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "داده‌های استفاده‌شده"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "再利用データ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "재사용 데이터"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повторно используемые данные"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dữ liệu tái sử dụng"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "再利用的資料"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "再利用的資料"
+          }
+        }
+      }
+    },
+    "Design reference": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Design reference"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设计参考"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Referencia de diseño"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مرجع طراحی"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設計参考"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "설계 참조"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Справочник по проектированию"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tham khảo thiết kế"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設計參考"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設計參考"
+          }
+        }
+      }
+    },
+    "Research reference": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Research reference"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "研究参考"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Referencia de investigación"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مرجع پژوهشی"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "研究参考"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "연구 참조"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Справочник по исследованию"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tham khảo nghiên cứu"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "研究參考"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "研究參考"
+          }
+        }
+      }
+    },
+    "Test tool": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Test tool"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "测试工具"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Herramienta de pruebas"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ابزار آزمایش"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "テストツール"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "테스트 도구"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Инструмент тестирования"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Công cụ kiểm thử"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "測試工具"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "測試工具"
+          }
+        }
+      }
+    },
+    "Build tool": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Build tool"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "构建工具"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Herramienta de compilación"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ابزار ساخت"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ビルドツール"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "빌드 도구"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Инструмент сборки"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Công cụ xây dựng"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "建置工具"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "建置工具"
+          }
+        }
+      }
+    },
+    "LilaShift is an unofficial enhancement project. It is not affiliated with Apple or any upstream project.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LilaShift is an unofficial enhancement project. It is not affiliated with Apple or any upstream project."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LilaShift 是非官方增强项目，与 Apple 及任何上游项目均无官方关联。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LilaShift es un proyecto de mejora no oficial, sin afiliación con Apple ni con ningún proyecto original."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LilaShift یک پروژه بهبود غیررسمی است و وابسته به Apple یا هیچ پروژه بالادستی نیست."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LilaShift は非公式の拡張プロジェクトであり、Apple やいかなる上流プロジェクトとも提携していません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LilaShift는 비공식 개선 프로젝트이며 Apple이나 어떤 업스트림 프로젝트와도 제휴 관계가 없습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LilaShift — неофициальный проект улучшений, не связанный с Apple или каким-либо вышестоящим проектом."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LilaShift là dự án cải tiến không chính thức, không liên kết với Apple hay bất kỳ dự án gốc nào."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LilaShift 是非官方增強專案，與 Apple 及任何上游專案均無官方關聯。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LilaShift 是非官方增強專案，與 Apple 及任何上游專案均無官方關聯。"
+          }
+        }
+      }
+    },
+    "Modifying device features carries compatibility and data risks. Back up your device before applying changes.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modifying device features carries compatibility and data risks. Back up your device before applying changes."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "修改设备功能存在兼容性和数据风险，应用更改前请备份设备。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modificar funciones del dispositivo conlleva riesgos de compatibilidad y de datos. Haz una copia de seguridad antes de aplicar cambios."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تغییر ویژگی‌های دستگاه خطرات سازگاری و داده دارد. پیش از اعمال تغییرات از دستگاه خود پشتیبان بگیرید."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "デバイスの機能を変更すると、互換性やデータのリスクがあります。変更を適用する前にデバイスをバックアップしてください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기기 기능을 수정하면 호환성 및 데이터 위험이 따릅니다. 변경을 적용하기 전에 기기를 백업하세요."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Изменение функций устройства сопряжено с рисками совместимости и потери данных. Сделайте резервную копию устройства перед применением изменений."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Việc sửa đổi tính năng thiết bị tiềm ẩn rủi ro về tương thích và dữ liệu. Hãy sao lưu thiết bị trước khi áp dụng thay đổi."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "修改裝置功能存在相容性與資料風險，套用變更前請備份裝置。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "修改裝置功能存在相容性與資料風險，套用變更前請備份裝置。"
+          }
+        }
+      }
+    },
+    "The complete source code is provided under the applicable open-source licenses.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The complete source code is provided under the applicable open-source licenses."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完整源代码依据适用的开源许可证提供。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El código fuente completo se proporciona bajo las licencias de código abierto aplicables."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "کد منبع کامل تحت مجوزهای متن‌باز قابل‌اعمال ارائه می‌شود."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完全なソースコードは、適用されるオープンソースライセンスに基づいて提供されます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "전체 소스 코드는 적용 가능한 오픈소스 라이선스에 따라 제공됩니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Полный исходный код предоставляется в соответствии с применимыми лицензиями с открытым исходным кодом."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mã nguồn đầy đủ được cung cấp theo các giấy phép mã nguồn mở hiện hành."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完整原始碼依據適用的開源授權提供。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完整原始碼依據適用的開源授權提供。"
+          }
+        }
+      }
+    },
+    "The enhanced version is distributed under the GNU GPL v3.0. Its complete corresponding source is distributed with the release.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The enhanced version is distributed under the GNU GPL v3.0. Its complete corresponding source is distributed with the release."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "增强版遵循 GNU GPL v3.0 发布。随发布一同提供其完整对应源代码。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La versión mejorada se distribuye bajo la GNU GPL v3.0. Su código fuente correspondiente completo se distribuye con la versión."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نسخه بهبودیافته تحت GNU GPL نسخه 3.0 توزیع می‌شود. کد منبع متناظر کامل آن همراه با انتشار ارائه می‌شود."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "拡張版は GNU GPL v3.0 に基づいて配布されます。対応する完全なソースコードもリリースとともに配布されます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "개선된 버전은 GNU GPL v3.0에 따라 배포됩니다. 이에 대응하는 전체 소스 코드도 릴리스와 함께 배포됩니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Улучшенная версия распространяется по лицензии GNU GPL v3.0. Соответствующий полный исходный код распространяется вместе с выпуском."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phiên bản cải tiến được phân phối theo GNU GPL v3.0. Mã nguồn tương ứng đầy đủ được phân phối cùng với bản phát hành."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "增強版遵循 GNU GPL v3.0 發佈。隨發佈一同提供其完整對應原始碼。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "增強版遵循 GNU GPL v3.0 發佈。隨發佈一同提供其完整對應原始碼。"
+          }
+        }
+      }
+    },
+    "No license stated": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No license stated"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未声明许可证"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sin licencia declarada"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مجوزی اعلام نشده است"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ライセンス未表明"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "라이선스 미표기"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Лицензия не указана"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa công bố giấy phép"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未聲明授權"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未聲明授權"
+          }
+        }
+      }
+    },
+    "Tap a project for its author, relationship, key technology, license and source link.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap a project for its author, relationship, key technology, license and source link."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "点开一个项目可查看其作者、使用关系、关键技术、许可证与源码链接。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toca un proyecto para ver su autor, relación, tecnología clave, licencia y enlace al código."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "روی یک پروژه ضربه بزنید تا نویسنده، رابطه، فناوری کلیدی، مجوز و پیوند منبع آن را ببینید."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プロジェクトをタップすると、作者、関係、主要技術、ライセンス、ソースへのリンクが表示されます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "프로젝트를 탭하면 저자, 관계, 핵심 기술, 라이선스 및 소스 링크를 볼 수 있습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нажмите на проект, чтобы увидеть его автора, связь, ключевую технологию, лицензию и ссылку на исходный код."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chạm vào một dự án để xem tác giả, mối quan hệ, công nghệ chính, giấy phép và liên kết nguồn của dự án đó."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "點開一個專案可查看其作者、使用關係、關鍵技術、授權與原始碼連結。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "點開一個專案可查看其作者、使用關係、關鍵技術、授權與原始碼連結。"
+          }
+        }
+      }
+    },
+    "License texts shown here are bundled with the app. Research references and development tools are MIT- or GPL-licensed at their upstream repositories; their texts are not bundled because their code is not shipped in the app.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "License texts shown here are bundled with the app. Research references and development tools are MIT- or GPL-licensed at their upstream repositories; their texts are not bundled because their code is not shipped in the app."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此处显示的许可证文本均随 App 分发。研究参考与开发工具在其上游仓库遵循 MIT 或 GPL 许可；因其代码不随 App 分发，文本未打包。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Los textos de licencia que se muestran aquí se incluyen con la app. Las referencias de investigación y las herramientas de desarrollo tienen licencia MIT o GPL en sus repositorios originales; sus textos no se incluyen porque su código no se distribuye con la app."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "متن‌های مجوز نمایش‌داده‌شده در اینجا همراه با برنامه عرضه می‌شوند. مراجع پژوهشی و ابزارهای توسعه در مخازن بالادستی خود تحت مجوز MIT یا GPL هستند؛ متن‌های آن‌ها همراه نیست زیرا کد آن‌ها با برنامه عرضه نمی‌شود."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ここに表示されるライセンス文はアプリに同梱されています。研究参考と開発ツールは、それぞれの上流リポジトリで MIT または GPL ライセンスの下にあり、コードがアプリに同梱されないため、そのテキストは同梱されていません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "여기에 표시되는 라이선스 텍스트는 앱에 번들로 제공됩니다. 연구 참조 및 개발 도구는 각 업스트림 저장소에서 MIT 또는 GPL 라이선스를 따르며, 해당 코드가 앱에 포함되지 않으므로 텍스트는 번들로 제공되지 않습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Тексты лицензий, показанные здесь, поставляются вместе с приложением. Исследовательские ссылки и инструменты разработки лицензированы по MIT или GPL в их исходных репозиториях; их тексты не включены, поскольку их код не поставляется с приложением."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Các văn bản giấy phép hiển thị tại đây được đi kèm với ứng dụng. Các tham khảo nghiên cứu và công cụ phát triển được cấp phép MIT hoặc GPL tại kho gốc của chúng; văn bản của chúng không được đi kèm vì mã của chúng không được phân phối cùng ứng dụng."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此處顯示的授權文本均隨 App 發佈。研究參考與開發工具在其上游儲存庫遵循 MIT 或 GPL 授權；因其程式碼不隨 App 發佈，文本未打包。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此處顯示的授權文本均隨 App 發佈。研究參考與開發工具在其上游儲存庫遵循 MIT 或 GPL 授權；因其程式碼不隨 App 發佈，文本未打包。"
+          }
+        }
+      }
+    },
+    "Restart Device": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restart Device"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重启设备"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reiniciar dispositivo"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "راه‌اندازی مجدد دستگاه"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "デバイスを再起動"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기기 다시 시작"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перезапустить устройство"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khởi động lại thiết bị"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重新啟動裝置"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重新啟動裝置"
+          }
+        }
+      }
+    },
+    "Restart Your Device": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restart Your Device"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重新启动设备"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reinicia tu dispositivo"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دستگاه خود را راه‌اندازی مجدد کنید"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "デバイスを再起動してください"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기기를 다시 시작하세요"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перезапустите устройство"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khởi động lại thiết bị của bạn"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重新啟動你的裝置"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重新啟動你的裝置"
+          }
+        }
+      }
+    },
+    "Some changes need a device restart to take effect. LilaShift cannot restart SpringBoard itself. Please restart your device manually: hold the side button and a volume button, then slide to power off, or use Settings → General → Shut Down.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Some changes need a device restart to take effect. LilaShift cannot restart SpringBoard itself. Please restart your device manually: hold the side button and a volume button, then slide to power off, or use Settings → General → Shut Down."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "部分更改需要重启设备才能生效。紫序无法自行重启 SpringBoard，请手动重启设备：按住侧边按钮和任一音量按钮，然后滑动关机；或前往“设置 → 通用 → 关机”。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Algunos cambios necesitan reiniciar el dispositivo para surtir efecto. LilaShift no puede reiniciar SpringBoard por sí mismo. Reinicia el dispositivo manualmente: mantén pulsado el botón lateral y un botón de volumen y desliza para apagar, o ve a Ajustes → General → Apagar."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "برخی تغییرات برای اعمال شدن به راه‌اندازی مجدد دستگاه نیاز دارند. LilaShift نمی‌تواند SpringBoard را خودش راه‌اندازی مجدد کند. لطفاً دستگاه را به‌صورت دستی راه‌اندازی مجدد کنید: دکمه کناری و یک دکمه صدا را نگه دارید و برای خاموش کردن بکشید، یا از تنظیمات → عمومی → خاموش کردن استفاده کنید."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "一部の変更を有効にするには、デバイスの再起動が必要です。LilaShift は SpringBoard を自動で再起動できません。サイドボタンと音量ボタンを長押ししてスライドして電源を切るか、「設定」→「一般」→「電源を切る」から手動で再起動してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "일부 변경 사항은 적용되려면 기기를 다시 시작해야 합니다. LilaShift는 SpringBoard를 직접 다시 시작할 수 없습니다. 측면 버튼과 음량 버튼을 길게 눌러 밀어 전원을 끄거나, 설정 → 일반 → 종료를 사용해 수동으로 다시 시작하세요."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Для вступления некоторых изменений в силу требуется перезапуск устройства. LilaShift не может перезапустить SpringBoard самостоятельно. Перезапустите устройство вручную: удерживайте боковую кнопку и кнопку громкости, затем проведите, чтобы выключить, или откройте «Настройки» → «Основные» → «Выключить»."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Một số thay đổi cần khởi động lại thiết bị mới có hiệu lực. LilaShift không thể tự khởi động lại SpringBoard. Vui lòng khởi động lại thiết bị theo cách thủ công: giữ nút sườn và một nút âm lượng rồi trượt để tắt nguồn, hoặc vào Cài đặt → Cài đặt chung → Tắt nguồn."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "部分更改需要重新啟動裝置才能生效。紫序無法自行重新啟動 SpringBoard，請手動重新啟動裝置：按住側邊按鈕和任一音量按鈕，然後滑動關機；或前往「設定 → 一般 → 關機」。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "部分更改需要重新啟動裝置才能生效。紫序無法自行重新啟動 SpringBoard，請手動重新啟動裝置：按住側邊按鈕和任一音量按鈕，然後滑動關機；或前往「設定 → 一般 → 關機」。"
+          }
+        }
+      }
+    },
+    "Suspended": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suspended"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已暂停"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suspendido"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "متوقف‌شده"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "一時停止"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "중단됨"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Приостановлено"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã tạm dừng"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已暫停"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已暫停"
+          }
+        }
+      }
+    },
+    "Manual Restart": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manual Restart"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "手动重启"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reinicio manual"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "راه‌اندازی مجدد دستی"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "手動再起動"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "수동 다시 시작"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ручной перезапуск"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khởi động lại thủ công"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "手動重新啟動"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "手動重新啟動"
+          }
+        }
+      }
+    },
+    "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "紫序不会自行重启 SpringBoard。应用更改后，若某项功能未出现，请手动重启设备。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LilaShift no reinicia SpringBoard por sí mismo. Después de aplicar los cambios, reinicia el dispositivo manualmente si una función no aparece."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LilaShift خودش SpringBoard را راه‌اندازی مجدد نمی‌کند. پس از اعمال تغییرات، اگر قابلیتی ظاهر نشد، دستگاه را به‌صورت دستی راه‌اندازی مجدد کنید."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LilaShift は SpringBoard を自動で再起動しません。変更を適用した後、機能が表示されない場合はデバイスを手動で再起動してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LilaShift는 SpringBoard를 직접 다시 시작하지 않습니다. 변경 사항을 적용한 뒤 기능이 나타나지 않으면 기기를 수동으로 다시 시작하세요."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LilaShift не перезапускает SpringBoard самостоятельно. После применения изменений перезапустите устройство вручную, если какая-либо функция не появилась."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LilaShift không tự khởi động lại SpringBoard. Sau khi áp dụng thay đổi, hãy khởi động lại thiết bị theo cách thủ công nếu một tính năng không xuất hiện."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "紫序不會自行重新啟動 SpringBoard。套用更改後，若某項功能未出現，請手動重新啟動裝置。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "紫序不會自行重新啟動 SpringBoard。套用更改後，若某項功能未出現，請手動重新啟動裝置。"
           }
         }
       }

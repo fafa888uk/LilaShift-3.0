@@ -1,4 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
+// Container identity follows forcequitOS's fsgetpath research; PosterBoard
+// targets follow Gester (MIT) and Erosion (GPL-3.0). See GXCustomizationAccess.m
+// and Licenses/ThirdPartyNotices.txt for sources and complete licenses.
 #import <Foundation/Foundation.h>
 NS_ASSUME_NONNULL_BEGIN
 @interface GXCustomizationAccess : NSObject

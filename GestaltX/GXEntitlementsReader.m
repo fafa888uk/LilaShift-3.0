@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // Copyright (C) 2026 huamidev
-// 来源：LCSign 的 LCEntitlementsReader（Sources/LCEntitlementsReader）。
-// Runtime entitlement-reading approach adapted from LCSign.
+// 来源：LCSign 的 LCEntitlementsReader（Sources/LCEntitlementsReader，https://sign.lc）。
+// Runtime entitlement-reading approach adapted from LCSign (no public license
+// stated for LCSign; none asserted here). No LCSign code is bundled.
 // GestaltX adds strict Mach-O bounds checks and effective SecTask lookup.
 #import "GXEntitlementsReader.h"
 #include <mach-o/dyld.h>

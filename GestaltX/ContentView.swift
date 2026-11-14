@@ -30,7 +30,7 @@ struct ContentView: View {
     @State private var sharesFile: TemporaryExport?
     @State private var activeExport: TemporaryExport?
     @State private var showsChanges = false
-    @State private var asksRespring = false
+    @State private var showsRestartHelp = false
     @State private var asksImportedRestore = false
     @State private var showsShareNotice = false
     @AppStorage("GestaltX.sharedImportNotice.v1") private var sharedImportNoticeShown = false
@@ -98,14 +98,12 @@ struct ContentView: View {
                     .toolbar { ToolbarItem(placement: .topBarTrailing) { Button(L("Done")) { showsSharedWallpapers = false } } }
             }
         }
-        .fullScreenCover(isPresented: $model.isRespringing) { NeoSpringView() }
         .alert(L("LilaShift"), isPresented: Binding(get: { model.message != nil && !showsChanges }, set: { if !$0 { model.message = nil } })) {
             Button(L("OK"), role: .cancel) { model.message = nil }
         } message: { Text(model.message ?? "") }
-        .alert(L("Respring now?"), isPresented: $asksRespring) {
-            Button(L("Cancel"), role: .cancel) {}
-            Button(L("Respring")) { model.isRespringing = true }
-        } message: { Text(L("This will attempt to restart SpringBoard using NeoSpring.")) }
+        .alert(L("Restart Your Device"), isPresented: $showsRestartHelp) {
+            Button(L("OK"), role: .cancel) {}
+        } message: { Text(L("Some changes need a device restart to take effect. LilaShift cannot restart SpringBoard itself. Please restart your device manually: hold the side button and a volume button, then slide to power off, or use Settings → General → Shut Down.")) }
         .alert(L("Import Plist"), isPresented: $showsImportConfirmation) {
             Button(L("Cancel"), role: .cancel) {
                 if let offer = importOffer { model.discardImport(offer) }
@@ -284,8 +282,8 @@ struct ContentView: View {
         acceptedWelcome && !model.isBusy && model.changeCount == 0 && importOffer == nil
             && wallpaperOffer == nil && !showsWallpaperConfirmation && !showsSharedWallpapers
             && !customizations.busy && !customizations.isPresenting && customizations.message == nil
-            && !showsImportConfirmation && !showsChanges && !model.isRespringing
-            && sharesFile == nil && !asksRespring && !asksImportedRestore
+            && !showsImportConfirmation && !showsChanges
+            && sharesFile == nil && !showsRestartHelp && !asksImportedRestore
             && !showsShareNotice && model.message == nil
     }
 
@@ -578,7 +576,7 @@ struct ContentView: View {
                             if let export = model.exportDocument() { presentShare(export) }
                         }
                         Divider()
-                        actionButton(label: L("Respring"), systemImage: "arrow.trianglehead.2.clockwise.rotate.90", enabled: !model.isBusy) { asksRespring = true }
+                        actionButton(label: L("Restart Device"), systemImage: "power", enabled: !model.isBusy) { showsRestartHelp = true }
                         Divider()
                         NavigationLink { SessionLogView() } label: {
                             actionLabel(label: L("Log"), systemImage: "text.alignleft")
@@ -587,7 +585,7 @@ struct ContentView: View {
                         }
                     }
                 }
-                if model.needsRespring {
+                if model.needsRestart {
                     Label(L("Some changes require a device restart."), systemImage: "info.circle")
                         .font(.footnote).foregroundStyle(.secondary)
                 }
@@ -1940,7 +1938,7 @@ struct ChangeReviewView: View {
         .alert(L("Apply these changes?"), isPresented: $asksApply) {
             Button(L("Cancel"), role: .cancel) {}
             Button(L("Apply")) { applying = true; Task { await model.apply(); applying = false; if model.changeCount == 0 { dismiss() } } }
-        } message: { Text(L(model.sourceIsDevice ? "Incorrect system values can affect device behavior. A verified backup will be kept. No respring is triggered automatically." : "The current local document will be backed up before saving your edits.")) }
+        } message: { Text(L(model.sourceIsDevice ? "Incorrect system values can affect device behavior. A verified backup will be kept. No restart is triggered automatically." : "The current local document will be backed up before saving your edits.")) }
     }
 
     /// Fixed glass action bar: change count, data source and backup status

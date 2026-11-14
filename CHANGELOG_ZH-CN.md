@@ -11,10 +11,23 @@
 - 将解锁、诊断、备份恢复、预设个性化分成独立的导航页面；旧版工具页仍可从「全部工具」进入，确保功能可回退。
 - 首页快捷入口支持系统原生重新排序，设置保存在本机；自动修复旧版或异常排序数据。
 - 新增首页排序单元测试，3.0 分支构建 IPA 和 XCTest 可通过 GitHub Actions 自动触发。
+- 3.0 整合（C–I 阶段）：8 分区首页、53 项 11 分类的功能目录（统一排序规则，版本化 JSON + SHA-256 sidecar）、8 状态统一兼容性模型、带二次确认的历史恢复视图、诊断缓存（`HomeDiagnosticsCache`，11 张诊断卡移至二级页、`LazyVStack`、移除 iOS 26+ 阴影），Swift 测试函数共 356 个。
+- 构建号 30000001 → 30000002；版本号保持 3.0.0。
+
+### 新增（开源审计，2026-11-14）
+- 开源审计：逐项来源记录见 `docs/OPEN_SOURCE_REFERENCES.md`（16 个项目），逐功能来源映射见 `docs/FEATURE_ORIGIN_MATRIX.md`。
+- 关于页重建为开源贡献者中心：每个实际使用或参考的项目各为一条，含作者、使用关系、关键技术、许可证与源码链接；第三方许可证均来自 App 内置的真实文本；附完整源码链接与免责声明。
+- 20 个实际使用或改编第三方代码的文件完成版权头规范化（SPDX + 原始来源 + 修改说明）；GestaltEdit 许可证由 PolyForm Noncommercial 1.0.0 更正为 GPL-3.0-or-later；ZIPFoundation MIT 文本更新为 2017-2026（与上游逐字节相同）。
+- 新增许可证合规检查脚本 `scripts/check-licenses.py`（每次 IPA 构建时由 check-licenses 工作流运行）与 `tests/ThirdPartyNoticesTests.py` 中的许可证一致性测试。
+
+### 移除（Respring 授权，2026-11-14）
+- 移除 NeoSpring/Ketamine WebKit 注销实现（删除 `GestaltX/NeoSpringView.swift`；用户决定方案 c）。该技术无可验证授权：NeoSpring（rooootdev/neospring）在任何地方均未声明许可证。本构建不再包含任何注销代码。注销操作改为手动重启设备提示，绝不假装自行重启 SpringBoard。见 `docs/OPEN_SOURCE_REFERENCES.md` §3–§4。
 
 ### 待验证
-- 仍须等待 GitHub Actions 构建与真机性能回归结果。此开发预览不代表全部 3.0 升级目标已经完成。
-- 诊断计算缓存、I/O 脱离主线程与复杂卡片性能专项修复仍在后续工作清单内。
+- 整合后 3.0 分支的 GitHub Actions 构建：Tests #129 已在整合前 HEAD（096330e）通过；整合后 HEAD（86e32b4）的 Tests #137 与 IPA #138 因 `HomeDiagnosticsCache.swift` 缺少 `import Combine` 而失败（修复进行中）。真机性能尚未验证。
+- 8 张快照基线待 CI 渲染新图后重录（阴影移除与新增排序/隐藏 UI）；10 张新增 Phase H 快照参考在首次 CI 运行时录制，须在后续提交中提交。
+- NeoSpring 注销：已于 2026-11-14 决定并处理（用户选方案 c，移除/替换）；实现已删除，关于页将 Ketamine 与 NeoSpring 标记为已暂停。重新集成须先找到来源清楚、许可兼容的实现，并经独立审计与测试；见 `docs/OPEN_SOURCE_REFERENCES.md` §4。
+- `Package.resolved` 只锁定了 ZIPFoundation，工程同时要求 SnapshotTesting 1.19.7——须在 Xcode 环境中运行 `xcodebuild -resolvePackageDependencies` 解决。
 
 
 

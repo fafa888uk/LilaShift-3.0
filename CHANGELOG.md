@@ -11,10 +11,23 @@ English | [简体中文](CHANGELOG_ZH-CN.md)
 - Task-specific navigation for unlock, diagnostics, restore and presets; legacy tools remain accessible.
 - Native reorderable dashboard shortcuts with persisted and sanitized order.
 - XCTest coverage for dashboard ordering and automatic preview branch CI.
+- 3.0 integration (phases C–I): an 8-section home, a 53-item feature catalog in 11 categories with one ordering rule (versioned JSON + SHA-256 sidecar), a unified 8-state compatibility model, a history/restore view with second confirmations, diagnostic caching (`HomeDiagnosticsCache`, 11 diagnostic cards moved to secondary pages, `LazyVStack`, iOS 26+ shadow removal), and 356 Swift test functions in total.
+- Build number 30000001 → 30000002; version stays 3.0.0.
+
+### Added (audit, 2026-11-14)
+- Open-source audit: per-project record in `docs/OPEN_SOURCE_REFERENCES.md` (16 projects) and per-feature origin map in `docs/FEATURE_ORIGIN_MATRIX.md`.
+- About page rebuilt as an open-source contributor center: every used or referenced project as its own entry with author, relationship, key technology, license and source link; third-party licenses from the real bundled texts; full source links; disclaimer.
+- Copyright headers normalized in 20 files that use or adapt third-party code (SPDX + original source + modification notes); GestaltEdit license corrected from PolyForm Noncommercial 1.0.0 to GPL-3.0-or-later; ZIPFoundation MIT text updated to 2017-2026 (byte-identical to upstream).
+- License compliance script `scripts/check-licenses.py` (runs on every IPA build via the check-licenses workflow) and license-consistency tests in `tests/ThirdPartyNoticesTests.py`.
+
+### Removed (respring license, 2026-11-14)
+- Removed the NeoSpring/Ketamine WebKit respring implementation (`GestaltX/NeoSpringView.swift` deleted; user decision option c). The technique had no verifiable authorization: NeoSpring (rooootdev/neospring) states no license anywhere. No respring code ships in this build. The Respring action is replaced by a manual device-restart prompt that never claims to restart SpringBoard itself. See `docs/OPEN_SOURCE_REFERENCES.md` §3–§4.
 
 ### To verify
-- GitHub Actions compilation and on-device performance are not yet verified.
-- Shared diagnostic caching and off-main-thread file work remain follow-up performance tasks.
+- GitHub Actions compilation on the integrated 3.0 branch: Tests #129 passed on the pre-integration HEAD (096330e); the integrated HEAD (86e32b4) failed Tests #137 and IPA #138 on a missing `import Combine` in `HomeDiagnosticsCache.swift` (fix in flight). On-device performance is not yet verified.
+- 8 snapshot baselines await re-recording after CI renders the new images (shadow removal and new sort/hide UI); the 10 new Phase H snapshot references are recorded on the first CI run and must be committed in a follow-up.
+- NeoSpring respring: decided and handled 2026-11-14 (user chose option c, remove/replace); the implementation is deleted and the About page marks Ketamine and NeoSpring as suspended. Re-integration requires a clearly sourced, license-compatible implementation plus independent audit and testing; see `docs/OPEN_SOURCE_REFERENCES.md` §4.
+- `Package.resolved` pins only ZIPFoundation while the project also requires SnapshotTesting 1.19.7 — resolve with `xcodebuild -resolvePackageDependencies` in an Xcode environment.
 
 
 

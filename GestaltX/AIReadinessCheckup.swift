@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // Apple Intelligence 4-factor readiness checkup + slot-only conflict guards.
 //
-// Adapted from Erosion-CN's AppleIntelligenceCheckupCard idea; reimplemented
-// for GestaltX's staging model (read-only until Fix is tapped, then the
+// Adapted from Erosion-CN's AppleIntelligenceCheckupCard idea (Kianuni,
+// https://github.com/Kianuni/Erosion-CN, GPL-3.0); reimplemented for
+// GestaltX's staging model (read-only until Fix is tapped, then the
 // normal review + backup + readback flow).
 //
 // UNRESOLVED CONFLICT (#178) — READ BEFORE CHANGING THE UNLOCK:

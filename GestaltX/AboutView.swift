@@ -1,6 +1,46 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // Copyright (C) 2026 huamidev
+// LilaShift enhancement: open-source contributor center (About page).
+// Maintainer: @steam8871. Upstream GestaltX code remains huamidev's.
+// See THIRD_PARTY_NOTICES.md and docs/OPEN_SOURCE_REFERENCES.md.
 import SwiftUI
+
+/// One open-source project LilaShift uses or references.
+/// `relationshipKey` is a localization key (e.g. "Bundled code").
+/// `tech` is a short English technical tag (proper nouns / technical terms).
+/// `license` is nil when the project states no open-source license.
+/// `licenseFile` is the bundled license text (without ".txt"), nil when
+/// the text is not shipped in the app (research references and tools).
+struct OpenSourceProject: Identifiable {
+    let name: String
+    let author: String
+    let relationshipKey: String
+    let tech: String
+    let license: String?
+    let licenseFile: String?
+    let url: String
+    let shippedInIPA: Bool
+    var id: String { name }
+}
+
+let openSourceProjects: [OpenSourceProject] = [
+    OpenSourceProject(name: "GestaltX", author: "huamidev", relationshipKey: "Original code base", tech: "Application baseline", license: "GPL-3.0", licenseFile: "GestaltX-GPL-3.0", url: "https://github.com/huamidev/GestaltX", shippedInIPA: true),
+    OpenSourceProject(name: "worse_query", author: "Taj C (forcequitOS)", relationshipKey: "Bundled code", tech: "Sandbox escape", license: "GPL-3.0-or-later", licenseFile: "GestaltX-GPL-3.0", url: "https://github.com/forcequitOS/worse_query", shippedInIPA: true),
+    OpenSourceProject(name: "Ketamine", author: "Nouvborne", relationshipKey: "Suspended", tech: "Respring", license: "GPL-3.0", licenseFile: "GestaltX-GPL-3.0", url: "https://github.com/Nouvborne/Ketamine", shippedInIPA: false),
+    OpenSourceProject(name: "NeoSpring", author: "rooootdev", relationshipKey: "Suspended", tech: "Respring", license: nil, licenseFile: nil, url: "https://github.com/rooootdev/neospring", shippedInIPA: false),
+    OpenSourceProject(name: "LCSign", author: "huamidev", relationshipKey: "Design reference", tech: "Entitlement reading", license: nil, licenseFile: nil, url: "https://sign.lc", shippedInIPA: false),
+    OpenSourceProject(name: "Erosion-CN", author: "Kianuni", relationshipKey: "Reused data", tech: "AI checkup · Safe write · Device data", license: "GPL-3.0", licenseFile: "Erosion-GPL-3.0", url: "https://github.com/Kianuni/Erosion-CN", shippedInIPA: true),
+    OpenSourceProject(name: "Erosion", author: "lunginspector · jailbreak.party", relationshipKey: "Design reference", tech: "Wallpaper descriptors", license: "GPL-3.0", licenseFile: "Erosion-GPL-3.0", url: "https://github.com/jailbreakdotparty/Erosion", shippedInIPA: false),
+    OpenSourceProject(name: "Gester", author: "sasobhabha · KAMUI contributors", relationshipKey: "Design reference", tech: "PosterBoard descriptors", license: "MIT", licenseFile: "Gester-MIT", url: "https://github.com/sasobhabha/Gester", shippedInIPA: false),
+    OpenSourceProject(name: "ZIPFoundation", author: "Thomas Zoechling", relationshipKey: "Bundled code", tech: "ZIP archives", license: "MIT", licenseFile: "ZIPFoundation-MIT", url: "https://github.com/weichsel/ZIPFoundation", shippedInIPA: true),
+    OpenSourceProject(name: "Primer Octicons", author: "GitHub Inc.", relationshipKey: "Bundled code", tech: "GitHub icon", license: "MIT", licenseFile: "Primer-Octicons-MIT", url: "https://github.com/primer/octicons", shippedInIPA: true),
+    OpenSourceProject(name: "MGKeys", author: "PoomSmart", relationshipKey: "Research reference", tech: "Key mappings", license: "MIT", licenseFile: nil, url: "https://github.com/PoomSmart/MGKeys", shippedInIPA: false),
+    OpenSourceProject(name: "Nugget", author: "leminlimez", relationshipKey: "Research reference", tech: "Key mappings · Feature grouping", license: "AGPL-3.0", licenseFile: nil, url: "https://github.com/leminlimez/Nugget", shippedInIPA: false),
+    OpenSourceProject(name: "mond", author: "rooootdev", relationshipKey: "Research reference", tech: "Key mappings", license: "AGPL-3.0", licenseFile: nil, url: "https://github.com/rooootdev/mond", shippedInIPA: false),
+    OpenSourceProject(name: "GestaltEdit", author: "frs0n", relationshipKey: "Research reference", tech: "Workflow reference", license: "GPL-3.0-or-later", licenseFile: nil, url: "https://github.com/frs0n/GestaltEdit", shippedInIPA: false),
+    OpenSourceProject(name: "SnapshotTesting", author: "Point-Free, Inc.", relationshipKey: "Test tool", tech: "Snapshot tests", license: "MIT", licenseFile: nil, url: "https://github.com/pointfreeco/swift-snapshot-testing", shippedInIPA: false),
+    OpenSourceProject(name: "SwiftLint", author: "Realm Inc.", relationshipKey: "Build tool", tech: "Code style checks", license: "MIT", licenseFile: nil, url: "https://github.com/realm/SwiftLint", shippedInIPA: false),
+]
 
 struct AboutView: View {
     @EnvironmentObject private var model: GestaltManager
@@ -11,9 +51,11 @@ struct AboutView: View {
                     BrandMark(size: 44)
                     VStack(alignment: .leading, spacing: 3) {
                         Text(L("LilaShift")).font(.headline)
+                        Text("LilaShift \(GestaltBrand.version) (\(GestaltBrand.build))")
+                            .font(.subheadline).foregroundStyle(.secondary)
                     }
                 }.padding(.vertical, 6)
-                Link(destination: GestaltBrand.projects) {
+                Link(destination: GestaltBrand.lilashift) {
                     Label { Text(L("GitHub Repository")) } icon: {
                         Image("GitHubMark").renderingMode(.template).resizable().scaledToFit()
                             .frame(width: 22, height: 22).foregroundStyle(Color(uiColor: .label))
@@ -24,53 +66,72 @@ struct AboutView: View {
                 LabeledContent(L("Supported OS"), value: VersionSupport.range)
                 NavigationLink { CompatibilityView() } label: { Label(L("Compatibility"), systemImage: "iphone.badge.checkmark") }
             }
-            Section(L("Special Thanks")) {
-                Link(destination: URL(string: "https://github.com/forcequitOS/worse_query")!) {
-                    HStack(spacing: 12) {
-                        Image(systemName: "cpu").font(.title3).foregroundStyle(.blue)
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("worse_query").font(.headline).foregroundStyle(.primary)
-                            Text("forcequitOS · Taj C").font(.caption).foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                        Image(systemName: "arrow.up.right").font(.caption).foregroundStyle(.tertiary)
-                    }.padding(.vertical, 6)
-                }
-            }
-            Section {
+            Section(L("Open Source & Acknowledgements")) {
                 LabeledContent(L("Original Project"), value: "GestaltX")
                 LabeledContent(L("Original Author"), value: "huamidev")
                 LabeledContent(L("Enhanced Version Maintainer"), value: "@steam8871")
                 NavigationLink { LicenseTextView(name: "GestaltX-GPL-3.0", title: "GNU GPL v3") } label: {
                     LabeledContent(L("Open Source License"), value: "GNU GPL v3.0")
                 }
+                Text(L("The enhanced version is distributed under the GNU GPL v3.0. Its complete corresponding source is distributed with the release."))
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .padding(.vertical, 4)
+                Text("Based on GestaltX by huamidev")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .padding(.vertical, 4)
+            }
+            Section(L("Technical Sources")) {
+                ForEach(openSourceProjects) { project in
+                    NavigationLink { OpenSourceProjectDetailView(project: project) } label: {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text(project.name)
+                                Text(project.author).font(.caption).foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            Text(L(project.relationshipKey)).font(.caption).foregroundStyle(.secondary)
+                        }
+                    }
+                }
+            } footer: {
+                Text(L("Tap a project for its author, relationship, key technology, license and source link."))
+                    .font(.footnote)
+            }
+            Section(L("Third-Party Licenses")) {
+                licenseRow("GNU GPL v3", file: "GestaltX-GPL-3.0")
+                licenseRow("Erosion · GPL v3", file: "Erosion-GPL-3.0")
+                licenseRow("Gester · MIT", file: "Gester-MIT")
+                licenseRow("ZIPFoundation · MIT", file: "ZIPFoundation-MIT")
+                licenseRow("Primer Octicons · MIT", file: "Primer-Octicons-MIT")
+            } footer: {
+                Text(L("License texts shown here are bundled with the app. Research references and development tools are MIT- or GPL-licensed at their upstream repositories; their texts are not bundled because their code is not shipped in the app."))
+                    .font(.footnote)
+            }
+            Section(L("Full Source Code")) {
                 VStack(alignment: .leading, spacing: 3) {
                     Text(L("Original Project URL")).font(.caption).foregroundStyle(.secondary)
                     Link("https://github.com/huamidev/GestaltX", destination: GestaltBrand.projects)
                         .font(.subheadline)
                 }
                 .padding(.vertical, 4)
-                Link(destination: GestaltBrand.projects) {
-                    LabeledContent(L("Source Code"), value: "github.com/huamidev/GestaltX")
-                }
                 VStack(alignment: .leading, spacing: 3) {
                     Text(L("Enhanced Source URL")).font(.caption).foregroundStyle(.secondary)
-                    Link("https://github.com/fafa920q-hue/LilaShift", destination: URL(string: "https://github.com/fafa920q-hue/LilaShift")!)
+                    Link("https://github.com/fafa920q-hue/LilaShift-2.0", destination: GestaltBrand.lilashift)
                         .font(.subheadline)
                 }
                 .padding(.vertical, 4)
-                Text("Based on GestaltX by huamidev")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .padding(.vertical, 4)
-            } header: {
-                Text(L("Open Source & Acknowledgements"))
-            } footer: {
-                Text(L("The enhanced version is distributed under the GNU GPL v3.0. Its complete source is distributed with the release as the pristine v1.0.7 source plus the modification patch."))
-                    .font(.footnote)
+            }
+            Section(L("Disclaimer")) {
+                Text(L("LilaShift is an unofficial enhancement project. It is not affiliated with Apple or any upstream project."))
+                    .font(.subheadline).foregroundStyle(.secondary)
+                Text(L("Modifying device features carries compatibility and data risks. Back up your device before applying changes."))
+                    .font(.subheadline).foregroundStyle(.secondary)
+                Text(L("The complete source code is provided under the applicable open-source licenses."))
+                    .font(.subheadline).foregroundStyle(.secondary)
             }
             Section {
-                NavigationLink { CreditsView() } label: { Label(L("Credits & Licenses"), systemImage: "text.book.closed") }
             } footer: {
                 aboutFooter.padding(.top, 8)
             }
@@ -80,14 +141,20 @@ struct AboutView: View {
         .navigationTitle(L("About"))
     }
 
+    private func licenseRow(_ title: String, file: String) -> some View {
+        NavigationLink { LicenseTextView(name: file, title: title) } label: {
+            Text(title)
+        }
+    }
+
     private var aboutFooter: some View {
         let year = Calendar.current.component(.year, from: .now)
         return VStack(spacing: 8) {
             Text("\(L("LilaShift")) \(GestaltBrand.version) (\(GestaltBrand.build))")
                 .foregroundStyle(.secondary)
-            Text("Developed by huamidev")
+            Text("Based on GestaltX by huamidev · Enhanced by @steam8871")
                 .foregroundStyle(.secondary.opacity(0.7))
-            Text("© \(String(year)) huamidev. All rights reserved.")
+            Text("© \(String(year)) huamidev. Licensed under the GNU GPL v3.")
                 .foregroundStyle(.secondary.opacity(0.5))
         }
         .font(.caption)
@@ -97,48 +164,32 @@ struct AboutView: View {
     }
 }
 
-struct CreditsView: View {
+struct OpenSourceProjectDetailView: View {
+    let project: OpenSourceProject
     var body: some View {
         List {
-            Section(L("License")) {
-                NavigationLink { LicenseTextView(name: "GestaltX-GPL-3.0", title: "GNU GPL v3") } label: { Text("GNU GPL v3") }
-            }
-            Section(L("Credits")) {
-                credit("NeoSpring", author: "rooootdev · neonmodder123 · skadz108", url: "https://github.com/rooootdev/neospring")
-                credit("Ketamine", author: "Nouvborne", url: "https://github.com/Nouvborne/Ketamine")
-                credit("MGKeys", author: "PoomSmart", url: "https://github.com/PoomSmart/MGKeys")
-                credit("Nugget", author: "leminlimez", url: "https://github.com/leminlimez/Nugget")
-                credit("mond", author: "rooootdev", url: "https://github.com/rooootdev/mond")
-                credit("GestaltEdit", author: "frs0n", url: "https://github.com/frs0n/GestaltEdit")
-                credit("LCSign", author: "huamidev", url: "https://sign.lc")
-                licensedCredit("Gester", author: "sasobhabha · KAMUI contributors", license: "MIT", file: "Gester-MIT", url: "https://github.com/sasobhabha/Gester")
-                licensedCredit("Erosion", author: "lunginspector · jailbreak.party", license: "GPL v3", file: "Erosion-GPL-3.0", url: "https://github.com/jailbreakdotparty/Erosion")
-                licensedCredit("Erosion-CN", author: "Kianuni", license: "GPL v3", file: "Erosion-GPL-3.0", url: "https://github.com/Kianuni/Erosion-CN")
-                licensedCredit("ZIPFoundation", author: "Thomas Zoechling", license: "MIT", file: "ZIPFoundation-MIT", url: "https://github.com/weichsel/ZIPFoundation")
-                licensedCredit("Primer Octicons", author: "GitHub", license: "MIT", file: "Primer-Octicons-MIT", url: "https://github.com/primer/octicons")
-            }
-        }
-        .navigationTitle(L("Credits & Licenses"))
-        .navigationBarTitleDisplayMode(.inline)
-    }
-
-    private func credit(_ project: String, author: String, url: String) -> some View {
-        Link(destination: URL(string: url)!) {
-            LabeledContent { Text(author).font(.subheadline).foregroundStyle(.secondary).multilineTextAlignment(.trailing) }
-                label: { Text(project).foregroundStyle(.primary) }
-        }
-    }
-    private func licensedCredit(_ project: String, author: String, license: String, file: String, url: String) -> some View {
-        NavigationLink { LicenseTextView(name: file, title: project + " · " + license, source: URL(string: url)) } label: {
-            HStack {
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(project)
-                    Text(author).font(.caption).foregroundStyle(.secondary)
+            Section {
+                LabeledContent(L("Author"), value: project.author)
+                LabeledContent(L("Relationship"), value: L(project.relationshipKey))
+                LabeledContent(L("Key Technology"), value: project.tech)
+                if let file = project.licenseFile, let license = project.license {
+                    NavigationLink { LicenseTextView(name: file, title: project.name + " · " + license) } label: {
+                        LabeledContent(L("License"), value: license)
+                    }
+                } else if let license = project.license {
+                    LabeledContent(L("License"), value: license)
+                } else {
+                    LabeledContent(L("License"), value: L("No license stated"))
                 }
-                Spacer()
-                Text(license).font(.caption).foregroundStyle(.secondary)
+                LabeledContent(L("Shipped in IPA"), value: project.shippedInIPA ? L("Yes") : L("No"))
+            }
+            Section(L("GitHub Repository")) {
+                Link(project.url, destination: URL(string: project.url)!)
+                    .font(.subheadline)
             }
         }
+        .navigationTitle(project.name)
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 struct CompatibilityView: View {
@@ -151,8 +202,8 @@ struct CompatibilityView: View {
                     .font(.subheadline).foregroundStyle(.secondary)
                 Link(L("Read Upstream Compatibility"), destination: URL(string: "https://github.com/forcequitOS/worse_query")!)
             }
-            Section(L("NeoSpring")) {
-                Text(L("NeoSpring attempts a SpringBoard refresh using WebKit. Its effectiveness varies by OS build. Some MobileGestalt changes may still need a manual device restart."))
+            Section(L("Manual Restart")) {
+                Text(L("LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear."))
                     .font(.subheadline).foregroundStyle(.secondary)
             }
         }.navigationTitle(L("Compatibility"))

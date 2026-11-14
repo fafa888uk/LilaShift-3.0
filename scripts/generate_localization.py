@@ -42,13 +42,12 @@ The original files could not be backed up.	未能备份原始文件。
 This adds new wallpapers without replacing your existing ones.	将添加新壁纸，保留现有壁纸。
 This pack contains no compatible wallpapers.	此包中没有兼容的壁纸。
 This wallpaper was changed outside LilaShift. It was not removed.	壁纸已被其他方式修改，未执行移除。
-Wallpaper added. Open the wallpaper gallery to select it. If it does not appear, restart PosterBoard or respring.	壁纸已添加，请打开图库选择。若未出现，可重新启动 PosterBoard 或执行注销。
+Wallpaper added. Open the wallpaper gallery to select it. If it does not appear, restart the device.	壁纸已添加，请打开图库选择。若未出现，请重新启动设备。
 Wallpaper Settings	壁纸设置
 WAPI	WAPI
 Disable WAPI	关闭 WAPI
 Disabling may show Wi-Fi and change some network options. Restart to apply.	关闭后可显示为 Wi-Fi，部分联网选项可能随之变化。重启后生效。
 Restore Original	恢复原值
-Special Thanks	特别鸣谢
 Supported	支持
 Unsupported	不支持
 Welcome	欢迎
@@ -63,16 +62,14 @@ Capability flags cannot add missing hardware. Some changes require a device rest
 Use only devices you own or are authorized to manage. You are responsible for the changes you choose to apply.	仅在你拥有或获授权管理的设备上使用，并自行承担所选修改带来的风险。
 This software is provided without warranty. Read the included license before use.	本软件不提供任何担保，使用前请阅读随附的开源许可证。
 GitHub Repository	GitHub 仓库
-Credits & Licenses	鸣谢与许可
 License	许可证
-Respring Technique	注销方法
 Read Again	重新读取
 A device restart may be required.	可能需要重新启动设备才能生效。
 Restart the device after changing the region.	更改地区后需要重新启动设备。
 Some changes require a device restart.	部分更改需要重新启动设备。
 Restart required. Apple Intelligence also depends on device and region.	需要重新启动设备。Apple 智能还取决于机型与地区。
 Restart the device, then reopen Settings. Pencil hardware support is still required.	重新启动设备后再打开“设置”，仍需要 Apple Pencil 硬件支持。
-Respring first. Restart the device if the change does not appear.	先执行注销，若未生效则重新启动设备。
+Restart the device if the change does not appear.	若未生效，请重新启动设备。
 Write verified. Some features require a device restart.	写入已验证。部分功能需要重新启动设备才能生效。
 Model	机型
 Status	状态
@@ -84,12 +81,10 @@ Read MobileGestalt	读取 MobileGestalt
 Import Plist	导入 plist
 Actions	操作
 Apply Changes	应用更改
-Respring Required	需要注销
 Log	日志
 Experimental settings. Back up before applying.	实验性设置，请在应用前备份。
 No Backups	暂无备份
 A backup is created before each write.	每次写入前会自动备份。
-This will attempt to restart SpringBoard using NeoSpring.	将通过 NeoSpring 尝试重新启动 SpringBoard。
 GitHub Projects	GitHub 项目
 GNU GPL v3	GNU GPL v3
 Date	日期
@@ -136,8 +131,6 @@ Quick Actions	快捷操作
 Keep a copy. Refresh when ready.	先留一份备份，准备好后再刷新。
 Back Up	备份
 Export Plist	导出 plist
-Respring	注销
-Changes are verified. Respring when you are ready.	更改已验证，准备好后可执行注销。
 Session Log	操作日志
 Open Plist…	打开 plist…
 Connect to Device	连接设备
@@ -198,7 +191,7 @@ Apply to Device	应用到设备
 Save Local Changes	保存本地更改
 Discard Changes	放弃更改
 Apply these changes?	应用这些更改？
-Incorrect system values can affect device behavior. A verified backup will be kept. No respring is triggered automatically.	错误的系统值可能影响设备运行。应用会保留经过验证的备份，且不会自动执行注销。
+Incorrect system values can affect device behavior. A verified backup will be kept. No restart is triggered automatically.	错误的系统值可能影响设备运行。应用会保留经过验证的备份，且不会自动触发重启。
 The current local document will be backed up before saving your edits.	保存更改前会先备份当前本地文稿。
 Before	更改前
 After	更改后
@@ -222,8 +215,6 @@ Delete this backup?	删除这个备份？
 This removes the local backup permanently. It does not change the device file.	本地备份将被永久删除，设备文件不会被修改。
 No activity yet.	暂无操作记录。
 Clear	清空
-Respring now?	立即注销？
-NeoSpring will attempt to restart SpringBoard. Save your work first. It may not work on every OS build.	NeoSpring 将尝试重新启动 SpringBoard，请先保存其他应用中的工作。部分系统版本可能不适用。
 Dynamic Island, Always-On and Liquid Glass	灵动岛、全天候显示与液态玻璃
 Charging, buttons and device identity	充电、按键与设备标识
 Stage Manager and app compatibility	台前调度与应用兼容性
@@ -264,7 +255,6 @@ Device access unavailable	无法访问设备
 Local file opened	已打开本地文件
 Changes verified on device	本机更改已验证
 Local changes saved	本地更改已保存
-Changes verified on device. Respring to refresh supported features.	本机更改已验证，可执行注销以刷新受支持的功能。
 Local changes saved. Export the plist to keep a copy.	本地更改已保存，请导出 plist 以保留副本。
 Backup saved	备份已保存
 Backup restored and verified.	备份已恢复并通过验证。
@@ -301,12 +291,7 @@ More Projects by huamidev	huamidev 的更多项目
 Supported OS	支持系统
 Languages	语言
 Compatibility	兼容性
-Credits	鸣谢
 worse_query sandbox escape	worse_query 沙盒逃逸原语
-Original WebKit respring technique	原始 WebKit 注销方法
-Swift implementation of the respring technique	注销方法的 Swift 实现
-NeoSpring project and respring research	NeoSpring 项目与注销研究
-GPL-licensed respring adaptation	采用 GPL 许可的注销适配实现
 MobileGestalt key research	MobileGestalt 键名研究
 MobileGestalt preset research	MobileGestalt 预设研究
 MobileGestalt workflow reference	MobileGestalt 工作流参考
@@ -320,11 +305,7 @@ MobileGestalt Access	MobileGestalt 访问
 iOS 27: access is checked on the device.	iOS 27：通过本机实际探测访问权限。
 iOS 26: SystemGroup access is not claimed by upstream. Local plist editing is available.	iOS 26：上游未声明支持 SystemGroup 访问，可编辑本地 plist。
 A correctly provisioned App Group is required. Export and backup are available for any document you can open.	需要正确配置并签名 App Group。能够打开的文稿均可导出与备份。
-NeoSpring	NeoSpring
-NeoSpring attempts a SpringBoard refresh using WebKit. Its effectiveness varies by OS build. Some MobileGestalt changes may still need a manual device restart.	NeoSpring 使用 WebKit 尝试刷新 SpringBoard，效果因系统版本而异。部分 MobileGestalt 更改仍可能需要手动重新启动设备。
 License text could not be loaded.	无法加载许可文本。
-Respring did not finish.	注销未完成。
-Refreshing SpringBoard…	正在刷新 SpringBoard…
 This OS build may not support the technique. You can close this screen and try a manual restart later.	当前系统版本可能不支持此方法。你可以关闭此页面，稍后手动重新启动设备。
 Your device may briefly return to the Lock Screen.	设备可能会短暂返回锁定屏幕。
 The cache layout or values do not match this preset.	缓存布局或数值与此预设不符。
@@ -509,8 +490,6 @@ Enhanced Version Maintainer	国行增强版维护
 Open Source License	开源许可证
 Original Project URL	原项目地址
 Enhanced Source URL	增强版源码地址
-Source Code	源代码
-The enhanced version is distributed under the GNU GPL v3.0. Its complete source is distributed with the release as the pristine v1.0.7 source plus the modification patch.	增强版遵循 GNU GPL v3.0 发布。完整源代码随发布一同提供，即官方 v1.0.7 原始源码加修改补丁。
 Reading device data…	读取本机数据...
 Reading related settings…	正在读取相关配置...
 Write	写入
@@ -534,11 +513,11 @@ Expose internal menus.	显示内部菜单。
 Mark the device as an internal build.	将设备标记为内部版本。
 Change the Security Research Device capability flag.	更改安全研究设备功能标记。
 Expose Apple's internal settings bundle.	显示 Apple 内部设置包。
-Respring first. Restart the device if the change does not appear. Display behavior depends on the panel and may increase power use and burn-in risk.	先执行注销，若未生效则重新启动设备。显示效果取决于屏幕面板，可能增加耗电与烧屏风险。
+Restart the device if the change does not appear. Display behavior depends on the panel and may increase power use and burn-in risk.	若未生效，请重新启动设备。显示效果取决于屏幕面板，可能增加耗电与烧屏风险。
 A device restart may be required. Experimental; the accepted range varies by iOS build.	可能需要重新启动设备才能生效。实验性功能，可用范围因系统版本而异。
 A device restart may be required. Actual dimming behavior depends on the panel.	可能需要重新启动设备才能生效。实际调光行为取决于屏幕面板。
 A device restart may be required. Compatible hardware is still required.	可能需要重新启动设备才能生效。仍需要兼容硬件。
-Respring first. Restart the device if the change does not appear. Requires iOS 26 or later.	先执行注销，若未生效则重新启动设备。需要 iOS 26 或更高版本。
+Restart the device if the change does not appear. Requires iOS 26 or later.	若未生效，请重新启动设备。需要 iOS 26 或更高版本。
 A device restart may be required. Actual charging control depends on hardware.	可能需要重新启动设备才能生效。实际充电控制仍取决于硬件。
 A device restart may be required. Only shown on devices where tap-to-wake is hidden.	可能需要重新启动设备才能生效。仅在隐藏轻点唤醒的设备上显示。
 A device restart may be required. This does not add a physical button.	可能需要重新启动设备才能生效。此操作不会为设备增加实体按钮。
@@ -1144,6 +1123,36 @@ Before / after	修改前 / 修改后
 The whole device file is replaced by the backup.	整个设备文件将被备份替换。
 A check failed. The restore cannot proceed until it is resolved.	有一项检查未通过。在解决之前无法继续恢复。
 Check the preview above, then confirm to restore the whole backup.	请检查上方预览，然后确认以恢复整个备份。
+Technical Sources	技术来源
+Third-Party Licenses	第三方许可证
+Full Source Code	完整源代码
+Author	作者
+Relationship	使用关系
+Key Technology	关键技术
+Shipped in IPA	是否随 IPA 分发
+Yes	是
+No	否
+Original code base	原始代码基础
+Bundled code	直接集成的代码
+Adapted code	改编的代码
+Reused data	复用的数据
+Design reference	设计参考
+Research reference	研究参考
+Test tool	测试工具
+Build tool	构建工具
+LilaShift is an unofficial enhancement project. It is not affiliated with Apple or any upstream project.	LilaShift 是非官方增强项目，与 Apple 及任何上游项目均无官方关联。
+Modifying device features carries compatibility and data risks. Back up your device before applying changes.	修改设备功能存在兼容性和数据风险，应用更改前请备份设备。
+The complete source code is provided under the applicable open-source licenses.	完整源代码依据适用的开源许可证提供。
+The enhanced version is distributed under the GNU GPL v3.0. Its complete corresponding source is distributed with the release.	增强版遵循 GNU GPL v3.0 发布。随发布一同提供其完整对应源代码。
+No license stated	未声明许可证
+Tap a project for its author, relationship, key technology, license and source link.	点开一个项目可查看其作者、使用关系、关键技术、许可证与源码链接。
+License texts shown here are bundled with the app. Research references and development tools are MIT- or GPL-licensed at their upstream repositories; their texts are not bundled because their code is not shipped in the app.	此处显示的许可证文本均随 App 分发。研究参考与开发工具在其上游仓库遵循 MIT 或 GPL 许可；因其代码不随 App 分发，文本未打包。
+Restart Device	重启设备
+Restart Your Device	重新启动设备
+Some changes need a device restart to take effect. LilaShift cannot restart SpringBoard itself. Please restart your device manually: hold the side button and a volume button, then slide to power off, or use Settings → General → Shut Down.	部分更改需要重启设备才能生效。紫序无法自行重启 SpringBoard，请手动重启设备：按住侧边按钮和任一音量按钮，然后滑动关机；或前往“设置 → 通用 → 关机”。
+Suspended	已暂停
+Manual Restart	手动重启
+LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.	紫序不会自行重启 SpringBoard。应用更改后，若某项功能未出现，请手动重启设备。
 '''
 entries = {}
 for line in TRANSLATIONS.strip().splitlines():

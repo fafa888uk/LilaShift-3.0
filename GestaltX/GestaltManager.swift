@@ -33,8 +33,7 @@ final class GestaltManager: ObservableObject {
     /// has happened yet. Read-path state only.
     @Published private(set) var lastReadAt: Date?
     @Published var message: String?
-    @Published var isRespringing = false
-    @Published var needsRespring = false
+    @Published var needsRestart = false
     @Published var choices: [String: PresetChoice] = [:]
     @Published var regionID = "keep"
     @Published var regionCodeID = "keep"
@@ -720,7 +719,7 @@ final class GestaltManager: ObservableObject {
             } else {
                 logChanges(from: before.document, to: restored, prefix: "[restore-option] ")
                 result = try await files.commit(restored, expected: before)
-                needsRespring = result.source == .device
+                needsRestart = result.source == .device
                 message = L(result.source == .device
                             ? "Write verified. Some features require a device restart."
                             : "Local changes saved. Export the plist to keep a copy.")
@@ -769,7 +768,7 @@ final class GestaltManager: ObservableObject {
             } else {
                 for line in diffLines(before.document.extra, restored.extra) { log("[restore-field] " + line) }
                 result = try await files.commit(restored, expected: before, originallyAbsentKeys: absentKeys)
-                needsRespring = result.source == .device
+                needsRestart = result.source == .device
                 message = L(result.source == .device ? "Original values restored." : "Local changes saved. Export the plist to keep a copy.")
             }
             snapshot = result
@@ -874,7 +873,7 @@ final class GestaltManager: ObservableObject {
             let values = try url.resourceValues(forKeys: [.fileSizeKey])
             guard (values.fileSize ?? 0) <= 16 * 1024 * 1024 else { throw GestaltFailure("Choose a plist smaller than 16 MB.") }
             let result = try await files.loadLocal(data: Data(contentsOf: url), name: url.lastPathComponent)
-            accept(result); status = "Local file opened"; needsRespring = false
+            accept(result); status = "Local file opened"; needsRestart = false
             lastReadAt = Date()
             log("[open] \(url.lastPathComponent): \(result.data.count) bytes")
             for line in summarize(result.document) { log("[open] " + line) }
@@ -953,7 +952,7 @@ final class GestaltManager: ObservableObject {
             if let identity = offer.identity { try DevicePlistIdentity(plist: offer.data).requireMatch(with: identity) }
             var loaded = try await files.loadLocal(data: offer.data, name: offer.name)
             loaded.ownershipVerified = true
-            accept(loaded); status = "Local file opened"; needsRespring = false
+            accept(loaded); status = "Local file opened"; needsRestart = false
             discardImport(offer)
             log("[share] Verified device plist imported: \(offer.data.count) bytes")
         } catch { failed(error) }
@@ -969,7 +968,7 @@ final class GestaltManager: ObservableObject {
             let live = try await files.loadDevice()
             let restored = try await files.restoreVerifiedImport(imported, expected: live)
             let changed = !restored.document.matches(live.document)
-            accept(restored); needsRespring = needsRespring || changed
+            accept(restored); needsRestart = needsRestart || changed
             status = "Changes verified on device"
             message = changed ? L("Backup restored and verified.") + " " + L("Some changes require a device restart.")
                 : L("This backup already matches the device. No changes were made.")
@@ -1022,7 +1021,7 @@ final class GestaltManager: ObservableObject {
             logChanges(from: snapshot.document, to: edited, prefix: "[diff] ")
             let absentKeys = Set(Capability.all.filter { choices[$0.id] == .removeAdded }.flatMap(\.keys))
             let result = try await files.commit(edited, expected: snapshot, originallyAbsentKeys: absentKeys)
-            accept(result); needsRespring = result.source == .device
+            accept(result); needsRestart = result.source == .device
             status = result.source == .device ? "Changes verified on device" : "Local changes saved"
             let changedCacheOption = !DeviceCacheOptions.changes(from: snapshot.document, to: edited).isEmpty
             message = L(result.source == .device
@@ -1059,7 +1058,7 @@ final class GestaltManager: ObservableObject {
             logChanges(from: snapshot.document, to: restored, prefix: "[restore-diff] ")
             let result = try await files.commit(restored, expected: snapshot, restoring: record)
             let changed = !result.document.matches(snapshot.document)
-            accept(result); needsRespring = result.source == .device && (needsRespring || changed)
+            accept(result); needsRestart = result.source == .device && (needsRestart || changed)
             message = L(result.source == .device
                         ? (changed ? "Backup restored and verified." : "This backup already matches the device. No changes were made.")
                         : "Backup opened as a local document.")

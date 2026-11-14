@@ -1,8 +1,8 @@
 ![LilaShift](GestaltX/Assets.xcassets/AppIcon.appiconset/AppIcon.png)
 
-## LilaShift 2.0 (紫序) — LilaShift 1.0.7
+## LilaShift 3.0 (紫序) — LilaShift 3.0.0 (development preview)
 
-[![Version](https://img.shields.io/badge/version-1.0.7-blue)](https://github.com/fafa920q-hue/LilaShift-2.0)
+[![Version](https://img.shields.io/badge/version-3.0.0-blue)](https://github.com/fafa920q-hue/LilaShift-2.0)
 
 [![Platform](https://img.shields.io/badge/iOS-27.x-black?logo=apple)](#compatibility)
 
@@ -12,21 +12,22 @@
 
 [English](README.md) · [简体中文](README_ZH-CN.md)
 
-One-tap eSIM, region code and Apple Intelligence setup for China-model iPhones — the full-source LilaShift 2.0 project, based on upstream GestaltX v1.0.7.
+One-tap eSIM, region code and Apple Intelligence setup for China-model iPhones — the full-source LilaShift 3.0 project, based on upstream GestaltX v1.0.7.
 
 ## What this repository is
 
-This is the **full-source project** for LilaShift 2.0 (紫序), the China Unlock enhanced version of GestaltX. The complete modified source lives in this repository — no patch step, CI builds the IPA straight from this source. It is based on upstream [huamidev/GestaltX](https://github.com/huamidev/GestaltX) `v1.0.7` (commit `dfd4a7e`, build `11130112`) plus the upstream wallpaper-delete fix in PR #126 (commit `c60519c`). The previous patch-based build repository ([fafa920q-hue/LilaShift](https://github.com/fafa920q-hue/LilaShift)) stays as it is.
+This is the **full-source project** for LilaShift 3.0 (紫序), the China Unlock enhanced version of GestaltX. The complete modified source lives in this repository — no patch step, CI builds the IPA straight from this source. It is based on upstream [huamidev/GestaltX](https://github.com/huamidev/GestaltX) `v1.0.7` (commit `dfd4a7e`, build `11130112`) plus the upstream wallpaper-delete fix in PR #126 (commit `c60519c`). The previous patch-based build repository ([fafa920q-hue/LilaShift](https://github.com/fafa920q-hue/LilaShift)) stays as it is.
 
 ## What's new in this build
 
+- **LilaShift 3.0 preview.** Lightweight dashboard with real device read and staged-change status, a 53-item feature catalog in 11 categories, a unified 8-state compatibility model, a history/restore view with second confirmations, and diagnostic caching that moves file reads and SHA-256 off the render path. See [CHANGELOG.md](CHANGELOG.md).
 - **One-tap China Unlock (9 items).** eSIM switches (green-tea off, not-green-tea on), region code set to US (`LL`, sales region untouched), and six Apple Intelligence capabilities enabled — all staged in one tap, then reviewed and applied.
   - The eSIM cache layout is verified before staging. If it cannot be verified, the whole eSIM group stops and shows the reason; region and AI can still be set individually.
   - Every apply is automatically backed up and read-back verified. One-tap restore reverts all 9 items from the recorded originals.
 - **Light-lavender Liquid Glass redesign.** Page background `#F6F3FF`, primary purple `#8652DC`. No large dark backgrounds.
 - **One-line purpose description under every feature.** All 33 presets show a Simplified Chinese purpose line under the feature name; device requirements and how the change takes effect live in the details.
 - **Author badge and progress cards.** Maintainer `@steam8871` is credited in the header and the About page. Reading and applying show real progress (backup / write / verify / done) driven by the actual operation — never faked.
-- **Open-source compliance.** The About page carries an "Open Source & Acknowledgements" section, the full GPL v3.0 text is bundled in the app, and the enhanced source repository (this repo) is linked in the app.
+- **Open-source compliance.** The About page is an open-source contributor center listing every used or referenced project with its author, relationship, key technology, license and source link; the full GPL v3.0 text is bundled in the app; see [docs/OPEN_SOURCE_REFERENCES.md](docs/OPEN_SOURCE_REFERENCES.md) and [docs/FEATURE_ORIGIN_MATRIX.md](docs/FEATURE_ORIGIN_MATRIX.md).
 - **Hardened writes, learned from Erosion-CN.** In-place writes (never pre-truncate, `F_FULLFSYNC`, full read-back, in-place rollback on failure), runtime dynamic resolution of the eSIM cache layout, a diff preview before applying, a dual-vault backup (a factory vault that survives uninstall/reinstall), a region-mode choice (region code only, or full US `LL` + `LL/A`), and a 4-factor Apple Intelligence checkup with conflict guards — all without copying Erosion-CN code.
 - **LilaShift identity.** The app is named **LilaShift** (中文：紫序), with a cat photo as the app icon and the author `@steam8871` credited in the header and the About page.
 
@@ -43,7 +44,7 @@ This is the **full-source project** for LilaShift 2.0 (紫序), the China Unlock
 | Field editor | Read, search, add, edit, and remove `CacheExtra` fields; local plist import/export; String, Integer, Real, Boolean, Data, Date, Array, and Dictionary values |
 | Changes | Automatic reading and manual re-read, staged before/after review, verified writes, per-preset restore |
 | Backups | Automatic initial backup before device editing, backup before every write, original-value records; open, export, restore, and delete |
-| Logs & respring | Actual exploit-stage logs and manual NeoSpring respring |
+| Logs & restart | Actual exploit-stage logs and a manual device-restart prompt |
 
 Usually, changing the region code is enough to try enabling AI; there is no need to change Sales Region. Selecting United States for Region Code sets `RegionCode` to `LL` and keeps the sales-region suffix. You can also choose China (Mainland), Hong Kong, Taiwan, Japan or the United Kingdom. Sales Region and Region Code can be applied together: the sales suffix follows Sales Region, while the code follows Region Code.
 
@@ -63,7 +64,7 @@ The easiest install needs no signing at all: [LiveContainer](https://github.com/
 
 ## Download
 
-Download the IPA from [Releases](https://github.com/fafa920q-hue/LilaShift-2.0/releases/latest) — `LilaShift_1.0.7.ipa` (bundle `com.huami.gestultx`, version `1.0.7`, build `11130112`, minimum iOS `26.0`, ~5.9 MB). The first release is published after the first verified build.
+Download the IPA from [Releases](https://github.com/fafa920q-hue/LilaShift-2.0/releases/latest) — `LilaShift_3.0.0_Preview.ipa` (bundle `com.huami.gestultx`, version `3.0.0`, build `30000002`, minimum iOS `26.0`). No preview IPA has been published from this branch yet; the first preview is published after the first verified build.
 
 Some users report incomplete downloads with Safari on iOS 27. If the file is reported as damaged or cannot be extracted, download it again; several attempts may be needed. Try another browser if it persists. The cause has not been confirmed.
 
@@ -89,7 +90,7 @@ Some users report incomplete downloads with Safari on iOS 27. If the file is rep
 ### eSIM still doesn't work after unlocking, or "Add eSIM" disappeared
 
 - **iPhone 18 Pro / Pro Max with two physical SIMs in the tray.** These models share one baseband channel between the dual physical slots and the eSIM. If both physical slots are occupied, the baseband can hide "Add eSIM". Fix: remove the SIM tray (empty), apply the unlock, cold restart, add the eSIMs, then reinsert the physical SIM(s).
-- **A respring is not enough for eSIM.** The baseband daemons (`CommCenter`, `ctkd`) do not reload the cache on a respring. After applying, power the device fully off and back on (cold restart).
+- **A SpringBoard refresh is not enough for eSIM.** The baseband daemons (`CommCenter`, `ctkd`) do not reload the cache on a SpringBoard refresh. After applying, power the device fully off and back on (cold restart).
 - **Both switches must be on.** The region change and the eSIM change must both be applied; changing only the region code leaves the eSIM hardware lock in place.
 - **Never change the model identifier (`ProductType`).** Forcing a China board (e.g. `iPhone19,7`) to a US model breaks baseband checks and hides the eSIM menu entirely.
 - **Adding a foreign eSIM inside mainland China is blocked by Apple.** Scan the code with airplane mode on and Wi-Fi connected through an overseas proxy.
@@ -160,6 +161,7 @@ This project is distributed under the **GNU General Public License v3.0**. See [
 - Upstream project: [huamidev/GestaltX](https://github.com/huamidev/GestaltX) (`v1.0.7`, commit `dfd4a7e`, plus PR #126, commit `c60519c`)
 - Enhanced version maintainer: `@steam8871`
 - Modifications in this build: the 9-item China Unlock preset and its safety checks, the light-lavender Liquid Glass redesign, one-line purpose descriptions, the author badge and progress cards, the in-app source-repository link, the open-source compliance section, the Erosion-CN-inspired hardening (write path, dynamic layout resolution, diff preview, dual-vault backup, region mode, AI checkup), the LilaShift rebrand, and the cat app icon.
+- LilaShift 3.0 additions: the lightweight dashboard, the 53-item feature catalog, the unified compatibility model, the history/restore view, diagnostic caching, and the open-source contributor center (About page) with the per-project source record in `docs/OPEN_SOURCE_REFERENCES.md`.
 - The complete corresponding source is in this repository (full source, no patch step).
 
 ## Credits
@@ -168,12 +170,22 @@ This project is distributed under the **GNU General Public License v3.0**. See [
 - [forcequitOS / Taj C — worse_query](https://github.com/forcequitOS/worse_query)
 - [neonmodder123](https://github.com/neonmodder123)
 - [skadz108](https://github.com/skadz108)
-- [rooootdev — NeoSpring](https://github.com/rooootdev/neospring)
+- [rooootdev — NeoSpring](https://github.com/rooootdev/neospring) (no license stated; respring use suspended and removed 2026-11-14 — see `docs/OPEN_SOURCE_REFERENCES.md`)
 - [Nouvborne — Ketamine](https://github.com/Nouvborne/Ketamine)
+- [huamidev — LCSign](https://sign.lc)
+- [Kianuni — Erosion-CN](https://github.com/Kianuni/Erosion-CN)
+- [lunginspector / jailbreak.party — Erosion](https://github.com/jailbreakdotparty/Erosion)
+- [sasobhabha — Gester](https://github.com/sasobhabha/Gester)
+- [Thomas Zoechling — ZIPFoundation](https://github.com/weichsel/ZIPFoundation)
+- [GitHub Inc. — Primer Octicons](https://github.com/primer/octicons)
 - [PoomSmart — MGKeys](https://github.com/PoomSmart/MGKeys)
-- [leminlimez — Nugget](https://github.com/leminlimez/Nugget)
-- [rooootdev — mond](https://github.com/rooootdev/mond)
+- [leminlimez — Nugget](https://github.com/leminlimez/Nugget) (AGPL-3.0, reference only — no code ported)
+- [rooootdev — mond](https://github.com/rooootdev/mond) (AGPL-3.0, reference only — no code ported)
 - [frs0n — GestaltEdit](https://github.com/frs0n/GestaltEdit)
+- [Point-Free — SnapshotTesting](https://github.com/pointfreeco/swift-snapshot-testing) (test tool, not shipped in the app)
+- [Realm — SwiftLint](https://github.com/realm/SwiftLint) (build tool, not shipped in the app)
+
+The full per-project record (license, evidence, relationship, files, IPA inclusion) is in [docs/OPEN_SOURCE_REFERENCES.md](docs/OPEN_SOURCE_REFERENCES.md); the per-feature origin map is in [docs/FEATURE_ORIGIN_MATRIX.md](docs/FEATURE_ORIGIN_MATRIX.md).
 
 ## Disclaimer
 

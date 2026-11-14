@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
-// Wallpaper descriptor conventions: Gester (MIT), Erosion (GPL-3.0).
-// See Licenses/ThirdPartyNotices.txt for sources and complete licenses.
+// Wallpaper descriptor conventions: Gester (MIT, https://github.com/sasobhabha/Gester),
+// Erosion (GPL-3.0, https://github.com/jailbreakdotparty/Erosion). No code copied;
+// see Licenses/ThirdPartyNotices.txt for sources and complete licenses.
 import Foundation
 import ImageIO
 import UniformTypeIdentifiers

@@ -1,4 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
+// PosterBoard refresh flag (`PBF_RESET_FILE_PROTECTIONS`) follows Gester
+// (MIT, sasobhabha, https://github.com/sasobhabha/Gester); no Gester code
+// is copied. See Licenses/ThirdPartyNotices.txt.
 import Foundation
 
 actor CustomizationStore {

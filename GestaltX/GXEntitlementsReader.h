@@ -1,6 +1,8 @@
-// 来源：LCSign 的 LCEntitlementsReader；GestaltX 适配运行时 App Group 选择。
 // SPDX-License-Identifier: GPL-3.0-only
 // Copyright (C) 2026 huamidev
+// Runtime entitlement reading adapted from LCSign's LCEntitlementsReader
+// (https://sign.lc; no public license stated for LCSign, none asserted here).
+// Reimplemented for GestaltX; no LCSign code is bundled.
 #import <Foundation/Foundation.h>
 NS_ASSUME_NONNULL_BEGIN
 @interface GXEntitlementsReader : NSObject

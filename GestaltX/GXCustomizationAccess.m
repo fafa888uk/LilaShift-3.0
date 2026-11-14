@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
-// Container identity discovery follows forcequitOS's fsgetpath research.
-// PosterBoard targets follow Gester (MIT) and Erosion (GPL-3.0).
+// Container identity discovery follows forcequitOS's fsgetpath research
+// (https://github.com/forcequitOS/worse_query). PosterBoard targets follow
+// Gester (MIT, https://github.com/sasobhabha/Gester) and Erosion (GPL-3.0,
+// https://github.com/jailbreakdotparty/Erosion).
 #import "GXCustomizationAccess.h"
 #import "GXEntitlementsReader.h"
 #import "GXLaunchServicesDatabase.h"

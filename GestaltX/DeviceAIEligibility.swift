@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // Native Apple Intelligence hardware eligibility, owned by GestaltX.
 //
-// Device list transcribed from Erosion-CN's `isAppleIntellHD` (same
-// device identifiers, reimplemented as a pure lookup). Review the list on
+// Device list transcribed from Erosion-CN's `isAppleIntellHD` (Kianuni,
+// https://github.com/Kianuni/Erosion-CN, GPL-3.0; same device identifiers,
+// reimplemented as a pure lookup). Review the list on
 // every new iPhone/iPad generation; unknown future models default to NOT
 // native (fail closed: the unlock still works, the checkup just reports
 // the hardware as not natively eligible). List current as of 2026-11-13

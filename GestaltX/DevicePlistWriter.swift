@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // Hardened in-place writer for the device system plist.
+// Adapted from Erosion-CN's in-place writer idea (Kianuni,
+// https://github.com/Kianuni/Erosion-CN, GPL-3.0); reimplemented for
+// GestaltX's throwing-error style and its injectable `writeData` seam.
 //
 // The previous device write was Foundation's `Data.write(to:)` without
 // the `.atomic` option, which truncates the file to 0 bytes first and
@@ -21,8 +24,6 @@
 // itself cannot see relies on the pre-write backup taken by
 // `GestaltFileStore.commit` before it calls this writer.
 //
-// Adapted from Erosion-CN's in-place writer idea; reimplemented for
-// GestaltX's throwing-error style and its injectable `writeData` seam.
 // Temp-file + rename is deliberately not used for the device file: it
 // needs directory-create access which some sandbox extensions lack, and
 // it would replace the file's inode.

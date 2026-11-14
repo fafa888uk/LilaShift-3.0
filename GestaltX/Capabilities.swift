@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // Copyright (C) 2026 huamidev
-// Public MobileGestalt key mappings cross-checked against MGKeys, Nugget and mond.
-// Preset behavior is independently implemented for GestaltX.
+// Public MobileGestalt key mappings cross-checked against MGKeys (MIT,
+// https://github.com/PoomSmart/MGKeys), Nugget (AGPL-3.0,
+// https://github.com/leminlimez/Nugget) and mond (AGPL-3.0,
+// https://github.com/rooootdev/mond). Research reference only — no code
+// ported. Preset behavior is independently implemented for GestaltX.
 import Foundation
 
 enum CapabilityCategory: String, CaseIterable, Equatable, Identifiable {
@@ -69,9 +72,9 @@ struct Capability: Identifiable, Equatable {
             "Restart required. Apple Intelligence also depends on device and region. Results depend on the app and system support."
         case "pencil": "Restart the device, then reopen Settings. Pencil hardware support is still required."
         case "aod":
-            "Respring first. Restart the device if the change does not appear. Display behavior depends on the panel and may increase power use and burn-in risk."
+            "Restart the device if the change does not appear. Display behavior depends on the panel and may increase power use and burn-in risk."
         case "liquidGlass":
-            "Respring first. Restart the device if the change does not appear. Requires iOS 26 or later."
+            "Restart the device if the change does not appear. Requires iOS 26 or later."
         case "aodFlipbookCount":
             "A device restart may be required. Experimental; the accepted range varies by iOS build."
         case "pwm":
@@ -96,7 +99,7 @@ struct Capability: Identifiable, Equatable {
             "A device restart may be required. This does not turn the device into an Apple SRD."
         case "bootChime", "actionButton", "aodHighLuminance", "aodFlipbook":
             "A device restart may be required."
-        default: "Respring first. Restart the device if the change does not appear."
+        default: "Restart the device if the change does not appear."
         }
     }
     /// The enable value for a plain boolean capability flag. This must

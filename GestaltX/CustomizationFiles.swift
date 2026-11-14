@@ -1,4 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
+// ZIP archive reading via ZIPFoundation 0.9.20 (MIT, Thomas Zoechling,
+// https://github.com/weichsel/ZIPFoundation); linked as a Swift Package.
+// Full MIT text: Licenses/ZIPFoundation-MIT.txt.
 import Foundation
 import CryptoKit
 import ZIPFoundation

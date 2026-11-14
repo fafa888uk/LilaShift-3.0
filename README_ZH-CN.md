@@ -1,8 +1,8 @@
 ![LilaShift](GestaltX/Assets.xcassets/AppIcon.appiconset/AppIcon.png)
 
-## LilaShift 2.0（紫序）— LilaShift 1.0.7
+## LilaShift 3.0（紫序）— LilaShift 3.0.0（开发预览版）
 
-[![Version](https://img.shields.io/badge/version-1.0.7-blue)](https://github.com/fafa920q-hue/LilaShift-2.0)
+[![Version](https://img.shields.io/badge/version-3.0.0-blue)](https://github.com/fafa920q-hue/LilaShift-2.0)
 
 [![Platform](https://img.shields.io/badge/iOS-27.x-black?logo=apple)](#兼容性)
 
@@ -12,21 +12,22 @@
 
 [English](README.md) · [简体中文](README_ZH-CN.md)
 
-国行 iPhone 一键解锁：eSIM、地区码、Apple Intelligence，一次点按完成。这是完整源码的 LilaShift 2.0 项目，基于官方 GestaltX v1.0.7。
+国行 iPhone 一键解锁：eSIM、地区码、Apple Intelligence，一次点按完成。这是完整源码的 LilaShift 3.0 项目，基于官方 GestaltX v1.0.7。
 
 ## 这是什么仓库
 
-这是 LilaShift 2.0（紫序）的**完整源码项目**，即 GestaltX 国行增强版。完整修改源码都在这个仓库里，没有补丁步骤，CI 直接从这份源码构建 IPA。基于上游 [huamidev/GestaltX](https://github.com/huamidev/GestaltX) `v1.0.7`（提交 `dfd4a7e`，build `11130112`）加上上游壁纸删除修复 PR #126（提交 `c60519c`）。之前的补丁式构建仓库（[fafa920q-hue/LilaShift](https://github.com/fafa920q-hue/LilaShift)）保持原样不动。
+这是 LilaShift 3.0（紫序）的**完整源码项目**，即 GestaltX 国行增强版。完整修改源码都在这个仓库里，没有补丁步骤，CI 直接从这份源码构建 IPA。基于上游 [huamidev/GestaltX](https://github.com/huamidev/GestaltX) `v1.0.7`（提交 `dfd4a7e`，build `11130112`）加上上游壁纸删除修复 PR #126（提交 `c60519c`）。之前的补丁式构建仓库（[fafa920q-hue/LilaShift](https://github.com/fafa920q-hue/LilaShift)）保持原样不动。
 
 ## 本版新增内容
 
+- **LilaShift 3.0 预览版。** 轻量首页（真实设备读取与待应用更改状态）、53 项 11 分类的功能目录、8 状态统一兼容性模型、带二次确认的历史恢复视图、诊断缓存（文件读取与 SHA-256 移出渲染路径）。详见 [CHANGELOG_ZH-CN.md](CHANGELOG_ZH-CN.md)。
 - **一键解锁（9 项）。** eSIM 两项开关（green-tea 关、not-green-tea 开）、地区码改美国（`LL`，销售地区不变）、6 项 Apple Intelligence 能力——一次点按全部暂存，确认后应用。
   - 暂存前会先校验 eSIM 缓存布局；验不过整组停住并显示原因，地区码和 AI 仍可单独设置。
   - 每次应用都会自动备份并写回校验；一键还原可从记录的原始值恢复全部 9 项。
 - **浅紫 Liquid Glass 全新视觉。** 页面背景 `#F6F3FF`，主紫 `#8652DC`，无大面积深色背景。
 - **每个功能名下都有一句简体中文用途说明。** 33 个预设全覆盖；设备要求与生效方式放在详情里。
 - **作者徽章与进度卡。** 维护者 `@steam8871` 显示在首页与关于页；读取与应用进度（备份 / 写入 / 校验 / 完成）由真实操作驱动，绝不伪造。
-- **开源合规。** 关于页有「开源与鸣谢」，App 内置 GPL v3.0 全文，并链接了本增强版源码仓库。
+- **开源合规。** 关于页是开源贡献者中心，逐项列出每个实际使用或参考的项目（作者、使用关系、关键技术、许可证、源码链接）；App 内置 GPL v3.0 全文；详见 [docs/OPEN_SOURCE_REFERENCES.md](docs/OPEN_SOURCE_REFERENCES.md) 与 [docs/FEATURE_ORIGIN_MATRIX.md](docs/FEATURE_ORIGIN_MATRIX.md)。
 - **写入加固，借鉴 Erosion-CN。** 原地写入（不预先截断、`F_FULLFSYNC`、完整写回校验、失败原地回滚）、运行时动态解析 eSIM 缓存布局、应用前 Diff 预览、双金库备份（卸载重装后还在的出厂金库）、地区二选一（只改地区码，或完整美国 `LL` + `LL/A`）、四要素 Apple 智能体检与冲突防呆——均未照抄 Erosion-CN 代码。
 - **LilaShift 身份。** 应用名为 **LilaShift**（中文：紫序），猫照片做应用图标，作者 `@steam8871` 显示在首页与关于页。
 
@@ -43,7 +44,7 @@
 | 字段编辑 | 读取、搜索、添加、编辑与删除 `CacheExtra` 字段；本地 plist 导入导出；支持字符串、整数、浮点数、布尔值、数据、日期、数组和字典 |
 | 更改管理 | 启动自动读取、手动重新读取、暂存更改前后对比、写入验证、逐项还原 |
 | 备份 | 首次读取自动备份、每次写入前备份、原值记录；打开、导出、恢复和删除 |
-| 日志与注销 | 实际漏洞利用过程日志、手动 NeoSpring 注销 |
+| 日志与重启 | 实际漏洞利用过程日志、手动重启设备提示 |
 
 通常只需修改地区代码即可尝试启用 AI，无需更改销售地区。“地区代码”选择“美国”时仅将 `RegionCode` 设为 `LL`，保留销售地区后缀，也可选择中国大陆、香港、台湾、日本或英国。销售地区与地区代码可以一起应用：后缀按销售地区设置，代码按地区代码设置。
 
@@ -63,7 +64,7 @@
 
 ## 下载
 
-请在 [Releases](https://github.com/fafa920q-hue/LilaShift-2.0/releases/latest) 下载 IPA：`LilaShift_1.0.7.ipa`（包名 `com.huami.gestultx`，版本 `1.0.7`，build `11130112`，最低 iOS `26.0`，约 5.9 MB）。第一个 Release 会在首次编包验证通过后发布。
+请在 [Releases](https://github.com/fafa920q-hue/LilaShift-2.0/releases/latest) 下载 IPA：`LilaShift_3.0.0_Preview.ipa`（包名 `com.huami.gestultx`，版本 `3.0.0`，build `30000002`，最低 iOS `26.0`）。本分支尚未发布过预览 IPA，首个预览版会在首次编包验证通过后发布。
 
 部分用户反馈，iOS 27 上使用 Safari 下载的文件可能不完整。如果提示文件损坏或无法解压，可重新下载几次；仍有问题时换用其他浏览器。目前尚未确认具体原因。
 
@@ -89,7 +90,7 @@
 ### 解锁后 eSIM 还是不能用，或者「添加 eSIM」消失了
 
 - **iPhone 18 Pro / Pro Max 插着双实体卡。** 这两款是双实体卡槽 + 内置 eSIM 三通道复用硬件，两个实体卡槽都占着时基带可能隐藏「添加 eSIM」。解决：先拔出卡托（空卡状态），应用解锁后冷重启，加上 eSIM，再插回实体卡。
-- **注销（Respring）不够。** 基带守护进程（`CommCenter`、`ctkd`）注销时不会重载缓存，应用后必须手动滑动关机、黑屏后再开机（冷重启）才生效。
+- **仅刷新 SpringBoard 不够。** 基带守护进程（`CommCenter`、`ctkd`）在 SpringBoard 刷新时不会重载缓存，应用后必须手动滑动关机、黑屏后再开机（冷重启）才生效。
 - **两个开关都要开。** 地区码和 eSIM 两项必须同时应用，只改地区码不解 green-tea 硬件锁，eSIM 菜单一样会被屏蔽。
 - **不要改机型标识（`ProductType`）。** 把国行主板（如 `iPhone19,7`）强改成美版会让基带校验失配，整个 eSIM 菜单消失。
 - **在中国大陆境内扫码添加境外 eSIM 会被拦截。** 扫码时开飞行模式 + 连 Wi-Fi（挂海外代理）。
@@ -160,6 +161,7 @@ GestaltX 跟随 iOS 的语言设置，默认及回退语言为英语。波斯语
 - 上游项目：[huamidev/GestaltX](https://github.com/huamidev/GestaltX)（`v1.0.7`，提交 `dfd4a7e`，另加 PR #126，提交 `c60519c`）
 - 国行增强版维护者：`@steam8871`
 - 本版修改内容：9 项一键解锁预设及安全检查、浅紫 Liquid Glass 界面、每项功能一句话用途说明、作者徽章与进度卡、App 内源码仓库链接、开源合规栏目、借鉴 Erosion-CN 的加固（写入路径、动态布局解析、Diff 预览、双金库备份、地区二选一、AI 体检）、LilaShift 更名、猫图标。
+- LilaShift 3.0 新增：轻量首页、53 项功能目录、统一兼容性模型、历史恢复视图、诊断缓存，以及关于页的开源贡献者中心（逐项来源记录见 `docs/OPEN_SOURCE_REFERENCES.md`）。
 - 完整对应源码就在本仓库（完整源码，无补丁步骤）。
 
 ## 鸣谢
@@ -168,12 +170,22 @@ GestaltX 跟随 iOS 的语言设置，默认及回退语言为英语。波斯语
 - [forcequitOS / Taj C — worse_query](https://github.com/forcequitOS/worse_query)
 - [neonmodder123](https://github.com/neonmodder123)
 - [skadz108](https://github.com/skadz108)
-- [rooootdev — NeoSpring](https://github.com/rooootdev/neospring)
+- [rooootdev — NeoSpring](https://github.com/rooootdev/neospring)（未声明许可证；注销功能已于 2026-11-14 暂停并移除，见 `docs/OPEN_SOURCE_REFERENCES.md`）
 - [Nouvborne — Ketamine](https://github.com/Nouvborne/Ketamine)
+- [huamidev — LCSign](https://sign.lc)
+- [Kianuni — Erosion-CN](https://github.com/Kianuni/Erosion-CN)
+- [lunginspector / jailbreak.party — Erosion](https://github.com/jailbreakdotparty/Erosion)
+- [sasobhabha — Gester](https://github.com/sasobhabha/Gester)
+- [Thomas Zoechling — ZIPFoundation](https://github.com/weichsel/ZIPFoundation)
+- [GitHub Inc. — Primer Octicons](https://github.com/primer/octicons)
 - [PoomSmart — MGKeys](https://github.com/PoomSmart/MGKeys)
-- [leminlimez — Nugget](https://github.com/leminlimez/Nugget)
-- [rooootdev — mond](https://github.com/rooootdev/mond)
+- [leminlimez — Nugget](https://github.com/leminlimez/Nugget)（AGPL-3.0，仅作参考，未移植代码）
+- [rooootdev — mond](https://github.com/rooootdev/mond)（AGPL-3.0，仅作参考，未移植代码）
 - [frs0n — GestaltEdit](https://github.com/frs0n/GestaltEdit)
+- [Point-Free — SnapshotTesting](https://github.com/pointfreeco/swift-snapshot-testing)（测试工具，不随 IPA 分发）
+- [Realm — SwiftLint](https://github.com/realm/SwiftLint)（构建工具，不随 IPA 分发）
+
+完整逐项记录（许可证、证据、使用关系、对应文件、是否随 IPA 分发）见 [docs/OPEN_SOURCE_REFERENCES.md](docs/OPEN_SOURCE_REFERENCES.md)；逐功能来源映射见 [docs/FEATURE_ORIGIN_MATRIX.md](docs/FEATURE_ORIGIN_MATRIX.md)。
 
 ## 免责声明
 
