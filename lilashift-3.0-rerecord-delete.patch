@@ -1,0 +1,32 @@
+diff --git a/tests/__Snapshots__/ViewSnapshotTests/testPersonalizationCenterCardPopulatedSnapshot.personalization-center-populated.png b/tests/__Snapshots__/ViewSnapshotTests/testPersonalizationCenterCardPopulatedSnapshot.personalization-center-populated.png
+deleted file mode 100644
+index 15a1ce516bfda60793c76d3f2bf81c952ad0a599..0000000000000000000000000000000000000000
+Binary files a/tests/__Snapshots__/ViewSnapshotTests/testPersonalizationCenterCardPopulatedSnapshot.personalization-center-populated.png and /dev/null differ
+diff --git a/tests/__Snapshots__/ViewSnapshotTests/testPersonalizationCenterCardUnreadSnapshot.personalization-center-unread.png b/tests/__Snapshots__/ViewSnapshotTests/testPersonalizationCenterCardUnreadSnapshot.personalization-center-unread.png
+deleted file mode 100644
+index 15a1ce516bfda60793c76d3f2bf81c952ad0a599..0000000000000000000000000000000000000000
+Binary files a/tests/__Snapshots__/ViewSnapshotTests/testPersonalizationCenterCardUnreadSnapshot.personalization-center-unread.png and /dev/null differ
+diff --git a/tests/__Snapshots__/ViewSnapshotTests/testPresetCatalogCardPopulatedSnapshot.preset-catalog-populated.png b/tests/__Snapshots__/ViewSnapshotTests/testPresetCatalogCardPopulatedSnapshot.preset-catalog-populated.png
+deleted file mode 100644
+index 2bc97532354498d714f015d6504fd7d007be9be8..0000000000000000000000000000000000000000
+Binary files a/tests/__Snapshots__/ViewSnapshotTests/testPresetCatalogCardPopulatedSnapshot.preset-catalog-populated.png and /dev/null differ
+diff --git a/tests/__Snapshots__/ViewSnapshotTests/testPresetCatalogCardUnreadSnapshot.preset-catalog-unread.png b/tests/__Snapshots__/ViewSnapshotTests/testPresetCatalogCardUnreadSnapshot.preset-catalog-unread.png
+deleted file mode 100644
+index db5a6a871ee2c193ec9c07132825067b38f88f6d..0000000000000000000000000000000000000000
+Binary files a/tests/__Snapshots__/ViewSnapshotTests/testPresetCatalogCardUnreadSnapshot.preset-catalog-unread.png and /dev/null differ
+diff --git a/tests/__Snapshots__/ViewSnapshotTests/testSmartFaultDiagnosisCardPopulatedSnapshot.smart-fault-diagnosis-populated.png b/tests/__Snapshots__/ViewSnapshotTests/testSmartFaultDiagnosisCardPopulatedSnapshot.smart-fault-diagnosis-populated.png
+deleted file mode 100644
+index 5134b06afdca56ccaf0ec5c75519df092409f296..0000000000000000000000000000000000000000
+Binary files a/tests/__Snapshots__/ViewSnapshotTests/testSmartFaultDiagnosisCardPopulatedSnapshot.smart-fault-diagnosis-populated.png and /dev/null differ
+diff --git a/tests/__Snapshots__/ViewSnapshotTests/testSmartFaultDiagnosisCardUnreadSnapshot.smart-fault-diagnosis-unread.png b/tests/__Snapshots__/ViewSnapshotTests/testSmartFaultDiagnosisCardUnreadSnapshot.smart-fault-diagnosis-unread.png
+deleted file mode 100644
+index 4dcd8729e51016edbbff361b8d734cd6e71f3398..0000000000000000000000000000000000000000
+Binary files a/tests/__Snapshots__/ViewSnapshotTests/testSmartFaultDiagnosisCardUnreadSnapshot.smart-fault-diagnosis-unread.png and /dev/null differ
+diff --git a/tests/__Snapshots__/ViewSnapshotTests/testSystemHealthScoreCardPopulatedSnapshot.system-health-score-populated.png b/tests/__Snapshots__/ViewSnapshotTests/testSystemHealthScoreCardPopulatedSnapshot.system-health-score-populated.png
+deleted file mode 100644
+index f1752026dd303fd5e48314b4423090adca489652..0000000000000000000000000000000000000000
+Binary files a/tests/__Snapshots__/ViewSnapshotTests/testSystemHealthScoreCardPopulatedSnapshot.system-health-score-populated.png and /dev/null differ
+diff --git a/tests/__Snapshots__/ViewSnapshotTests/testSystemHealthScoreCardUnreadSnapshot.system-health-score-unread.png b/tests/__Snapshots__/ViewSnapshotTests/testSystemHealthScoreCardUnreadSnapshot.system-health-score-unread.png
+deleted file mode 100644
+index 5fd642532e3ebaa928b553dd3493041fbb31b561..0000000000000000000000000000000000000000
+Binary files a/tests/__Snapshots__/ViewSnapshotTests/testSystemHealthScoreCardUnreadSnapshot.system-health-score-unread.png and /dev/null differ
