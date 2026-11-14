@@ -65,7 +65,7 @@ jobs:
               "COMMUNITY.md",
               "SECURITY.md",
               "CONTRIBUTING.md",
-              "LilaShift/AboutView.swift",
+              "GestaltX/AboutView.swift",
               "scripts/verify_respring.mjs",
               "china-unlock-v107.patch",
               ".github/workflows/apply-patch.yml",
