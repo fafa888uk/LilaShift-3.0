@@ -1,0 +1,52 @@
+# Apply the 3.0 app icon patch (one-shot)
+#
+# Manually dispatched once, on feature/lilashift-3.0-dashboard:
+# replaces GestaltX/Assets.xcassets/AppIcon.appiconset/AppIcon.png
+# with the new light-lilac lilac-flower + shift-arrow icon
+# (1024x1024 PNG, SHA-256 4dbded561fabc4cde18ca02a5a079c7f8cad0ca888841bd45336b67a4826e15b),
+# chosen by the user in the icon design side chat.
+# Base: remote HEAD 8621dc0. Expected tree after apply: 85f9873a1780205a12a1c765e92d2027dd2a8b1c.
+# Do NOT re-run after the patch is applied: git apply --check
+# fails when the change is already in the tree, and the run
+# stops before committing.
+#
+# The patch touches only the AppIcon PNG (no workflow files),
+# so `contents: write` is sufficient.
+name: Apply 3.0 icon patch
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out the branch
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: true
+
+      - name: Verify patch file and apply it
+        run: |
+          test "$(wc -c < lilashift-3.0-icon.patch | tr -d ' ')" = "2889206"
+          test "$(sha256sum lilashift-3.0-icon.patch | cut -d' ' -f1)" = "9620294b7422a3d031e1c394bf8cc318a08ad490ce06de77bdbacfe11707b0e2"
+          git apply --check lilashift-3.0-icon.patch
+          git apply --index lilashift-3.0-icon.patch
+
+      - name: Verify the diff is exactly the 1 icon file
+        run: |
+          git diff --cached --name-status > /tmp/icon-diff.txt
+          cat /tmp/icon-diff.txt
+          test "$(wc -l < /tmp/icon-diff.txt | tr -d ' ')" = "1"
+          grep -qx "M	GestaltX/Assets.xcassets/AppIcon.appiconset/AppIcon.png" /tmp/icon-diff.txt
+          test "$(sha256sum GestaltX/Assets.xcassets/AppIcon.appiconset/AppIcon.png | cut -d' ' -f1)" = "4dbded561fabc4cde18ca02a5a079c7f8cad0ca888841bd45336b67a4826e15b"
+          python3 -c "from PIL import Image; im=Image.open('GestaltX/Assets.xcassets/AppIcon.appiconset/AppIcon.png'); assert im.size==(1024,1024) and im.mode=='RGB', im.size"
+
+      - name: Commit the new icon
+        run: |
+          git config user.name "fafa920q-hue"
+          git config user.email "fafa920q-hue@users.noreply.github.com"
+          git commit -m "feat(v3): new light-lilac LilaShift app icon (lilac flower + shift arrow)"
+          git push
