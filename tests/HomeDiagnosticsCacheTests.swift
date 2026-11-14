@@ -46,6 +46,7 @@
 // their contents are whatever the host has, so these tests assert
 // records/history are UNCHANGED across a refresh, never an
 // absolute value.
+import Foundation
 import XCTest
 
 @testable import GestaltX
@@ -60,8 +61,8 @@ final class HomeDiagnosticsCacheTests: XCTestCase {
     private func snapshotA() throws -> DocumentSnapshot {
         let document = try CoreModuleFixtures.document(
             extra: [
-                "productType": "iPhone18,1",
-                "regionCode": "LL",
+                GestaltKeys.productType: "iPhone18,1",
+                GestaltKeys.regionCode: "LL",
             ],
             greenTea: false,
             notGreenTea: true,
@@ -194,8 +195,8 @@ final class HomeDiagnosticsCacheTests: XCTestCase {
         // the pure-function form of this rule).
         let staged = try CoreModuleFixtures.document(
             extra: [
-                "productType": "iPhone18,1",
-                "regionCode": "LL",
+                GestaltKeys.productType: "iPhone18,1",
+                GestaltKeys.regionCode: "LL",
                 DeviceCacheOptions.audioIntelligenceKey: true,
             ],
             greenTea: false,
@@ -249,5 +250,34 @@ final class HomeDiagnosticsCacheTests: XCTestCase {
         XCTAssertEqual(cache.externalModificationCount, 0)
         XCTAssertTrue(cache.stagedFeatureIDs.isEmpty)
         XCTAssertTrue(cache.backupVerifications.isEmpty)
+    }
+
+    func testBackupFileReplacementAndDeletionAreReverifiedWithIdenticalInventory() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+
+        let snapshot = try snapshotA()
+        let bytes = try snapshot.document.encoded()
+        let record = BackupRecord(
+            id: UUID(), date: Date(timeIntervalSince1970: 0), reason: "test", source: .device,
+            deviceID: "test-device", byteCount: bytes.count, sha256: GestaltFileStore.sha256Hex(of: bytes),
+            provenance: .preModification)
+        let url = directory.appendingPathComponent(record.filename)
+        try bytes.write(to: url)
+        let cache = HomeDiagnosticsCache(backupDirectory: directory)
+        await cache.refresh(snapshot: snapshot, working: snapshot.document, backups: [record]).value
+        XCTAssertEqual(cache.backupVerifications.first?.status, .verified)
+
+        try Data(repeating: 0, count: bytes.count).write(to: url)
+        await cache.refresh(snapshot: snapshot, working: snapshot.document, backups: [record]).value
+        let corrupted = try XCTUnwrap(cache.backupVerifications.first)
+        guard case .failed = corrupted.status else {
+            return XCTFail("A replacement with the same byte count must fail digest verification")
+        }
+
+        try FileManager.default.removeItem(at: url)
+        await cache.refresh(snapshot: snapshot, working: snapshot.document, backups: [record]).value
+        XCTAssertEqual(cache.backupVerifications.first?.status, .notFound)
     }
 }

@@ -34,8 +34,8 @@ final class HomeDiagnosticsCacheConcurrencyTests: XCTestCase {
     private func snapshotA() throws -> DocumentSnapshot {
         let document = try CoreModuleFixtures.document(
             extra: [
-                "productType": "iPhone18,1",
-                "regionCode": "LL",
+                GestaltKeys.productType: "iPhone18,1",
+                GestaltKeys.regionCode: "LL",
             ],
             greenTea: false,
             notGreenTea: true,
@@ -77,7 +77,7 @@ final class HomeDiagnosticsCacheConcurrencyTests: XCTestCase {
         await withTaskGroup(of: Void.self) { group in
             for _ in 0..<8 {
                 group.addTask {
-                    await cache.refresh(
+                    _ = await cache.refresh(
                         snapshot: snapshot, working: snapshot.document, backups: [])
                 }
             }
@@ -144,12 +144,49 @@ final class HomeDiagnosticsCacheConcurrencyTests: XCTestCase {
         let snapshot = try snapshotA()
 
         await Task.detached {
-            await cache.refresh(
+            _ = await cache.refresh(
                 snapshot: snapshot, working: snapshot.document, backups: [])
         }.value
         await waitForIdle(cache)
         XCTAssertFalse(cache.isComputing)
         XCTAssertNotNil(cache.deviceReport)
         XCTAssertEqual(cache.deviceReport?.profile.regionCode.value, "LL")
+    }
+
+    func testDeviceSwitchClearsPreviousDiagnosticsAndOnlyPublishesLatestRefresh() async throws {
+        let cache = HomeDiagnosticsCache()
+        let first = try snapshotA()
+        let second = try snapshotB()
+        await cache.refresh(snapshot: first, working: first.document, backups: []).value
+        XCTAssertEqual(cache.deviceReport?.profile.regionCode.value, "LL")
+        XCTAssertNotNil(cache.healthScore)
+        XCTAssertNotNil(cache.currentFingerprint)
+
+        let superseded = cache.refresh(snapshot: first, working: first.document, backups: [])
+        let latest = cache.refresh(snapshot: second, working: second.document, backups: [])
+        XCTAssertNil(cache.deviceReport)
+        XCTAssertNil(cache.healthScore)
+        XCTAssertNil(cache.currentFingerprint)
+        XCTAssertTrue(cache.simulations.isEmpty)
+
+        await latest.value
+        await superseded.value
+        XCTAssertTrue(superseded.isCancelled)
+        XCTAssertEqual(cache.deviceReport?.profile.regionCode.value, "CH")
+        XCTAssertEqual(cache.currentFingerprint?.regionCode, "CH")
+        XCTAssertFalse(cache.isComputing)
+    }
+
+    func testCancelledRefreshClearsLoadingAndDoesNotPublish() async throws {
+        let cache = HomeDiagnosticsCache()
+        let snapshot = try snapshotA()
+        let refresh = cache.refresh(snapshot: snapshot, working: snapshot.document, backups: [])
+        refresh.cancel()
+        await refresh.value
+
+        XCTAssertTrue(refresh.isCancelled)
+        XCTAssertNil(cache.deviceReport)
+        XCTAssertNil(cache.currentFingerprint)
+        XCTAssertFalse(cache.isComputing)
     }
 }
