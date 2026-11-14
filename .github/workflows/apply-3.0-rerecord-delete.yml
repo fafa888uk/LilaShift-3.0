@@ -31,7 +31,7 @@ jobs:
           test "$(wc -c < lilashift-3.0-rerecord-delete.patch | tr -d ' ')" = "4020"
           test "$(sha256sum lilashift-3.0-rerecord-delete.patch | cut -d' ' -f1)" = "e1073c5c0604b52f0bac1dd065bf963e19cb6639ea3d2d98d788f49a86723e7c"
           git apply --check lilashift-3.0-rerecord-delete.patch
-          git apply lilashift-3.0-rerecord-delete.patch
+          git apply --index lilashift-3.0-rerecord-delete.patch
 
       - name: Verify the diff is exactly the 8 deletions
         run: |
