@@ -95,6 +95,30 @@ final class DashboardV3SnapshotTests: XCTestCase {
     /// Glass — see ViewSnapshotTests). `width` defaults to the
     /// 390pt phone width; pass 320 for the small-screen test.
     /// `contentSize` adds a Dynamic Type trait when set.
+    ///
+    /// Settling (Tests #196/#208/#210 flake): the harness renders
+    /// the view synchronously in the same block as its first
+    /// appearance — it never disables animations and never lets
+    /// the runloop turn before drawing (swift-snapshot-testing
+    /// 1.19.7, `snapshotView`). The captures are 16-bit Display P3
+    /// images of live iOS 26 Liquid Glass, and the same code +
+    /// baselines failed a different 1–3 snapshots on each run
+    /// (Accessibility, Dark, Tools, Unlock rotating), always with
+    /// sub-8-bit differences confined to glass surfaces — the
+    /// committed PNGs themselves differ by at most Delta-E 1.5 and
+    /// would pass the 0.98 threshold. So the captures were taken
+    /// before the render pipeline had settled, not because the
+    /// content changed. The three settles below are test-only and
+    /// image-neutral (the settled state is the reference state —
+    /// these tests pass on most runs): `.wait` lets the runloop
+    /// turn so the previous test's teardown commits and the shared
+    /// key window / compositor quiesces before the fresh controller
+    /// is drawn; the transaction kills any implicit animation
+    /// mid-flight during the synchronous draw; Reduce Motion turns
+    /// off the app's own animation modifiers (press scale,
+    /// statusText — neither animates in a snapshot). Thresholds
+    /// are unchanged (precision 1, perceptualPrecision 0.98), no
+    /// test is skipped, no baseline is re-recorded.
     private func assertV3Snapshot<V: View>(
         _ view: V, named name: String,
         width: CGFloat = 390,
@@ -112,13 +136,18 @@ final class DashboardV3SnapshotTests: XCTestCase {
             traits.append(UITraitCollection(preferredContentSizeCategory: contentSize))
         }
         assertSnapshot(
-            of: view,
-            as: .image(
-                drawHierarchyInKeyWindow: true,
-                precision: 1,
-                perceptualPrecision: 0.98,
-                layout: .fixed(width: width, height: 844),
-                traits: UITraitCollection(traitsFrom: traits)
+            of: view
+                .transaction { $0.animation = nil }
+                .environment(\.accessibilityReduceMotion, true),
+            as: .wait(
+                for: 0.5,
+                on: .image(
+                    drawHierarchyInKeyWindow: true,
+                    precision: 1,
+                    perceptualPrecision: 0.98,
+                    layout: .fixed(width: width, height: 844),
+                    traits: UITraitCollection(traitsFrom: traits)
+                )
             ),
             named: name,
             record: .missing,

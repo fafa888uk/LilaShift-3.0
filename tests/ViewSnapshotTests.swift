@@ -128,6 +128,16 @@ final class ViewSnapshotTests: XCTestCase {
     /// fatalError in a framework (host-less) test target. Never
     /// remove this flag without re-checking that the recorded
     /// references are non-blank and distinct across the eight tests.
+    ///
+    /// Settling (same flake as DashboardV3SnapshotTests, Tests
+    /// #196/#208/#210): the harness draws the fresh controller
+    /// synchronously with no settle, and the 16-bit Display P3
+    /// glass captures varied run to run at sub-8-bit precision
+    /// while the committed PNGs stayed within Delta-E 1.5 of the
+    /// actuals. `.wait` + a nil-animation transaction + Reduce
+    /// Motion (see `assertV3Snapshot` for the full reasoning) make
+    /// the capture take the settled state, which is the reference
+    /// state. Test-only, image-neutral; thresholds unchanged.
     private func assertCardSnapshot<V: View>(
         _ view: V, named name: String,
         file: StaticString = #filePath,
@@ -135,16 +145,21 @@ final class ViewSnapshotTests: XCTestCase {
         line: UInt = #line
     ) {
         assertSnapshot(
-            of: view,
-            as: .image(
-                drawHierarchyInKeyWindow: true,
-                precision: 1,
-                perceptualPrecision: 0.98,
-                layout: .fixed(width: 390, height: 844),
-                traits: UITraitCollection(traitsFrom: [
-                    UITraitCollection(userInterfaceStyle: .light),
-                    UITraitCollection(displayScale: 2),
-                ])
+            of: view
+                .transaction { $0.animation = nil }
+                .environment(\.accessibilityReduceMotion, true),
+            as: .wait(
+                for: 0.5,
+                on: .image(
+                    drawHierarchyInKeyWindow: true,
+                    precision: 1,
+                    perceptualPrecision: 0.98,
+                    layout: .fixed(width: 390, height: 844),
+                    traits: UITraitCollection(traitsFrom: [
+                        UITraitCollection(userInterfaceStyle: .light),
+                        UITraitCollection(displayScale: 2),
+                    ])
+                )
             ),
             named: name,
             record: .missing,
