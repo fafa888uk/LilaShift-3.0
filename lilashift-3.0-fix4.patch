@@ -1,0 +1,323 @@
+diff --git a/GestaltX.xcodeproj/project.pbxproj b/GestaltX.xcodeproj/project.pbxproj
+index 663cb0c..1a33f48 100644
+--- a/GestaltX.xcodeproj/project.pbxproj
++++ b/GestaltX.xcodeproj/project.pbxproj
+@@ -83,6 +83,7 @@
+ 		DB12434CDC500609761216B1 /* HomeDiagnosticsCacheConcurrencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 007542ED35DFB2E93B7F0F41 /* HomeDiagnosticsCacheConcurrencyTests.swift */; };
+ 		BE026BD50295ABE265201260 /* DashboardV3SnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3624FBBE3C977DC36106724 /* DashboardV3SnapshotTests.swift */; };
+ 		D43F6FE6E3F70F2FD3EC5873 /* DashboardV3NavigationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E1320CF71EABD8197C0EF5 /* DashboardV3NavigationTests.swift */; };
++		1A7AD902F4504E46B9FC8038 /* DiagnosticsEquatableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE7645FF99DB44D29B4CE01D /* DiagnosticsEquatableTests.swift */; };
+ 		100F74C65CA447F76A377DC2 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 368CCEAD13DE80A54EDDFBC1 /* XCTest.framework */; };
+ 		D4929DE02BC485D5C87CC206 /* DependencyAnalyzerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6CF1400EC4B43E84563D815 /* DependencyAnalyzerTests.swift */; };
+ 		B831FA5C5D600B267D6D663F /* DeviceFingerprintTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DF9F83E57401483D5C89C7 /* DeviceFingerprintTests.swift */; };
+@@ -202,6 +203,7 @@
+ 		007542ED35DFB2E93B7F0F41 /* HomeDiagnosticsCacheConcurrencyTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HomeDiagnosticsCacheConcurrencyTests.swift; sourceTree = "<group>"; };
+ 		A3624FBBE3C977DC36106724 /* DashboardV3SnapshotTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DashboardV3SnapshotTests.swift; sourceTree = "<group>"; };
+ 		D4E1320CF71EABD8197C0EF5 /* DashboardV3NavigationTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DashboardV3NavigationTests.swift; sourceTree = "<group>"; };
++		DE7645FF99DB44D29B4CE01D /* DiagnosticsEquatableTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DiagnosticsEquatableTests.swift; sourceTree = "<group>"; };
+ 		368CCEAD13DE80A54EDDFBC1 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+ 		D6CF1400EC4B43E84563D815 /* DependencyAnalyzerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DependencyAnalyzerTests.swift; sourceTree = "<group>"; };
+ 		B8DF9F83E57401483D5C89C7 /* DeviceFingerprintTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DeviceFingerprintTests.swift; sourceTree = "<group>"; };
+@@ -395,6 +397,7 @@
+ 				007542ED35DFB2E93B7F0F41 /* HomeDiagnosticsCacheConcurrencyTests.swift */,
+ 				A3624FBBE3C977DC36106724 /* DashboardV3SnapshotTests.swift */,
+ 				D4E1320CF71EABD8197C0EF5 /* DashboardV3NavigationTests.swift */,
++				DE7645FF99DB44D29B4CE01D /* DiagnosticsEquatableTests.swift */,
+ 			);
+ 			name = Tests;
+ 			path = tests;
+@@ -622,6 +625,7 @@
+ 				DB12434CDC500609761216B1 /* HomeDiagnosticsCacheConcurrencyTests.swift in Sources */,
+ 				BE026BD50295ABE265201260 /* DashboardV3SnapshotTests.swift in Sources */,
+ 				D43F6FE6E3F70F2FD3EC5873 /* DashboardV3NavigationTests.swift in Sources */,
++				1A7AD902F4504E46B9FC8038 /* DiagnosticsEquatableTests.swift in Sources */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+diff --git a/GestaltX/AboutView.swift b/GestaltX/AboutView.swift
+index 62dcfec..508058c 100644
+--- a/GestaltX/AboutView.swift
++++ b/GestaltX/AboutView.swift
+@@ -82,7 +82,7 @@ struct AboutView: View {
+                     .foregroundStyle(.secondary)
+                     .padding(.vertical, 4)
+             }
+-            Section(L("Technical Sources")) {
++            Section {
+                 ForEach(openSourceProjects) { project in
+                     NavigationLink { OpenSourceProjectDetailView(project: project) } label: {
+                         HStack {
+@@ -95,16 +95,20 @@ struct AboutView: View {
+                         }
+                     }
+                 }
++            } header: {
++                Text(L("Technical Sources"))
+             } footer: {
+                 Text(L("Tap a project for its author, relationship, key technology, license and source link."))
+                     .font(.footnote)
+             }
+-            Section(L("Third-Party Licenses")) {
++            Section {
+                 licenseRow("GNU GPL v3", file: "GestaltX-GPL-3.0")
+                 licenseRow("Erosion · GPL v3", file: "Erosion-GPL-3.0")
+                 licenseRow("Gester · MIT", file: "Gester-MIT")
+                 licenseRow("ZIPFoundation · MIT", file: "ZIPFoundation-MIT")
+                 licenseRow("Primer Octicons · MIT", file: "Primer-Octicons-MIT")
++            } header: {
++                Text(L("Third-Party Licenses"))
+             } footer: {
+                 Text(L("License texts shown here are bundled with the app. Research references and development tools are MIT- or GPL-licensed at their upstream repositories; their texts are not bundled because their code is not shipped in the app."))
+                     .font(.footnote)
+diff --git a/GestaltX/DeviceFingerprint.swift b/GestaltX/DeviceFingerprint.swift
+index efa67da..1b8da45 100644
+--- a/GestaltX/DeviceFingerprint.swift
++++ b/GestaltX/DeviceFingerprint.swift
+@@ -48,6 +48,35 @@ struct DeviceFingerprint: Equatable, Codable, Sendable {
+     let hasTrustedBackup: Bool?
+     let recordedAt: Date
+ 
++    /// Content equality: `recordedAt` is capture metadata, not device
++    /// state — every capture stamps the current time, so including it
++    /// would make two captures of the same device never equal. This
++    /// mirrors `digest`, which already hashes every field except
++    /// `recordedAt`: two fingerprints are equal exactly when their
++    /// digests agree on the same device state.
++    static func == (lhs: DeviceFingerprint, rhs: DeviceFingerprint) -> Bool {
++        lhs.version == rhs.version
++            && lhs.deviceID == rhs.deviceID
++            && lhs.productType == rhs.productType
++            && lhs.modelNumber == rhs.modelNumber
++            && lhs.osVersion == rhs.osVersion
++            && lhs.osBuild == rhs.osBuild
++            && lhs.regionCode == rhs.regionCode
++            && lhs.salesRegionSuffix == rhs.salesRegionSuffix
++            && lhs.cacheLayoutUUID == rhs.cacheLayoutUUID
++            && lhs.cacheSlotCount == rhs.cacheSlotCount
++            && lhs.cacheByteCount == rhs.cacheByteCount
++            && lhs.esimGreenTea == rhs.esimGreenTea
++            && lhs.esimNotGreenTea == rhs.esimNotGreenTea
++            && lhs.wapiEnabled == rhs.wapiEnabled
++            && lhs.audioIntelligenceSlot == rhs.audioIntelligenceSlot
++            && lhs.personalTranslatorSlot == rhs.personalTranslatorSlot
++            && lhs.isNativeAppleIntelligence == rhs.isNativeAppleIntelligence
++            && lhs.appGroupAvailable == rhs.appGroupAvailable
++            && lhs.backupCount == rhs.backupCount
++            && lhs.hasTrustedBackup == rhs.hasTrustedBackup
++    }
++
+     /// SHA-256 hex over the canonical encoding of every field
+     /// except `recordedAt` (the capture time is metadata, not
+     /// device state: two captures of the same device must hash
+diff --git a/GestaltX/LilaIntelligence.swift b/GestaltX/LilaIntelligence.swift
+index 59633b6..c850f6a 100644
+--- a/GestaltX/LilaIntelligence.swift
++++ b/GestaltX/LilaIntelligence.swift
+@@ -927,6 +927,21 @@ struct LilaRecommendation: Equatable, Sendable {
+     let blockers: [PlanBlocker]
+     let requiresRestart: Bool
+ 
++    /// Content equality: `id` and `createdAt` are creation metadata,
++    /// not content — every build mints a fresh UUID and timestamp, so
++    /// including them would make two recommendations from identical
++    /// inputs never equal. Equality must reflect the recommendation's
++    /// content (what would be staged and why), so that
++    /// `HomeDiagnosticsCache`'s publish-only-on-change works and an
++    /// identical refresh republishes nothing new.
++    static func == (lhs: LilaRecommendation, rhs: LilaRecommendation) -> Bool {
++        lhs.deviceID == rhs.deviceID
++            && lhs.productType == rhs.productType
++            && lhs.steps == rhs.steps
++            && lhs.blockers == rhs.blockers
++            && lhs.requiresRestart == rhs.requiresRestart
++    }
++
+     /// True only when there is something to execute, nothing blocks it,
+     /// and every step is actionable. An empty recommendation is not
+     /// executable: there is nothing to apply.
+diff --git a/tests/DiagnosticsEquatableTests.swift b/tests/DiagnosticsEquatableTests.swift
+new file mode 100644
+index 0000000..651cd67
+--- /dev/null
++++ b/tests/DiagnosticsEquatableTests.swift
+@@ -0,0 +1,139 @@
++// SPDX-License-Identifier: GPL-3.0-only
++//
++// DiagnosticsEquatableTests.swift — content-equality tests for the
++// two types `HomeDiagnosticsCache` compares with `==` in its
++// publish-only-on-change path (fix3).
++//
++// `LilaRecommendation` and `DeviceFingerprint` both carry creation
++// metadata (`id` / `createdAt`, and `recordedAt`) that is fresh on
++// every build/capture. Their synthesized `==` compared that metadata
++// too, so two reports/fingerprints from identical inputs were never
++// equal: an identical refresh always republished, and concurrent
++// readers observed "torn" reports that matched neither snapshot's
++// whole report. Both types now define `==` over content only
++// (matching `DeviceFingerprint.digest`, which already excluded
++// `recordedAt`). These tests pin that rule: identical content with
++// different metadata is equal; different content is not.
++import XCTest
++
++@testable import GestaltX
++
++final class DiagnosticsEquatableTests: XCTestCase {
++
++    // MARK: - LilaRecommendation
++
++    func testRecommendationEqualDespiteDifferentIDAndCreatedAt() {
++        let first = LilaRecommendation(
++            id: UUID(uuidString: "11111111-2222-3333-4444-555555555555")!,
++            createdAt: Date(timeIntervalSince1970: 0),
++            deviceID: "test-device",
++            productType: "iPhone18,1",
++            steps: [audioStep()],
++            blockers: [],
++            requiresRestart: false)
++        let second = LilaRecommendation(
++            id: UUID(uuidString: "99999999-8888-7777-6666-555555555555")!,
++            createdAt: Date(timeIntervalSince1970: 1_000_000),
++            deviceID: "test-device",
++            productType: "iPhone18,1",
++            steps: [audioStep()],
++            blockers: [],
++            requiresRestart: false)
++        XCTAssertEqual(first, second,
++                       "Recommendations with identical content must be equal regardless of id/createdAt")
++    }
++
++    func testRecommendationNotEqualWhenStepsDiffer() {
++        let base = LilaRecommendation(
++            id: UUID(), createdAt: Date(),
++            deviceID: "test-device", productType: "iPhone18,1",
++            steps: [audioStep()], blockers: [], requiresRestart: false)
++        let differentSteps = LilaRecommendation(
++            id: base.id, createdAt: base.createdAt,
++            deviceID: "test-device", productType: "iPhone18,1",
++            steps: [], blockers: [], requiresRestart: false)
++        XCTAssertNotEqual(base, differentSteps,
++                          "A recommendation with different steps must not be equal")
++    }
++
++    func testRecommendationNotEqualWhenBlockersDiffer() {
++        let base = LilaRecommendation(
++            id: UUID(), createdAt: Date(),
++            deviceID: "test-device", productType: "iPhone18,1",
++            steps: [audioStep()], blockers: [], requiresRestart: false)
++        let blocked = LilaRecommendation(
++            id: base.id, createdAt: base.createdAt,
++            deviceID: "test-device", productType: "iPhone18,1",
++            steps: [audioStep()],
++            blockers: [PlanBlocker(featureID: "audioIntelligence",
++                                   code: "unknown-model",
++                                   reason: "test")],
++            requiresRestart: false)
++        XCTAssertNotEqual(base, blocked,
++                          "A recommendation with different blockers must not be equal")
++    }
++
++    // MARK: - DeviceFingerprint
++
++    func testFingerprintEqualDespiteDifferentRecordedAt() {
++        let first = fingerprint(recordedAt: Date(timeIntervalSince1970: 0))
++        let second = fingerprint(recordedAt: Date(timeIntervalSince1970: 1_000_000))
++        XCTAssertEqual(first, second,
++                       "Fingerprints with identical fields must be equal regardless of recordedAt")
++        XCTAssertEqual(first.digest, second.digest,
++                       "Equal fingerprints must have equal digests")
++    }
++
++    func testFingerprintNotEqualWhenRegionCodeDiffers() {
++        let base = fingerprint(recordedAt: Date(timeIntervalSince1970: 0))
++        let differentRegion = fingerprint(regionCode: "LL",
++                                          recordedAt: Date(timeIntervalSince1970: 0))
++        XCTAssertNotEqual(base, differentRegion,
++                          "A fingerprint with a different region code must not be equal")
++        XCTAssertNotEqual(base.digest, differentRegion.digest,
++                          "Fingerprints that differ must have different digests")
++    }
++
++    // MARK: - Helpers
++
++    private func audioStep() -> PlanStep {
++        PlanStep(featureID: "audioIntelligence",
++                 title: "Audio Intelligence",
++                 kind: .cacheExtraKey,
++                 key: DeviceCacheOptions.audioIntelligenceKey,
++                 layer: .cacheExtra,
++                 newValue: .bool(true),
++                 slotIndex: nil,
++                 verification: "test")
++    }
++
++    /// A fingerprint with test defaults and the given overrides
++    /// (mirrors the helper in DeviceFingerprintTests).
++    private func fingerprint(
++        regionCode: String? = "CH",
++        recordedAt: Date = Date(timeIntervalSince1970: 0)
++    ) -> DeviceFingerprint {
++        DeviceFingerprint(
++            version: DeviceFingerprint.currentVersion,
++            deviceID: "test-device",
++            productType: "iPhone14,7",
++            modelNumber: "A1234",
++            osVersion: "27.0.1",
++            osBuild: "23A344",
++            regionCode: regionCode,
++            salesRegionSuffix: "CH/A",
++            cacheLayoutUUID: CoreModuleFixtures.uuid,
++            cacheSlotCount: 720,
++            cacheByteCount: 6480,
++            esimGreenTea: true,
++            esimNotGreenTea: false,
++            wapiEnabled: true,
++            audioIntelligenceSlot: nil,
++            personalTranslatorSlot: nil,
++            isNativeAppleIntelligence: false,
++            appGroupAvailable: true,
++            backupCount: 0,
++            hasTrustedBackup: false,
++            recordedAt: recordedAt)
++    }
++}
+diff --git a/tests/HomeDiagnosticsCacheConcurrencyTests.swift b/tests/HomeDiagnosticsCacheConcurrencyTests.swift
+index a1a1dc0..d18dfa8 100644
+--- a/tests/HomeDiagnosticsCacheConcurrencyTests.swift
++++ b/tests/HomeDiagnosticsCacheConcurrencyTests.swift
+@@ -34,8 +34,8 @@ final class HomeDiagnosticsCacheConcurrencyTests: XCTestCase {
+     private func snapshotA() throws -> DocumentSnapshot {
+         let document = try CoreModuleFixtures.document(
+             extra: [
+-                "productType": "iPhone18,1",
+-                "regionCode": "LL",
++                GestaltKeys.productType: "iPhone18,1",
++                GestaltKeys.regionCode: "LL",
+             ],
+             greenTea: false,
+             notGreenTea: true,
+diff --git a/tests/HomeDiagnosticsCacheTests.swift b/tests/HomeDiagnosticsCacheTests.swift
+index 1cd6e73..a65d13a 100644
+--- a/tests/HomeDiagnosticsCacheTests.swift
++++ b/tests/HomeDiagnosticsCacheTests.swift
+@@ -60,8 +60,8 @@ final class HomeDiagnosticsCacheTests: XCTestCase {
+     private func snapshotA() throws -> DocumentSnapshot {
+         let document = try CoreModuleFixtures.document(
+             extra: [
+-                "productType": "iPhone18,1",
+-                "regionCode": "LL",
++                GestaltKeys.productType: "iPhone18,1",
++                GestaltKeys.regionCode: "LL",
+             ],
+             greenTea: false,
+             notGreenTea: true,
+@@ -194,8 +194,8 @@ final class HomeDiagnosticsCacheTests: XCTestCase {
+         // the pure-function form of this rule).
+         let staged = try CoreModuleFixtures.document(
+             extra: [
+-                "productType": "iPhone18,1",
+-                "regionCode": "LL",
++                GestaltKeys.productType: "iPhone18,1",
++                GestaltKeys.regionCode: "LL",
+                 DeviceCacheOptions.audioIntelligenceKey: true,
+             ],
+             greenTea: false,
