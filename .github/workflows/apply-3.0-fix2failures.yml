@@ -1,0 +1,57 @@
+# Apply the 3.0 snapshot fix patch (one-shot)
+#
+# Manually dispatched once, on feature/lilashift-3.0-dashboard:
+# freezes the fingerprint capture time in the Restore snapshot test
+# (the "Recorded" line rendered the live clock, so the reference
+# differed on every run — Tests #196) and adds failure-render
+# collection to run-swift-tests.yml so a future mismatch can be
+# located pixel by pixel. Do NOT re-run after the patch is applied:
+# git apply --check fails when the changes are already in the tree,
+# and the run stops before committing.
+#
+# The patch touches 4 files (no workflow files of its own besides
+# run-swift-tests.yml), so `contents: write` is sufficient.
+# NOTE: use `git apply --index` (not plain `git apply`) — plain
+# apply only changes the worktree, leaving `git diff --cached`
+# empty and the later `git commit` with nothing staged.
+name: Apply 3.0 snapshot fix patch
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out the branch
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: true
+
+      - name: Verify patch file and apply it
+        run: |
+          test "$(wc -c < lilashift-3.0-fix2failures.patch | tr -d ' ')" = "7268"
+          test "$(sha256sum lilashift-3.0-fix2failures.patch | cut -d' ' -f1)" = "2f24d056fb62a259d84a9411cc0edfca7afb76cb2d675ffbec9498d5d572ba65"
+          git apply --check lilashift-3.0-fix2failures.patch
+          git apply --index lilashift-3.0-fix2failures.patch
+
+      - name: Verify the diff is exactly the 4 fix files
+        run: |
+          git diff --cached --name-status > /tmp/changed.txt
+          cat /tmp/changed.txt
+          test "$(wc -l < /tmp/changed.txt | tr -d ' ')" = "4"
+          grep -qx "M\t.github/workflows/run-swift-tests.yml" /tmp/changed.txt
+          grep -qx "M\tGestaltX/DeviceFingerprint.swift" /tmp/changed.txt
+          grep -qx "M\tGestaltX/DeviceFingerprintViews.swift" /tmp/changed.txt
+          grep -qx "M\ttests/DashboardV3SnapshotTests.swift" /tmp/changed.txt
+          test "$(git diff --cached --shortstat | grep -o '[0-9]* insertions' | grep -o '[0-9]*')" = "71"
+          test "$(git diff --cached --shortstat | grep -o '[0-9]* deletions' | grep -o '[0-9]*')" = "6"
+
+      - name: Commit the fix
+        run: |
+          git config user.name "fafa920q-hue"
+          git config user.email "fafa920q-hue@users.noreply.github.com"
+          git commit -m "fix(tests): freeze fingerprint recordedAt in Restore snapshot; collect failure renders"
+          git push
