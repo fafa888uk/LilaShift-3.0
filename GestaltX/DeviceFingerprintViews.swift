@@ -12,9 +12,27 @@
 // the card says so, instead of showing a default one.
 import SwiftUI
 
+/// Environment override for the fingerprint capture time, used
+/// only by snapshot tests: the card renders "Recorded <time>",
+/// and a live clock makes the Restore snapshot differ on every
+/// run. Production never sets it, so the card stamps the live
+/// capture time exactly as before. (Same shape as
+/// `homeDiagnosticsCache` in HomeDiagnosticsCache.swift.)
+private struct FingerprintRecordedAtKey: EnvironmentKey {
+    static let defaultValue: Date? = nil
+}
+
+extension EnvironmentValues {
+    var fingerprintRecordedAt: Date? {
+        get { self[FingerprintRecordedAtKey.self] }
+        set { self[FingerprintRecordedAtKey.self] = newValue }
+    }
+}
+
 struct DeviceFingerprintCard: View {
     @EnvironmentObject private var model: GestaltManager
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.fingerprintRecordedAt) private var fingerprintRecordedAt
     @State private var stored: DeviceFingerprint?
     @State private var fingerprintError: String?
     @State private var saveMessage: String?
@@ -27,12 +45,16 @@ struct DeviceFingerprintCard: View {
     }
 
     /// The current fingerprint from the latest read, or `nil` when
-    /// the device has not been read yet.
+    /// the device has not been read yet. The capture time is the
+    /// live clock unless a snapshot test freezes it through
+    /// `fingerprintRecordedAt` (see above).
     private var current: DeviceFingerprint? {
         guard model.snapshot != nil else { return nil }
         let report = LilaIntelligence.report(
             snapshot: model.snapshot, backups: model.backups)
-        return DeviceFingerprintCapture.capture(profile: report.profile, snapshot: model.snapshot)
+        return DeviceFingerprintCapture.capture(
+            profile: report.profile, snapshot: model.snapshot,
+            recordedAt: fingerprintRecordedAt ?? Date())
     }
 
     private var comparison: FingerprintComparison? {

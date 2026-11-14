@@ -140,8 +140,11 @@ enum DeviceFingerprintCapture {
     /// The eSIM flags, WAPI flag and AI slot values come from the
     /// document through `DeviceCacheOptions`, the same readers the
     /// rest of the app uses; a value that cannot be read stays
-    /// `nil`.
-    static func capture(profile: DeviceProfile, snapshot: DocumentSnapshot?) -> DeviceFingerprint? {
+    /// `nil`. `recordedAt` defaults to the live capture time;
+    /// snapshot tests pass a fixed date so the rendered
+    /// "Recorded" line is deterministic (see
+    /// `fingerprintRecordedAt` in DeviceFingerprintViews).
+    static func capture(profile: DeviceProfile, snapshot: DocumentSnapshot?, recordedAt: Date = Date()) -> DeviceFingerprint? {
         guard let snapshot else { return nil }
         let document = snapshot.document
         let layout = profile.cacheLayout.value
@@ -169,7 +172,7 @@ enum DeviceFingerprintCapture {
             appGroupAvailable: profile.appGroupAvailable.value,
             backupCount: profile.backupCount,
             hasTrustedBackup: profile.hasTrustedBackup,
-            recordedAt: Date())
+            recordedAt: recordedAt)
     }
 
     /// Compares `current` against `stored` field by field. Fields

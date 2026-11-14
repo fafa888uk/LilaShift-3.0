@@ -37,6 +37,11 @@
 // eSIM on), an unread manager for the empty states, no live device
 // read, no clock, fixed size and traits, `drawHierarchyInKeyWindow:
 // true` (Liquid Glass needs it — see ViewSnapshotTests).
+// The Restore destination is the one exception to "no clock": its
+// fingerprint card renders a "Recorded" time from the live capture,
+// so that test freezes it with `fingerprintRecordedAt` (below) —
+// without the freeze the reference differs on every run
+// (Tests #196: reference "Nov 14, 2026 at 5:54 PM", re-run ~6:17 PM).
 // The home reads its section order from
 // `LilaShift.v3.dashboardOrder` in UserDefaults; the test host
 // has no value stored, so the default order applies.
@@ -70,6 +75,17 @@ final class DashboardV3SnapshotTests: XCTestCase {
         manager.loadSnapshotForTests(snapshot)
         return manager
     }
+
+    /// The fixed capture time for the Restore snapshot. The
+    /// fingerprint card renders "Recorded <time>" from the capture,
+    /// so a live clock makes the snapshot differ on every run.
+    /// 2026-11-14 17:54:30 UTC is the minute the committed
+    /// "v3-restore-populated" reference was recorded in, and the CI
+    /// simulator runs in UTC, so the frozen text renders as
+    /// "Nov 14, 2026 at 5:54 PM" and the reference stays valid —
+    /// no re-record needed. The digest is unaffected: it already
+    /// excludes `recordedAt` (see DeviceFingerprint).
+    private static let fingerprintRecordedAt = Date(timeIntervalSince1970: 1_794_678_870)
 
     // MARK: - Snapshot helper
 
@@ -157,7 +173,8 @@ final class DashboardV3SnapshotTests: XCTestCase {
 
     func testV3RestoreDestinationSnapshot() throws {
         assertV3Snapshot(
-            destination(.restore, try populatedManager()),
+            destination(.restore, try populatedManager())
+                .environment(\.fingerprintRecordedAt, Self.fingerprintRecordedAt),
             named: "v3-restore-populated")
     }
 
