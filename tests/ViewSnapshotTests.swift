@@ -134,8 +134,8 @@ final class ViewSnapshotTests: XCTestCase {
     /// synchronously with no settle, and the 16-bit Display P3
     /// glass captures varied run to run at sub-8-bit precision
     /// while the committed PNGs stayed within Delta-E 1.5 of the
-    /// actuals. `.wait` + a nil-animation transaction + Reduce
-    /// Motion (see `assertV3Snapshot` for the full reasoning) make
+    /// actuals. `.wait` + a nil-animation transaction (see
+    /// `assertV3Snapshot` for the full reasoning) make
     /// the capture take the settled state, which is the reference
     /// state. Test-only, image-neutral; thresholds unchanged.
     private func assertCardSnapshot<V: View>(
@@ -146,8 +146,7 @@ final class ViewSnapshotTests: XCTestCase {
     ) {
         assertSnapshot(
             of: view
-                .transaction { $0.animation = nil }
-                .environment(\.accessibilityReduceMotion, true),
+                .transaction { $0.animation = nil },
             as: .wait(
                 for: 0.5,
                 on: .image(

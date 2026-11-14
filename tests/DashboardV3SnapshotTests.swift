@@ -108,17 +108,24 @@ final class DashboardV3SnapshotTests: XCTestCase {
     /// committed PNGs themselves differ by at most Delta-E 1.5 and
     /// would pass the 0.98 threshold. So the captures were taken
     /// before the render pipeline had settled, not because the
-    /// content changed. The three settles below are test-only and
+    /// content changed. The two settles below are test-only and
     /// image-neutral (the settled state is the reference state —
     /// these tests pass on most runs): `.wait` lets the runloop
     /// turn so the previous test's teardown commits and the shared
     /// key window / compositor quiesces before the fresh controller
     /// is drawn; the transaction kills any implicit animation
-    /// mid-flight during the synchronous draw; Reduce Motion turns
-    /// off the app's own animation modifiers (press scale,
-    /// statusText — neither animates in a snapshot). Thresholds
+    /// mid-flight during the synchronous draw. Thresholds
     /// are unchanged (precision 1, perceptualPrecision 0.98), no
     /// test is skipped, no baseline is re-recorded.
+    ///
+    /// Note: an earlier revision also set
+    /// `.environment(\.accessibilityReduceMotion, true)`, but that
+    /// key path is read-only and `View.environment` requires a
+    /// writable key path, so it does not compile (Tests #215) and
+    /// was removed. Nothing is lost: the app's two Reduce Motion
+    /// readers (press scale, statusText) do not animate in a
+    /// snapshot, so the two remaining settles still address the
+    /// settle mechanism.
     private func assertV3Snapshot<V: View>(
         _ view: V, named name: String,
         width: CGFloat = 390,
@@ -137,8 +144,7 @@ final class DashboardV3SnapshotTests: XCTestCase {
         }
         assertSnapshot(
             of: view
-                .transaction { $0.animation = nil }
-                .environment(\.accessibilityReduceMotion, true),
+                .transaction { $0.animation = nil },
             as: .wait(
                 for: 0.5,
                 on: .image(
