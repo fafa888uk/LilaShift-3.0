@@ -5,10 +5,7 @@
 //
 // These tests drive the REAL `HomeDiagnosticsCache` (no mock): the
 // cache computes on its background task and publishes on the main
-// actor, exactly as ContentView drives it. Waiting is a bounded
-// `Task.yield()` loop on `isComputing` — no sleeps, no timing
-// assertions; the loop only bounds how long a stuck refresh may
-// run before the test fails.
+// actor, exactly as ContentView drives it. Tests await the refresh task.
 //
 // What is proven here:
 //   - A snapshot change invalidates the report (nil -> populated
@@ -93,25 +90,13 @@ final class HomeDiagnosticsCacheTests: XCTestCase {
 
     // MARK: - Helpers
 
-    /// Waits until no refresh is in flight. Bounded yield loop:
-    /// no sleep, no timing assertion — the budget only fails a
-    /// refresh that never finishes.
-    private func waitForIdle(_ cache: HomeDiagnosticsCache) async {
-        for _ in 0..<5000 {
-            if !cache.isComputing { return }
-            await Task.yield()
-        }
-        XCTFail("HomeDiagnosticsCache did not finish refreshing within the yield budget")
-    }
-
     private func refreshAndWait(
         _ cache: HomeDiagnosticsCache,
         snapshot: DocumentSnapshot?,
         working: GestaltDocument?,
         backups: [BackupRecord]
     ) async {
-        cache.refresh(snapshot: snapshot, working: working, backups: backups)
-        await waitForIdle(cache)
+        await cache.refresh(snapshot: snapshot, working: working, backups: backups).value
     }
 
     // MARK: - Snapshot change invalidates the report
