@@ -14,6 +14,10 @@
 # NOTE: use `git apply --index` (not plain `git apply`) — plain
 # apply only changes the worktree, leaving `git diff --cached`
 # empty and the later `git commit` with nothing staged.
+# NOTE 2: verification must not use grep "M\t..." — GNU grep does
+# not interpret \t as a tab (apply run #1 failed on exactly this).
+# Compare plain paths via --name-only instead; --name-status output
+# uses real tabs, so check the status letters through cut -f1.
 name: Apply 3.0 snapshot fix patch
 on:
   workflow_dispatch:
@@ -39,13 +43,14 @@ jobs:
 
       - name: Verify the diff is exactly the 4 fix files
         run: |
-          git diff --cached --name-status > /tmp/changed.txt
+          git diff --cached --name-only > /tmp/changed.txt
           cat /tmp/changed.txt
           test "$(wc -l < /tmp/changed.txt | tr -d ' ')" = "4"
-          grep -qx "M\t.github/workflows/run-swift-tests.yml" /tmp/changed.txt
-          grep -qx "M\tGestaltX/DeviceFingerprint.swift" /tmp/changed.txt
-          grep -qx "M\tGestaltX/DeviceFingerprintViews.swift" /tmp/changed.txt
-          grep -qx "M\ttests/DashboardV3SnapshotTests.swift" /tmp/changed.txt
+          grep -qxF ".github/workflows/run-swift-tests.yml" /tmp/changed.txt
+          grep -qxF "GestaltX/DeviceFingerprint.swift" /tmp/changed.txt
+          grep -qxF "GestaltX/DeviceFingerprintViews.swift" /tmp/changed.txt
+          grep -qxF "tests/DashboardV3SnapshotTests.swift" /tmp/changed.txt
+          test "$(git diff --cached --name-status | cut -f1 | sort -u)" = "M"
           test "$(git diff --cached --shortstat | grep -o '[0-9]* insertions' | grep -o '[0-9]*')" = "71"
           test "$(git diff --cached --shortstat | grep -o '[0-9]* deletions' | grep -o '[0-9]*')" = "6"
 
