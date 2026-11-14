@@ -48,6 +48,35 @@ struct DeviceFingerprint: Equatable, Codable, Sendable {
     let hasTrustedBackup: Bool?
     let recordedAt: Date
 
+    /// Content equality: `recordedAt` is capture metadata, not device
+    /// state — every capture stamps the current time, so including it
+    /// would make two captures of the same device never equal. This
+    /// mirrors `digest`, which already hashes every field except
+    /// `recordedAt`: two fingerprints are equal exactly when their
+    /// digests agree on the same device state.
+    static func == (lhs: DeviceFingerprint, rhs: DeviceFingerprint) -> Bool {
+        lhs.version == rhs.version
+            && lhs.deviceID == rhs.deviceID
+            && lhs.productType == rhs.productType
+            && lhs.modelNumber == rhs.modelNumber
+            && lhs.osVersion == rhs.osVersion
+            && lhs.osBuild == rhs.osBuild
+            && lhs.regionCode == rhs.regionCode
+            && lhs.salesRegionSuffix == rhs.salesRegionSuffix
+            && lhs.cacheLayoutUUID == rhs.cacheLayoutUUID
+            && lhs.cacheSlotCount == rhs.cacheSlotCount
+            && lhs.cacheByteCount == rhs.cacheByteCount
+            && lhs.esimGreenTea == rhs.esimGreenTea
+            && lhs.esimNotGreenTea == rhs.esimNotGreenTea
+            && lhs.wapiEnabled == rhs.wapiEnabled
+            && lhs.audioIntelligenceSlot == rhs.audioIntelligenceSlot
+            && lhs.personalTranslatorSlot == rhs.personalTranslatorSlot
+            && lhs.isNativeAppleIntelligence == rhs.isNativeAppleIntelligence
+            && lhs.appGroupAvailable == rhs.appGroupAvailable
+            && lhs.backupCount == rhs.backupCount
+            && lhs.hasTrustedBackup == rhs.hasTrustedBackup
+    }
+
     /// SHA-256 hex over the canonical encoding of every field
     /// except `recordedAt` (the capture time is metadata, not
     /// device state: two captures of the same device must hash

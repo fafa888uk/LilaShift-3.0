@@ -60,8 +60,8 @@ final class HomeDiagnosticsCacheTests: XCTestCase {
     private func snapshotA() throws -> DocumentSnapshot {
         let document = try CoreModuleFixtures.document(
             extra: [
-                "productType": "iPhone18,1",
-                "regionCode": "LL",
+                GestaltKeys.productType: "iPhone18,1",
+                GestaltKeys.regionCode: "LL",
             ],
             greenTea: false,
             notGreenTea: true,
@@ -194,8 +194,8 @@ final class HomeDiagnosticsCacheTests: XCTestCase {
         // the pure-function form of this rule).
         let staged = try CoreModuleFixtures.document(
             extra: [
-                "productType": "iPhone18,1",
-                "regionCode": "LL",
+                GestaltKeys.productType: "iPhone18,1",
+                GestaltKeys.regionCode: "LL",
                 DeviceCacheOptions.audioIntelligenceKey: true,
             ],
             greenTea: false,

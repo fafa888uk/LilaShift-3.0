@@ -82,7 +82,7 @@ struct AboutView: View {
                     .foregroundStyle(.secondary)
                     .padding(.vertical, 4)
             }
-            Section(L("Technical Sources")) {
+            Section {
                 ForEach(openSourceProjects) { project in
                     NavigationLink { OpenSourceProjectDetailView(project: project) } label: {
                         HStack {
@@ -95,16 +95,20 @@ struct AboutView: View {
                         }
                     }
                 }
+            } header: {
+                Text(L("Technical Sources"))
             } footer: {
                 Text(L("Tap a project for its author, relationship, key technology, license and source link."))
                     .font(.footnote)
             }
-            Section(L("Third-Party Licenses")) {
+            Section {
                 licenseRow("GNU GPL v3", file: "GestaltX-GPL-3.0")
                 licenseRow("Erosion · GPL v3", file: "Erosion-GPL-3.0")
                 licenseRow("Gester · MIT", file: "Gester-MIT")
                 licenseRow("ZIPFoundation · MIT", file: "ZIPFoundation-MIT")
                 licenseRow("Primer Octicons · MIT", file: "Primer-Octicons-MIT")
+            } header: {
+                Text(L("Third-Party Licenses"))
             } footer: {
                 Text(L("License texts shown here are bundled with the app. Research references and development tools are MIT- or GPL-licensed at their upstream repositories; their texts are not bundled because their code is not shipped in the app."))
                     .font(.footnote)

@@ -83,6 +83,7 @@
 		DB12434CDC500609761216B1 /* HomeDiagnosticsCacheConcurrencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 007542ED35DFB2E93B7F0F41 /* HomeDiagnosticsCacheConcurrencyTests.swift */; };
 		BE026BD50295ABE265201260 /* DashboardV3SnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3624FBBE3C977DC36106724 /* DashboardV3SnapshotTests.swift */; };
 		D43F6FE6E3F70F2FD3EC5873 /* DashboardV3NavigationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E1320CF71EABD8197C0EF5 /* DashboardV3NavigationTests.swift */; };
+		1A7AD902F4504E46B9FC8038 /* DiagnosticsEquatableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE7645FF99DB44D29B4CE01D /* DiagnosticsEquatableTests.swift */; };
 		100F74C65CA447F76A377DC2 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 368CCEAD13DE80A54EDDFBC1 /* XCTest.framework */; };
 		D4929DE02BC485D5C87CC206 /* DependencyAnalyzerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6CF1400EC4B43E84563D815 /* DependencyAnalyzerTests.swift */; };
 		B831FA5C5D600B267D6D663F /* DeviceFingerprintTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8DF9F83E57401483D5C89C7 /* DeviceFingerprintTests.swift */; };
@@ -202,6 +203,7 @@
 		007542ED35DFB2E93B7F0F41 /* HomeDiagnosticsCacheConcurrencyTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HomeDiagnosticsCacheConcurrencyTests.swift; sourceTree = "<group>"; };
 		A3624FBBE3C977DC36106724 /* DashboardV3SnapshotTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DashboardV3SnapshotTests.swift; sourceTree = "<group>"; };
 		D4E1320CF71EABD8197C0EF5 /* DashboardV3NavigationTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DashboardV3NavigationTests.swift; sourceTree = "<group>"; };
+		DE7645FF99DB44D29B4CE01D /* DiagnosticsEquatableTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DiagnosticsEquatableTests.swift; sourceTree = "<group>"; };
 		368CCEAD13DE80A54EDDFBC1 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		D6CF1400EC4B43E84563D815 /* DependencyAnalyzerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DependencyAnalyzerTests.swift; sourceTree = "<group>"; };
 		B8DF9F83E57401483D5C89C7 /* DeviceFingerprintTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DeviceFingerprintTests.swift; sourceTree = "<group>"; };
@@ -395,6 +397,7 @@
 				007542ED35DFB2E93B7F0F41 /* HomeDiagnosticsCacheConcurrencyTests.swift */,
 				A3624FBBE3C977DC36106724 /* DashboardV3SnapshotTests.swift */,
 				D4E1320CF71EABD8197C0EF5 /* DashboardV3NavigationTests.swift */,
+				DE7645FF99DB44D29B4CE01D /* DiagnosticsEquatableTests.swift */,
 			);
 			name = Tests;
 			path = tests;
@@ -622,6 +625,7 @@
 				DB12434CDC500609761216B1 /* HomeDiagnosticsCacheConcurrencyTests.swift in Sources */,
 				BE026BD50295ABE265201260 /* DashboardV3SnapshotTests.swift in Sources */,
 				D43F6FE6E3F70F2FD3EC5873 /* DashboardV3NavigationTests.swift in Sources */,
+				1A7AD902F4504E46B9FC8038 /* DiagnosticsEquatableTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

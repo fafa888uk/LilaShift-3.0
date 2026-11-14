@@ -34,8 +34,8 @@ final class HomeDiagnosticsCacheConcurrencyTests: XCTestCase {
     private func snapshotA() throws -> DocumentSnapshot {
         let document = try CoreModuleFixtures.document(
             extra: [
-                "productType": "iPhone18,1",
-                "regionCode": "LL",
+                GestaltKeys.productType: "iPhone18,1",
+                GestaltKeys.regionCode: "LL",
             ],
             greenTea: false,
             notGreenTea: true,

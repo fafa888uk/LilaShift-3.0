@@ -927,6 +927,21 @@ struct LilaRecommendation: Equatable, Sendable {
     let blockers: [PlanBlocker]
     let requiresRestart: Bool
 
+    /// Content equality: `id` and `createdAt` are creation metadata,
+    /// not content — every build mints a fresh UUID and timestamp, so
+    /// including them would make two recommendations from identical
+    /// inputs never equal. Equality must reflect the recommendation's
+    /// content (what would be staged and why), so that
+    /// `HomeDiagnosticsCache`'s publish-only-on-change works and an
+    /// identical refresh republishes nothing new.
+    static func == (lhs: LilaRecommendation, rhs: LilaRecommendation) -> Bool {
+        lhs.deviceID == rhs.deviceID
+            && lhs.productType == rhs.productType
+            && lhs.steps == rhs.steps
+            && lhs.blockers == rhs.blockers
+            && lhs.requiresRestart == rhs.requiresRestart
+    }
+
     /// True only when there is something to execute, nothing blocks it,
     /// and every step is actionable. An empty recommendation is not
     /// executable: there is nothing to apply.
