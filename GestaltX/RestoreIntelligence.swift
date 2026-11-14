@@ -595,9 +595,6 @@ enum RestoreAction: Equatable, Sendable {
                 || change.key == DeviceCacheOptions.notGreenTeaKey {
                 return .cacheOption
             }
-            if let capability = Capability.all.first(where: { $0.keys.contains(change.key) }) {
-                return .capability(capability)
-            }
             return .previewOnly(reason: L("No restore path is connected for this CacheData slot yet."))
         case .cacheExtra:
             if change.key == GestaltKeys.regionCode
@@ -679,6 +676,12 @@ struct BackupVerification: Equatable, Sendable {
     /// current document (`nil` when no current document was supplied
     /// or the backup could not be parsed).
     let layoutMatchesCurrent: Bool?
+
+    func permitsDeviceRestore(deviceID: String?) -> Bool {
+        guard let deviceID else { return false }
+        return status == .verified && layoutMatchesCurrent == true && record.sha256 != nil
+            && record.source == .device && record.deviceID == deviceID
+    }
 }
 
 // MARK: - RestoreIntelligence namespace
@@ -920,16 +923,8 @@ enum RestoreIntelligence {
                     status: .failed(reason: L("The backup could not be verified. No system changes were made.")),
                     layoutMatchesCurrent: nil)
             }
-            var layoutMatches: Bool?
-            if let current {
-                let uuidMatches = (backupDocument.root["CacheUUID"] as? String)
-                    == (current.root["CacheUUID"] as? String)
-                let cacheMatches: Bool = {
-                    guard let a = backupDocument.root["CacheData"] as? Data,
-                          let b = current.root["CacheData"] as? Data else { return false }
-                    return a.count == b.count
-                }()
-                layoutMatches = uuidMatches && cacheMatches
+            let layoutMatches = current.map {
+                (try? GestaltFileStore.validateRestoreLayout(backupDocument, against: $0)) != nil
             }
             return BackupVerification(record: record, status: .verified, layoutMatchesCurrent: layoutMatches)
         }

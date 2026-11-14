@@ -1,20 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
-// Restore Intelligence (智能恢复引擎) — read-only SwiftUI display
-// plus restore actions wired ONLY to GestaltManager's existing
-// restore paths.
-//
-// The card shows the modification timeline (recorded operations plus
-// differences detected against the snapshot), the verification state
-// of each stored backup, and — for each entry — a pre-restore Diff
-// and the restore action. Restore execution goes only through the
-// existing paths (`restore(_:)` for a full backup,
-// `restoreCapability(_:)` for one capability,
-// `restoreCacheOption()` for the eSIM flags, and the China Unlock
-// group restores). Where no existing path covers an item, the action
-// is preview-only with a clear "restore path not yet connected"
-// state. A restore stages the revert; the user still applies it
-// through the normal flow and verifies it after a restart — the
-// timeline records the restore as staged, never as verified.
+// Read-only change history and backup verification, with a separate
+// confirmation for whole-backup restoration.
 import SwiftUI
 
 struct RestoreIntelligenceCard: View {
@@ -91,11 +77,10 @@ struct RestoreIntelligenceCard: View {
             }
         }
         .task { reloadHistory() }
-        .onChange(of: model.working != nil) { _, _ in reloadHistory() }
+        .onChange(of: model.snapshot?.data) { _, _ in reloadHistory() }
+        .onChange(of: model.backups) { _, _ in refreshBackupVerification() }
         .sheet(item: $selectedEntry) { entry in
-            RestoreEntryDetailView(entry: entry, records: records) {
-                reloadHistory()
-            }
+            RestoreEntryDetailView(entry: entry, records: records)
         }
     }
 
@@ -117,7 +102,11 @@ struct RestoreIntelligenceCard: View {
         let logStore = RestoreLogStore(
             directory: RestoreIntelligence.historyDirectory, deviceID: deviceID)
         logCount = (try? logStore.load().count) ?? 0
-        verifications = RestoreIntelligence.verifyBackups(model.backups, against: model.working)
+        refreshBackupVerification()
+    }
+
+    private func refreshBackupVerification() {
+        verifications = RestoreIntelligence.verifyBackups(model.backups, against: model.snapshot?.document)
     }
 
     @ViewBuilder
@@ -206,10 +195,11 @@ struct RestoreIntelligenceCard: View {
                     .foregroundStyle(.secondary)
             } else {
                 ForEach(verifications, id: \.record.id) { verification in
+                    let integrityVerified = verification.status == .verified && verification.record.sha256 != nil
                     HStack(spacing: 8) {
-                        Image(systemName: verification.status == .verified
+                        Image(systemName: integrityVerified
                               ? "checkmark.circle.fill" : "xmark.circle.fill")
-                            .foregroundStyle(verification.status == .verified ? .green : .red)
+                            .foregroundStyle(integrityVerified ? .green : .orange)
                         VStack(alignment: .leading, spacing: 1) {
                             Text(verification.record.filename)
                                 .font(.subheadline.weight(.medium))
@@ -219,11 +209,13 @@ struct RestoreIntelligenceCard: View {
                                 .foregroundStyle(.secondary)
                         }
                         Spacer()
-                        if verification.status == .verified {
+                        if model.sourceIsDevice,
+                           verification.permitsDeviceRestore(deviceID: RestoreIntelligence.installationDeviceID) {
                             Button(L("Restore")) {
                                 selectedBackup = verification.record
                             }
                             .buttonStyle(GlassPrimaryButtonStyle())
+                            .disabled(model.isBusy || model.changeCount > 0)
                         }
                     }
                     .padding(10)
@@ -257,6 +249,9 @@ struct RestoreIntelligenceCard: View {
     private func backupStatusText(_ verification: BackupVerification) -> String {
         switch verification.status {
         case .verified:
+            guard verification.record.sha256 != nil else {
+                return L("Backup could not be verified")
+            }
             if let layoutMatches = verification.layoutMatchesCurrent {
                 return layoutMatches
                     ? L("Verified. Cache layout matches this device.")
@@ -278,9 +273,6 @@ private struct RestoreEntryDetailView: View {
     @Environment(\.dismiss) private var dismiss
     let entry: RestoreTimelineEntry
     let records: [RecordedChange]
-    let onRestored: () -> Void
-    @State private var restoreMessage: String?
-    @State private var isRestoring = false
 
     /// The recorded change behind this entry, or a synthesized
     /// unverified change for a detected difference (which the
@@ -298,7 +290,7 @@ private struct RestoreEntryDetailView: View {
     }
 
     private var preview: RestorePreview? {
-        guard let document = model.working else { return nil }
+        guard let document = model.snapshot?.document else { return nil }
         let layout = try? MobileGestaltCacheLayout.resolve(in: document)
         return RestorePreviewBuilder.build(
             changes: [change], records: [:], current: document, layout: layout)
@@ -325,11 +317,6 @@ private struct RestoreEntryDetailView: View {
 
                     if let item = preview?.items.first {
                         previewSection(item)
-                    }
-                    if let restoreMessage {
-                        Text(restoreMessage)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
                     }
                 }
                 .padding()
@@ -366,99 +353,17 @@ private struct RestoreEntryDetailView: View {
                         .foregroundStyle(.orange)
                 }
             }
-            switch item.action {
-            case .previewOnly(let reason):
+            if case .previewOnly(let reason) = item.action {
                 Text(reason)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
-                Text(L("Restore path not yet connected for this item."))
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.orange)
-            case .capability(let capability):
-                Text(String(format: L("This restores all %d keys of %@."), capability.keys.count, L(capability.title)))
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                restoreButton(item)
-            case .cacheOption:
-                Text(L("This restores both eSIM flags together."))
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                restoreButton(item)
-            case .fullBackup, .chinaUnlock, .aiOnly, .esimRegion:
-                restoreButton(item)
             }
+            Text(L("Restore path not yet connected for this item."))
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.orange)
         }
         .padding(12)
         .background(Color.primary.opacity(0.04), in: RoundedRectangle(cornerRadius: 12))
-    }
-
-    @ViewBuilder
-    private func restoreButton(_ item: RestoreItemPreview) -> some View {
-        Button(L(isRestoring ? "Restoring…" : "Restore")) {
-            Task { await performRestore(item) }
-        }
-        .buttonStyle(GlassPrimaryButtonStyle())
-        .disabled(isRestoring || !item.autoRestorable)
-        .opacity(item.autoRestorable ? 1 : 0.5)
-    }
-
-    /// Runs the restore through the existing GestaltManager path for
-    /// this action, then records the operation and logs the outcome.
-    /// A restore stages the revert; the user still applies it through
-    /// the normal flow and verifies it after a restart.
-    private func performRestore(_ item: RestoreItemPreview) async {
-        guard !isRestoring else { return }
-        isRestoring = true
-        defer { isRestoring = false }
-        let staged: Bool
-        switch item.action {
-        case .fullBackup(let record):
-            await model.restore(record)
-            staged = true
-        case .capability(let capability):
-            await model.restoreCapability(capability)
-            staged = true
-        case .cacheOption:
-            await model.restoreCacheOption()
-            staged = true
-        case .chinaUnlock:
-            staged = model.restoreChinaUnlock()
-        case .aiOnly:
-            staged = model.restoreChinaAIOnly()
-        case .esimRegion:
-            staged = model.restoreChinaESIMRegion()
-        case .previewOnly:
-            staged = false
-        }
-        let deviceID = RestoreIntelligence.installationDeviceID ?? ""
-        let osBuild = SystemDeviceIdentitySource().osBuild ?? ""
-        if staged {
-            let recorded = RecordedChange(
-                id: UUID(), date: Date(), deviceID: deviceID, osBuild: osBuild,
-                featureID: entry.featureID, key: entry.key, layer: entry.layer,
-                original: entry.current ?? entry.target, new: entry.original,
-                backupProvenance: entry.provenance, verified: false,
-                restartVerified: false)
-            _ = RestoreIntelligence.recordChange(recorded)
-            let logEntry = RestoreLogEntry(
-                id: UUID(), date: Date(), changeID: entry.id,
-                featureID: entry.featureID, key: entry.key, layer: entry.layer,
-                targetValue: entry.original, outcome: .restored,
-                reason: L("Restore staged through the existing path. Apply and restart to verify."),
-                restorePointID: nil, deviceID: deviceID, osBuild: osBuild)
-            _ = RestoreIntelligence.logRestore(logEntry)
-            restoreMessage = L("Restore staged. Apply it, then restart and re-read to verify.")
-            onRestored()
-        } else {
-            let logEntry = RestoreLogEntry(
-                id: UUID(), date: Date(), changeID: entry.id,
-                featureID: entry.featureID, key: entry.key, layer: entry.layer,
-                targetValue: entry.original, outcome: .failed,
-                reason: L("The restore could not be staged."),
-                restorePointID: nil, deviceID: deviceID, osBuild: osBuild)
-            _ = RestoreIntelligence.logRestore(logEntry)
-            restoreMessage = L("The restore could not be staged. No system changes were made.")
-        }
     }
 }
 
@@ -484,18 +389,14 @@ private struct FullBackupRestoreView: View {
                     Text(L("This restores every field in the backup, not just one change."))
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.orange)
-                    Button(L(isRestoring ? "Restoring…" : "Restore Whole Backup")) {
-                        Task {
-                            guard !isRestoring else { return }
-                            isRestoring = true
-                            await model.restore(record)
-                            isRestoring = false
-                            message = L("Restore staged. Apply it, then restart and re-read to verify.")
-                            onRestored()
-                        }
+                    Text(L("The current document is backed up first. Device restores are verified after writing."))
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    Button(L(isRestoring ? "Restoring…" : "Apply to Device")) {
+                        Task { await restore() }
                     }
                     .buttonStyle(GlassPrimaryButtonStyle())
-                    .disabled(isRestoring)
+                    .disabled(isRestoring || model.isBusy || !model.sourceIsDevice || model.changeCount > 0)
                     if let message {
                         Text(message)
                             .font(.subheadline)
@@ -509,8 +410,24 @@ private struct FullBackupRestoreView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(L("Close")) { dismiss() }
+                        .disabled(isRestoring)
                 }
             }
+            .interactiveDismissDisabled(isRestoring)
+        }
+    }
+
+    private func restore() async {
+        guard !isRestoring, !model.isBusy, model.sourceIsDevice, model.changeCount == 0 else { return }
+        isRestoring = true
+        defer { isRestoring = false }
+        message = nil
+        if await model.restore(record) {
+            onRestored()
+            dismiss()
+        } else {
+            message = model.message
+            model.message = nil
         }
     }
 }
