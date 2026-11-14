@@ -1,0 +1,68 @@
+# Apply the 3.0 flaky-snapshot settle patch (one-shot)
+#
+# Manually dispatched once, on feature/lilashift-3.0-dashboard:
+# makes the two snapshot helpers settle before capturing —
+# `.wait(for: 0.5, on: .image(...))` lets the runloop turn,
+# a nil-animation transaction ends implicit animations instantly,
+# and Reduce Motion turns off the app's own animation modifiers.
+# Root cause (verified by pixel forensics on the #208/#210 actuals):
+# the live 16-bit Display P3 Liquid Glass render varies run to run
+# at sub-8-bit precision and the harness draws the fresh controller
+# synchronously with no settle, so a different 1–3 snapshots failed
+# on each run (Accessibility, Dark, Tools, Unlock rotating) with
+# content-identical images. Thresholds are unchanged (precision 1,
+# perceptualPrecision 0.98), no test is skipped, no baseline is
+# re-recorded, no production code is touched.
+#
+# This patch touches only 2 test files, so `contents: write` is
+# sufficient (no workflow file is involved, so no split is needed).
+# NOTE: use `git apply --index` (not plain `git apply`) — plain
+# apply only changes the worktree, leaving `git diff --cached`
+# empty and the later `git commit` with nothing staged.
+# NOTE 2: verification must not use grep "M\t..." — GNU grep does
+# not interpret \t as a tab. Compare plain paths via --name-only
+# instead; --name-status output uses real tabs, so check the status
+# letters through cut -f1.
+# Do NOT re-run after the patch is applied: git apply --check fails
+# when the changes are already in the tree, and the run stops before
+# committing.
+name: Apply 3.0 flaky snapshot fix
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out the branch
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: true
+
+      - name: Verify patch file and apply it
+        run: |
+          test "$(wc -c < lilashift-3.0-fix-flaky-snapshots.patch | tr -d ' ')" = "5781"
+          test "$(sha256sum lilashift-3.0-fix-flaky-snapshots.patch | cut -d' ' -f1)" = "1381b6caeb552113d83d66c1132ea42d42f00f3aadd494dbfcd098643d82eab9"
+          git apply --check lilashift-3.0-fix-flaky-snapshots.patch
+          git apply --index lilashift-3.0-fix-flaky-snapshots.patch
+
+      - name: Verify the diff is exactly the 2 test files
+        run: |
+          git diff --cached --name-only > /tmp/changed.txt
+          cat /tmp/changed.txt
+          test "$(wc -l < /tmp/changed.txt | tr -d ' ')" = "2"
+          grep -qxF "tests/DashboardV3SnapshotTests.swift" /tmp/changed.txt
+          grep -qxF "tests/ViewSnapshotTests.swift" /tmp/changed.txt
+          test "$(git diff --cached --name-status | cut -f1 | sort -u)" = "M"
+          test "$(git diff --cached --shortstat | grep -o '[0-9]* insertions' | grep -o '[0-9]*')" = "61"
+          test "$(git diff --cached --shortstat | grep -o '[0-9]* deletions' | grep -o '[0-9]*')" = "17"
+
+      - name: Commit the fix
+        run: |
+          git config user.name "fafa920q-hue"
+          git config user.email "fafa920q-hue@users.noreply.github.com"
+          git commit -m "fix(tests): settle snapshot captures to remove render flake"
+          git push
