@@ -1,0 +1,88 @@
+# Apply the 3.0 docs + cleanup patch (one-shot)
+#
+# Manually dispatched once, on feature/lilashift-3.0-dashboard:
+# applies lilashift-3.0-combined.patch (the README/CHANGELOG/docs
+# rewrite + cleanup of the stale patch and scaffolds, on top of
+# the HEAD 37c4a368c73ec80654c8b395387abea9a24915f6) and commits
+# the result to the current branch.
+# Do NOT re-run after the patch is applied: git apply --check
+# fails when the changes are already in the tree, and the run
+# stops before committing.
+#
+# The patch is verified before applying: byte size and SHA-256
+# must match the expected values, and git apply --check must
+# succeed. After applying, the staged diff must be exactly
+# 35 files (9 deletions, 17 modifications, 9 new files);
+# otherwise the run stops before committing or pushing.
+name: Apply 3.0 docs + cleanup patch
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out the branch
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: true
+
+      - name: Verify the combined patch
+        run: |
+          test "$(stat -c %s lilashift-3.0-combined.patch)" = "3819241"
+          echo "b470b1a03aef44438c98104e3fbd3ab9e1dfe530c016b2d250edd8e7fb55cdfa  lilashift-3.0-combined.patch" | sha256sum -c -
+          git apply --check lilashift-3.0-combined.patch
+
+      - name: Apply the docs + cleanup patch
+        run: |
+          git apply lilashift-3.0-combined.patch
+          git add -A
+          git status --short
+          git diff --cached --name-status
+
+      - name: Verify the expected 35-file diff
+        run: |
+          python3 - <<'PY'
+          import subprocess, sys
+          out = subprocess.check_output(["git", "diff", "--cached", "--name-status"], text=True)
+          rows = [line.split("\t", 1) for line in out.strip().splitlines() if line.strip()]
+          counts = {"A": 0, "M": 0, "D": 0}
+          names = set()
+          for status, name in rows:
+              counts[status] = counts.get(status, 0) + 1
+              names.add(name)
+          print(f"total={len(rows)} added={counts.get('A', 0)} modified={counts.get('M', 0)} deleted={counts.get('D', 0)}")
+          if len(rows) != 35 or counts.get("A", 0) != 9 or counts.get("M", 0) != 17 or counts.get("D", 0) != 9:
+              sys.exit("unexpected diff: expected 35 files (9 added, 17 modified, 9 deleted)")
+          required = [
+              "README.md",
+              "README_ZH-CN.md",
+              "CHANGELOG.md",
+              "CHANGELOG_ZH-CN.md",
+              "COMMUNITY.md",
+              "SECURITY.md",
+              "CONTRIBUTING.md",
+              "GestaltX/AboutView.swift",
+              "scripts/verify_respring.mjs",
+              "china-unlock-v107.patch",
+              ".github/workflows/apply-patch.yml",
+          ]
+          missing = [f for f in required if f not in names]
+          if missing:
+              sys.exit(f"missing expected files in diff: {missing}")
+          if "lilashift-3.0-combined.patch" in names or ".github/workflows/apply-3.0-docs-cleanup.yml" in names:
+              sys.exit("scaffolding files must not be part of the applied diff")
+          PY
+
+      - name: Commit the applied patch
+        run: |
+          git config user.name "fafa920q-hue"
+          git config user.email "fafa920q-hue@users.noreply.github.com"
+          find . -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
+          find . -name "*.pyc" -delete 2>/dev/null || true
+          git status --short
+          git commit -m "docs(3.0): README/CHANGELOG/docs rewrite + cleanup stale patch and scaffolds"
+          git push
