@@ -1,0 +1,75 @@
+name: Apply Tests fix
+
+# One-shot: apply lilashift-tests-fix.patch (hoist the actor-isolated
+# wallpaperImageData await out of the XCTAssertEqual autoclosure in
+# WallpaperSaveToPhotosTests.swift — the test target did not compile,
+# so Run Swift Tests reported success while running zero tests).
+# The patch file must already be uploaded to the branch root.
+# Dispatch with ref = feature/lila-tests-fix.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v7
+        with:
+          ref: feature/lila-tests-fix
+
+      - name: Verify patch file
+        run: |
+          ls -l lilashift-tests-fix.patch
+          sha256sum lilashift-tests-fix.patch
+          test "$(sha256sum lilashift-tests-fix.patch | cut -d' ' -f1)" = "1cda63a94811e1959c8c5c0e0a001f3357146bffbc63d1f0ecbdb732f9001413"
+
+      - name: Apply patch
+        run: |
+          git config user.name "fafa920q-hue"
+          git config user.email "fafa920q-hue@users.noreply.github.com"
+          git apply --index --binary lilashift-tests-fix.patch
+
+      - name: Verify staged files
+        run: |
+          echo "=== staged files ==="
+          git diff --cached --name-only
+          echo "=== staged stat ==="
+          git diff --cached --stat
+          # Expect exactly 1 file, +4/-2
+          test "$(git diff --cached --name-only | wc -l)" -eq 1
+          git diff --cached --name-only | grep -qxF "tests/WallpaperSaveToPhotosTests.swift"
+          test "$(git diff --cached --numstat | awk '{s+=$1; d+=$2} END {print s}')" -eq 4
+          test "$(git diff --cached --numstat | awk '{s+=$1; d+=$2} END {print d}')" -eq 2
+          # The branch also tracks the uploaded patch file and this
+          # workflow file, so the staged tree includes them and can
+          # never equal the expected tree. Remove them from the index
+          # (disk copies stay) before comparing the tree.
+          git rm --cached -q lilashift-tests-fix.patch .github/workflows/apply-tests-fix.yml
+          # Expect tree 36494898ff0391ee3c6116ada5d37e5d7b2c4124
+          test "$(git write-tree)" = "36494898ff0391ee3c6116ada5d37e5d7b2c4124"
+
+      - name: Commit and push
+        run: |
+          git commit -m "fix: hoist actor-isolated wallpaperImageData await out of XCTAssertEqual autoclosure (Tests hollow-green)
+
+          CustomizationStore is an actor, so wallpaperImageData needs
+          await, but await is not allowed inside the XCTAssertEqual
+          autoclosure — the test target did not compile and Run Swift
+          Tests reported success while running zero tests. Evaluate
+          the call first, then assert on the plain value. No behavior
+          change; the two tests now actually run."
+          git push origin feature/lila-tests-fix
+
+      - name: Clean up patch file
+        # The patch file was already removed from the index by the
+        # verify step, so it is not in the fix commit; it is only an
+        # untracked file on disk in this ephemeral runner. Delete it
+        # from disk; there is nothing to commit.
+        run: |
+          rm -f lilashift-tests-fix.patch
+          git status --porcelain
