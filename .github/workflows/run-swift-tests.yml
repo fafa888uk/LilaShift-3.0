@@ -36,9 +36,11 @@ jobs:
 
       - name: Run unit tests
         # tee saves the xcodebuild log for the job-summary step below.
-        # GitHub's default bash runs with pipefail, so a failing
-        # xcodebuild still fails this step.
+        # The runner shell is /bin/bash -e without pipefail, so pipefail
+        # is set explicitly below: without it a failing xcodebuild is
+        # masked by tee's exit 0 and the step passes while running zero tests (Tests #254/#255).
         run: |
+          set -o pipefail
           xcodebuild test \
             -project GestaltX.xcodeproj \
             -scheme GestaltX \
