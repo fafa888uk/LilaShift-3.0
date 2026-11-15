@@ -42,13 +42,12 @@ The original files could not be backed up.	未能备份原始文件。
 This adds new wallpapers without replacing your existing ones.	将添加新壁纸，保留现有壁纸。
 This pack contains no compatible wallpapers.	此包中没有兼容的壁纸。
 This wallpaper was changed outside LilaShift. It was not removed.	壁纸已被其他方式修改，未执行移除。
-Wallpaper added. Open the wallpaper gallery to select it. If it does not appear, restart PosterBoard or respring.	壁纸已添加，请打开图库选择。若未出现，可重新启动 PosterBoard 或执行注销。
+Wallpaper added. Open the wallpaper gallery to select it. If it does not appear, restart the device.	壁纸已添加，请打开图库选择。若未出现，请重新启动设备。
 Wallpaper Settings	壁纸设置
 WAPI	WAPI
 Disable WAPI	关闭 WAPI
 Disabling may show Wi-Fi and change some network options. Restart to apply.	关闭后可显示为 Wi-Fi，部分联网选项可能随之变化。重启后生效。
 Restore Original	恢复原值
-Special Thanks	特别鸣谢
 Supported	支持
 Unsupported	不支持
 Welcome	欢迎
@@ -63,16 +62,15 @@ Capability flags cannot add missing hardware. Some changes require a device rest
 Use only devices you own or are authorized to manage. You are responsible for the changes you choose to apply.	仅在你拥有或获授权管理的设备上使用，并自行承担所选修改带来的风险。
 This software is provided without warranty. Read the included license before use.	本软件不提供任何担保，使用前请阅读随附的开源许可证。
 GitHub Repository	GitHub 仓库
-Credits & Licenses	鸣谢与许可
+Telegram Updates Channel	Telegram 更新频道
 License	许可证
-Respring Technique	注销方法
 Read Again	重新读取
 A device restart may be required.	可能需要重新启动设备才能生效。
 Restart the device after changing the region.	更改地区后需要重新启动设备。
 Some changes require a device restart.	部分更改需要重新启动设备。
 Restart required. Apple Intelligence also depends on device and region.	需要重新启动设备。Apple 智能还取决于机型与地区。
 Restart the device, then reopen Settings. Pencil hardware support is still required.	重新启动设备后再打开“设置”，仍需要 Apple Pencil 硬件支持。
-Respring first. Restart the device if the change does not appear.	先执行注销，若未生效则重新启动设备。
+Restart the device if the change does not appear.	若未生效，请重新启动设备。
 Write verified. Some features require a device restart.	写入已验证。部分功能需要重新启动设备才能生效。
 Model	机型
 Status	状态
@@ -84,12 +82,10 @@ Read MobileGestalt	读取 MobileGestalt
 Import Plist	导入 plist
 Actions	操作
 Apply Changes	应用更改
-Respring Required	需要注销
 Log	日志
 Experimental settings. Back up before applying.	实验性设置，请在应用前备份。
 No Backups	暂无备份
 A backup is created before each write.	每次写入前会自动备份。
-This will attempt to restart SpringBoard using NeoSpring.	将通过 NeoSpring 尝试重新启动 SpringBoard。
 GitHub Projects	GitHub 项目
 GNU GPL v3	GNU GPL v3
 Date	日期
@@ -136,8 +132,6 @@ Quick Actions	快捷操作
 Keep a copy. Refresh when ready.	先留一份备份，准备好后再刷新。
 Back Up	备份
 Export Plist	导出 plist
-Respring	注销
-Changes are verified. Respring when you are ready.	更改已验证，准备好后可执行注销。
 Session Log	操作日志
 Open Plist…	打开 plist…
 Connect to Device	连接设备
@@ -198,7 +192,7 @@ Apply to Device	应用到设备
 Save Local Changes	保存本地更改
 Discard Changes	放弃更改
 Apply these changes?	应用这些更改？
-Incorrect system values can affect device behavior. A verified backup will be kept. No respring is triggered automatically.	错误的系统值可能影响设备运行。应用会保留经过验证的备份，且不会自动执行注销。
+Incorrect system values can affect device behavior. A verified backup will be kept. No restart is triggered automatically.	错误的系统值可能影响设备运行。应用会保留经过验证的备份，且不会自动触发重启。
 The current local document will be backed up before saving your edits.	保存更改前会先备份当前本地文稿。
 Before	更改前
 After	更改后
@@ -222,8 +216,6 @@ Delete this backup?	删除这个备份？
 This removes the local backup permanently. It does not change the device file.	本地备份将被永久删除，设备文件不会被修改。
 No activity yet.	暂无操作记录。
 Clear	清空
-Respring now?	立即注销？
-NeoSpring will attempt to restart SpringBoard. Save your work first. It may not work on every OS build.	NeoSpring 将尝试重新启动 SpringBoard，请先保存其他应用中的工作。部分系统版本可能不适用。
 Dynamic Island, Always-On and Liquid Glass	灵动岛、全天候显示与液态玻璃
 Charging, buttons and device identity	充电、按键与设备标识
 Stage Manager and app compatibility	台前调度与应用兼容性
@@ -264,7 +256,6 @@ Device access unavailable	无法访问设备
 Local file opened	已打开本地文件
 Changes verified on device	本机更改已验证
 Local changes saved	本地更改已保存
-Changes verified on device. Respring to refresh supported features.	本机更改已验证，可执行注销以刷新受支持的功能。
 Local changes saved. Export the plist to keep a copy.	本地更改已保存，请导出 plist 以保留副本。
 Backup saved	备份已保存
 Backup restored and verified.	备份已恢复并通过验证。
@@ -301,12 +292,7 @@ More Projects by huamidev	huamidev 的更多项目
 Supported OS	支持系统
 Languages	语言
 Compatibility	兼容性
-Credits	鸣谢
 worse_query sandbox escape	worse_query 沙盒逃逸原语
-Original WebKit respring technique	原始 WebKit 注销方法
-Swift implementation of the respring technique	注销方法的 Swift 实现
-NeoSpring project and respring research	NeoSpring 项目与注销研究
-GPL-licensed respring adaptation	采用 GPL 许可的注销适配实现
 MobileGestalt key research	MobileGestalt 键名研究
 MobileGestalt preset research	MobileGestalt 预设研究
 MobileGestalt workflow reference	MobileGestalt 工作流参考
@@ -320,11 +306,7 @@ MobileGestalt Access	MobileGestalt 访问
 iOS 27: access is checked on the device.	iOS 27：通过本机实际探测访问权限。
 iOS 26: SystemGroup access is not claimed by upstream. Local plist editing is available.	iOS 26：上游未声明支持 SystemGroup 访问，可编辑本地 plist。
 A correctly provisioned App Group is required. Export and backup are available for any document you can open.	需要正确配置并签名 App Group。能够打开的文稿均可导出与备份。
-NeoSpring	NeoSpring
-NeoSpring attempts a SpringBoard refresh using WebKit. Its effectiveness varies by OS build. Some MobileGestalt changes may still need a manual device restart.	NeoSpring 使用 WebKit 尝试刷新 SpringBoard，效果因系统版本而异。部分 MobileGestalt 更改仍可能需要手动重新启动设备。
 License text could not be loaded.	无法加载许可文本。
-Respring did not finish.	注销未完成。
-Refreshing SpringBoard…	正在刷新 SpringBoard…
 This OS build may not support the technique. You can close this screen and try a manual restart later.	当前系统版本可能不支持此方法。你可以关闭此页面，稍后手动重新启动设备。
 Your device may briefly return to the Lock Screen.	设备可能会短暂返回锁定屏幕。
 The cache layout or values do not match this preset.	缓存布局或数值与此预设不符。
@@ -420,6 +402,26 @@ Lock screen text updated.	锁屏文字已更新。
 China Unlock	国行一键解锁
 One-Tap Restore	一键还原
 One-Tap Unlock	一键解锁
+China AI	国行 AI
+Enable the six Apple Intelligence features on a China-model iPhone.	在国行 iPhone 上启用 6 项 Apple 智能功能。
+Enable China AI	启用国行 AI
+Restore AI	还原 AI
+eSIM & Region	eSIM 与地区
+Enable eSIM and set the region code to US (LL).	启用 eSIM，并将地区代码设为美国 (LL)。
+Enable eSIM & Region	启用 eSIM 与地区
+Restore eSIM & Region	还原 eSIM 与地区
+Modified Values	已修改的值
+Fields whose current value differs from the recorded original.	当前值与已记录原始值不同的字段。
+Read the device first to see modified values.	请先读取本机数据，再查看已修改的值。
+No recorded originals. Whether anything was modified cannot be determined.	没有已记录的原始值，无法判断是否修改过。
+Only changes with a recorded original are listed.	仅列出有已记录原始值的改动。
+No modifications found	未发现修改
+Modified %d fields	已修改 %d 项
+Not set	未设定
+Regulatory Model	监管型号
+Product Type	产品类型
+eSIM (green-tea)	eSIM（green-tea）
+eSIM (not-green-tea)	eSIM（not-green-tea）
 Device Information	设备信息
 Included AI Features	查看包含的 AI 功能
 Review the changes, apply them, then restart the device.	先查看并应用更改，然后重启设备。
@@ -489,8 +491,6 @@ Enhanced Version Maintainer	国行增强版维护
 Open Source License	开源许可证
 Original Project URL	原项目地址
 Enhanced Source URL	增强版源码地址
-Source Code	源代码
-The enhanced version is distributed under the GNU GPL v3.0. Its complete source is distributed with the release as the pristine v1.0.7 source plus the modification patch.	增强版遵循 GNU GPL v3.0 发布。完整源代码随发布一同提供，即官方 v1.0.7 原始源码加修改补丁。
 Reading device data…	读取本机数据...
 Reading related settings…	正在读取相关配置...
 Write	写入
@@ -514,11 +514,11 @@ Expose internal menus.	显示内部菜单。
 Mark the device as an internal build.	将设备标记为内部版本。
 Change the Security Research Device capability flag.	更改安全研究设备功能标记。
 Expose Apple's internal settings bundle.	显示 Apple 内部设置包。
-Respring first. Restart the device if the change does not appear. Display behavior depends on the panel and may increase power use and burn-in risk.	先执行注销，若未生效则重新启动设备。显示效果取决于屏幕面板，可能增加耗电与烧屏风险。
+Restart the device if the change does not appear. Display behavior depends on the panel and may increase power use and burn-in risk.	若未生效，请重新启动设备。显示效果取决于屏幕面板，可能增加耗电与烧屏风险。
 A device restart may be required. Experimental; the accepted range varies by iOS build.	可能需要重新启动设备才能生效。实验性功能，可用范围因系统版本而异。
 A device restart may be required. Actual dimming behavior depends on the panel.	可能需要重新启动设备才能生效。实际调光行为取决于屏幕面板。
 A device restart may be required. Compatible hardware is still required.	可能需要重新启动设备才能生效。仍需要兼容硬件。
-Respring first. Restart the device if the change does not appear. Requires iOS 26 or later.	先执行注销，若未生效则重新启动设备。需要 iOS 26 或更高版本。
+Restart the device if the change does not appear. Requires iOS 26 or later.	若未生效，请重新启动设备。需要 iOS 26 或更高版本。
 A device restart may be required. Actual charging control depends on hardware.	可能需要重新启动设备才能生效。实际充电控制仍取决于硬件。
 A device restart may be required. Only shown on devices where tap-to-wake is hidden.	可能需要重新启动设备才能生效。仅在隐藏轻点唤醒的设备上显示。
 A device restart may be required. This does not add a physical button.	可能需要重新启动设备才能生效。此操作不会为设备增加实体按钮。
@@ -543,16 +543,10 @@ CacheData[0x%X] · slot %d	CacheData[0x%X] · 槽位 %d
 Other CacheData bytes changed	其他 CacheData 字节已更改
 Unrelated cache bytes changed — apply will be refused.	存在无关缓存字节更改，将拒绝应用。
 No US regulatory model known for this device — region code only.	未知此设备的美国监管型号，仅使用地区代码。
-Region mode	地区模式
-Region code only (LL)	仅地区代码 (LL)
-Full US (LL + LL/A)	完整美国 (LL + LL/A)
-Keeps the CH/A suffix and factory model — safest for dual-SIM phones.	保留 CH/A 后缀与出厂型号，双卡手机最安全。
-Also sets the sales region and US model number — most consistent, but can conflict on dual-SIM hardware.	同时设置销售地区与美国型号，最一致，但可能与双卡硬件冲突。
 Apple Intelligence readiness	Apple 智能就绪检查
 Ready %d/4	就绪 %d/4
 Live status unknown	本机状态未知
 Fix	修复
-Regulatory model	监管型号
 Regulatory model (factory model kept)	监管型号（保留出厂型号）
 eSIM gate and conflicts	eSIM 门控与冲突
 On-device AI eligibility	本机 AI 资格
@@ -588,6 +582,578 @@ Restart required. Apple Intelligence also depends on device and region. This sta
 Restart required. Apple Intelligence also depends on device and region. The exact entry point depends on the device and OS version. This stages the CacheExtra key; the CacheData slot is a separate value.	需要重启。Apple 智能还取决于设备与地区。具体入口取决于设备与系统版本。此操作暂存 CacheExtra 键；CacheData 槽位是另一个独立值。
 Live probe: on	实时探针：开启
 Live probe: off — restart to apply	实时探针：关闭 — 重启后生效
+%d steps, %d blockers	共 %d 步，%d 个阻止项
+A precise restore cannot be guaranteed without a trusted backup. Use read-only diagnostics or import a backup instead.	没有可信备份，无法保证精确恢复。请改用只读诊断或导入备份。
+A simulation passing does not mean the system will take effect. Real-device verification after a restart is still required.	模拟通过并不代表系统一定会生效。仍需在重启后于真机上验证。
+A trusted backup exists for restore.	已有可信备份可用于恢复。
+A trusted original is available for this change.	此更改有可信的原值可用。
+AI Only	仅 AI
+All preset dependencies are satisfied.	所有预设依赖均已满足。
+Backup Verification	备份验证
+Backup and restore prerequisites	备份与恢复的前提条件
+Backup file not found.	未找到备份文件。
+Blocked	已阻止
+Blocked by a pre-check.	被前置检查阻止。
+Cache layout is resolved from the device's own library, never selected by model or OS.	缓存布局取自设备自身的系统库，从不按机型或系统版本推测。
+CacheData slot #%d reads back at its native baseline — this verifies the slot value, not the feature itself.	CacheData 槽位 #%d 回读值为原生基线——这仅验证槽位值，不验证功能本身。
+CacheData slots #%d/#%d read back as staged — this verifies the flags, not eSIM hardware.	CacheData 槽位 #%d/#%d 回读值与暂存一致——这仅验证标志位，不验证 eSIM 硬件。
+CacheExtra key %@ reads back as staged — this verifies the staged flag, not the underlying hardware or service.	CacheExtra 键 %@ 回读值与暂存一致——这仅验证暂存的标志位，不验证底层硬件或服务。
+Cannot restore automatically	无法自动恢复
+Changed	已更改
+China Unlock is not ready	一键解锁尚未就绪
+China Unlock is ready to stage	一键解锁已就绪，可以暂存
+Conflict	冲突
+Current	当前
+Detected	已检测到
+Device identity is unavailable.	无法获取设备身份。
+Effect States	生效状态
+Eligible	符合条件
+File write success is never presented as the feature definitely working.	文件写入成功绝不代表功能一定生效。
+File write verified	文件写入已验证
+File write verified: the written file read back as staged.	文件写入已验证：写入的文件回读值与暂存一致。
+First-recorded value	首次记录值
+Hardware-identity check	硬件身份检查
+Hide Details	隐藏详情
+Hide Pre-Checks	隐藏前置检查
+High risk	高风险
+History is unavailable: no installation ID has been recorded yet.	历史记录不可用：尚未记录安装 ID。
+In effect	生效中
+Lila Intelligence	紫序智能引擎
+Low risk	低风险
+Medium risk	中风险
+Modification Timeline	修改时间线
+Modification timeline and precise restore, from trusted records only.	修改时间线与精确恢复，仅依据可信记录。
+Native	原生
+Native support and conflicts	原生支持与冲突
+No backups stored yet.	尚未存储任何备份。
+No device document is available, so this feature cannot be judged.	没有可用的设备文档，无法判断此功能。
+No document has been read.	尚未读取任何文档。
+No eligibility result was provided for this feature, so it cannot be staged.	未提供此功能的资格评估结果，因此无法暂存。
+No fresh re-read was supplied, so the snapshot could not be re-verified.	未提供新的重新读取数据，因此无法再次验证快照。
+No hardware-identity field is touched.	未触及任何硬件身份字段。
+No modifications recorded and no differences detected.	未记录任何修改，也未检测到差异。
+No native support or conflict blocks this proposal.	没有原生支持或冲突会阻止此方案。
+No recorded original exists, so a precise restore cannot be guaranteed.	不存在已记录的原值，因此无法保证精确恢复。
+No restore path is connected for this CacheData slot yet.	此 CacheData 槽位尚未连接恢复路径。
+No restore path is connected for this artwork key yet.	此 artwork 键尚未连接恢复路径。
+No restore path is connected for this key yet.	此键尚未连接恢复路径。
+No trusted backup exists yet. A pre-change restore point will be created before applying; a precise restore is only guaranteed for changes with a trusted original.	尚无可信备份。应用前会创建修改前还原点；仅对有可信原值的更改保证精确恢复。
+No verified OS-build compatibility table exists for this model, so OS-build compatibility is unknown.	此机型没有已验证的系统版本兼容表，因此系统版本兼容性未知。
+No verified per-model eSIM-hardware table exists, so eSIM hardware presence is unknown.	没有已验证的按机型 eSIM 硬件表，因此无法确认是否存在 eSIM 硬件。
+Not a China-market device.	不是中国市场机型。
+Not yet	尚未
+Offline serialization	离线序列化
+Original	原值
+Original → target diff	原值 → 目标值差异
+Original: first-recorded value	原值：首次记录值
+Original: key was absent	原值：键原本不存在
+Original: recorded original	原值：已记录的原值
+Personalized recommendations for this device, generated locally from real readings.	针对本机的个性化建议，根据真实读取数据在本地生成。
+Pre-Restore Diff	恢复前差异
+Preset dependencies	预设依赖
+Proposal	方案
+Re-read consistent after restart	重启后重读一致
+Re-read consistent after restart: the value survived a device restart.	重启后重读一致：该值在设备重启后仍保持。
+Read the device first to see personalized recommendations.	请先读取设备，再查看个性化建议。
+Read the device first to see the modification timeline.	请先读取设备，再查看修改时间线。
+Read the device first to simulate a change.	请先读取设备，再模拟更改。
+Recommendations are generated on this device from its own readings. Nothing is sent anywhere.	建议根据本机自身的读取数据在设备上生成，不会向任何地方发送数据。
+Region code is unknown, so this device cannot be confirmed as a China-market device.	地区代码未知，因此无法确认此设备为中国市场机型。
+Region code is unknown.	地区代码未知。
+Region code reads back as %@ — this verifies the staged code, not region-restricted services.	地区代码回读值为 %@——这仅验证暂存的代码，不验证受地区限制的服务。
+Requires a device restart to take effect.	需要重启设备才能生效。
+Restart verified	已验证重启
+Restore Backup	恢复备份
+Restore Intelligence	智能恢复引擎
+Restore Preview	恢复预览
+Restore log: %d entries	恢复日志：%d 条
+Restore path not yet connected for this item.	此项目尚未连接恢复路径。
+Restore staged through the existing path. Apply and restart to verify.	已通过现有路径暂存恢复。请应用并重启以验证。
+Restore staged. Apply it, then restart and re-read to verify.	恢复已暂存。请应用，然后重启并重新读取以验证。
+Restore to	恢复为
+Restored	已恢复
+Restores the whole device file from this backup (%@).	将从此备份（%@）恢复整个设备文件。
+Restoring only one of the eSIM pair leaves the flags inconsistent. Restore both together.	仅恢复 eSIM 两个标志中的一个会导致标志不一致。请一起恢复。
+Restoring only the region code leaves the sales-region suffix inconsistent. Restore both together.	仅恢复地区代码会导致销售地区后缀不一致。请一起恢复。
+Review required	需要复核
+SafePatch Simulator	SafePatch 模拟器
+Sales region	销售地区
+See what a change would do before you enable it. Simulation only — nothing is written.	在启用更改前，先查看它会产生什么影响。仅为模拟——不会写入任何内容。
+Show All	显示全部
+Show Details	显示详情
+Show Less	收起
+Show Pre-Checks	显示前置检查
+Signing state could not be read.	无法读取签名状态。
+Simulation blocked	模拟已阻止
+Simulation passed	模拟已通过
+Some features are already natively supported or configured and need no change.	部分功能已获得原生支持或已配置，无需更改。
+Staged	已暂存
+Staged: the change is prepared for review, not yet written.	已暂存：更改已准备好供审核，尚未写入。
+Staging flips the eSIM cache flags only. It does not prove eSIM hardware is present.	暂存仅翻转 eSIM 缓存标志，不能证明存在 eSIM 硬件。
+System function actually verified	系统功能已实际验证
+System function actually verified: the feature works on the device.	系统功能已实际验证：该功能在设备上可用。
+The CacheData slot cannot be repaired to a known baseline on this device, so staging is refused until the recorded original value is available.	此设备上的 CacheData 槽位无法修复到已知的基线，因此在获得已记录的原值之前拒绝暂存。
+The backup could not be verified. No system changes were made.	无法验证备份，未做任何系统更改。
+The change history could not be read. No system changes were made.	无法读取更改历史，未做任何系统更改。
+The change history could not be saved and verified. No system changes were made.	无法保存并验证更改历史，未做任何系统更改。
+The device data changed since the snapshot. Read again before simulating.	自快照以来设备数据已更改。请重新读取后再模拟。
+The device data matches the snapshot.	设备数据与快照一致。
+The first-read value is the first-recorded value, never a factory original. Fields with no trusted original never offer a precise restore.	首次读取值即首次记录值，绝非出厂原值。没有可信原值的字段绝不提供精确恢复。
+The region code restores with the eSIM & Region group, not per item.	地区代码随 eSIM 与地区组合一起恢复，不支持单项恢复。
+The restore could not be staged.	无法暂存恢复。
+The restore could not be staged. No system changes were made.	无法暂存恢复，未做任何系统更改。
+The restore log could not be read. No system changes were made.	无法读取恢复日志，未做任何系统更改。
+The simulated document could not be serialized and verified.	无法序列化并验证模拟文档。
+The simulated document serializes and reads back correctly.	模拟文档序列化并回读正确。
+The stored artwork value is malformed, so it cannot be restored.	存储的 artwork 值格式错误，因此无法恢复。
+The system cache layout could not be resolved, so CacheData checks are unavailable.	无法解析系统缓存布局，因此 CacheData 检查不可用。
+This backup's origin is not trusted, so it cannot be restored automatically. It can be reviewed manually instead.	此备份来源不可信，因此无法自动恢复。可改为手动复核。
+This change touches a CacheData slot that cannot be located on this device.	此更改涉及此设备上无法定位的 CacheData 槽位。
+This device already has Dynamic Island natively.	此设备原生已有灵动岛。
+This device natively supports Apple Intelligence.	此设备原生支持 Apple 智能。
+This feature is not in the capability catalog, so it cannot be staged.	此功能不在能力目录中，因此无法暂存。
+This history belongs to a different device.	此历史记录属于另一台设备。
+This history uses a newer format this version cannot read.	此历史记录使用了当前版本无法读取的新格式。
+This proposal changes a device-identity field. Staging it is refused.	此方案会更改设备身份字段，已拒绝暂存。
+This proposal touches a hardware-identity field. Staging it is refused.	此方案触及硬件身份字段，已拒绝暂存。
+This proposal would change nothing on this device.	此方案不会更改此设备上的任何内容。
+This proposal would change nothing.	此方案不会产生任何更改。
+This restores all %d keys of %@.	这将恢复 %d 个键（%@）。
+This restores both eSIM flags together.	这将同时恢复两个 eSIM 标志。
+This restores every field in the backup, not just one change.	这将恢复备份中的所有字段，而不仅是一项更改。
+Trusted original snapshot	可信原值快照
+Unchanged since snapshot	自快照以来未更改
+Unknown	未知
+Unknown OS	未知系统
+Unknown build	未知版本
+Unknown device	未知设备
+Unknown feature — eligibility cannot be determined.	未知功能——无法确定资格。
+Verified	已验证
+Verified, but the cache layout differs from this device.	已验证，但缓存布局与此设备不同。
+Verified.	已验证。
+Verified. Cache layout matches this device.	已验证。缓存布局与此设备一致。
+WAPI flag reads back as disabled — this verifies the staged flag, not network hardware.	WAPI 标志回读值为关闭——这仅验证暂存的标志位，不验证网络硬件。
+Would change %d fields	将更改 %d 个字段
+%@ conflicts with %@	%@ 与 %@ 冲突
+%@ is changed to the same value by %@	%@ 被 %@ 改为相同的值
+%@ is set to different values by %@	%@ 被 %@ 设为不同的值
+%d accepted	已接受 %d 个
+%d conflicts block staging.	%d 个冲突阻止暂存。
+%d fields changed since the fingerprint was recorded.	自记录指纹以来，有 %d 个字段发生了变化。
+%d fields were modified outside this app's records.	有 %d 个字段是在本 App 记录之外被修改的。
+%d not re-read	%d 个未重新读取
+%d of %d fields accepted after restart.	重启后 %d / %d 个字段已接受。
+%d of %d fields accepted after restart; %d reverted.	重启后 %d / %d 个字段已接受；%d 个已还原。
+%d of %d fields hold the staged value, but the device was not confirmed restarted.	%d / %d 个字段保留了暂存值，但未确认设备已重启。
+%d prerequisites are missing.	缺少 %d 个前置条件。
+%d recorded modifications have not been verified as restored.	有 %d 项已记录的修改尚未验证是否已还原。
+%d reverted	已还原 %d 个
+A trusted, verified backup exists for restore.	存在受信任且已验证的备份，可用于还原。
+Accepted	已接受
+Accepted changes marked restart-verified in history.	已接受的更改已在历史记录中标记为重启后已验证。
+Across the selected set	所选组合整体
+Analysis only — nothing is staged or written here.	仅供分析——此处不暂存、不写入任何内容。
+App Group	App 群组
+Audio Intelligence slot	音频智能插槽
+Backup	备份
+Backups have not been verified yet.	备份尚未验证。
+Build	构建号
+Cache bytes	缓存字节数
+Cache integrity	缓存完整性
+Cache layout	缓存布局
+Cache layout resolved, CacheUUID present, originals recorded, document verified.	缓存布局已解析，CacheUUID 存在，原始值已记录，文档已验证。
+Cache slots	缓存插槽数
+Cache, compatibility, backup and modification risk, from real readings only.	缓存、兼容性、备份与修改风险，均来自真实读取。
+Dependencies, conflicts and duplicates for a proposal, before you stage it.	在暂存之前，先查看该方案的依赖、冲突与重复修改。
+Dependency	依赖
+Dependency Analyzer	依赖分析器
+Device Capability Fingerprint	设备能力指纹
+Duplicate	重复
+Fair	一般
+Fingerprint saved.	指纹已保存。
+Fingerprint unchanged since it was recorded.	指纹自记录以来未发生变化。
+Has conflicts	存在冲突
+Health could not be scored: no evidence was available.	无法评分健康状况：没有任何证据。
+Health score %d of 100. %@	健康评分 %d / 100。%@
+Healthy	健康
+I restarted the device after applying	应用后我已重启设备
+Live probe agrees with the staged value.	实时检测与暂存值一致。
+Live probe disagrees with the staged value.	实时检测与暂存值不一致。
+Mark accepted as restart-verified	将已接受项标记为重启后已验证
+Missing prerequisites	缺少前置条件
+Model number	型号
+Model, OS build and support scope are recorded for this device.	该设备的型号、系统构建号与支持范围均已记录。
+Modification risk	修改风险
+Native Apple Intelligence	原生 Apple Intelligence
+Needs attention	需要注意
+No backups exist yet.	尚无备份。
+No fingerprint has been recorded for this device yet.	尚未为该设备记录指纹。
+No modifications have been recorded yet.	尚未记录任何修改。
+No modifications recorded.	未记录任何修改。
+No post-restart document has been read. Nothing is claimed accepted.	尚未读取重启后的文档。没有任何内容被声称为已接受。
+No trusted backup exists yet.	尚无受信任的备份。
+Not re-read	未重新读取
+Off	关
+On	开
+Only fields that were re-read after a restart are claimed accepted. A value in the file does not prove the system uses it.	只有在重启后重新读取过的字段才会被声称为已接受。文件中的值并不能证明系统实际在使用它。
+Personal Translator slot	个人翻译插槽
+Post-Modification Acceptance	修改后验收
+Product type	产品类型
+Re-read the device after a restart and check what actually stuck.	重启后重新读取设备，检查实际生效了什么。
+Read the device first to analyze a proposal.	请先读取设备，再分析方案。
+Read the device first to capture its fingerprint.	请先读取设备，再记录其指纹。
+Read the device first to score its health.	请先读取设备，再评估其健康状况。
+Recorded %@ · Digest %@	已记录 %@ · 摘要 %@
+Region code	地区码
+Reverted	已还原
+Reverted: %@	已还原：%@
+Safe to stage	可以暂存
+Safe to stage: %d features, %d warnings.	可以暂存：%d 个功能，%d 个警告。
+Safe to stage: %d features, no findings.	可以暂存：%d 个功能，无发现。
+Save current fingerprint	保存当前指纹
+System Health Score	系统健康评分
+Target %@ · Now %@	目标 %@ · 当前 %@
+The change history could not be saved. No system changes were made.	无法保存更改历史。未做任何系统更改。
+The device fingerprint could not be read. No system changes were made.	无法读取设备指纹。未做任何系统更改。
+The device fingerprint could not be saved. No system changes were made.	无法保存设备指纹。未做任何系统更改。
+The document could not be serialized and verified.	文档无法序列化与验证。
+The fingerprint is stored only on this device, in the app's own history. It is never sent anywhere.	指纹仅保存在本设备上，位于 App 自身的历史记录中，绝不会发送到任何地方。
+The recorded support scope may no longer apply. Re-verification is needed before staging.	已记录的支持范围可能不再适用。暂存前需要重新验证。
+The stored fingerprint belongs to a different device. It was not used.	存储的指纹属于另一台设备，未被使用。
+This device's real capabilities and build, recorded locally with a SHA-256 digest.	该设备的真实能力与构建信息，本地记录并附 SHA-256 摘要。
+This score is a diagnostic summary only. It does not guarantee safety or that any feature will work.	此评分仅为诊断性汇总，不保证安全，也不保证任何功能一定可用。
+Trusted backup	受信任的备份
+Unreadable	无法读取
+eSIM	eSIM
+eSIM green-tea	eSIM 绿茶
+eSIM not-green-tea	eSIM 非绿茶
+iOS version	iOS 版本
+The device could not be identified, so its fingerprint was not saved.	无法识别设备，因此未保存其指纹。
+%d errors, %d warnings, %d notes	%d 个错误，%d 个警告，%d 条提示
+%d fields could not be re-read.	有 %d 个字段无法重新读取。
+A backup file is missing from disk.	磁盘上缺少一个备份文件。
+A read attempt failed.	一次读取尝试失败了。
+A restore attempt failed.	一次恢复尝试失败了。
+A suggested fix is a suggestion, not a guarantee. It may not work on this device.	建议的修复方法只是建议，不是保证，在这台设备上可能无效。
+A verified backup is from a different cache generation than the current document.	一个已验证的备份来自与当前文稿不同的缓存世代。
+A write attempt did not verify.	一次写入尝试未能通过验证。
+Apple Intelligence slot could not be resolved	无法定位 Apple 智能插槽
+Backup could not be verified	备份无法通过验证
+Backup file is missing	备份文件缺失
+Backup is from a different cache generation	备份来自不同的缓存世代
+Backup “%@” — cache layout does not match the current document.	备份“%@”——缓存布局与当前文稿不匹配。
+Backup “%@” — file not found.	备份“%@”——找不到文件。
+Backup “%@” — verification failed.	备份“%@”——验证失败。
+Backups exist, but none has been verified in this session.	已有备份，但本次会话中尚未验证任何一个。
+Backups have not been verified	备份尚未验证
+Cache integrity needs attention	缓存完整性需要注意
+Cause not yet determined.	原因尚未确定。
+Check whether this model is in the supported list, and re-read the device.	请确认该机型是否在支持列表中，并重新读取设备。
+Compatibility could not be determined for this device.	无法确定此设备的兼容性。
+Compatibility is unknown	兼容性未知
+Confirm the device was restarted after applying, then re-read and check the acceptance report. If the region keeps reverting, restore from a verified backup.	请确认应用后设备已重新启动，然后重新读取并查看验收报告。如果地区仍在还原，请从已验证的备份恢复。
+Create a backup before changing anything.	在更改任何内容之前，请先创建备份。
+Create a fresh backup before changing anything. This record cannot be used to restore.	在更改任何内容之前，请先创建一个新的备份。此记录无法用于恢复。
+Create a fresh backup on this build. Treat a restore from this backup as review-required.	请在此构建上创建一个新的备份。从此备份恢复时需要复核。
+Device changed — support scope needs re-verification	设备已更改——支持范围需要重新验证
+Device identity or build changed since the last fingerprint.	自上次记录指纹以来，设备标识或构建已更改。
+Device not read yet	尚未读取设备
+Device state changed since the last fingerprint	自上次记录指纹以来设备状态已更改
+Device values changed between the stored fingerprint and the current read.	在已存储的指纹与当前读取之间，设备值发生了变化。
+Do not restore from this backup. Create a fresh backup, and keep the failed file for inspection.	请勿从此备份恢复。请创建一个新的备份，并保留失败的文件以供检查。
+Do not retry the write blindly. Re-read the device to see its current state first.	请勿盲目重试写入。请先重新读取设备，查看其当前状态。
+Error	错误
+Evidence	证据
+Hardware-identity change refused	已拒绝更改硬件标识
+Live system disagrees with the file	实时系统与文件值不一致
+Modification risk needs attention	修改风险需要注意
+No action is needed unless the change was unexpected — then review the change history.	除非该更改出乎意料，否则无需采取行动——如有意外，请查看更改历史。
+No backup has been created yet.	尚未创建任何备份。
+No backups yet	暂无备份
+No issues were found in the available data.	在现有数据中未发现问题。
+No read has happened yet, so there is nothing to diagnose.	尚未进行任何读取，因此无可诊断。
+Note	提示
+On native Apple Intelligence hardware, skip this item: the native slot stays off. Otherwise use the repair path, then re-read after a restart.	在原生支持 Apple 智能的硬件上，请跳过此项：原生插槽保持关闭。否则请使用修复路径，然后在重新启动后重新读取。
+Re-read after a restart and check the live probe again.	请在重新启动后重新读取，并再次检查实时检测。
+Re-read the device and check the restore log. If the device is in an unwanted state, restore from a verified backup.	请重新读取设备并查看恢复日志。如果设备处于不希望的状态，请从已验证的备份恢复。
+Re-read the device and check whether the fields can be read then.	请重新读取设备，查看届时是否可以读取这些字段。
+Re-read the device and check whether the integrity checks pass then.	请重新读取设备，查看届时完整性检查是否通过。
+Re-read the device. If it keeps failing, note the model and iOS minor version — the layout may not be resolvable on this build.	请重新读取设备。如果仍然失败，请记下机型和 iOS 小版本号——此构建上的布局可能无法解析。
+Re-verify support on this build before staging anything.	在暂存任何内容之前，请在此构建上重新验证支持情况。
+Read failed	读取失败
+Read the device first to diagnose faults.	请先读取设备以诊断故障。
+Read the device to see its current state.	请读取设备以查看其当前状态。
+Region reverted after restart	重新启动后地区已还原
+Remove hardware-identity fields from the proposal.	请从方案中移除硬件标识字段。
+Restore failed	恢复失败
+Review the change history and the Modified Values report. If a change was unwanted, restore from a trusted backup.	请查看更改历史和“已修改的值”报告。如果某项更改并非所需，请从受信任的备份恢复。
+Run backup verification before relying on a backup.	在依赖备份之前，请先运行备份验证。
+Smart Fault Diagnosis	智能故障诊断
+Some device values changed since the fingerprint was captured.	自记录指纹以来，一些设备值已更改。
+Some fields could not be re-read	部分字段无法重新读取
+Suggested fix	建议的修复方法
+The CacheData slot for this key cannot be located on this device's layout. On native Apple Intelligence hardware the slot is natively off, while the CacheExtra key can be staged on — the two are separate values.	在此设备的布局上无法定位此键对应的 CacheData 插槽。在原生支持 Apple 智能的硬件上，该插槽原生为关闭，而 CacheExtra 键可以暂存为开启——两者是相互独立的值。
+The CacheData slot for this key could not be located.	无法定位此键对应的 CacheData 插槽。
+The backup file is no longer on disk.	备份文件已不在磁盘上。
+The backup was written from a different cache generation.	该备份写入自不同的缓存世代。
+The cache integrity checks did not all pass.	缓存完整性检查并未全部通过。
+The cache layout could not be resolved on this model and OS build, so eSIM staging was refused by the guard.	在此机型和系统构建上无法解析缓存布局，因此防护机制拒绝了 eSIM 暂存。
+The eSIM cache layout could not be resolved on this device.	无法解析此设备上的 eSIM 缓存布局。
+The file failed its byte-count, digest or plist check.	该文件未通过字节数、摘要或 plist 检查。
+The file holds the staged value, but the live system returns a different answer. A value in the file does not prove the system uses it.	文件保存的是暂存值，但实时系统返回了不同的答案。文件中有某个值，并不能证明系统正在使用它。
+The live probe did not answer for these keys: acceptance is based on the file value only.	实时检测未回答这些键：验收仅基于文件值。
+The live system answer disagrees with the file value.	实时系统的答案与文件值不一致。
+The modification-risk checks did not all pass.	修改风险检查并未全部通过。
+The product type, OS build, cache layout or slot count changed since the fingerprint was captured, so the previously recorded support scope may no longer apply.	自记录指纹以来，产品类型、系统构建、缓存布局或插槽数量已更改，因此此前记录的支持范围可能不再适用。
+The proposal touched a hardware-identity field. Staging it is refused by design: changing such a field can break Face ID or make the system discard the whole cache at boot.	该方案触及了硬件标识字段。按设计会拒绝暂存：更改此类字段可能破坏面容 ID，或导致系统在启动时丢弃整个缓存。
+The region code is back to its original value in the re-read document.	在重新读取的文稿中，地区代码已恢复为原值。
+The system rebuilt the cached region value on restart instead of keeping the staged value. This has been observed on iPhone 17 Pro Max (A3527): the region returned to CH after a restart.	系统在重新启动时重建了缓存的地区值，而没有保留暂存值。这一情况已在 iPhone 17 Pro Max（A3527）上观察到：重新启动后地区恢复为 CH。
+Try reading again. If it keeps failing, check the App Group and signing state.	请重试读取。如果仍然失败，请检查 App Group 和签名状态。
+Warning	警告
+What went wrong, why, and what to try — from real readings only.	出了什么问题、为什么、以及可以尝试什么——仅基于真实读取。
+Write did not verify	写入未能通过验证
+Write, restore and guard events are not recorded yet.	写入、恢复和防护事件尚未记录。
+eSIM layout could not be resolved	无法解析 eSIM 布局
+%d members	%d 个成员
+%d members are no longer in the catalog.	有 %d 个成员已不在预设库中。
+%d verified models	%d 个已验证机型
+A combination cannot contain the same preset twice.	一个组合不能两次包含同一个预设。
+All	全部
+Applies to	适用范围
+Category	分类
+Check Result	检查结果
+China-market devices	中国大陆市场设备
+Choose at least one preset.	请至少选择一个预设。
+Choose members	选择成员
+Combination name	组合名称
+Conflicts	冲突
+Custom Combinations	自定义组合
+Dependencies	依赖
+Eligibility	适用情况
+Favorites first	收藏优先
+Give the combination a name.	请给组合起个名字。
+Group	组
+High	高
+Hypothesis	假设
+Low	低
+Medium	中
+Members	成员
+Minimum system	最低系统
+New Combination	新建组合
+No combinations yet.	暂无自定义组合。
+No presets match this search.	没有符合搜索条件的预设。
+Not verified	未验证
+Observed	实测
+Preset Catalog	智能预设库
+Read the device first to see eligibility on this device.	请先读取设备，以查看本机上的适用情况。
+Restore method	恢复方式
+Risk	风险
+Risk level	风险等级
+Save Combination	保存组合
+Search presets…	搜索预设…
+Search, filter and save presets — from the catalog only.	搜索、筛选并收藏预设——仅基于预设库。
+Simulation can proceed	模拟可继续
+Source code	源码
+The combinations could not be read. No system changes were made.	无法读取组合。未做任何系统更改。
+The combinations could not be saved and verified. No system changes were made.	无法保存并验证组合。未做任何系统更改。
+The favorites could not be read. No system changes were made.	无法读取收藏。未做任何系统更改。
+The favorites could not be saved and verified. No system changes were made.	无法保存并验证收藏。未做任何系统更改。
+These combinations belong to a different device.	这些组合属于另一台设备。
+These combinations use a newer format this version cannot read.	这些组合使用了此版本无法读取的新格式。
+These favorites belong to a different device.	这些收藏属于另一台设备。
+These favorites use a newer format this version cannot read.	这些收藏使用了此版本无法读取的新格式。
+This combination is a plan only. It is not connected to staging or applying.	此组合仅为计划，未连接暂存或套用。
+Unknown preset: %@	未知预设：%@
+Upstream	上游
+iPad hardware	iPad 硬件
+%d of 32 characters	%d / 32 个字符
+%lld files	%lld 个文件
+A custom preset cannot contain the same preset twice.	自定义预设不能两次包含同一预设。
+A preset name is 1–32 characters.	预设名称为 1–32 个字符。
+All Tools cards are hidden. Re-enable them in the Personalization Center.	工具页卡片已全部隐藏，请在个性化中心重新开启。
+App Cache	应用缓存
+App cache cleared.	应用缓存已清理。
+Application Support	应用支持文件
+Available	可用
+Battery	电池
+Battery health, cycle count and capacity are not available through public iOS APIs.	电池健康、循环次数与容量无法通过 iOS 公开 API 获取。
+Battery level	电量
+Battery state	电池状态
+Battery, app cache, connection status and the operation log — read-only.	电池、应用缓存、连接状态与操作日志——仅读取。
+Cache Read	缓存读取
+Caches	缓存
+Catalog Sort	目录排序
+Charging	充电中
+Clear App Cache	清理应用缓存
+Connection Status	连接状态
+Custom Presets	自定义预设
+Custom presets are plans only. They are not connected to staging or applying.	自定义预设仅为计划，未连接暂存或套用。
+Custom presets, catalog sort and Tools page cards — saved on this device only.	自定义预设、目录排序与工具页卡片——仅保存在本机。
+Delete this custom preset?	删除此自定义预设？
+Describe what this preset does.	请描述此预设的作用。
+Description	描述
+Diagnostics Expansion	诊断扩展
+Edit	编辑
+Explain the risk of this preset.	请说明此预设的风险。
+Full	已充满
+Give the custom preset a name.	请给自定义预设起个名字。
+Last Read	上次读取
+New Custom Preset	新建自定义预设
+No custom presets yet.	暂无自定义预设。
+No operation events recorded yet.	尚未记录任何操作事件。
+OS Build	系统构建
+Operation Log	操作日志
+Personalization Center	个性化中心
+Personalization Settings	个性化设置
+Preset Name	预设名称
+Read %lld bytes from the device.	从设备读取了 %lld 字节。
+Read succeeded	读取成功
+Read the device first to check this preset.	请先读取设备以检查此预设。
+Read: %lld bytes	已读取：%lld 字节
+Refusing to clear a directory that is not the app's Caches directory.	拒绝清理非本应用 Caches 的目录。
+Restore succeeded	还原成功
+Risk Reason	风险原因
+Save Changes	保存更改
+Save Custom Preset	保存自定义预设
+Show or hide each card on the Tools page. The Personalization Center card itself always stays on this page.	选择在工具页显示哪些卡片。个性化中心卡片始终保留在本页。
+Sort by Category	按分类排序
+Sort by Name	按名称排序
+Sort by Risk	按风险排序
+Temporary	临时文件
+The app cache could not be cleared.	应用缓存无法清理。
+The custom presets could not be read. No system changes were made.	自定义预设无法读取，未做任何系统更改。
+The custom presets could not be saved and verified. No system changes were made.	自定义预设无法保存并验证，未做任何系统更改。
+The settings could not be read. Defaults are used.	设置无法读取，已使用默认值。
+The settings could not be saved and verified. No system changes were made.	设置无法保存并验证，未做任何系统更改。
+These custom presets belong to a different device.	这些自定义预设属于另一台设备。
+These custom presets use a newer format this version cannot read.	这些自定义预设使用了本版本无法读取的新格式。
+These settings belong to a different device.	这些设置属于另一台设备。
+These settings use a newer format this version cannot read.	这些设置使用了本版本无法读取的新格式。
+This clears only this app's own Caches directory. It never touches system caches.	仅清理本应用自己的 Caches 目录，绝不触碰系统缓存。
+Tools Page Cards	工具页卡片
+Total	合计
+Unplugged	未充电
+Wallpaper and Launch Images	壁纸与启动图
+Write, restore and guard events are not recorded yet: the only hook points are inside the write path, which this version must not touch.	写入、还原与守卫事件尚未记录：唯一的接入点在写入路径内部，本版本不得触碰。
+iOS offers no public API for an app to change the system wallpaper or another app's launch image. Save an image to Photos and set it manually.	iOS 未提供公开 API 供 App 更改系统壁纸或他 App 的启动图。请把图片保存到相册后手动设置。
+Custom Home Screen Name	自定义桌面名称
+Choose Preview Icon	选择预览图标
+App Icon & Name · Preview Only	应用图标与名称 · 仅预览
+Preview only. This does not change the installed app, its Home Screen icon, SpringBoard, or LaunchServices.	仅预览，不会修改已安装的 App、其桌面图标、SpringBoard 或 LaunchServices。
+Use 1–32 characters without control characters.	请使用 1–32 个字符，且不含控制字符。
+Native write capability: Unknown — not verified	原生写入能力：未知 — 未验证
+This image is empty.	这张图片是空的。
+This image is too large. Choose an image under %d MB.	这张图片太大了，请选择小于 %d MB 的图片。
+This image format is not supported. Use PNG, JPEG, or HEIC.	不支持这种图片格式，请使用 PNG、JPEG 或 HEIC。
+This image is too large in pixels. Choose an image up to %d pixels on its longest side.	这张图片像素太大了，请选择最长边不超过 %d 像素的图片。
+Image: %@ · %d × %d · %d KB	图片：%@ · %d × %d · %d KB
+Crop	裁剪
+Square	正方形
+Custom	自定义
+Crop inset	裁剪边距
+Corner radius	圆角半径
+Undo	撤销
+Save Draft	保存草稿
+Load Draft	读取草稿
+Reset	重置
+Draft saved.	草稿已保存。
+Draft loaded.	草稿已读取。
+No draft found.	未找到草稿。
+Full Image	完整
+Diagnostics Summary	诊断摘要
+Health, simulation and recorded changes at a glance. Details are on the pages below.	健康评分、模拟结果与已记录的更改一目了然，详情见下方页面。
+Health Score	健康评分
+Simulation	模拟
+Recorded Changes	已记录的更改
+Passed	通过
+Home Diagnostics Sections	首页诊断分区
+Reorder and show or hide the diagnostics rows on the Tools home. The order is saved on this device only.	在工具首页对诊断行重新排序、显示或隐藏。顺序仅保存在本设备上。
+Read the device first to see the diagnostics summary.	先读取设备，再查看诊断摘要。
+All tools	全部工具
+Device Overview	设备概览
+%d changes	%d 项更改
+Sort	排序
+Device-specific results are available after reading the device.	读取设备后可查看设备专属结果。
+Browse, search and organize every preset.	浏览、搜索并整理全部预设。
+Common Features	常用功能
+Most-used presets at a glance.	常用预设一览。
+Apple Intelligence & eSIM	Apple 智能与 eSIM
+Security Diagnosis	安全诊断
+Backup & Restore	备份与恢复
+Preset Management	预设管理
+More Tools	更多工具
+Smart Unlock	智能解锁
+Modified Records	修改记录
+Advanced Tools	高级工具
+Feature Catalog	功能目录
+Search features…	搜索功能…
+All Categories	全部分类
+Favorites	收藏
+Recent	最近使用
+Hide	隐藏
+Restore Defaults	恢复默认
+Manage	管理
+Custom Order	自定义顺序
+No features match this search.	没有符合此搜索的功能。
+Show	显示
+No favorites yet. The three preset groups are shown instead.	暂无收藏，改为显示三个预设组合。
+Natively supported	原生支持
+Modifiable	可修改
+Enabled	已启用
+Needs restart	需要重启
+Unverified	未验证
+Compatibility Status	兼容性状态
+Detection evidence	检测依据
+Already supported on this device — no change needed.	本设备已原生支持，无需修改。
+Not offered on this device	未向此设备提供
+Audio Intelligence is staged on native Apple Intelligence hardware, but the native slot reads off. Whether to skip it is still undecided — nothing was changed.	音频智能已在原生 Apple 智能设备上暂存，但原生插槽读数为关闭。是否跳过尚未决定——未做任何更改。
+History & Restore	历史与恢复
+Staged value	已暂存的值
+Can restore	可恢复
+Restore this change?	恢复此项更改？
+Confirm Restore	确认恢复
+Device identity	设备身份
+File integrity	文件完整性
+Backup source	备份来源
+System compatibility	系统兼容性
+No verified backup file for this change.	此项更改没有已验证的备份文件。
+Verified backup on file.	已有已验证的备份文件。
+This device	本设备
+Another device	其他设备
+Before / after	修改前 / 修改后
+The whole device file is replaced by the backup.	整个设备文件将被备份替换。
+A check failed. The restore cannot proceed until it is resolved.	有一项检查未通过。在解决之前无法继续恢复。
+Check the preview above, then confirm to restore the whole backup.	请检查上方预览，然后确认以恢复整个备份。
+Technical Sources	技术来源
+Third-Party Licenses	第三方许可证
+Full Source Code	完整源代码
+Author	作者
+Relationship	使用关系
+Key Technology	关键技术
+Shipped in IPA	是否随 IPA 分发
+Yes	是
+No	否
+Original code base	原始代码基础
+Bundled code	直接集成的代码
+Adapted code	改编的代码
+Reused data	复用的数据
+Design reference	设计参考
+Research reference	研究参考
+Test tool	测试工具
+Build tool	构建工具
+LilaShift is an unofficial enhancement project. It is not affiliated with Apple or any upstream project.	LilaShift 是非官方增强项目，与 Apple 及任何上游项目均无官方关联。
+Modifying device features carries compatibility and data risks. Back up your device before applying changes.	修改设备功能存在兼容性和数据风险，应用更改前请备份设备。
+The complete source code is provided under the applicable open-source licenses.	完整源代码依据适用的开源许可证提供。
+The enhanced version is distributed under the GNU GPL v3.0. Its complete corresponding source is distributed with the release.	增强版遵循 GNU GPL v3.0 发布。随发布一同提供其完整对应源代码。
+No license stated	未声明许可证
+Tap a project for its author, relationship, key technology, license and source link.	点开一个项目可查看其作者、使用关系、关键技术、许可证与源码链接。
+License texts shown here are bundled with the app. Research references and development tools are MIT- or GPL-licensed at their upstream repositories; their texts are not bundled because their code is not shipped in the app.	此处显示的许可证文本均随 App 分发。研究参考与开发工具在其上游仓库遵循 MIT 或 GPL 许可；因其代码不随 App 分发，文本未打包。
+Restart Device	重启设备
+Restart Your Device	重新启动设备
+Some changes need a device restart to take effect. LilaShift cannot restart SpringBoard itself. Please restart your device manually: hold the side button and a volume button, then slide to power off, or use Settings → General → Shut Down.	部分更改需要重启设备才能生效。紫序无法自行重启 SpringBoard，请手动重启设备：按住侧边按钮和任一音量按钮，然后滑动关机；或前往“设置 → 通用 → 关机”。
+Suspended	已暂停
+Manual Restart	手动重启
+LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.	紫序不会自行重启 SpringBoard。应用更改后，若某项功能未出现，请手动重启设备。
 '''
 entries = {}
 for line in TRANSLATIONS.strip().splitlines():

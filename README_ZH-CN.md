@@ -1,33 +1,70 @@
 ![LilaShift](GestaltX/Assets.xcassets/AppIcon.appiconset/AppIcon.png)
 
-## LilaShift 2.0（紫序）— LilaShift 1.0.7
+# LilaShift 3.0 · 紫序
 
-[![Version](https://img.shields.io/badge/version-1.0.7-blue)](https://github.com/fafa920q-hue/LilaShift-2.0)
-
-[![Platform](https://img.shields.io/badge/iOS-27.x-black?logo=apple)](#兼容性)
-
-[![SwiftUI](https://img.shields.io/badge/Swift-SwiftUI-orange?logo=swift)](https://github.com/fafa920q-hue/LilaShift-2.0)
-
-[![License](https://img.shields.io/badge/license-GPLv3-blue)](LICENSE)
+**智能设备检测 · 功能管理 · 安全备份 · 可追溯恢复**
 
 [English](README.md) · [简体中文](README_ZH-CN.md)
 
-国行 iPhone 一键解锁：eSIM、地区码、Apple Intelligence，一次点按完成。这是完整源码的 LilaShift 2.0 项目，基于官方 GestaltX v1.0.7。
+> **预发布：LilaShift 3.0.0-rc.1**——这是**预发布版本，不是稳定版**。
+> 由 `feature/lilashift-3.0-dashboard` 分支构建，提交
+> 37c4a368c73ec80654c8b395387abea9a24915f6（包含 fix4 提交 `7020964`）。App 内版本号为 `3.0.0`
+>（build `30000002`），IPA 文件名为 `LilaShift_3.0.0.ipa`。
+> 本版在真机上的安装、eSIM 开通、Apple Intelligence 开通与还原均**未验证**——见
+> [验证情况](#验证情况)。
+
+[![Version](https://img.shields.io/badge/version-3.0.0--rc.1%20pre--release-purple)](https://github.com/fafa920q-hue/LilaShift-2.0/releases/tag/v3.0.0-rc.1)
+[![Build LilaShift IPA](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/build.yml/badge.svg)](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/build.yml)
+[![Run Swift Tests](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/run-swift-tests.yml/badge.svg)](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/run-swift-tests.yml)
+[![Check Licenses](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/check-licenses.yml/badge.svg)](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/check-licenses.yml)
+[![SwiftLint](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/swiftlint.yml/badge.svg)](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/swiftlint.yml)
+[![Platform](https://img.shields.io/badge/iOS-27.x-black?logo=apple)](#兼容性)
+[![License](https://img.shields.io/badge/license-GPLv3-blue)](LICENSE)
+
+- **下载 IPA：**[LilaShift 3.0.0-rc.1 发布页](https://github.com/fafa920q-hue/LilaShift-2.0/releases/tag/v3.0.0-rc.1)（预发布发布后生效；全部发布见 [Releases](https://github.com/fafa920q-hue/LilaShift-2.0/releases)）
+- **安装教程：**[docs/INSTALL_ZH-CN.md](docs/INSTALL_ZH-CN.md)（简体中文，一步一步）
+- **使用指南：**[docs/USER_GUIDE_ZH-CN.md](docs/USER_GUIDE_ZH-CN.md) ·
+  **兼容性：**[docs/COMPATIBILITY_ZH-CN.md](docs/COMPATIBILITY_ZH-CN.md) ·
+  **备份与还原：**[docs/BACKUP_RESTORE_ZH-CN.md](docs/BACKUP_RESTORE_ZH-CN.md) ·
+  **故障排查：**[docs/TROUBLESHOOTING_ZH-CN.md](docs/TROUBLESHOOTING_ZH-CN.md) ·
+  **常见问题：**[docs/FAQ_ZH-CN.md](docs/FAQ_ZH-CN.md)
+- **官方 Telegram 更新频道：**[加入 Telegram 更新频道](https://t.me/LilaShiftUpdates)——只发公告（版本公告、测试版通知、设备兼容性与已知问题）。这是**频道，不是讨论群**。源码、下载与反馈都在 GitHub。
+- **反馈 / 报 Bug：**[GitHub Issues](https://github.com/fafa920q-hue/LilaShift-2.0/issues)（见 [COMMUNITY.md](COMMUNITY.md)）。请勿在 Issue 里贴序列号、UDID、账号密钥或其他个人资料。
+
+国行 iPhone 一键解锁：eSIM、地区码、Apple Intelligence，一次点按完成。这是完整源码的 LilaShift 3.0 项目，基于官方 GestaltX v1.0.7。
+
+## 验证情况
+
+| 项目 | 本预发布状态 |
+| --- | --- |
+| 源码在 CI 构建（Build LilaShift IPA 工作流） | 分支上 GitHub Actions 已验证——最新结果见上方徽章 |
+| Swift 单元测试（Run Swift Tests 工作流） | 分支上 GitHub Actions 已验证——最新结果见上方徽章 |
+| 许可证 / 署名检查（Check Licenses 工作流） | 分支上 GitHub Actions 已验证 |
+| 本版 IPA 在真机上安装 | **未验证**——本次构建没有可用的真机 |
+| 解锁后 eSIM 开通 | 本版**未在真机上验证** |
+| Apple Intelligence 实际出现 / 可用 | 本版**未在真机上验证** |
+| 还原到设备此前的准确状态 | **未在真机上验证**；还原的含义与限度见[备份](#备份)一节 |
+
+改一个 MobileGestalt 开关 ≠ 功能真的能用：开关显示“已开”，硬件、系统版本或苹果服务仍可能说不行。本 README 不声称所有设备都能解锁全部功能。
 
 ## 这是什么仓库
 
-这是 LilaShift 2.0（紫序）的**完整源码项目**，即 GestaltX 国行增强版。完整修改源码都在这个仓库里，没有补丁步骤，CI 直接从这份源码构建 IPA。基于上游 [huamidev/GestaltX](https://github.com/huamidev/GestaltX) `v1.0.7`（提交 `dfd4a7e`，build `11130112`）加上上游壁纸删除修复 PR #126（提交 `c60519c`）。之前的补丁式构建仓库（[fafa920q-hue/LilaShift](https://github.com/fafa920q-hue/LilaShift)）保持原样不动。
+这是 LilaShift 3.0（紫序）的**完整源码项目**，即 GestaltX 国行增强版。完整修改源码都在这个仓库里，没有补丁步骤，CI 直接从这份源码构建 IPA。基于上游 [huamidev/GestaltX](https://github.com/huamidev/GestaltX) `v1.0.7`（提交 `dfd4a7e`，build `11130112`）加上上游壁纸删除修复 PR #126（提交 `c60519c`）。之前的补丁式构建仓库（[fafa920q-hue/LilaShift](https://github.com/fafa920q-hue/LilaShift)）保持原样不动。
+
+LilaShift 增强部分维护者：`@steam8871`。上游 GestaltX 的工作仍属于 huamidev。
 
 ## 本版新增内容
 
+- **LilaShift 3.0 首页。** 轻量首页（真实设备读取与待应用更改状态）、53 项 11 分类的功能目录（40 个预设项 + 13 个页面项，统一排序规则：版本化 JSON + SHA-256 sidecar）、8 状态统一兼容性模型、带二次确认的历史恢复视图、诊断缓存（文件读取与 SHA-256 移出渲染路径）。详见 [CHANGELOG_ZH-CN.md](CHANGELOG_ZH-CN.md)。
 - **一键解锁（9 项）。** eSIM 两项开关（green-tea 关、not-green-tea 开）、地区码改美国（`LL`，销售地区不变）、6 项 Apple Intelligence 能力——一次点按全部暂存，确认后应用。
   - 暂存前会先校验 eSIM 缓存布局；验不过整组停住并显示原因，地区码和 AI 仍可单独设置。
   - 每次应用都会自动备份并写回校验；一键还原可从记录的原始值恢复全部 9 项。
 - **浅紫 Liquid Glass 全新视觉。** 页面背景 `#F6F3FF`，主紫 `#8652DC`，无大面积深色背景。
 - **每个功能名下都有一句简体中文用途说明。** 33 个预设全覆盖；设备要求与生效方式放在详情里。
 - **作者徽章与进度卡。** 维护者 `@steam8871` 显示在首页与关于页；读取与应用进度（备份 / 写入 / 校验 / 完成）由真实操作驱动，绝不伪造。
-- **开源合规。** 关于页有「开源与鸣谢」，App 内置 GPL v3.0 全文，并链接了本增强版源码仓库。
+- **开源合规。** 关于页是开源贡献者中心，逐项列出每个实际使用或参考的项目（作者、使用关系、关键技术、许可证、源码链接）；App 内置 GPL v3.0 全文；详见 [docs/OPEN_SOURCE_REFERENCES.md](docs/OPEN_SOURCE_REFERENCES.md) 与 [docs/FEATURE_ORIGIN_MATRIX.md](docs/FEATURE_ORIGIN_MATRIX.md)。
 - **写入加固，借鉴 Erosion-CN。** 原地写入（不预先截断、`F_FULLFSYNC`、完整写回校验、失败原地回滚）、运行时动态解析 eSIM 缓存布局、应用前 Diff 预览、双金库备份（卸载重装后还在的出厂金库）、地区二选一（只改地区码，或完整美国 `LL` + `LL/A`）、四要素 Apple 智能体检与冲突防呆——均未照抄 Erosion-CN 代码。
+- **注销功能因许可证原因已移除。** NeoSpring/Ketamine 注销实现已于 2026-11-14 移除（NeoSpring 在任何地方均未声明许可证）。本构建不含任何注销代码，改为手动重启设备提示。见 `docs/OPEN_SOURCE_REFERENCES.md` §3–§4。
 - **LilaShift 身份。** 应用名为 **LilaShift**（中文：紫序），猫照片做应用图标，作者 `@steam8871` 显示在首页与关于页。
 
 ## 功能
@@ -43,7 +80,7 @@
 | 字段编辑 | 读取、搜索、添加、编辑与删除 `CacheExtra` 字段；本地 plist 导入导出；支持字符串、整数、浮点数、布尔值、数据、日期、数组和字典 |
 | 更改管理 | 启动自动读取、手动重新读取、暂存更改前后对比、写入验证、逐项还原 |
 | 备份 | 首次读取自动备份、每次写入前备份、原值记录；打开、导出、恢复和删除 |
-| 日志与注销 | 实际漏洞利用过程日志、手动 NeoSpring 注销 |
+| 日志与重启 | 实际漏洞利用过程日志、手动重启设备提示 |
 
 通常只需修改地区代码即可尝试启用 AI，无需更改销售地区。“地区代码”选择“美国”时仅将 `RegionCode` 设为 `LL`，保留销售地区后缀，也可选择中国大陆、香港、台湾、日本或英国。销售地区与地区代码可以一起应用：后缀按销售地区设置，代码按地区代码设置。
 
@@ -53,43 +90,56 @@
 
 预设修改的是功能标记，实际效果取决于设备与系统。国行设备可通过 Apple 智能与地区选项尝试启用 AI，实际可用性还取决于机型、系统版本及 Apple 服务。
 
+完整功能清单见 [docs/FEATURES_ZH-CN.md](docs/FEATURES_ZH-CN.md)。
+
 ## 兼容性
 
-支持 **iOS / iPadOS 27.x**。**iOS / iPadOS 26.x 不支持本机 MobileGestalt 访问。** 基于 [worse_query](https://github.com/forcequitOS/worse_query)。SystemGroup 访问需要 iOS 27，功能可用性因设备与系统而异，同时支持本地 plist 编辑。
+支持 **iOS / iPadOS 27.x** 本机 MobileGestalt 访问。**iOS / iPadOS 26.x 不支持本机 MobileGestalt 访问**（仍可安装——最低 iOS `26.0`，本地 plist 编辑可用）。基于 [worse_query](https://github.com/forcequitOS/worse_query)。SystemGroup 访问需要 iOS 27，功能可用性因设备与系统而异。
 
-签名所用的证书及描述文件必须提供至少一个可用的 App Group。主应用和内置分享扩展必须签入至少一个**相同的 App Group**，重签时请保留分享扩展。两者均会在运行时读取实际签名中的 App Group。发布的 IPA 使用 ad-hoc 签名嵌入这些 entitlements，便于 SideStore、AltStore 在重签时识别，不使用开发者证书。
+签名所用的证书及描述文件必须提供至少一个可用的 App Group。主应用和内置分享扩展必须签入至少一个**相同的 App Group**（`group.com.huami.gestultx`），重签时请保留分享扩展。两者均会在运行时读取实际签名中的 App Group。发布的 IPA 使用 ad-hoc 签名嵌入这些 entitlements，便于 SideStore、AltStore 在重签时识别，不使用开发者证书。
 
 最简单的安装不需要签名：用 [LiveContainer](https://github.com/khanhduytran0/LiveContainer) 直接运行原始 IPA，无需重签，即可满足 App Group 要求，不需要付费开发者账号。
 
+完整兼容性表见 [docs/COMPATIBILITY_ZH-CN.md](docs/COMPATIBILITY_ZH-CN.md)。
+
 ## 下载
 
-请在 [Releases](https://github.com/fafa920q-hue/LilaShift-2.0/releases/latest) 下载 IPA：`LilaShift_1.0.7.ipa`（包名 `com.huami.gestultx`，版本 `1.0.7`，build `11130112`，最低 iOS `26.0`，约 5.9 MB）。第一个 Release 会在首次编包验证通过后发布。
+请在 [3.0.0-rc.1 发布页](https://github.com/fafa920q-hue/LilaShift-2.0/releases/tag/v3.0.0-rc.1)下载 IPA（预发布发布后生效）：`LilaShift_3.0.0.ipa`（包名 `com.huami.gestultx`，版本 `3.0.0`，build `30000002`，最低 iOS `26.0`）。IPA 文件名由构建脚本（`.github/scripts/build-ipa.sh`）决定：`LilaShift_<版本>.ipa`。
 
 部分用户反馈，iOS 27 上使用 Safari 下载的文件可能不完整。如果提示文件损坏或无法解压，可重新下载几次；仍有问题时换用其他浏览器。目前尚未确认具体原因。
 
 ## 安装
 
-1. 用 [LiveContainer](https://github.com/khanhduytran0/LiveContainer) 安装 IPA。
+完整一步一步教程见 [docs/INSTALL_ZH-CN.md](docs/INSTALL_ZH-CN.md)。简版：
+
+1. 用 [LiveContainer](https://github.com/khanhduytran0/LiveContainer) 安装 IPA（无需重签），或用 AltStore / SideStore / Sideloadly / 开发者证书重签——区别见安装教程。
 2. 打开 LilaShift，先点 **Read Device** 读取本机数据。
 3. 打开 **China Unlock**，确认 9 项内容后应用。
-4. 应用后**重新启动设备**，再去系统「设置」里检查 eSIM 与 Apple Intelligence。
+4. 应用后**重新启动设备**（完全关机再开机——只刷新 SpringBoard 对 eSIM 不够），再去系统「设置」里检查 eSIM 与 Apple Intelligence。
 5. 想全部撤销时用一键还原，会从备份恢复全部 9 项。
+
+**不要**向第三方签名服务购买证书，也**不要**把 Apple ID 密码告诉任何人。如果某种方法要求这两样，请停下来。
 
 ## 要求与注意事项
 
-- **需要 eSIM 硬件。** 解锁只改能力开关，不能给没有 eSIM 硬件的设备加上 eSIM。
+- **需要 eSIM 硬件。** 解锁只改能力开关，不能给没有 eSIM 硬件的设备加上 eSIM。软件加不出一块 eSIM 芯片。
 - **Apple Intelligence 取决于硬件与苹果服务器。** 打开开关不保证功能一定出现或可用。
 - **运营商与位置规则仍然适用。** 在中国大陆境内无法安装境外 eSIM（苹果规则）；在境外安装通常需要打开定位服务；中国运营商 eSIM 须在中国营业厅激活。
 - **系统更新可能还原改动。** 升级 iOS 后如有需要请重新应用。
 - **不要盲目升级 iOS。** GestaltX 依赖一个未修复的 iOS 沙盒逃逸漏洞（`worse_query`）。苹果可能在未来版本中修掉它；如果你依赖这个工具，升级前请先确认兼容性。
 - **应用前请备份。** App 会自动备份，但另外做一份设备备份仍是好习惯。
+- **“恢复记录的原值”≠“真正的出厂状态”。** 还原只会写回 App 自己在改动前记录的值。如果某个值在 App 第一次备份之前就已经被改过，备份里存的就是改过之后的值。详见 [docs/BACKUP_RESTORE_ZH-CN.md](docs/BACKUP_RESTORE_ZH-CN.md)。
+
+## 截图
+
+本预发布暂不附截图。真实截图将在真机上跑通 3.0.0-rc.1 后补上——此处不放任何拼造图，也不把旧版模拟器截图当成本版截图。（旧版模拟器截图显示的是“Not read yet”状态，不是 9 项解锁摘要，9 项摘要需要真机读取。）
 
 ## 常见问题
 
 ### 解锁后 eSIM 还是不能用，或者「添加 eSIM」消失了
 
 - **iPhone 18 Pro / Pro Max 插着双实体卡。** 这两款是双实体卡槽 + 内置 eSIM 三通道复用硬件，两个实体卡槽都占着时基带可能隐藏「添加 eSIM」。解决：先拔出卡托（空卡状态），应用解锁后冷重启，加上 eSIM，再插回实体卡。
-- **注销（Respring）不够。** 基带守护进程（`CommCenter`、`ctkd`）注销时不会重载缓存，应用后必须手动滑动关机、黑屏后再开机（冷重启）才生效。
+- **仅刷新 SpringBoard 不够。** 基带守护进程（`CommCenter`、`ctkd`）在 SpringBoard 刷新时不会重载缓存，应用后必须手动滑动关机、黑屏后再开机（冷重启）才生效。
 - **两个开关都要开。** 地区码和 eSIM 两项必须同时应用，只改地区码不解 green-tea 硬件锁，eSIM 菜单一样会被屏蔽。
 - **不要改机型标识（`ProductType`）。** 把国行主板（如 `iPhone19,7`）强改成美版会让基带校验失配，整个 eSIM 菜单消失。
 - **在中国大陆境内扫码添加境外 eSIM 会被拦截。** 扫码时开飞行模式 + 连 Wi-Fi（挂海外代理）。
@@ -122,6 +172,8 @@ MG 控制显示的是 CacheExtra 的实时值，预设页是上次读取的快�
 
 本版备份存在 App 容器里，卸载 App 会一起删掉。重装或证书过期前先导出备份。
 
+更多问题见 [docs/FAQ_ZH-CN.md](docs/FAQ_ZH-CN.md) 与 [docs/TROUBLESHOOTING_ZH-CN.md](docs/TROUBLESHOOTING_ZH-CN.md)。
+
 ## 导入 plist
 
 在“文件”或其他 App 中选中 MobileGestalt plist，点击**分享**，再选择 **LilaShift**。分享扩展会直接读取收到的文件，并通过共同的 App Group 交给主应用。如未自动打开，请返回 LilaShift。应用会验证 GestaltX 导出文件的本机凭证，或将文件中的至少两个唯一设备标识与本机信息比对，通过后弹窗确认导入。无法核验的文件均拒绝导入，不会把之前导入的文件当成本机身份依据。
@@ -132,9 +184,9 @@ MG 控制显示的是 CacheExtra 的实时值，预设页是上次读取的快�
 
 ## 自己构建
 
-**Build LilaShift IPA**（`.github/workflows/build.yml`）直接从这份源码构建 IPA——每次推送到 `main`、拉取请求、版本标签、Release 与手动触发都会运行。IPA 作为产物上传，名为 `LilaShift-<版本>`；打标签与发布 Release 时也会挂到对应的 Release 上。
+**Build LilaShift IPA**（`.github/workflows/build.yml`）直接从这份源码构建 IPA——每次推送到 `main` 与 `feature/lilashift-3.0-dashboard`、拉取请求、版本标签、Release 与手动触发都会运行。IPA 作为产物上传，名为 `LilaShift-<版本>`；打标签与发布 Release 时也会挂到对应的 Release 上。
 
-之前构建仓库里的截图来自没有真实设备文件的模拟器，因此显示「Not read yet」状态，确认页为 1 项预览——不是 9 项解锁摘要，9 项摘要需要真机读取。
+**Run Swift Tests**（`.github/workflows/run-swift-tests.yml`）在 iOS 模拟器上跑 XCTest 套件。**Check Licenses**（`.github/workflows/check-licenses.yml`）在每次可构建 IPA 的推送上运行 `scripts/check-licenses.py`。**Prepare Draft Release**（`.github/workflows/prepare-release.yml`，仅手动触发）构建 IPA 并创建 DRAFT GitHub Release——绝不自动发布。
 
 ## 语言支持
 
@@ -160,6 +212,7 @@ GestaltX 跟随 iOS 的语言设置，默认及回退语言为英语。波斯语
 - 上游项目：[huamidev/GestaltX](https://github.com/huamidev/GestaltX)（`v1.0.7`，提交 `dfd4a7e`，另加 PR #126，提交 `c60519c`）
 - 国行增强版维护者：`@steam8871`
 - 本版修改内容：9 项一键解锁预设及安全检查、浅紫 Liquid Glass 界面、每项功能一句话用途说明、作者徽章与进度卡、App 内源码仓库链接、开源合规栏目、借鉴 Erosion-CN 的加固（写入路径、动态布局解析、Diff 预览、双金库备份、地区二选一、AI 体检）、LilaShift 更名、猫图标。
+- LilaShift 3.0 新增：轻量首页、53 项功能目录、统一兼容性模型、历史恢复视图、诊断缓存，以及关于页的开源贡献者中心（逐项来源记录见 `docs/OPEN_SOURCE_REFERENCES.md`）。
 - 完整对应源码就在本仓库（完整源码，无补丁步骤）。
 
 ## 鸣谢
@@ -168,12 +221,22 @@ GestaltX 跟随 iOS 的语言设置，默认及回退语言为英语。波斯语
 - [forcequitOS / Taj C — worse_query](https://github.com/forcequitOS/worse_query)
 - [neonmodder123](https://github.com/neonmodder123)
 - [skadz108](https://github.com/skadz108)
-- [rooootdev — NeoSpring](https://github.com/rooootdev/neospring)
+- [rooootdev — NeoSpring](https://github.com/rooootdev/neospring)（未声明许可证；注销功能已于 2026-11-14 暂停并移除，见 `docs/OPEN_SOURCE_REFERENCES.md`）
 - [Nouvborne — Ketamine](https://github.com/Nouvborne/Ketamine)
+- [huamidev — LCSign](https://sign.lc)
+- [Kianuni — Erosion-CN](https://github.com/Kianuni/Erosion-CN)
+- [lunginspector / jailbreak.party — Erosion](https://github.com/jailbreakdotparty/Erosion)
+- [sasobhabha — Gester](https://github.com/sasobhabha/Gester)
+- [Thomas Zoechling — ZIPFoundation](https://github.com/weichsel/ZIPFoundation)
+- [GitHub Inc. — Primer Octicons](https://github.com/primer/octicons)
 - [PoomSmart — MGKeys](https://github.com/PoomSmart/MGKeys)
-- [leminlimez — Nugget](https://github.com/leminlimez/Nugget)
-- [rooootdev — mond](https://github.com/rooootdev/mond)
+- [leminlimez — Nugget](https://github.com/leminlimez/Nugget)（AGPL-3.0，仅作参考，未移植代码）
+- [rooootdev — mond](https://github.com/rooootdev/mond)（AGPL-3.0，仅作参考，未移植代码）
 - [frs0n — GestaltEdit](https://github.com/frs0n/GestaltEdit)
+- [Point-Free — SnapshotTesting](https://github.com/pointfreeco/swift-snapshot-testing)（测试工具，不随 IPA 分发）
+- [Realm — SwiftLint](https://github.com/realm/SwiftLint)（构建工具，不随 IPA 分发）
+
+完整逐项记录（许可证、证据、使用关系、对应文件、是否随 IPA 分发）见 [docs/OPEN_SOURCE_REFERENCES.md](docs/OPEN_SOURCE_REFERENCES.md)；逐功能来源映射见 [docs/FEATURE_ORIGIN_MATRIX.md](docs/FEATURE_ORIGIN_MATRIX.md)。
 
 ## 免责声明
 

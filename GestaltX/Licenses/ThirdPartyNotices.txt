@@ -4,7 +4,7 @@ Copyright (C) 2026 huamidev
 https://github.com/huamidev
 
 LilaShift is the enhanced version of GestaltX, maintained by @steam8871
-(https://github.com/fafa920q-hue/LilaShift). The maintainer role covers
+(https://github.com/fafa920q-hue/LilaShift-2.0). The maintainer role covers
 the LilaShift enhancements only: all upstream GestaltX work remains
 attributed to its author, huamidev, below.
 
@@ -28,7 +28,10 @@ The whole LilaShift application is built on the GestaltX 1.0.7 baseline
 transactions, staging model and interface. LilaShift adds the China
 Unlock enhancements, wallpaper tools, AI readiness checkup and the
 LilaShift branding on top of that baseline. The provisioned App Group
-identifier remains group.com.huami.gestultx.
+identifier remains group.com.huami.gestultx. LilaShift 3.0.0 (this
+branch) adds a lightweight dashboard, a 53-item feature catalog,
+a unified compatibility model, a history/restore view and diagnostic
+caching, all developed in this repository on the same GPL-3.0 terms.
 
 2. worse_query (bundled code, GPL-3.0-or-later)
 Author: Taj C (forcequit / forcequitOS)
@@ -41,20 +44,25 @@ preserved. forcequitOS's fsgetpath research is also followed for
 container identity discovery (GestaltX/GXCustomizationAccess.m).
 GestaltX supplies its own application, document transactions and UI.
 
-3. Ketamine / NeoSpring respring (adapted code, GPL-3.0)
-GPL-licensed adaptation used as reference and incorporated here:
-Nouvborne/Ketamine — https://github.com/Nouvborne/Ketamine
-Original WebKit technique: neonmodder123 — https://github.com/neonmodder123
-Swift implementation: skadz108 — https://github.com/skadz108
-NeoSpring project: rooootdev — https://github.com/rooootdev/neospring
-License: GNU GPL v3 (copy included in the app: GestaltX-GPL-3.0.txt).
-Adapted: the respring HTML/logic in GestaltX/NeoSpringView.swift and the
-earlier GestaltX respring implementation.
-GestaltX changes dated 2026-11-09: fixed raw-string closing-tag escaping
-and Web Crypto request length; added timeout, cancellation, nonpersistent
-WebKit data store and Simulator exclusion. NeoSpring itself is credited
-as a project/technique reference, not assigned a license it does not
-declare.
+3. Ketamine / NeoSpring respring — SUSPENDED and removed 2026-11-14
+   (formerly adapted code; see below)
+The WebKit respring technique was adapted from Nouvborne/Ketamine
+(GPL-3.0) — https://github.com/Nouvborne/Ketamine — whose own
+implementation credits rooootdev's NeoSpring project
+(https://github.com/rooootdev/neospring). The original WebKit technique
+is by neonmodder123 — https://github.com/neonmodder123 — and the Swift
+port by skadz108 — https://github.com/skadz108. NeoSpring states no
+license anywhere (no LICENSE file, no license header; GitHub API
+/license returns 404), so the adaptation had no verifiable
+authorization. On 2026-11-14 the user decided (option c) to remove the
+implementation: GestaltX/NeoSpringView.swift and all WebKit respring
+code were deleted, and the Respring action was replaced by a manual
+device-restart prompt that never claims to restart SpringBoard itself.
+No respring code ships in this build. Ketamine and NeoSpring remain
+credited here as the technique's sources; Ketamine's GPL-3.0 license
+text is included in the app (GestaltX-GPL-3.0.txt). If a clearly
+sourced, license-compatible implementation is found later, it may be
+re-integrated only after independent audit and testing.
 
 4. LCSign (design reference)
 Author: huamidev — https://sign.lc
@@ -120,6 +128,7 @@ wallpaper theme assets are bundled.
 
 9. Primer Octicons (bundled asset, MIT)
 Author: GitHub Inc.
+Project: https://github.com/primer/octicons
 Source: https://raw.githubusercontent.com/primer/octicons/main/icons/mark-github-16.svg
 License: MIT License; full text: Primer-Octicons-MIT.txt.
 The GitHub mark SVG is bundled as
@@ -141,10 +150,29 @@ ported: porting it would impose AGPL terms on this app.
   Key mappings cross-checked; no code ported.
 - rooootdev/mond (AGPL-3.0): https://github.com/rooootdev/mond
   Key mappings cross-checked; no code ported.
-- frs0n/GestaltEdit (PolyForm Noncommercial License 1.0.0):
+- frs0n/GestaltEdit (GNU GPL v3.0 or later):
   https://github.com/frs0n/GestaltEdit
-  Workflow reference only; no code included, in keeping with its
-  noncommercial terms.
+  Workflow reference only; no code included. License history verified
+  2026-11-14: MIT at first release (2026-08-11), PolyForm Noncommercial
+  1.0.0 (2026-08-20), then GPL v3 (2026-11-09, commit ed8192e, when the
+  project adopted GPL-licensed worse_query). The earlier PolyForm
+  statement in this file was outdated and is corrected here.
+
+
+11. Test and build tools (not shipped in the app)
+These tools are used to test or build LilaShift; their code is not
+linked into the IPA and their license texts are not bundled in the
+app. Each upstream retains its own license and copyright.
+- pointfreeco/swift-snapshot-testing (MIT):
+  https://github.com/pointfreeco/swift-snapshot-testing
+  Snapshot tests for the key SwiftUI cards (GestaltXTests,
+  ViewSnapshotTests). Pinned as an exact Swift Package dependency
+  (1.19.7, test target only). License: MIT License, Copyright (c) 2019
+  Point-Free, Inc. Not shipped in the IPA.
+- realm/SwiftLint (MIT):
+  https://github.com/realm/SwiftLint
+  Swift style and static checks, run in CI from .swiftlint.yml
+  (minimal rule set). Not shipped in the IPA.
 
 Not used here: Leaflet, gcoord, libimobiledevice, zsign, Feather,
 SideStore, AltStore and LiveContainer do not appear in this tree; they
@@ -156,5 +184,4 @@ mark; neither is third-party material.
 LilaShift is not affiliated with Apple or any credited project. Upstream
 sandbox-escape OS support is not a guarantee that the MobileGestalt
 system cache is writable, or that capability flags produce working
-hardware features. A verified file write does not prove a feature works
-or that a respring succeeded.
+hardware features. A verified file write does not prove a feature works.

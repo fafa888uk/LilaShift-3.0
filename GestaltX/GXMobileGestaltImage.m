@@ -1,4 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
+// `__cfstring` walk adapted from Erosion-CN's MGImageReader (Kianuni,
+// https://github.com/Kianuni/Erosion-CN, GPL-3.0); simplified for GestaltX
+// (UUID-shaped text only, pointers bounded to the copied `__cstring` range).
 #import "GXMobileGestaltImage.h"
 #import <TargetConditionals.h>
 #import <ctype.h>

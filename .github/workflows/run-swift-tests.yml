@@ -12,7 +12,7 @@ name: Run Swift Tests
 
 on:
   push:
-    branches: [main, dev/p0-security-fixes]
+    branches: [main, dev/p0-security-fixes, feature/lilashift-3.0-dashboard]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -42,33 +42,38 @@ jobs:
             -destination 'platform=iOS Simulator,name=iPhone 17' \
             -only-testing:GestaltXTests
 
+      - name: Upload snapshot references
+        # The ViewSnapshotTests record their references on the first
+        # run (record: .missing) into tests/__Snapshots__/. Upload
+        # them so they can be downloaded and committed; without this
+        # step the first run's recordings would be lost. Runs even
+        # when the tests fail, so a failure diff is also captured.
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: snapshot-references
+          path: tests/__Snapshots__/
+          if-no-files-found: ignore
 
+      - name: Collect snapshot failure renders
+        # On a mismatch, SnapshotTesting writes the actual render to
+        # the simulator's /tmp (record: .missing never overwrites
+        # the reference), so the references artifact alone cannot
+        # show what differed — Tests #196's two mismatches were
+        # undiagnosable from it. Collect any failure renders so the
+        # next mismatch can be located pixel by pixel.
+        if: always()
+        run: |
+          mkdir -p /tmp/snapshot-failures
+          find ~/Library/Developer/CoreSimulator -type f -name '*.png' \
+            \( -path '*/tmp/DashboardV3SnapshotTests/*' -o -path '*/tmp/ViewSnapshotTests/*' \) \
+            -exec cp {} /tmp/snapshot-failures/ \; 2>/dev/null || true
+          ls -la /tmp/snapshot-failures/
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+      - name: Upload snapshot failure renders
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: snapshot-failures
+          path: /tmp/snapshot-failures/
+          if-no-files-found: ignore

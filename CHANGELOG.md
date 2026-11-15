@@ -2,6 +2,115 @@
 
 English | [简体中文](CHANGELOG_ZH-CN.md)
 
+## [3.0.0-rc.1] - Pre-release (not stable)
+
+Built from branch `feature/lilashift-3.0-dashboard` at commit `37c4a36`
+(`37c4a368c73ec80654c8b395387abea9a24915f6`; includes the fix4 commit
+`7020964`). In-app version `3.0.0`, build
+`30000002`; IPA file `LilaShift_3.0.0.ipa` (bundle `com.huami.gestultx`,
+minimum iOS `26.0`). The `rc.1` name lives at the release/tag level; the
+Xcode project still reports marketing version `3.0.0`.
+
+### Added (vs 2.0 / 1.0.7)
+- LilaShift 3.0 dashboard: lightweight home with real device-read and
+  staged-change status; 53-item feature catalog in 11 categories (40 preset
+  items + 13 page items, versioned JSON + SHA-256 sidecar ordering); unified
+  8-state compatibility model (`nativeSupported`, `modifiable`, `enabled`,
+  `staged`, `needsRestart`, `unverified`, `unsupported`, `readFailed`); a
+  history/restore view with second confirmations; diagnostic caching
+  (`HomeDiagnosticsCache`, 11 diagnostic cards moved to secondary pages,
+  `LazyVStack`, iOS 26+ shadow removal).
+- Documentation set for this pre-release: rewritten `README.md` /
+  `README_ZH-CN.md` as 3.0.0-rc.1 product homepages, step-by-step Chinese
+  install / user / compatibility / backup-restore / troubleshooting /
+  feature / FAQ guides under `docs/`, plus `COMMUNITY.md`, `SECURITY.md`
+  and `CONTRIBUTING.md`. See `docs/INSTALL_ZH-CN.md` for install methods
+  and their verification status.
+- Open-source audit (2026-11-14): per-project record in
+  `docs/OPEN_SOURCE_REFERENCES.md` (16 projects) and per-feature origin map
+  in `docs/FEATURE_ORIGIN_MATRIX.md`; About page rebuilt as an open-source
+  contributor center; copyright headers normalized in 20 files;
+  `scripts/check-licenses.py` plus the Check Licenses workflow.
+
+### Fixed
+- AboutView section headers: the three `Section(L(...))` + `footer:` forms
+  that had no matching SwiftUI overload now use explicit `header:` /
+  `footer:` views (commit `7020964`).
+- HomeDiagnosticsCache / concurrency test fixes (commit `7020964`): test
+  fixtures now use the real `GestaltKeys.*` keys instead of the literal
+  `"regionCode"` / `"productType"` strings; `LilaRecommendation` equality
+  ignores `id` / `createdAt` and `DeviceFingerprint` equality ignores
+  `recordedAt`, matching the digest rules; new regression tests in
+  `tests/DiagnosticsEquatableTests.swift`.
+- `HomeDiagnosticsCache.swift` now imports Combine, so
+  `ObservableObject` / `@Published` resolve in CI (earlier fix on `0a429e9`).
+
+### Removed
+- NeoSpring/Ketamine WebKit respring implementation removed
+  (`GestaltX/NeoSpringView.swift` deleted, 2026-11-14): NeoSpring states no
+  license anywhere, so the technique ships no more. Replaced by a manual
+  device-restart prompt that never claims to restart SpringBoard itself.
+
+### Known gaps at this HEAD (2026-11-15, commit `37c4a36`)
+- **No real-device verification for this build.** Install, eSIM activation,
+  Apple Intelligence activation and restore have not been tested on a real
+  iPhone for 3.0.0-rc.1. Install-method steps in `docs/INSTALL_ZH-CN.md`
+  are marked 待验证 where they could not be verified from the repo.
+- **CI status at this exact HEAD is not yet confirmed in this changelog.**
+  The fix4 commit (`7020964`) landed after the last recorded test runs;
+  check the workflow badges in `README.md` for the latest runs before
+  publishing. Earlier recorded runs: Tests #129 passed on pre-integration
+  HEAD `096330e`; Tests #137 / IPA #138 failed on integrated HEAD `86e32b4`
+  (missing `import Combine`, since fixed).
+- 8 snapshot baselines await re-recording after CI renders the new images
+  (shadow removal and new sort/hide UI); the 10 new Phase H snapshot
+  references are recorded on the first CI run and must be committed in a
+  follow-up.
+- `Package.resolved` pins only ZIPFoundation while the project also requires
+  SnapshotTesting 1.19.7 — resolve with
+  `xcodebuild -resolvePackageDependencies` in an Xcode environment.
+- No screenshots from the real 3.0.0-rc.1 build exist yet; none are claimed.
+- The `v3.0.0-rc.1` tag and GitHub Release do not exist yet at the time of
+  writing; they are created when this pre-release is published.
+
+## [Unreleased]
+
+## [3.0.0] - Development preview (not released)
+
+> Superseded by [3.0.0-rc.1] above for the current HEAD. The entries below
+> are kept as the history of the 3.0 development preview.
+
+### Added
+- Lightweight 3.0 home showing real device read and staged-change status.
+- Task-specific navigation for unlock, diagnostics, restore and presets; legacy tools remain accessible.
+- Native reorderable dashboard shortcuts with persisted and sanitized order.
+- XCTest coverage for dashboard ordering and automatic preview branch CI.
+- 3.0 integration (phases C–I): an 8-section home, a 53-item feature catalog in 11 categories with one ordering rule (versioned JSON + SHA-256 sidecar), a unified 8-state compatibility model, a history/restore view with second confirmations, diagnostic caching (`HomeDiagnosticsCache`, 11 diagnostic cards moved to secondary pages, `LazyVStack`, iOS 26+ shadow removal), and 356 Swift test functions in total.
+- Build number 30000001 → 30000002; version stays 3.0.0.
+
+### Added (audit, 2026-11-14)
+- Open-source audit: per-project record in `docs/OPEN_SOURCE_REFERENCES.md` (16 projects) and per-feature origin map in `docs/FEATURE_ORIGIN_MATRIX.md`.
+- About page rebuilt as an open-source contributor center: every used or referenced project as its own entry with author, relationship, key technology, license and source link; third-party licenses from the real bundled texts; full source links; disclaimer.
+- Copyright headers normalized in 20 files that use or adapt third-party code (SPDX + original source + modification notes); GestaltEdit license corrected from PolyForm Noncommercial 1.0.0 to GPL-3.0-or-later; ZIPFoundation MIT text updated to 2017-2026 (byte-identical to upstream).
+- License compliance script `scripts/check-licenses.py` (runs on every IPA build via the check-licenses workflow) and license-consistency tests in `tests/ThirdPartyNoticesTests.py`.
+
+### Removed (respring license, 2026-11-14)
+- Removed the NeoSpring/Ketamine WebKit respring implementation (`GestaltX/NeoSpringView.swift` deleted; user decision option c). The technique had no verifiable authorization: NeoSpring (rooootdev/neospring) states no license anywhere. No respring code ships in this build. The Respring action is replaced by a manual device-restart prompt that never claims to restart SpringBoard itself. See `docs/OPEN_SOURCE_REFERENCES.md` §3–§4.
+
+### To verify
+- GitHub Actions compilation on the integrated 3.0 branch: Tests #129 passed on the pre-integration HEAD (096330e); the integrated HEAD (86e32b4) failed Tests #137 and IPA #138 on a missing `import Combine` in `HomeDiagnosticsCache.swift` (fix in flight). On-device performance is not yet verified.
+- 8 snapshot baselines await re-recording after CI renders the new images (shadow removal and new sort/hide UI); the 10 new Phase H snapshot references are recorded on the first CI run and must be committed in a follow-up.
+- NeoSpring respring: decided and handled 2026-11-14 (user chose option c, remove/replace); the implementation is deleted and the About page marks Ketamine and NeoSpring as suspended. Re-integration requires a clearly sourced, license-compatible implementation plus independent audit and testing; see `docs/OPEN_SOURCE_REFERENCES.md` §4.
+- `Package.resolved` pins only ZIPFoundation while the project also requires SnapshotTesting 1.19.7 — resolve with `xcodebuild -resolvePackageDependencies` in an Xcode environment.
+
+
+
+### Added
+
+- Add SnapshotTesting UI regression tests for the key SwiftUI cards (preset catalog, smart fault diagnosis, personalization center, system health score — unread and populated states, fixed 390×844 layout, light traits) plus text snapshots of the deterministic data feeding the diagnostics card (battery unknown/known, connection not-read/read, cache entries from a fixed directory). The DiagnosticsExpansionCard itself has no image snapshot on purpose: its cache section renders live container sizes that vary with test execution order. Snapshot references are recorded on the first CI run (`record: .missing`) into `tests/__Snapshots__/ViewSnapshotTests/` and must be committed in a follow-up; see `docs/SNAPSHOT_TESTING.md`.
+- Add SwiftLint with a minimal rule set (`.swiftlint.yml`, only rules the current codebase already passes) and a SwiftLint CI workflow that runs on every PR to `main`.
+- Add the release system: `GestaltX/ReleaseNotes.swift` (version parsing/validation and Markdown rendering), `scripts/prepare-release.py` (validates and optionally bumps the version in the Xcode project, renders release notes from a PR list, verifies the IPA and records its SHA-256), and a `workflow_dispatch`-only Prepare Draft Release workflow that builds the IPA and creates a DRAFT GitHub Release (never published automatically, fails loudly if the tag already exists).
+
 ## [1.0.7] - 2026-11-13 - LilaShift 2.0
 
 Build `11130112`. Full-source LilaShift 2.0 project (this repository), based on upstream GestaltX v1.0.7 plus PR #126.

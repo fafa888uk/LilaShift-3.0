@@ -12,6 +12,12 @@ struct ContentView: View {
     @StateObject private var systemSettings = SystemSettingsModel()
     @StateObject private var customizations = CustomizationModel()
     @StateObject private var launchCatalog = LaunchArtworkCatalogModel()
+    /// The shared home-diagnostics cache (see HomeDiagnosticsCache):
+    /// it computes the device report, backup verifications, SafePatch
+    /// simulations, health score, fingerprint and live values once per
+    /// input change on a background task, so the home cards read a
+    /// cached value instead of recomputing on every body evaluation.
+    @StateObject private var diagnostics = HomeDiagnosticsCache()
     @Environment(\.scenePhase) private var scenePhase
     @State private var importOffer: PlistImportOffer?
     @State private var showsImportConfirmation = false
@@ -24,13 +30,18 @@ struct ContentView: View {
     @State private var sharesFile: TemporaryExport?
     @State private var activeExport: TemporaryExport?
     @State private var showsChanges = false
-    @State private var asksRespring = false
+    @State private var showsRestartHelp = false
     @State private var asksImportedRestore = false
     @State private var showsShareNotice = false
     @AppStorage("GestaltX.sharedImportNotice.v1") private var sharedImportNoticeShown = false
     @State private var selectedTab = 0
     @State private var didStart = false
     @State private var didAutoRead = false
+    /// The persisted personalization settings (Tools page card
+    /// visibility). Loaded on appear and reloaded whenever the
+    /// Personalization Center saves, via
+    /// `.personalizationSettingsDidChange`.
+    @State private var personalizationSettings = PersonalizationSettings.defaults
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     #if targetEnvironment(simulator)
     @State private var previewCategory: CapabilityCategory?
@@ -39,7 +50,22 @@ struct ContentView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            NavigationStack { tools }
+            NavigationStack {
+                DashboardV3Home { section in
+                    dashboardDestination(section)
+                }
+            }
+                // fix2: enum-value navigation for the catalog.
+                // FeatureCatalogView's page rows are
+                // NavigationLink(value:) over DashboardV3Destination;
+                // the destination view is resolved HERE, by the
+                // NavigationStack, and never by a closure passed
+                // into the catalog or into dashboardDestination
+                // itself (that closure was the recursive opaque-type
+                // cycle that failed the build on 33c690a).
+                .navigationDestination(for: DashboardV3Destination.self) { section in
+                    dashboardDestination(section)
+                }
                 .tabItem { Label(L("Tools"), systemImage: "square.grid.2x2") }.tag(0)
             NavigationStack { FieldsView() }
                 .tabItem { Label(L("MG Control"), systemImage: "slider.horizontal.3") }.tag(1)
@@ -49,6 +75,7 @@ struct ContentView: View {
                 .tabItem { Label(L("About"), systemImage: "info.circle") }.tag(3)
         }
         .environmentObject(model)
+        .environment(\.homeDiagnosticsCache, diagnostics)
         .tint(Color.gestaltAccent)
         #if targetEnvironment(simulator)
         .sheet(item: $previewCategory) { category in
@@ -71,14 +98,12 @@ struct ContentView: View {
                     .toolbar { ToolbarItem(placement: .topBarTrailing) { Button(L("Done")) { showsSharedWallpapers = false } } }
             }
         }
-        .fullScreenCover(isPresented: $model.isRespringing) { NeoSpringView() }
         .alert(L("LilaShift"), isPresented: Binding(get: { model.message != nil && !showsChanges }, set: { if !$0 { model.message = nil } })) {
             Button(L("OK"), role: .cancel) { model.message = nil }
         } message: { Text(model.message ?? "") }
-        .alert(L("Respring now?"), isPresented: $asksRespring) {
-            Button(L("Cancel"), role: .cancel) {}
-            Button(L("Respring")) { model.isRespringing = true }
-        } message: { Text(L("This will attempt to restart SpringBoard using NeoSpring.")) }
+        .alert(L("Restart Your Device"), isPresented: $showsRestartHelp) {
+            Button(L("OK"), role: .cancel) {}
+        } message: { Text(L("Some changes need a device restart to take effect. LilaShift cannot restart SpringBoard itself. Please restart your device manually: hold the side button and a volume button, then slide to power off, or use Settings → General → Shut Down.")) }
         .alert(L("Import Plist"), isPresented: $showsImportConfirmation) {
             Button(L("Cancel"), role: .cancel) {
                 if let offer = importOffer { model.discardImport(offer) }
@@ -186,10 +211,23 @@ struct ContentView: View {
         .onChange(of: acceptedWelcome) { _, accepted in
             if accepted && !isPreviewSession { Task { await autoRead(); showShareNoticeIfNeeded() } }
         }
+        // Diagnostics cache invalidation: refresh the shared cache
+        // whenever the inputs it derives from change. The snapshot
+        // data changes on a read, the backup inventory on a backup
+        // reload, the staged-change count on staging/clearing/apply,
+        // and the working-document presence on load/unload. The cache
+        // cancels an in-flight refresh and only publishes changed
+        // values, so these triggers are cheap and never rebuild the
+        // home spuriously.
+        .onChange(of: model.snapshot?.data) { _, _ in refreshDiagnostics() }
+        .onChange(of: model.backups) { _, _ in refreshDiagnostics() }
+        .onChange(of: model.changeCount) { _, _ in refreshDiagnostics() }
+        .onChange(of: model.working != nil) { _, _ in refreshDiagnostics() }
         .task {
             guard !didStart else { return }
             didStart = true
             await model.reloadBackups()
+            refreshDiagnostics()
             #if targetEnvironment(simulator)
             let arguments = ProcessInfo.processInfo.arguments
             if let flag = arguments.firstIndex(of: "--preview-document"), arguments.indices.contains(flag + 1) {
@@ -230,12 +268,22 @@ struct ContentView: View {
         await model.connect(showErrorAlert: false)
     }
 
+    /// Refreshes the shared home-diagnostics cache for the current
+    /// inputs (snapshot, working document, backup inventory). The
+    /// cache computes on a background task and publishes only changed
+    /// values; calling this often is safe.
+    private func refreshDiagnostics() {
+        diagnostics.refresh(
+            snapshot: model.snapshot, working: model.working,
+            backups: model.backups)
+    }
+
     private var canPresentSharedImport: Bool {
         acceptedWelcome && !model.isBusy && model.changeCount == 0 && importOffer == nil
             && wallpaperOffer == nil && !showsWallpaperConfirmation && !showsSharedWallpapers
             && !customizations.busy && !customizations.isPresenting && customizations.message == nil
-            && !showsImportConfirmation && !showsChanges && !model.isRespringing
-            && sharesFile == nil && !asksRespring && !asksImportedRestore
+            && !showsImportConfirmation && !showsChanges
+            && sharesFile == nil && !showsRestartHelp && !asksImportedRestore
             && !showsShareNotice && model.message == nil
     }
 
@@ -335,9 +383,88 @@ struct ContentView: View {
         sharesFile = export
     }
 
+    // Version 3 keeps legacy operations reachable while bringing costly
+    // diagnostics onto separate, task-specific navigation destinations.
+    // Internal (not private) on purpose: the Phase H snapshot tests
+    // render each destination through this exact builder, so the
+    // snapshots cover the real navigation targets instead of a copy.
+    // Presentation only — no behaviour lives here.
+    @ViewBuilder
+    func dashboardDestination(_ section: DashboardV3Destination) -> some View {
+        switch section {
+        case .unlock:
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 16) {
+                    ChinaUnlockCard { showsChanges = true }
+                    ChinaAIOnlyCard { showsChanges = true }
+                    ChinaESIMRegionCard { showsChanges = true }
+                    AppleIntelligenceCheckupCard { showsChanges = true }
+                    ModifiedValuesCard()
+                }
+                .padding()
+            }
+            .background(GlassBackground())
+            .navigationTitle(section.title)
+        case .diagnostics:
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 16) {
+                    LilaIntelligenceCard()
+                    SmartFaultDiagnosisCard()
+                    SystemHealthScoreCard()
+                    DependencyAnalyzerCard()
+                    DiagnosticsExpansionCard()
+                }
+                .padding()
+            }
+            .background(GlassBackground())
+            .navigationTitle(section.title)
+        case .restore:
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 16) {
+                    RestoreIntelligenceCard()
+                    DeviceFingerprintCard()
+                    PostModificationAcceptanceCard()
+                }
+                .padding()
+            }
+            .background(GlassBackground())
+            .navigationTitle(section.title)
+        case .presets:
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 16) {
+                    // The unified catalog browser (Phase E): search,
+                    // filter, sort, favorites, recent use, hide and
+                    // custom order over the same catalog the home
+                    // sections and the card below are built from.
+                    // fix2: the catalog navigates by enum value
+                    // (NavigationLink(value:) + .navigationDestination
+                    // on the NavigationStack below) — it takes NO
+                    // destination closure. Passing one that called
+                    // dashboardDestination() from inside
+                    // dashboardDestination() made this function's
+                    // `some View` return type refer to itself and
+                    // the build failed (OpaqueTypeInference, :51
+                    // and :384, Tests #147 / IPA #148 on 33c690a).
+                    FeatureCatalogView()
+                    PresetCatalogCard()
+                    PersonalizationCenterCard()
+                    SafePatchCard()
+                }
+                .padding()
+            }
+            .background(GlassBackground())
+            .navigationTitle(section.title)
+        case .advanced:
+            tools
+        }
+    }
+
     private var tools: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
+            // Lazy so off-screen cards are not built or laid out eagerly:
+            // the tab holds ~16 glass cards and an eager VStack made
+            // scrolling lag. Only visible cards are rendered now.
+            LazyVStack(alignment: .leading, spacing: 20) {
                 HStack(spacing: 6) {
                     Text(model.hasDocument ? model.displayedName : UIDevice.current.model)
                         .font(.subheadline.weight(.semibold))
@@ -362,7 +489,23 @@ struct ContentView: View {
 
                 ChinaUnlockCard { showsChanges = true }
 
+                ChinaAIOnlyCard { showsChanges = true }
+
+                ChinaESIMRegionCard { showsChanges = true }
+
                 AppleIntelligenceCheckupCard { showsChanges = true }
+
+                ModifiedValuesCard()
+
+                // Diagnostics summary + one row per diagnostic area.
+                // The full cards live on secondary pages behind a
+                // NavigationLink (see HomeDiagnosticsSection): the
+                // home used to inline all eleven full cards, which
+                // made it long, duplicated the same summaries, and
+                // forced every card to build at once.
+                DiagnosticsSummaryCard()
+
+                HomeDiagnosticsSection(order: HomeDiagnosticsSectionID.orderedVisibleSections(personalizationSettings))
 
                 if model.isReading {
                     GlassReadProgressCard(title: L("Reading device data…"))
@@ -373,7 +516,7 @@ struct ContentView: View {
                         .font(.headline)
                     GlassEffectContainer(spacing: 12) {
                         LazyVGrid(columns: gridColumns, spacing: 12) {
-                            ForEach(ToolGroup.categories) { group in
+                            ForEach(visibleToolGroups) { group in
                                 NavigationLink {
                                     ToolGroupView(group: group, systemSettings: systemSettings, customizations: customizations, launchCatalog: launchCatalog)
                                 } label: {
@@ -391,6 +534,11 @@ struct ContentView: View {
                                 .disabled(model.isBusy || (group.requiresDocument && !model.hasDocument))
                             }
                         }
+                    }
+                    if visibleToolGroups.isEmpty {
+                        Text(L("All Tools cards are hidden. Re-enable them in the Personalization Center."))
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
                     }
                     NavigationLink {
                         ToolGroupView(group: .advancedDiagnostics, systemSettings: systemSettings, customizations: customizations, launchCatalog: launchCatalog)
@@ -428,7 +576,7 @@ struct ContentView: View {
                             if let export = model.exportDocument() { presentShare(export) }
                         }
                         Divider()
-                        actionButton(label: L("Respring"), systemImage: "arrow.trianglehead.2.clockwise.rotate.90", enabled: !model.isBusy) { asksRespring = true }
+                        actionButton(label: L("Restart Device"), systemImage: "power", enabled: !model.isBusy) { showsRestartHelp = true }
                         Divider()
                         NavigationLink { SessionLogView() } label: {
                             actionLabel(label: L("Log"), systemImage: "text.alignleft")
@@ -437,7 +585,7 @@ struct ContentView: View {
                         }
                     }
                 }
-                if model.needsRespring {
+                if model.needsRestart {
                     Label(L("Some changes require a device restart."), systemImage: "info.circle")
                         .font(.footnote).foregroundStyle(.secondary)
                 }
@@ -447,6 +595,10 @@ struct ContentView: View {
         .background(GlassBackground())
         .navigationTitle(L("Tools LilaShift"))
         .navigationBarTitleDisplayMode(.large)
+        .onAppear { loadPersonalizationSettings() }
+        .onReceive(NotificationCenter.default.publisher(for: .personalizationSettingsDidChange)) { _ in
+            loadPersonalizationSettings()
+        }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 HStack(spacing: 8) {
@@ -475,6 +627,24 @@ struct ContentView: View {
         } else {
             [GridItem(.adaptive(minimum: 160), spacing: 12)]
         }
+    }
+
+    /// The Tools page category cards the user's settings show, in
+    /// grid order. The Personalization Center owns the toggles; this
+    /// page only applies them. The Advanced & Diagnostics card is
+    /// not part of this setting: it is always shown below the grid.
+    private var visibleToolGroups: [ToolGroup] {
+        let visibleIDs = PersonalizationCenter.visibleToolCardIDs(personalizationSettings)
+        return ToolGroup.categories.filter { visibleIDs.contains($0.rawValue) }
+    }
+
+    /// Loads the persisted personalization settings for the Tools
+    /// page grid. A missing history id means the defaults stay.
+    private func loadPersonalizationSettings() {
+        guard let deviceID = RestoreIntelligence.installationDeviceID else { return }
+        let store = PersonalizationSettingsStore(
+            directory: RestoreIntelligence.historyDirectory, deviceID: deviceID)
+        personalizationSettings = store.load().settings
     }
 
     private var readStatusText: String {
@@ -532,10 +702,10 @@ private struct ChinaUnlockCard: View {
 
     var body: some View {
         let enabledAI = model.chinaUnlockEnabledAICapabilityIDs
-        GlassCard(cornerRadius: 22, tint: heroTint) {
-            VStack(alignment: .leading, spacing: 14) {
+        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: heroTint) {
+            VStack(alignment: GlassTokens.cardAlignment, spacing: GlassTokens.cardSpacing) {
             HStack(spacing: 12) {
-                GlassIconPedestal(systemImage: "lock.open.fill", tint: .gestaltAccent, size: 44)
+                GlassIconPedestal(systemImage: "lock.open.fill", tint: .gestaltAccent, size: GlassTokens.iconSize)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(L("China Unlock"))
                         .font(.headline)
@@ -552,29 +722,6 @@ private struct ChinaUnlockCard: View {
                 statusColumn(title: L("Region Code"), value: model.previewRegionCode ?? L("Not read yet"))
                 Divider().frame(height: 36).background(Color.primary.opacity(0.12))
                 statusColumn(title: L("Apple Intelligence"), value: model.hasDocument ? "\(model.chinaUnlockAIEnabledCount)/\(ChinaUnlock.aiCapabilities.count)" : L("Not read yet"))
-            }
-
-            // Region mode (opt-in Full US). Shown for China hardware and
-            // while the unlock is staged. The two options use a menu
-            // picker: the full labels do not fit a segmented control on a
-            // phone screen. Changing the mode re-stages the unlock.
-            if model.hasDocument && (model.isChinaUnlockStaged || model.snapshot?.document.extra[GestaltKeys.regionCode] as? String == "CH") {
-                VStack(alignment: .leading, spacing: 6) {
-                    Picker(L("Region mode"), selection: Binding(
-                        get: { model.chinaUnlockRegionMode },
-                        set: { model.setChinaUnlockRegionMode($0) }
-                    )) {
-                        ForEach(ChinaUnlockRegionMode.allCases) { mode in
-                            Text(L(mode.title)).tag(mode)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    Text(L(model.chinaUnlockRegionMode.detail))
-                        .font(.caption).foregroundStyle(.secondary)
-                    if let note = model.regionModeNote {
-                        Text(note).font(.caption).foregroundStyle(.secondary)
-                    }
-                }
             }
 
             DisclosureGroup {
@@ -640,7 +787,7 @@ private struct ChinaUnlockCard: View {
                     .foregroundStyle(.secondary)
             }
         }
-            .padding(16)
+            .padding(GlassTokens.cardPadding)
         }
     }
 
@@ -669,6 +816,203 @@ private struct ChinaUnlockCard: View {
     }
 }
 
+/// Standalone AI-only preset: stages only the six Apple Intelligence
+/// presets (the AI part of the one-tap unlock), without eSIM or region.
+/// Not blocked by the eSIM cache layout. Mirrors the one-tap card.
+private struct ChinaAIOnlyCard: View {
+    let onReviewChanges: () -> Void
+    @EnvironmentObject private var model: GestaltManager
+    @Environment(\.colorScheme) private var colorScheme
+
+    private var heroTint: Color {
+        colorScheme == .dark
+            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
+            : Color.lavenderGlass.opacity(0.65)
+    }
+
+    var body: some View {
+        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: heroTint) {
+            VStack(alignment: GlassTokens.cardAlignment, spacing: GlassTokens.cardSpacing) {
+            HStack(spacing: 12) {
+                GlassIconPedestal(systemImage: "sparkles", tint: .gestaltAccent, size: GlassTokens.iconSize)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(L("China AI"))
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                    Text(L("Enable the six Apple Intelligence features on a China-model iPhone."))
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            HStack(spacing: 0) {
+                statusColumn(title: L("Apple Intelligence"), value: model.hasDocument ? "\(model.chinaUnlockAIEnabledCount)/\(ChinaUnlock.aiCapabilities.count)" : L("Not read yet"))
+            }
+
+            if model.hasDocument {
+                if model.isChinaAIOnlyStaged && model.changeCount > 0 {
+                    Button(L("Review Changes")) { onReviewChanges() }
+                        .buttonStyle(GlassPrimaryButtonStyle())
+                    Button(L("Restore AI")) { stageChanges(restoring: true) }
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Color.gestaltAccent)
+                        .frame(maxWidth: .infinity)
+                        .disabled(model.isBusy)
+                        .opacity(model.isBusy ? 0.5 : 1)
+                } else {
+                    let restoring = model.isChinaAIOnlyApplied
+                    Button(L(restoring ? "Restore AI" : "Enable China AI")) { stageChanges(restoring: restoring) }
+                        .buttonStyle(GlassPrimaryButtonStyle())
+                        .disabled(model.isBusy)
+                        .opacity(model.isBusy ? 0.5 : 1)
+                }
+
+                Text(L(model.sourceIsDevice
+                       ? "Review the changes, apply them, then restart the device."
+                       : "This edits the opened file in LilaShift. Export it to save a copy; the system file is not changed."))
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            } else {
+                Button(L(model.isBusy ? "Reading…" : "Read Device")) {
+                    Task { await model.connect() }
+                }
+                .buttonStyle(GlassPrimaryButtonStyle())
+                .disabled(model.isBusy)
+                .opacity(model.isBusy ? 0.5 : 1)
+                Text(L("Read the device before choosing a preset."))
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+        }
+            .padding(GlassTokens.cardPadding)
+        }
+    }
+
+    private func statusColumn(title: String, value: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Text(value)
+                .font(.headline)
+                .foregroundStyle(.primary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 4)
+    }
+
+    private func stageChanges(restoring: Bool) {
+        let staged = restoring ? model.restoreChinaAIOnly() : model.stageChinaAIOnly()
+        if staged && model.changeCount > 0 { onReviewChanges() }
+    }
+}
+
+/// Standalone eSIM+region preset: stages only the eSIM cache flags and
+/// the region code US (LL) — the eSIM+region part of the one-tap unlock,
+/// without the six AI presets. Blocked by the eSIM cache layout, exactly
+/// like the one-tap. Mirrors the one-tap card.
+private struct ChinaESIMRegionCard: View {
+    let onReviewChanges: () -> Void
+    @EnvironmentObject private var model: GestaltManager
+    @Environment(\.colorScheme) private var colorScheme
+
+    private var heroTint: Color {
+        colorScheme == .dark
+            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
+            : Color.lavenderGlass.opacity(0.65)
+    }
+
+    var body: some View {
+        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: heroTint) {
+            VStack(alignment: GlassTokens.cardAlignment, spacing: GlassTokens.cardSpacing) {
+            HStack(spacing: 12) {
+                GlassIconPedestal(systemImage: "simcard.fill", tint: .gestaltAccent, size: GlassTokens.iconSize)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(L("eSIM & Region"))
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                    Text(L("Enable eSIM and set the region code to US (LL)."))
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            HStack(spacing: 0) {
+                statusColumn(title: "eSIM", value: esimStatus ?? L("Not read yet"))
+                Divider().frame(height: 36).background(Color.primary.opacity(0.12))
+                statusColumn(title: L("Region Code"), value: model.previewRegionCode ?? L("Not read yet"))
+            }
+
+            if model.hasDocument {
+                if model.isChinaESIMRegionStaged && model.changeCount > 0 {
+                    Button(L("Review Changes")) { onReviewChanges() }
+                        .buttonStyle(GlassPrimaryButtonStyle())
+                    Button(L("Restore eSIM & Region")) { stageChanges(restoring: true) }
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Color.gestaltAccent)
+                        .frame(maxWidth: .infinity)
+                        .disabled(model.isBusy)
+                        .opacity(model.isBusy ? 0.5 : 1)
+                } else {
+                    let restoring = model.isChinaESIMRegionApplied
+                    Button(L(restoring ? "Restore eSIM & Region" : "Enable eSIM & Region")) { stageChanges(restoring: restoring) }
+                        .buttonStyle(GlassPrimaryButtonStyle())
+                        .disabled(model.isBusy || model.previewESIMFlags == nil)
+                        .opacity(model.isBusy || model.previewESIMFlags == nil ? 0.5 : 1)
+                }
+
+                if model.previewESIMFlags == nil {
+                    Text(model.cacheLayoutError ?? L("eSIM settings are unavailable. You can still configure region and AI under Intelligence."))
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text(L(model.sourceIsDevice
+                           ? "Review the changes, apply them, then restart the device."
+                           : "This edits the opened file in LilaShift. Export it to save a copy; the system file is not changed."))
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+            } else {
+                Button(L(model.isBusy ? "Reading…" : "Read Device")) {
+                    Task { await model.connect() }
+                }
+                .buttonStyle(GlassPrimaryButtonStyle())
+                .disabled(model.isBusy)
+                .opacity(model.isBusy ? 0.5 : 1)
+                Text(L("Read the device before choosing a preset."))
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+        }
+            .padding(GlassTokens.cardPadding)
+        }
+    }
+
+    private var esimStatus: String? {
+        guard model.hasDocument else { return nil }
+        guard let flags = model.previewESIMFlags else { return L("Unsupported") }
+        return L(flags == .enabled ? "Configured" : "Not Configured")
+    }
+
+    private func statusColumn(title: String, value: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Text(value)
+                .font(.headline)
+                .foregroundStyle(.primary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 4)
+    }
+
+    private func stageChanges(restoring: Bool) {
+        let staged = restoring ? model.restoreChinaESIMRegion() : model.stageChinaESIMRegion()
+        if staged && model.changeCount > 0 { onReviewChanges() }
+    }
+}
+
 /// Apple Intelligence readiness checkup (item 4): four factors with live
 /// on-device state when the probe can answer, and a one-tap Fix button.
 /// Read-only until Fix is tapped: Fix only stages through the normal
@@ -681,10 +1025,10 @@ private struct AppleIntelligenceCheckupCard: View {
     var body: some View {
         Group {
             if let checkup = model.aiReadinessCheckup {
-                GlassCard(cornerRadius: 22) {
+                GlassCard(cornerRadius: GlassTokens.cardRadius) {
                     VStack(alignment: .leading, spacing: 12) {
                         HStack(spacing: 12) {
-                            GlassIconPedestal(systemImage: "sparkles", tint: .gestaltAccent, size: 44)
+                            GlassIconPedestal(systemImage: "sparkles", tint: .gestaltAccent, size: GlassTokens.iconSize)
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(L("Apple Intelligence readiness"))
                                     .font(.headline)
@@ -717,7 +1061,7 @@ private struct AppleIntelligenceCheckupCard: View {
                             .opacity(model.isBusy ? 0.5 : 1)
                         }
                     }
-                    .padding(16)
+                    .padding(GlassTokens.cardPadding)
                 }
                 .onAppear { model.refreshLiveProbe() }
             }
@@ -751,6 +1095,106 @@ private struct AppleIntelligenceCheckupCard: View {
         case true: return L("Live probe: on")
         case false: return L("Live probe: off — restart to apply")
         case nil: return L("Live status unknown")
+        }
+    }
+}
+
+/// Read-only "Modified Values" card: lists every field in the
+/// live-read document whose current value differs from its recorded
+/// original, showing original → current. It stages nothing and writes
+/// nothing. A field appears only when both its original and its
+/// current value are known and verified; a field with no recorded
+/// original is never shown with a made-up original. An empty list
+/// after a comparison honestly means no modification was found,
+/// because a baseline existed to compare against — but "no recorded
+/// originals" is a different, honestly labeled state, never a claim
+/// that nothing was modified.
+private struct ModifiedValuesCard: View {
+    @EnvironmentObject private var model: GestaltManager
+    @Environment(\.colorScheme) private var colorScheme
+
+    private var heroTint: Color {
+        colorScheme == .dark
+            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
+            : Color.lavenderGlass.opacity(0.65)
+    }
+
+    var body: some View {
+        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: heroTint) {
+            VStack(alignment: GlassTokens.cardAlignment, spacing: GlassTokens.cardSpacing) {
+                HStack(spacing: 12) {
+                    GlassIconPedestal(systemImage: "list.bullet", tint: .gestaltAccent, size: GlassTokens.iconSize)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(L("Modified Values"))
+                            .font(.headline)
+                            .foregroundStyle(.primary)
+                        Text(L("Fields whose current value differs from the recorded original."))
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                switch model.modifiedValuesReport {
+                case .noDocument:
+                    Text(L("Read the device first to see modified values."))
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    Button(L(model.isBusy ? "Reading…" : "Read Device")) {
+                        Task { await model.connect() }
+                    }
+                    .buttonStyle(GlassPrimaryButtonStyle())
+                    .disabled(model.isBusy)
+                    .opacity(model.isBusy ? 0.5 : 1)
+                case .noRecordedOriginals:
+                    Text(L("No recorded originals. Whether anything was modified cannot be determined."))
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    Text(L("Only changes with a recorded original are listed."))
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                case .compared(let rows):
+                    if rows.isEmpty {
+                        Text(L("No modifications found"))
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Text(String(format: L("Modified %d fields"), rows.count))
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.primary)
+                        VStack(alignment: .leading, spacing: 10) {
+                            ForEach(rows) { row in
+                                // One line per row: name on the left, the
+                                // "original → current" value right-aligned,
+                                // so all values line up in a column instead
+                                // of stacking under each name.
+                                HStack(spacing: 8) {
+                                    Text(L(row.title))
+                                        .font(.subheadline.weight(.medium))
+                                        .foregroundStyle(.primary)
+                                    Spacer()
+                                    HStack(spacing: 4) {
+                                        Text(row.originalText)
+                                        Text("→")
+                                        Text(row.currentText)
+                                    }
+                                    .font(.subheadline.monospaced())
+                                    .foregroundStyle(.secondary)
+                                    .fixedSize(horizontal: true, vertical: false)
+                                }
+                            }
+                        }
+                    }
+                    Text(L("Only changes with a recorded original are listed."))
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .padding(GlassTokens.cardPadding)
+            // Full width: this card has no full-width button, so without
+            // this the .leading-aligned parent VStack sized it to its
+            // widest text and it rendered noticeably narrower than every
+            // other card on the Tools tab.
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }
@@ -1494,7 +1938,7 @@ struct ChangeReviewView: View {
         .alert(L("Apply these changes?"), isPresented: $asksApply) {
             Button(L("Cancel"), role: .cancel) {}
             Button(L("Apply")) { applying = true; Task { await model.apply(); applying = false; if model.changeCount == 0 { dismiss() } } }
-        } message: { Text(L(model.sourceIsDevice ? "Incorrect system values can affect device behavior. A verified backup will be kept. No respring is triggered automatically." : "The current local document will be backed up before saving your edits.")) }
+        } message: { Text(L(model.sourceIsDevice ? "Incorrect system values can affect device behavior. A verified backup will be kept. No restart is triggered automatically." : "The current local document will be backed up before saving your edits.")) }
     }
 
     /// Fixed glass action bar: change count, data source and backup status
@@ -1708,13 +2152,10 @@ struct ChangeReviewView: View {
         return code
     }
 
-    /// Region row's after-value: in Full US mode the staged sales-region
-    /// suffix is shown too, so the "9 items" summary never understates
-    /// the two extra staged fields.
+    /// Region row's after-value: the one-tap unlock stages the region
+    /// code only, so the after-value is just the LL display string.
     private var regionAfterText: String {
-        let code = regionDisplay(code: "LL")
-        guard model.chinaUnlockRegionMode == .fullUS else { return code }
-        return code + " · LL/A"
+        regionDisplay(code: "LL")
     }
 
     private var fieldChanges: some View {

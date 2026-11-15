@@ -4,7 +4,11 @@
 //
 //  Created by Taj C on 8/20/26.
 //
-
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Taj C (forcequit)
+// Bundled verbatim from https://github.com/forcequitOS/worse_query
+// (GPL-3.0-or-later per the notice below; not GPL-3.0-only like the rest of this repo.)
+//
 /*
      worse_query - A sandbox escape PoC for iOS 26 and 27, again.
      Copyright (C) 2026 Taj C (forcequit)

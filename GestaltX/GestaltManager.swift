@@ -25,20 +25,25 @@ final class GestaltManager: ObservableObject {
     @Published private(set) var deviceAccessible = false
     @Published private(set) var backups: [BackupRecord] = []
     @Published private(set) var logs: [String] = []
+    /// Structured operation events recorded this session (reads and
+    /// backups only — see `OperationEventRecorder`). Observation
+    /// only: recording never changes an operation's outcome.
+    let operationEvents = OperationEventRecorder()
+    /// When the last successful read happened, or `nil` when no read
+    /// has happened yet. Read-path state only.
+    @Published private(set) var lastReadAt: Date?
     @Published var message: String?
-    @Published var isRespringing = false
-    @Published var needsRespring = false
+    @Published var needsRestart = false
     @Published var choices: [String: PresetChoice] = [:]
     @Published var regionID = "keep"
     @Published var regionCodeID = "keep"
     @Published var modelID = "keep"
-    /// Opt-in region mode for China Unlock (default region-code-only).
+    /// Region mode for China Unlock (default region-code-only).
     /// Persisted across launches; never reset by loading a document.
+    /// The one-tap unlock stages the same 9 items in either mode; the
+    /// mode only affects manual region presets and restoring an unlock
+    /// applied by an older build.
     @Published var chinaUnlockRegionMode: ChinaUnlockRegionMode = .regionCodeOnly
-    /// US regulatory model staged by the Full US mode, if a mapping is
-    /// known for this device. `nil` means the mode stages region +
-    /// sales region only (see `regionModeNote`).
-    @Published var fullUSModelNumber: String?
     /// The user explicitly confirmed an unverified (warned) AI staging
     /// combination after reading its reason on the checkup card, by
     /// tapping Fix. In-memory only, never persisted: a fresh launch
@@ -46,9 +51,6 @@ final class GestaltManager: ObservableObject {
     /// Only ever converts a `.warn` decision into `.allow` (see
     /// `AIStagingGuard`); a `.block` is never overridden by it.
     @Published var userConfirmedUnverifiedAICombination = false
-    /// Shown under the region-mode picker when Full US cannot map this
-    /// device to a US regulatory model.
-    @Published var regionModeNote: String?
     @Published var changesName = false
     @Published var modelName = ""
     @Published var subtype = 0
@@ -167,9 +169,6 @@ final class GestaltManager: ObservableObject {
                         regionCode: RegionPreset.all.first { $0.id == regionCodeID },
                         skipCreatingRegionInfoOnModernOS: chinaUnlockRegionMode == .fullUS)
         doc.applyModel(ModelPreset.all.first { $0.id == modelID })
-        if chinaUnlockRegionMode == .fullUS, let model = fullUSModelNumber {
-            doc.set(model, for: GestaltKeys.modelNumber)
-        }
         return doc
     }
 
@@ -178,11 +177,20 @@ final class GestaltManager: ObservableObject {
         logs.append("[\(time)] \(text)")
         if logs.count > 1000 { logs.removeFirst(logs.count - 1000) }
     }
+    /// Records one structured operation event. Observation only:
+    /// the recorder never changes the operation, and recording is
+    /// fire-and-forget — a slow record cannot affect the manager.
+    /// Callers invoke this only after an operation's outcome is
+    /// known, and never from inside the write path (`apply()` /
+    /// `stage*` / `restore*` / `DevicePlistWriter`).
+    private func recordOperationEvent(_ kind: OperationEventKind, detail: String) {
+        let event = OperationEvent(kind: kind, detail: detail)
+        Task { await operationEvents.record(event) }
+    }
     private func failed(_ error: Error) { message = error.localizedDescription; log(error.localizedDescription) }
     private func accept(_ loaded: DocumentSnapshot) {
         snapshot = loaded; working = loaded.document
         choices = [:]; regionID = "keep"; regionCodeID = "keep"; modelID = "keep"; changesName = false; subtype = 0
-        fullUSModelNumber = nil; regionModeNote = nil
         userConfirmedUnverifiedAICombination = false
         cacheOptionChoice = .keep
         wapiChoice = .keep
@@ -229,40 +237,51 @@ final class GestaltManager: ObservableObject {
     var chinaUnlockAIEnabledCount: Int { chinaUnlockEnabledAICapabilityIDs.count }
 
     /// True when the preview already shows the full unlock, whether it was
-    /// just staged or applied in an earlier session. In Full US mode it
-    /// also requires the sales-region suffix (LL/A) and, when a US model
-    /// is known for this device, the mapped regulatory model number.
+    /// just staged or applied in an earlier session: eSIM enabled, region
+    /// code LL and all six AI presets enabled. The sales-region suffix
+    /// and the regulatory model number are never part of the unlock, so
+    /// they are not required here.
     var isChinaUnlockedInPreview: Bool {
-        guard isESIMUnlockedInPreview, previewRegionCode == "LL",
-              chinaUnlockAIEnabledCount == ChinaUnlock.aiCapabilityIDs.count else { return false }
-        guard chinaUnlockRegionMode == .fullUS else { return true }
-        let sysconfig = preview?.extra[GestaltKeys.legacyRegionInfo] as? String
-        let regionInfo = preview?.extra[GestaltKeys.regionInfo] as? String
-        guard sysconfig == "LL/A" || regionInfo == "LL/A" else { return false }
-        if let expected = expectedFullUSModelNumber {
-            return preview?.extra[GestaltKeys.modelNumber] as? String == expected
-        }
-        return true
+        isESIMUnlockedInPreview && previewRegionCode == "LL"
+            && chinaUnlockAIEnabledCount == ChinaUnlock.aiCapabilityIDs.count
     }
 
-    /// US regulatory model for the Full US mode, from the recorded
-    /// original model number and product type. `nil` means unknown: the
-    /// mode then stages region + sales region only.
-    var expectedFullUSModelNumber: String? {
-        guard let snapshot else { return nil }
-        let originalRegModel = snapshot.originalValue(for: GestaltKeys.modelNumber) as? String
-            ?? snapshot.document.extra[GestaltKeys.modelNumber] as? String
-        let productType = snapshot.document.extra[GestaltKeys.productType] as? String ?? ""
-        return USRegulatoryModelMapping.usRegulatoryModel(originalRegModel: originalRegModel,
-                                                          productType: productType)
+    /// True while the AI-only preset is staged: all six AI presets
+    /// enabled. This is the AI part of the one-tap unlock, staged on its
+    /// own; eSIM and region are untouched. It is not blocked by the eSIM
+    /// cache layout, because the six AI keys are CacheExtra values and do
+    /// not need the layout to resolve.
+    var isChinaAIOnlyStaged: Bool {
+        guard hasDocument else { return false }
+        return ChinaUnlock.aiCapabilityIDs.allSatisfy { (choices[$0] ?? .keep) == .enable }
     }
 
-    /// Switches the region mode (persisted). If the unlock is currently
-    /// staged, it is re-staged under the new mode so the review reflects it.
-    func setChinaUnlockRegionMode(_ mode: ChinaUnlockRegionMode) {
-        chinaUnlockRegionMode = mode
-        ChinaUnlockRegionMode.stored = mode
-        if isChinaUnlockStaged { _ = stageChinaUnlock() }
+    /// True when the preview already shows all six AI presets enabled,
+    /// whether staged now or applied in an earlier session.
+    var isChinaAIOnlyApplied: Bool {
+        chinaUnlockAIEnabledCount == ChinaUnlock.aiCapabilityIDs.count
+    }
+
+    /// True while the eSIM+region preset is staged: eSIM flags enabled
+    /// and region code US. This is the eSIM+region part of the one-tap
+    /// unlock, staged on its own; the six AI presets are untouched.
+    var isChinaESIMRegionStaged: Bool {
+        guard hasDocument else { return false }
+        return cacheOptionChoice == .enable && regionCodeID == ChinaUnlock.regionCodeID
+    }
+
+    /// True when the preview already shows eSIM enabled and region code
+    /// LL, whether staged now or applied in an earlier session.
+    var isChinaESIMRegionApplied: Bool {
+        isESIMUnlockedInPreview && previewRegionCode == "LL"
+    }
+
+    /// Read-only "Modified Values" report: fields in the live-read
+    /// document whose current value differs from the recorded original.
+    /// Computed on demand from the snapshot; never stages or writes
+    /// anything.
+    var modifiedValuesReport: ModifiedValuesReport {
+        ModifiedValues.report(for: snapshot)
     }
 
     // MARK: - AI readiness checkup (item 4)
@@ -401,10 +420,7 @@ final class GestaltManager: ObservableObject {
             ?? snapshot.document.extra[GestaltKeys.productType] as? String ?? ""
         return AIReadinessCheckup.evaluate(
             regionCode: preview.extra[GestaltKeys.regionCode] as? String,
-            sysconfig: preview.extra[GestaltKeys.legacyRegionInfo] as? String,
             regModel: preview.extra[GestaltKeys.modelNumber] as? String,
-            regionMode: chinaUnlockRegionMode,
-            expectedUSModel: expectedFullUSModelNumber,
             esimEnabled: isESIMUnlockedInPreview,
             conflicts: aiConflicts,
             aiEnabledCount: chinaUnlockAIEnabledCount,
@@ -522,14 +538,14 @@ final class GestaltManager: ObservableObject {
     }
 
     /// Stages the full China Unlock: eSIM cache flags, region code US and
-    /// the six Apple Intelligence presets. Nothing is written here; the
-    /// user still reviews the changes and applies them, and a restart is
-    /// required before they take effect. Sales region, `siriOnDevice`,
-    /// the model number and WAPI are left untouched in the default
-    /// region-code-only mode. In the opt-in Full US mode the sales region
-    /// (LL/A) and the mapped US regulatory model are staged as well; when
-    /// no US model is known for this device the model number is left
-    /// untouched and the reason is shown under the mode picker.
+    /// the six Apple Intelligence presets — exactly the 9 items, in either
+    /// region mode. Nothing is written here; the user still reviews the
+    /// changes and applies them, and a restart is required before they
+    /// take effect. The sales-region suffix, the regulatory model number,
+    /// `siriOnDevice` and WAPI are never staged: a regulatory model that
+    /// does not match the hardware makes the system discard the whole
+    /// MobileGestalt cache at boot and rebuild it from factory data, so
+    /// the region change does not stick.
     ///
     /// This is an explicit user action, so it is deliberately not gated
     /// by the AI staging guard (see `AIStagingGuard`): it stages
@@ -552,20 +568,7 @@ final class GestaltManager: ObservableObject {
         }
         guard stageCacheOption(.enable) else { return false }
         regionCodeID = ChinaUnlock.regionCodeID
-        if chinaUnlockRegionMode == .fullUS {
-            regionID = "US"
-            if let mapped = expectedFullUSModelNumber {
-                fullUSModelNumber = mapped
-                regionModeNote = nil
-            } else {
-                fullUSModelNumber = nil
-                regionModeNote = L("No US regulatory model known for this device — region code only.")
-            }
-        } else {
-            regionID = "keep"
-            fullUSModelNumber = nil
-            regionModeNote = nil
-        }
+        regionID = "keep"
         for id in ChinaUnlock.aiCapabilityIDs { choices[id] = .enable }
         return true
     }
@@ -573,15 +576,15 @@ final class GestaltManager: ObservableObject {
     /// Stages a restore of the full China Unlock: eSIM flags back to the
     /// recorded originals, region code back to its recorded original and
     /// the six AI presets back to their recorded originals (`.disable`
-    /// removes keys that were originally absent). `siriOnDevice`, the
-    /// model number, WAPI and the sales region are left untouched.
+    /// removes keys that were originally absent). `siriOnDevice` and WAPI
+    /// are left untouched. The sales-region suffixes and the model number
+    /// are also restored when the stored mode is Full US, so an unlock
+    /// applied by an older build can still be reverted.
     @discardableResult
     func restoreChinaUnlock() -> Bool {
         guard stageCacheOption(.restoreOriginal) else { return false }
         regionCodeID = "keep"
         regionID = "keep"
-        fullUSModelNumber = nil
-        regionModeNote = nil
         if let snapshot, var document = working {
             // The region overlay is preview-only, so stopping the overlay
             // alone would leave a previously applied `LL` in `working`.
@@ -597,6 +600,67 @@ final class GestaltManager: ObservableObject {
             working = document
         }
         for id in ChinaUnlock.aiCapabilityIDs { choices[id] = .disable }
+        return true
+    }
+
+    /// Stages only the six Apple Intelligence presets — the AI part of the
+    /// one-tap unlock, without eSIM or region. Deliberately not gated by
+    /// the eSIM cache layout (see `chinaUnlockESIMLayoutError`): the AI
+    /// keys are CacheExtra values and do not need the layout. Like the
+    /// one-tap, this is an explicit user action, so it is not gated by
+    /// the AI staging guard; the checkup surfaces any slot conflict with
+    /// a repair path.
+    @discardableResult
+    func stageChinaAIOnly() -> Bool {
+        guard !isBusy else { return false }
+        for id in ChinaUnlock.aiCapabilityIDs { choices[id] = .enable }
+        return true
+    }
+
+    /// Stages a restore of the AI-only preset: the six AI presets back to
+    /// their recorded originals (`.disable` removes keys that were
+    /// originally absent). eSIM and region are left untouched.
+    @discardableResult
+    func restoreChinaAIOnly() -> Bool {
+        guard !isBusy else { return false }
+        for id in ChinaUnlock.aiCapabilityIDs { choices[id] = .disable }
+        return true
+    }
+
+    /// Stages only the eSIM cache flags and the region code US (LL) — the
+    /// eSIM+region part of the one-tap unlock, without the six AI presets.
+    /// Guarded by the eSIM cache layout exactly like `stageChinaUnlock`:
+    /// if the layout cannot be verified, the preset is stopped and the
+    /// reason is shown (`message`).
+    @discardableResult
+    func stageChinaESIMRegion() -> Bool {
+        guard !isBusy else { return false }
+        if let reason = chinaUnlockESIMLayoutError {
+            message = reason
+            log(reason)
+            return false
+        }
+        guard stageCacheOption(.enable) else { return false }
+        regionCodeID = ChinaUnlock.regionCodeID
+        regionID = "keep"
+        return true
+    }
+
+    /// Stages a restore of the eSIM+region preset: eSIM flags back to the
+    /// recorded originals and region code back to its recorded original.
+    /// The six AI presets are left untouched.
+    @discardableResult
+    func restoreChinaESIMRegion() -> Bool {
+        guard stageCacheOption(.restoreOriginal) else { return false }
+        regionCodeID = "keep"
+        regionID = "keep"
+        if let snapshot, var document = working {
+            // The region overlay is preview-only, so stopping the overlay
+            // alone would leave a previously applied `LL` in `working`.
+            // Reset the working document itself to the recorded original.
+            document.set(snapshot.originalValue(for: GestaltKeys.regionCode), for: GestaltKeys.regionCode)
+            working = document
+        }
         return true
     }
 
@@ -655,7 +719,7 @@ final class GestaltManager: ObservableObject {
             } else {
                 logChanges(from: before.document, to: restored, prefix: "[restore-option] ")
                 result = try await files.commit(restored, expected: before)
-                needsRespring = result.source == .device
+                needsRestart = result.source == .device
                 message = L(result.source == .device
                             ? "Write verified. Some features require a device restart."
                             : "Local changes saved. Export the plist to keep a copy.")
@@ -704,7 +768,7 @@ final class GestaltManager: ObservableObject {
             } else {
                 for line in diffLines(before.document.extra, restored.extra) { log("[restore-field] " + line) }
                 result = try await files.commit(restored, expected: before, originallyAbsentKeys: absentKeys)
-                needsRespring = result.source == .device
+                needsRestart = result.source == .device
                 message = L(result.source == .device ? "Original values restored." : "Local changes saved. Export the plist to keep a copy.")
             }
             snapshot = result
@@ -784,12 +848,16 @@ final class GestaltManager: ObservableObject {
         do {
             let result = try await files.loadDevice()
             accept(result); deviceAccessible = true; status = "Device connected"
+            lastReadAt = Date()
             log("[read] plist: \(result.data.count) bytes")
             for line in summarize(result.document) { log("[read] " + line) }
             log(L("Device connected"))
+            recordOperationEvent(.readSucceeded, detail: String(
+                format: L("Read %lld bytes from the device."), result.data.count))
         } catch {
             deviceAccessible = false; status = "Device access unavailable"
             if showErrorAlert { failed(error) } else { log(error.localizedDescription) }
+            recordOperationEvent(.readFailed, detail: error.localizedDescription)
         }
         await reloadBackups()
     }
@@ -805,11 +873,16 @@ final class GestaltManager: ObservableObject {
             let values = try url.resourceValues(forKeys: [.fileSizeKey])
             guard (values.fileSize ?? 0) <= 16 * 1024 * 1024 else { throw GestaltFailure("Choose a plist smaller than 16 MB.") }
             let result = try await files.loadLocal(data: Data(contentsOf: url), name: url.lastPathComponent)
-            accept(result); status = "Local file opened"; needsRespring = false
+            accept(result); status = "Local file opened"; needsRestart = false
+            lastReadAt = Date()
             log("[open] \(url.lastPathComponent): \(result.data.count) bytes")
             for line in summarize(result.document) { log("[open] " + line) }
             log(L("Local file opened") + ": " + url.lastPathComponent)
-        } catch { failed(error) }
+            recordOperationEvent(.readSucceeded, detail: L("Local file opened") + ": " + url.lastPathComponent)
+        } catch {
+            failed(error)
+            recordOperationEvent(.readFailed, detail: error.localizedDescription)
+        }
     }
 
     #endif
@@ -879,7 +952,7 @@ final class GestaltManager: ObservableObject {
             if let identity = offer.identity { try DevicePlistIdentity(plist: offer.data).requireMatch(with: identity) }
             var loaded = try await files.loadLocal(data: offer.data, name: offer.name)
             loaded.ownershipVerified = true
-            accept(loaded); status = "Local file opened"; needsRespring = false
+            accept(loaded); status = "Local file opened"; needsRestart = false
             discardImport(offer)
             log("[share] Verified device plist imported: \(offer.data.count) bytes")
         } catch { failed(error) }
@@ -895,7 +968,7 @@ final class GestaltManager: ObservableObject {
             let live = try await files.loadDevice()
             let restored = try await files.restoreVerifiedImport(imported, expected: live)
             let changed = !restored.document.matches(live.document)
-            accept(restored); needsRespring = needsRespring || changed
+            accept(restored); needsRestart = needsRestart || changed
             status = "Changes verified on device"
             message = changed ? L("Backup restored and verified.") + " " + L("Some changes require a device restart.")
                 : L("This backup already matches the device. No changes were made.")
@@ -922,7 +995,7 @@ final class GestaltManager: ObservableObject {
         // Explicit field edits take precedence: discard presets that would overwrite the key.
         let changedKeys = Set([key, draft.originalKey].compactMap { $0 })
         for capability in Capability.all where !changedKeys.isDisjoint(with: capability.keys) { choices[capability.id] = .keep }
-        if !changedKeys.isDisjoint(with: [GestaltKeys.regionCode, GestaltKeys.regionInfo, GestaltKeys.legacyRegionInfo]) { regionID = "keep"; regionCodeID = "keep"; fullUSModelNumber = nil }
+        if !changedKeys.isDisjoint(with: [GestaltKeys.regionCode, GestaltKeys.regionInfo, GestaltKeys.legacyRegionInfo]) { regionID = "keep"; regionCodeID = "keep" }
         if changedKeys.contains(GestaltKeys.artwork) { subtype = 0 }
         if changedKeys.contains(GestaltKeys.modelNumber) { modelID = "keep" }
         if !changedKeys.isDisjoint(with: [GestaltKeys.artwork, "Z/dqyWS6OZTRy10UcmUAhw", "bbtR9jQx50Fv5Af/affNtA"]) { changesName = false }
@@ -930,7 +1003,7 @@ final class GestaltManager: ObservableObject {
     func removeField(_ key: String) {
         working?.set(nil, for: key)
         for capability in Capability.all where capability.keys.contains(key) { choices[capability.id] = .keep }
-        if [GestaltKeys.regionCode, GestaltKeys.regionInfo, GestaltKeys.legacyRegionInfo].contains(key) { regionID = "keep"; regionCodeID = "keep"; fullUSModelNumber = nil }
+        if [GestaltKeys.regionCode, GestaltKeys.regionInfo, GestaltKeys.legacyRegionInfo].contains(key) { regionID = "keep"; regionCodeID = "keep" }
         if key == GestaltKeys.artwork { subtype = 0 }
         if key == GestaltKeys.modelNumber { modelID = "keep" }
         if [GestaltKeys.artwork, "Z/dqyWS6OZTRy10UcmUAhw", "bbtR9jQx50Fv5Af/affNtA"].contains(key) { changesName = false }
@@ -948,7 +1021,7 @@ final class GestaltManager: ObservableObject {
             logChanges(from: snapshot.document, to: edited, prefix: "[diff] ")
             let absentKeys = Set(Capability.all.filter { choices[$0.id] == .removeAdded }.flatMap(\.keys))
             let result = try await files.commit(edited, expected: snapshot, originallyAbsentKeys: absentKeys)
-            accept(result); needsRespring = result.source == .device
+            accept(result); needsRestart = result.source == .device
             status = result.source == .device ? "Changes verified on device" : "Local changes saved"
             let changedCacheOption = !DeviceCacheOptions.changes(from: snapshot.document, to: edited).isEmpty
             message = L(result.source == .device
@@ -961,7 +1034,11 @@ final class GestaltManager: ObservableObject {
     func backup() async {
         guard !isBusy, let snapshot else { return }
         isBusy = true; defer { isBusy = false }
-        do { try await files.backup(snapshot); log(L("Backup saved")); message = L("Backup saved"); await reloadBackups() }
+        do {
+            try await files.backup(snapshot); log(L("Backup saved")); message = L("Backup saved")
+            recordOperationEvent(.backupCreated, detail: L("Backup saved"))
+            await reloadBackups()
+        }
         catch { failed(error) }
     }
     func reloadBackups() async {
@@ -981,7 +1058,7 @@ final class GestaltManager: ObservableObject {
             logChanges(from: snapshot.document, to: restored, prefix: "[restore-diff] ")
             let result = try await files.commit(restored, expected: snapshot, restoring: record)
             let changed = !result.document.matches(snapshot.document)
-            accept(result); needsRespring = result.source == .device && (needsRespring || changed)
+            accept(result); needsRestart = result.source == .device && (needsRestart || changed)
             message = L(result.source == .device
                         ? (changed ? "Backup restored and verified." : "This backup already matches the device. No changes were made.")
                         : "Backup opened as a local document.")

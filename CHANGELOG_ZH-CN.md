@@ -2,6 +2,72 @@
 
 [English](CHANGELOG.md) | 简体中文
 
+## [3.0.0-rc.1] - 预发布（非稳定版）
+
+由 `feature/lilashift-3.0-dashboard` 分支构建，提交 `37c4a36`
+（`37c4a368c73ec80654c8b395387abea9a24915f6`，包含 fix4 提交 `7020964`）。App 内版本号 `3.0.0`，build
+`30000002`；IPA 文件 `LilaShift_3.0.0.ipa`（包名 `com.huami.gestultx`，
+最低 iOS `26.0`）。`rc.1` 是发布/标签层面的命名；Xcode 工程里的
+marketing version 仍为 `3.0.0`。
+
+### 新增（相对 2.0 / 1.0.7）
+- LilaShift 3.0 首页：轻量首页（真实设备读取与待应用更改状态）；53 项 11 分类的功能目录（40 个预设项 + 13 个页面项，版本化 JSON + SHA-256 sidecar 排序）；8 状态统一兼容性模型（`nativeSupported`、`modifiable`、`enabled`、`staged`、`needsRestart`、`unverified`、`unsupported`、`readFailed`）；带二次确认的历史恢复视图；诊断缓存（`HomeDiagnosticsCache`，11 张诊断卡移至二级页、`LazyVStack`、移除 iOS 26+ 阴影）。
+- 本预发布文档：`README.md` / `README_ZH-CN.md` 重写为 3.0.0-rc.1 产品主页，`docs/` 下新增简体中文安装 / 使用 / 兼容性 / 备份还原 / 故障排查 / 功能 / FAQ 一步一步教程，以及 `COMMUNITY.md`、`SECURITY.md`、`CONTRIBUTING.md`。各安装方式的验证状态见 `docs/INSTALL_ZH-CN.md`。
+- 开源审计（2026-11-14）：逐项来源记录 `docs/OPEN_SOURCE_REFERENCES.md`（16 个项目）与逐功能来源映射 `docs/FEATURE_ORIGIN_MATRIX.md`；关于页重建为开源贡献者中心；20 个文件完成版权头规范化；新增 `scripts/check-licenses.py` 与 Check Licenses 工作流。
+
+### 修复
+- AboutView 标题栏：3 处 `Section(L(...))` + `footer:` 写法没有对应的 SwiftUI 重载，现已改用显式 `header:` / `footer:` 视图（提交 `7020964`）。
+- HomeDiagnosticsCache / 并发测试修复（提交 `7020964`）：测试夹具改用真实的 `GestaltKeys.*` 键，不再用字面 `"regionCode"` / `"productType"` 字符串；`LilaRecommendation` 相等比较忽略 `id` / `createdAt`，`DeviceFingerprint` 相等比较忽略 `recordedAt`（与摘要规则一致）；新增回归测试 `tests/DiagnosticsEquatableTests.swift`。
+- `HomeDiagnosticsCache.swift` 已补 `import Combine`，`ObservableObject` / `@Published` 可在 CI 中解析（此前修复见 `0a429e9`）。
+
+### 移除
+- NeoSpring/Ketamine WebKit 注销实现已移除（删除 `GestaltX/NeoSpringView.swift`，2026-11-14）：NeoSpring 在任何地方均未声明许可证，因此不再随本版分发。改为手动重启设备提示，绝不假装自行重启 SpringBoard。
+
+### 本 HEAD 已知缺口（2026-11-15，提交 `37c4a36`）
+- **本版无真机验证。** 安装、eSIM 开通、Apple Intelligence 开通与还原均未在真机上为 3.0.0-rc.1 测试过。`docs/INSTALL_ZH-CN.md` 中无法从仓库核实的安装步骤均已标为待验证。
+- **本提交的 CI 状态尚未在本日志中确认。** fix4 提交（`7020964`）落在上次记录的测试运行之后；发布前请先看 `README.md` 里的 workflow 徽章确认最新运行结果。此前记录：Tests #129 在整合前 HEAD（`096330e`）通过；Tests #137 与 IPA #138 在整合后 HEAD（`86e32b4`）失败（缺 `import Combine`，已修）。
+- 8 张快照基线待 CI 渲染新图后重录（阴影移除与新增排序/隐藏 UI）；10 张新增 Phase H 快照参考在首次 CI 运行时录制，须在后续提交中提交。
+- `Package.resolved` 只锁定了 ZIPFoundation，工程同时要求 SnapshotTesting 1.19.7——须在 Xcode 环境中运行 `xcodebuild -resolvePackageDependencies` 解决。
+- 尚无真实 3.0.0-rc.1 构建的截图；此处不声称有。
+- 写本文档时 `v3.0.0-rc.1` 标签与 GitHub Release 尚不存在，随预发布发布时创建。
+
+## [Unreleased]
+
+## [3.0.0] - 开发预览版（未正式发布）
+
+> 已被上方的 [3.0.0-rc.1] 取代（针对当前 HEAD）。以下条目保留为 3.0 开发预览版的历史记录。
+
+### 新增
+- 全新 3.0 轻量首页：展示真实设备读取状态和待应用更改数量，避免首次打开即渲染所有复杂诊断卡。
+- 将解锁、诊断、备份恢复、预设个性化分成独立的导航页面；旧版工具页仍可从「全部工具」进入，确保功能可回退。
+- 首页快捷入口支持系统原生重新排序，设置保存在本机；自动修复旧版或异常排序数据。
+- 新增首页排序单元测试，3.0 分支构建 IPA 和 XCTest 可通过 GitHub Actions 自动触发。
+- 3.0 整合（C–I 阶段）：8 分区首页、53 项 11 分类的功能目录（统一排序规则，版本化 JSON + SHA-256 sidecar）、8 状态统一兼容性模型、带二次确认的历史恢复视图、诊断缓存（`HomeDiagnosticsCache`，11 张诊断卡移至二级页、`LazyVStack`、移除 iOS 26+ 阴影），Swift 测试函数共 356 个。
+- 构建号 30000001 → 30000002；版本号保持 3.0.0。
+
+### 新增（开源审计，2026-11-14）
+- 开源审计：逐项来源记录见 `docs/OPEN_SOURCE_REFERENCES.md`（16 个项目），逐功能来源映射见 `docs/FEATURE_ORIGIN_MATRIX.md`。
+- 关于页重建为开源贡献者中心：每个实际使用或参考的项目各为一条，含作者、使用关系、关键技术、许可证与源码链接；第三方许可证均来自 App 内置的真实文本；附完整源码链接与免责声明。
+- 20 个实际使用或改编第三方代码的文件完成版权头规范化（SPDX + 原始来源 + 修改说明）；GestaltEdit 许可证由 PolyForm Noncommercial 1.0.0 更正为 GPL-3.0-or-later；ZIPFoundation MIT 文本更新为 2017-2026（与上游逐字节相同）。
+- 新增许可证合规检查脚本 `scripts/check-licenses.py`（每次 IPA 构建时由 check-licenses 工作流运行）与 `tests/ThirdPartyNoticesTests.py` 中的许可证一致性测试。
+
+### 移除（Respring 授权，2026-11-14）
+- 移除 NeoSpring/Ketamine WebKit 注销实现（删除 `GestaltX/NeoSpringView.swift`；用户决定方案 c）。该技术无可验证授权：NeoSpring（rooootdev/neospring）在任何地方均未声明许可证。本构建不再包含任何注销代码。注销操作改为手动重启设备提示，绝不假装自行重启 SpringBoard。见 `docs/OPEN_SOURCE_REFERENCES.md` §3–§4。
+
+### 待验证
+- 整合后 3.0 分支的 GitHub Actions 构建：Tests #129 已在整合前 HEAD（096330e）通过；整合后 HEAD（86e32b4）的 Tests #137 与 IPA #138 因 `HomeDiagnosticsCache.swift` 缺少 `import Combine` 而失败（修复进行中）。真机性能尚未验证。
+- 8 张快照基线待 CI 渲染新图后重录（阴影移除与新增排序/隐藏 UI）；10 张新增 Phase H 快照参考在首次 CI 运行时录制，须在后续提交中提交。
+- NeoSpring 注销：已于 2026-11-14 决定并处理（用户选方案 c，移除/替换）；实现已删除，关于页将 Ketamine 与 NeoSpring 标记为已暂停。重新集成须先找到来源清楚、许可兼容的实现，并经独立审计与测试；见 `docs/OPEN_SOURCE_REFERENCES.md` §4。
+- `Package.resolved` 只锁定了 ZIPFoundation，工程同时要求 SnapshotTesting 1.19.7——须在 Xcode 环境中运行 `xcodebuild -resolvePackageDependencies` 解决。
+
+
+
+### 新增
+
+- 新增 SnapshotTesting UI 回归测试，覆盖关键 SwiftUI 卡片（预设目录、智能故障诊断、个性化中心、系统健康评分——未读取与已填充两种状态，固定 390×844 布局、浅色特征），以及诊断卡片的确定性输入数据文本快照（电池未知/已知、连接未读取/已读取、固定目录的缓存条目）。诊断扩展卡片本身特意没有图片快照：其缓存区显示的是实时容器大小，会随测试执行顺序变化。快照参考在首次 CI 运行时录制（`record: .missing`），存入 `tests/__Snapshots__/ViewSnapshotTests/`，须在后续提交中提交；详见 `docs/SNAPSHOT_TESTING.md`。
+- 新增 SwiftLint，采用最小规则集（`.swiftlint.yml`，仅启用当前代码已通过的规则），并新增 SwiftLint CI 工作流，在每个指向 `main` 的 PR 上运行。
+- 新增发布系统：`GestaltX/ReleaseNotes.swift`（版本解析/校验与 Markdown 渲染）、`scripts/prepare-release.py`（校验并可选提升 Xcode 工程中的版本号、根据 PR 列表生成发布说明、验证 IPA 并记录其 SHA-256），以及仅可手动触发的 Prepare Draft Release 工作流（构建 IPA 并创建 DRAFT GitHub Release，绝不自动发布，标签已存在时大声失败）。
+
 ## [1.0.7] - 2026-11-13 - LilaShift 2.0
 
 构建号 `11130112`。完整源码的 LilaShift 2.0 项目（本仓库），基于上游 GestaltX v1.0.7 加 PR #126。

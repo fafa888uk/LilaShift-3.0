@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // US regulatory-model mapping for the opt-in Full US region mode.
 //
-// Value pairs transcribed from Erosion-CN's `usRegulatoryModelNumber`
-// (same A-number pairs, reimplemented as a pure lookup in GestaltX's
-// style). The table must be reviewed on every new iPhone generation:
+// Value pairs transcribed from Erosion-CN's `usRegulatoryModelNumber` (Kianuni,
+// https://github.com/Kianuni/Erosion-CN, GPL-3.0; same A-number pairs,
+// reimplemented as a pure lookup in GestaltX's style). The table must be reviewed on every new iPhone generation:
 // unknown models are refused (nil), never guessed, and the mode then
 // stages region + sales region only.
 //

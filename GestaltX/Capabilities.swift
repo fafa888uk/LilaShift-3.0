@@ -1,10 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // Copyright (C) 2026 huamidev
-// Public MobileGestalt key mappings cross-checked against MGKeys, Nugget and mond.
-// Preset behavior is independently implemented for GestaltX.
+// Public MobileGestalt key mappings cross-checked against MGKeys (MIT,
+// https://github.com/PoomSmart/MGKeys), Nugget (AGPL-3.0,
+// https://github.com/leminlimez/Nugget) and mond (AGPL-3.0,
+// https://github.com/rooootdev/mond). Research reference only — no code
+// ported. Preset behavior is independently implemented for GestaltX.
 import Foundation
 
-enum CapabilityCategory: String, CaseIterable, Identifiable {
+enum CapabilityCategory: String, CaseIterable, Equatable, Identifiable {
     case display = "Display", device = "Device", ipad = "iPad", intelligence = "Intelligence", advanced = "Advanced"
     var id: String { rawValue }
     var symbol: String {
@@ -27,7 +30,7 @@ enum CapabilityCategory: String, CaseIterable, Identifiable {
     }
 }
 
-struct Capability: Identifiable {
+struct Capability: Identifiable, Equatable {
     let id: String
     let category: CapabilityCategory
     let title: String
@@ -37,6 +40,19 @@ struct Capability: Identifiable {
     /// Per-key values for presets that are not a plain Boolean 1, such as the
     /// parallax switch (0) or the AOD flipbook count.
     var values: [String: Any]? = nil
+
+    /// Capabilities are compared by their Equatable fields. `values` is
+    /// excluded: `[String: Any]` cannot be Equatable, and the catalog is
+    /// keyed by `id`, so the same id always carries the same values in
+    /// practice.
+    static func == (lhs: Capability, rhs: Capability) -> Bool {
+        lhs.id == rhs.id
+            && lhs.category == rhs.category
+            && lhs.title == rhs.title
+            && lhs.detail == rhs.detail
+            && lhs.keys == rhs.keys
+            && lhs.caution == rhs.caution
+    }
     var availableChoices: [PresetChoice] {
         // Preserve the device-specific Siri capability type and allow recovery from older overrides.
         id == "siriOnDevice" ? [.keep, .disable, .removeAdded] : PresetChoice.allCases
@@ -56,9 +72,9 @@ struct Capability: Identifiable {
             "Restart required. Apple Intelligence also depends on device and region. Results depend on the app and system support."
         case "pencil": "Restart the device, then reopen Settings. Pencil hardware support is still required."
         case "aod":
-            "Respring first. Restart the device if the change does not appear. Display behavior depends on the panel and may increase power use and burn-in risk."
+            "Restart the device if the change does not appear. Display behavior depends on the panel and may increase power use and burn-in risk."
         case "liquidGlass":
-            "Respring first. Restart the device if the change does not appear. Requires iOS 26 or later."
+            "Restart the device if the change does not appear. Requires iOS 26 or later."
         case "aodFlipbookCount":
             "A device restart may be required. Experimental; the accepted range varies by iOS build."
         case "pwm":
@@ -83,10 +99,16 @@ struct Capability: Identifiable {
             "A device restart may be required. This does not turn the device into an Apple SRD."
         case "bootChime", "actionButton", "aodHighLuminance", "aodFlipbook":
             "A device restart may be required."
-        default: "Respring first. Restart the device if the change does not appear."
+        default: "Restart the device if the change does not appear."
         }
     }
-    var enabled: Any { id == "ipadApps" ? [1, 2] : NSNumber(value: 1) }
+    /// The enable value for a plain boolean capability flag. This must
+    /// be a real Boolean (`true`), not the integer 1: the codebase
+    /// distinguishes Boolean from integer ("Do not conflate Boolean
+    /// and integer"), and `ChangeValue` reports them as different
+    /// types. Capabilities whose enable value is not a plain boolean
+    /// declare it explicitly in `values`.
+    var enabled: Any { id == "ipadApps" ? [1, 2] : true }
 
     func isEnabled(in document: GestaltDocument?) -> Bool {
         guard let fields = document?.extra else { return false }
@@ -223,28 +245,18 @@ enum DeviceModelDecision: Equatable {
     }
 }
 
-/// Region mode for China Unlock, kept outside the 9-item definition so the
-/// default unlock is byte-identical to before. Default stays
-/// region-code-only (LL): the shipped 9-item definition, and the safest
-/// choice for CN dual-physical-SIM + eSIM hardware (Erosion-CN's own note
-/// warns a full-US mapping to a US model can conflict on dual-SIM
-/// hardware). Full US is an explicit opt-in that additionally stages the
-/// sales-region suffix (LL/A) and the mapped US regulatory model number.
+/// Region mode for China Unlock. The one-tap unlock always stages exactly
+/// the 9-item definition (eSIM + region code LL + six AI keys) in either
+/// mode — the sales-region suffix and the regulatory model number are
+/// never staged by the one-tap, because a regulatory model that does not
+/// match the hardware makes the system discard the whole MobileGestalt
+/// cache at boot and rebuild it from factory data, so the region change
+/// does not stick. The mode only affects manual region presets (which
+/// sales-region key is created on iOS 27) and restoring an unlock applied
+/// by an older build.
 enum ChinaUnlockRegionMode: String, CaseIterable, Identifiable {
     case regionCodeOnly, fullUS
     var id: String { rawValue }
-    var title: String {
-        switch self {
-        case .regionCodeOnly: "Region code only (LL)"
-        case .fullUS: "Full US (LL + LL/A)"
-        }
-    }
-    var detail: String {
-        switch self {
-        case .regionCodeOnly: "Keeps the CH/A suffix and factory model — safest for dual-SIM phones."
-        case .fullUS: "Also sets the sales region and US model number — most consistent, but can conflict on dual-SIM hardware."
-        }
-    }
     static let userDefaultsKey = "GestaltX.chinaUnlockRegionMode"
     static var stored: Self {
         get {

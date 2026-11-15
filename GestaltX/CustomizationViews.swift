@@ -43,7 +43,7 @@ final class CustomizationModel: ObservableObject {
     func applyWallpaper(_ pack: WallpaperPack) async {
         await run {
             packs = try await store.applyWallpaper(pack.id)
-            message = L("Wallpaper added. Open the wallpaper gallery to select it. If it does not appear, restart PosterBoard or respring.")
+            message = L("Wallpaper added. Open the wallpaper gallery to select it. If it does not appear, restart the device.")
         }
     }
     func removeWallpaper(_ pack: WallpaperPack) async {
