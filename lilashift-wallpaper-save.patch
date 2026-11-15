@@ -1,0 +1,487 @@
+diff --git a/GestaltX.xcodeproj/project.pbxproj b/GestaltX.xcodeproj/project.pbxproj
+index 641ea64..45e7bd9 100644
+--- a/GestaltX.xcodeproj/project.pbxproj
++++ b/GestaltX.xcodeproj/project.pbxproj
+@@ -84,6 +84,7 @@
+ 		BE026BD50295ABE265201260 /* DashboardV3SnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3624FBBE3C977DC36106724 /* DashboardV3SnapshotTests.swift */; };
+ 		7DED2B4236ED38CA1B96C42F /* CPUImageDiffing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B54C7F4463E10A786731690A /* CPUImageDiffing.swift */; };
+ 		C5463A77EE63DF48864201E8 /* ShareLilaShiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E50F80F2FADE84F33D5410C /* ShareLilaShiftTests.swift */; };
++		09F2D22304F64048B9E6369A /* WallpaperSaveToPhotosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A80799FA4AA04135A981E681 /* WallpaperSaveToPhotosTests.swift */; };
+ 		D43F6FE6E3F70F2FD3EC5873 /* DashboardV3NavigationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E1320CF71EABD8197C0EF5 /* DashboardV3NavigationTests.swift */; };
+ 		1A7AD902F4504E46B9FC8038 /* DiagnosticsEquatableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE7645FF99DB44D29B4CE01D /* DiagnosticsEquatableTests.swift */; };
+ 		100F74C65CA447F76A377DC2 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 368CCEAD13DE80A54EDDFBC1 /* XCTest.framework */; };
+@@ -206,6 +207,7 @@
+ 		A3624FBBE3C977DC36106724 /* DashboardV3SnapshotTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DashboardV3SnapshotTests.swift; sourceTree = "<group>"; };
+ 		B54C7F4463E10A786731690A /* CPUImageDiffing.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CPUImageDiffing.swift; sourceTree = "<group>"; };
+ 		3E50F80F2FADE84F33D5410C /* ShareLilaShiftTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareLilaShiftTests.swift; sourceTree = "<group>"; };
++		A80799FA4AA04135A981E681 /* WallpaperSaveToPhotosTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WallpaperSaveToPhotosTests.swift; sourceTree = "<group>"; };
+ 		D4E1320CF71EABD8197C0EF5 /* DashboardV3NavigationTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DashboardV3NavigationTests.swift; sourceTree = "<group>"; };
+ 		DE7645FF99DB44D29B4CE01D /* DiagnosticsEquatableTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DiagnosticsEquatableTests.swift; sourceTree = "<group>"; };
+ 		368CCEAD13DE80A54EDDFBC1 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+@@ -402,6 +404,7 @@
+ 				A3624FBBE3C977DC36106724 /* DashboardV3SnapshotTests.swift */,
+ 				B54C7F4463E10A786731690A /* CPUImageDiffing.swift */,
+ 				3E50F80F2FADE84F33D5410C /* ShareLilaShiftTests.swift */,
++				A80799FA4AA04135A981E681 /* WallpaperSaveToPhotosTests.swift */,
+ 				D4E1320CF71EABD8197C0EF5 /* DashboardV3NavigationTests.swift */,
+ 				DE7645FF99DB44D29B4CE01D /* DiagnosticsEquatableTests.swift */,
+ 			);
+@@ -632,6 +635,7 @@
+ 				BE026BD50295ABE265201260 /* DashboardV3SnapshotTests.swift in Sources */,
+ 				7DED2B4236ED38CA1B96C42F /* CPUImageDiffing.swift in Sources */,
+ 				C5463A77EE63DF48864201E8 /* ShareLilaShiftTests.swift in Sources */,
++				09F2D22304F64048B9E6369A /* WallpaperSaveToPhotosTests.swift in Sources */,
+ 				D43F6FE6E3F70F2FD3EC5873 /* DashboardV3NavigationTests.swift in Sources */,
+ 				1A7AD902F4504E46B9FC8038 /* DiagnosticsEquatableTests.swift in Sources */,
+ 			);
+diff --git a/GestaltX/CustomizationStore.swift b/GestaltX/CustomizationStore.swift
+index 46cd978..88dae39 100644
+--- a/GestaltX/CustomizationStore.swift
++++ b/GestaltX/CustomizationStore.swift
+@@ -115,6 +115,28 @@ actor CustomizationStore {
+         guard let name = try loadPack(id).preview else { return nil }
+         return try CustomizationFiles.read(CustomizationFiles.checked(name, in: folder(id)))
+     }
++    /// The largest real image file inside the pack's descriptor folders, by
++    /// magic-byte signature (PNG, JPEG, HEIC/HEIF). This only reads the pack
++    /// from LilaShift storage; it never touches the system wallpaper.
++    func wallpaperImageData(_ id: UUID) throws -> Data {
++        let pack = try loadPack(id)
++        var best: (url: URL, size: Int)?
++        for descriptor in pack.descriptors {
++            let directory = folder(id).appendingPathComponent(descriptor.folder)
++            guard fm.fileExists(atPath: directory.path) else { continue }
++            let folderURL = try CustomizationFiles.checked(descriptor.folder, in: folder(id))
++            guard let iterator = fm.enumerator(at: folderURL, includingPropertiesForKeys: [.isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey], options: [.skipsHiddenFiles]) else { continue }
++            for case let url as URL in iterator {
++                guard let values = try? url.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey]),
++                      values.isRegularFile == true, values.isSymbolicLink != true,
++                      let size = values.fileSize, size > 0, size <= CustomizationFiles.maximumFile,
++                      CustomizationImages.isImageFile(url) else { continue }
++                if best == nil || size > best!.size { best = (url, size) }
++            }
++        }
++        guard let best else { throw CustomizationFailure("This pack contains no compatible wallpapers.") }
++        return try CustomizationFiles.read(best.url)
++    }
+     private func stageURL(_ relative: String, root: URL) throws -> URL {
+         let target = try installationURL(relative, root: root)
+         return target.deletingLastPathComponent().appendingPathComponent(".GestaltX-stage-\(target.lastPathComponent)")
+diff --git a/GestaltX/CustomizationThemes.swift b/GestaltX/CustomizationThemes.swift
+index ffda6cb..8449fd9 100644
+--- a/GestaltX/CustomizationThemes.swift
++++ b/GestaltX/CustomizationThemes.swift
+@@ -113,6 +113,25 @@ enum CustomizationImages {
+         guard CGImageDestinationFinalize(destination) else { throw CustomizationFailure("This pack contains no compatible wallpapers.") }
+         return output as Data
+     }
++    /// Image kind by magic-byte signature (PNG, JPEG, HEIC/HEIF). Returns the
++    /// file extension to use, or nil when the data is not a recognized image.
++    static func kind(of data: Data) -> String? {
++        if data.starts(with: [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A] as [UInt8]) { return "png" }
++        if data.starts(with: [0xFF, 0xD8, 0xFF] as [UInt8]) { return "jpg" }
++        guard data.count >= 12, data[4..<8] == Data("ftyp".utf8),
++              ["heic", "heix", "hevc", "hevx", "mif1", "msf1"].contains(String(decoding: data[8..<12], as: UTF8.self)) else { return nil }
++        return "heic"
++    }
++    /// True when the file at url starts with a PNG, JPEG or HEIC/HEIF signature.
++    /// Only the 12-byte header is read; symlinks are never followed.
++    static func isImageFile(_ url: URL) -> Bool {
++        guard let handle = try? FileHandle(forReadingFrom: url) else { return false }
++        defer { try? handle.close() }
++        do {
++            guard let header = try handle.read(upToCount: 12) else { return false }
++            return kind(of: header) != nil
++        } catch { return false }
++    }
+     static func thumbnail(in root: URL) throws -> Data? {
+         guard let iterator = FileManager.default.enumerator(at: root, includingPropertiesForKeys: [.isRegularFileKey, .fileSizeKey], options: [.skipsHiddenFiles]) else { return nil }
+         for case let url as URL in iterator {
+diff --git a/GestaltX/CustomizationViews.swift b/GestaltX/CustomizationViews.swift
+index 2b99e14..103a5f9 100644
+--- a/GestaltX/CustomizationViews.swift
++++ b/GestaltX/CustomizationViews.swift
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: GPL-3.0-only
+ import SwiftUI
+ import Combine
++import Photos
+ import UniformTypeIdentifiers
+ 
+ @MainActor
+@@ -46,6 +47,28 @@ final class CustomizationModel: ObservableObject {
+             message = L("Wallpaper added. Open the wallpaper gallery to select it. If it does not appear, restart the device.")
+         }
+     }
++    /// Saves the pack's wallpaper image to Photos (public Photos API). This
++    /// does not set the system wallpaper: the user sets it from Photos
++    /// (Use as Wallpaper) or with the Shortcuts Set Wallpaper action.
++    func saveWallpaperToPhotos(_ pack: WallpaperPack) async {
++        await run {
++            let data = try await store.wallpaperImageData(pack.id)
++            var authorization = PHPhotoLibrary.authorizationStatus(for: .addOnly)
++            if authorization == .notDetermined { authorization = await PHPhotoLibrary.requestAuthorization(for: .addOnly) }
++            guard authorization == .authorized || authorization == .limited else {
++                throw CustomizationFailure("Allow LilaShift to add photos in Settings, then try again.")
++            }
++            let kind = CustomizationImages.kind(of: data) ?? "png"
++            let name = pack.name.replacingOccurrences(of: "/", with: "-").trimmingCharacters(in: .whitespacesAndNewlines)
++            try await PHPhotoLibrary.shared().performChanges {
++                let request = PHAssetCreationRequest.forAsset()
++                let options = PHAssetResourceCreationOptions()
++                options.originalFilename = "\(name.isEmpty ? "wallpaper" : name)-wallpaper.\(kind)"
++                request.addResource(with: .photo, data: data, options: options)
++            }
++            message = L("Wallpaper saved to Photos. Set it from Photos (Use as Wallpaper) or with the Shortcuts Set Wallpaper action.")
++        }
++    }
+     func removeWallpaper(_ pack: WallpaperPack) async {
+         await run { packs = try await store.removeWallpaper(pack.id); previews.removeValue(forKey: pack.id) }
+     }
+@@ -128,6 +151,9 @@ struct WallpapersView: View {
+                                 if pack.isApplied { Label(L("Applied"), systemImage: "checkmark.circle.fill").font(.caption).foregroundStyle(.green) }
+                                 HStack {
+                                     Button(L("Apply")) { pendingApply = pack }.disabled(pack.isApplied)
++                                    Button { Task { await model.saveWallpaperToPhotos(pack) } } label: {
++                                        Label(L("Save to Photos"), systemImage: "square.and.arrow.down")
++                                    }
+                                     Spacer()
+                                     Button(role: .destructive) { pendingDelete = pack } label: { Image(systemName: "trash") }
+                                         .accessibilityLabel(L("Delete"))
+diff --git a/GestaltX/Localizable.xcstrings b/GestaltX/Localizable.xcstrings
+index 669660d..a74040e 100644
+--- a/GestaltX/Localizable.xcstrings
++++ b/GestaltX/Localizable.xcstrings
+@@ -1601,6 +1601,70 @@
+         }
+       }
+     },
++    "Save to Photos": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Save to Photos"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "保存到相册"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Guardar en Fotos"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "ذخیره در عکس‌ها"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "写真に保存"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "사진에 저장"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Сохранить в Фото"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Lưu vào Ảnh"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "儲存到相片"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "儲存到照片"
++          }
++        }
++      }
++    },
+     "No Wallpapers": {
+       "localizations": {
+         "en": {
+@@ -2625,6 +2689,70 @@
+         }
+       }
+     },
++    "Wallpaper saved to Photos. Set it from Photos (Use as Wallpaper) or with the Shortcuts Set Wallpaper action.": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Wallpaper saved to Photos. Set it from Photos (Use as Wallpaper) or with the Shortcuts Set Wallpaper action."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "壁纸已保存到相册。请在“照片”中打开它并选择“用作壁纸”，或使用快捷指令的“设定壁纸”操作。"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Fondo de pantalla guardado en Fotos. Ajústalo desde Fotos (Usar como fondo de pantalla) o con la acción Establecer fondo de pantalla de Atajos."
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "تصویر پس‌زمینه در عکس‌ها ذخیره شد. آن را از عکس‌ها (استفاده به‌عنوان تصویر پس‌زمینه) یا با اقدام «تنظیم تصویر پس‌زمینه» در میانبرها تنظیم کنید."
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "壁紙を写真に保存しました。「写真」から「壁紙に設定」を選ぶか、ショートカットの「壁紙を設定」アクションで設定してください。"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "배경화면이 사진에 저장되었습니다. 사진에서 '배경화면으로 사용'을 선택하거나 단축어의 '배경화면 설정' 동작으로 설정하세요."
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Обои сохранены в Фото. Установите их из Фото («Использовать как обои») или с помощью действия «Установить обои» в Командах."
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Đã lưu hình nền vào Ảnh. Đặt từ Ảnh (Dùng làm Hình nền) hoặc bằng tác vụ Đặt Hình nền trong Phím tắt."
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "壁紙已儲存到相片。請在「相片」中開啟並選擇「設為壁紙」，或使用捷徑的「設定壁紙」操作。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "桌布已儲存到照片。請在「照片」中開啟並選擇「設為桌布」，或使用捷徑的「設定桌布」操作。"
++          }
++        }
++      }
++    },
+     "Wallpaper Settings": {
+       "localizations": {
+         "en": {
+diff --git a/localization/es.json b/localization/es.json
+index 09f3f16..3fa4f6b 100644
+--- a/localization/es.json
++++ b/localization/es.json
+@@ -1153,4 +1153,7 @@
+   "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "LilaShift no reinicia SpringBoard por sí mismo. Después de aplicar los cambios, reinicia el dispositivo manualmente si una función no aparece.",
+   "Share LilaShift": "Compartir LilaShift",
+   "Pre-release": "Prelanzamiento"
++,
++  "Save to Photos": "Guardar en Fotos",
++  "Wallpaper saved to Photos. Set it from Photos (Use as Wallpaper) or with the Shortcuts Set Wallpaper action.": "Fondo de pantalla guardado en Fotos. Ajústalo desde Fotos (Usar como fondo de pantalla) o con la acción Establecer fondo de pantalla de Atajos."
+ }
+diff --git a/localization/fa.json b/localization/fa.json
+index 1503ce8..dca2c39 100644
+--- a/localization/fa.json
++++ b/localization/fa.json
+@@ -1153,4 +1153,7 @@
+   "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "LilaShift خودش SpringBoard را راه‌اندازی مجدد نمی‌کند. پس از اعمال تغییرات، اگر قابلیتی ظاهر نشد، دستگاه را به‌صورت دستی راه‌اندازی مجدد کنید.",
+   "Share LilaShift": "اشتراک\u200cگذاری LilaShift",
+   "Pre-release": "پیش\u200cانتشار"
++,
++  "Save to Photos": "ذخیره در عکس‌ها",
++  "Wallpaper saved to Photos. Set it from Photos (Use as Wallpaper) or with the Shortcuts Set Wallpaper action.": "تصویر پس‌زمینه در عکس‌ها ذخیره شد. آن را از عکس‌ها (استفاده به‌عنوان تصویر پس‌زمینه) یا با اقدام «تنظیم تصویر پس‌زمینه» در میانبرها تنظیم کنید."
+ }
+diff --git a/localization/ja.json b/localization/ja.json
+index 17445e4..426080c 100644
+--- a/localization/ja.json
++++ b/localization/ja.json
+@@ -1153,4 +1153,7 @@
+   "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "LilaShift は SpringBoard を自動で再起動しません。変更を適用した後、機能が表示されない場合はデバイスを手動で再起動してください。",
+   "Share LilaShift": "LilaShift を共有",
+   "Pre-release": "プレリリース"
++,
++  "Save to Photos": "写真に保存",
++  "Wallpaper saved to Photos. Set it from Photos (Use as Wallpaper) or with the Shortcuts Set Wallpaper action.": "壁紙を写真に保存しました。「写真」から「壁紙に設定」を選ぶか、ショートカットの「壁紙を設定」アクションで設定してください。"
+ }
+diff --git a/localization/ko.json b/localization/ko.json
+index c3c7f38..6c84e07 100644
+--- a/localization/ko.json
++++ b/localization/ko.json
+@@ -1153,4 +1153,7 @@
+   "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "LilaShift는 SpringBoard를 직접 다시 시작하지 않습니다. 변경 사항을 적용한 뒤 기능이 나타나지 않으면 기기를 수동으로 다시 시작하세요.",
+   "Share LilaShift": "LilaShift 공유",
+   "Pre-release": "프리릴리스"
++,
++  "Save to Photos": "사진에 저장",
++  "Wallpaper saved to Photos. Set it from Photos (Use as Wallpaper) or with the Shortcuts Set Wallpaper action.": "배경화면이 사진에 저장되었습니다. 사진에서 '배경화면으로 사용'을 선택하거나 단축어의 '배경화면 설정' 동작으로 설정하세요."
+ }
+diff --git a/localization/ru.json b/localization/ru.json
+index 41d5f6a..fb9030d 100644
+--- a/localization/ru.json
++++ b/localization/ru.json
+@@ -1153,4 +1153,7 @@
+   "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "LilaShift не перезапускает SpringBoard самостоятельно. После применения изменений перезапустите устройство вручную, если какая-либо функция не появилась.",
+   "Share LilaShift": "Поделиться LilaShift",
+   "Pre-release": "Предварительная версия"
++,
++  "Save to Photos": "Сохранить в Фото",
++  "Wallpaper saved to Photos. Set it from Photos (Use as Wallpaper) or with the Shortcuts Set Wallpaper action.": "Обои сохранены в Фото. Установите их из Фото («Использовать как обои») или с помощью действия «Установить обои» в Командах."
+ }
+diff --git a/localization/vi.json b/localization/vi.json
+index 1c93c98..b2134ac 100644
+--- a/localization/vi.json
++++ b/localization/vi.json
+@@ -1153,4 +1153,7 @@
+   "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "LilaShift không tự khởi động lại SpringBoard. Sau khi áp dụng thay đổi, hãy khởi động lại thiết bị theo cách thủ công nếu một tính năng không xuất hiện.",
+   "Share LilaShift": "Chia sẻ LilaShift",
+   "Pre-release": "Bản tiền phát hành"
++,
++  "Save to Photos": "Lưu vào Ảnh",
++  "Wallpaper saved to Photos. Set it from Photos (Use as Wallpaper) or with the Shortcuts Set Wallpaper action.": "Đã lưu hình nền vào Ảnh. Đặt từ Ảnh (Dùng làm Hình nền) hoặc bằng tác vụ Đặt Hình nền trong Phím tắt."
+ }
+diff --git a/localization/zh-Hant-HK.json b/localization/zh-Hant-HK.json
+index ccc86be..9b573fc 100644
+--- a/localization/zh-Hant-HK.json
++++ b/localization/zh-Hant-HK.json
+@@ -1153,4 +1153,7 @@
+   "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "紫序不會自行重新啟動 SpringBoard。套用更改後，若某項功能未出現，請手動重新啟動裝置。",
+   "Share LilaShift": "分享 LilaShift",
+   "Pre-release": "預發佈"
++,
++  "Save to Photos": "儲存到相片",
++  "Wallpaper saved to Photos. Set it from Photos (Use as Wallpaper) or with the Shortcuts Set Wallpaper action.": "壁紙已儲存到相片。請在「相片」中開啟並選擇「設為壁紙」，或使用捷徑的「設定壁紙」操作。"
+ }
+diff --git a/localization/zh-Hant-TW.json b/localization/zh-Hant-TW.json
+index 4c95020..4f006b2 100644
+--- a/localization/zh-Hant-TW.json
++++ b/localization/zh-Hant-TW.json
+@@ -1153,4 +1153,7 @@
+   "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "紫序不會自行重新啟動 SpringBoard。套用更改後，若某項功能未出現，請手動重新啟動裝置。",
+   "Share LilaShift": "分享 LilaShift",
+   "Pre-release": "預發佈"
++,
++  "Save to Photos": "儲存到照片",
++  "Wallpaper saved to Photos. Set it from Photos (Use as Wallpaper) or with the Shortcuts Set Wallpaper action.": "桌布已儲存到照片。請在「照片」中開啟並選擇「設為桌布」，或使用捷徑的「設定桌布」操作。"
+ }
+diff --git a/scripts/generate_localization.py b/scripts/generate_localization.py
+index 53791f3..9dcff70 100644
+--- a/scripts/generate_localization.py
++++ b/scripts/generate_localization.py
+@@ -27,6 +27,7 @@ Import a .tendies or .zip wallpaper pack. You can also share it to LilaShift.	
+ Applied	已应用
+ Customization	个性化
+ Import Wallpaper	导入壁纸
++Save to Photos	保存到相册
+ No Wallpapers	暂无壁纸
+ This only deletes the imported pack from LilaShift. Applied wallpapers will be kept.	只从 紫序 删除导入包，已应用的壁纸会保留。
+ Open Wallpaper Gallery	打开壁纸图库
+@@ -43,6 +44,7 @@ This adds new wallpapers without replacing your existing ones.	将添加新壁
+ This pack contains no compatible wallpapers.	此包中没有兼容的壁纸。
+ This wallpaper was changed outside LilaShift. It was not removed.	壁纸已被其他方式修改，未执行移除。
+ Wallpaper added. Open the wallpaper gallery to select it. If it does not appear, restart the device.	壁纸已添加，请打开图库选择。若未出现，请重新启动设备。
++Wallpaper saved to Photos. Set it from Photos (Use as Wallpaper) or with the Shortcuts Set Wallpaper action.	壁纸已保存到相册。请在“照片”中打开它并选择“用作壁纸”，或使用快捷指令的“设定壁纸”操作。
+ Wallpaper Settings	壁纸设置
+ WAPI	WAPI
+ Disable WAPI	关闭 WAPI
+diff --git a/tests/WallpaperSaveToPhotosTests.swift b/tests/WallpaperSaveToPhotosTests.swift
+new file mode 100644
+index 0000000..0035122
+--- /dev/null
++++ b/tests/WallpaperSaveToPhotosTests.swift
+@@ -0,0 +1,69 @@
++// SPDX-License-Identifier: GPL-3.0-only
++import Foundation
++import XCTest
++@testable import GestaltX
++
++final class WallpaperSaveToPhotosTests: XCTestCase {
++    let fm = FileManager.default
++    /// A real 1x1 transparent PNG.
++    let png = Data(base64Encoded: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AAwMCAO+ip1sAAAAASUVORK5CYII=")!
++    /// A larger file with a JPEG magic-byte signature.
++    var jpeg: Data { Data([0xFF, 0xD8, 0xFF, 0xE0]) + Data(repeating: 0, count: 196) }
++
++    func localStore(_ storage: URL) -> CustomizationStore {
++        CustomizationStore(storage: storage, device: "test-device", resolver: { _ in
++            fatalError("wallpaperImageData must not request system-container access")
++        })
++    }
++    func makePack(_ pack: WallpaperPack, storage: URL, files: [String: Data] = [:]) throws {
++        let directory = storage.appendingPathComponent("Wallpapers/\(pack.id.uuidString)")
++        try fm.createDirectory(at: directory, withIntermediateDirectories: true)
++        for descriptor in pack.descriptors {
++            let folder = directory.appendingPathComponent(descriptor.folder)
++            try fm.createDirectory(at: folder, withIntermediateDirectories: true)
++            for (name, data) in files { try data.write(to: folder.appendingPathComponent(name)) }
++        }
++        try CustomizationFiles.saveVerified(pack, to: directory.appendingPathComponent("Pack.plist"))
++    }
++    func tempStorage() throws -> URL {
++        let storage = fm.temporaryDirectory.appendingPathComponent("GX-WallpaperSave-\(UUID().uuidString)")
++        try fm.createDirectory(at: storage, withIntermediateDirectories: false)
++        return storage
++    }
++
++    func testWallpaperImageDataReturnsPngBytes() async throws {
++        let storage = try tempStorage()
++        defer { try? fm.removeItem(at: storage) }
++        let pack = WallpaperPack(id: UUID(), name: "Test", descriptors: [.init(folder: UUID().uuidString, provider: .collections)])
++        try makePack(pack, storage: storage, files: ["Wallpaper.png": png])
++        XCTAssertEqual(try await localStore(storage).wallpaperImageData(pack.id), png)
++    }
++
++    func testWallpaperImageDataReturnsLargestImage() async throws {
++        let storage = try tempStorage()
++        defer { try? fm.removeItem(at: storage) }
++        let pack = WallpaperPack(id: UUID(), name: "Test", descriptors: [.init(folder: UUID().uuidString, provider: .collections)])
++        try makePack(pack, storage: storage, files: ["Wallpaper.png": png, "Photo.jpg": jpeg])
++        XCTAssertEqual(try await localStore(storage).wallpaperImageData(pack.id), jpeg)
++    }
++
++    func testWallpaperImageDataThrowsWithoutImages() async throws {
++        let storage = try tempStorage()
++        defer { try? fm.removeItem(at: storage) }
++        let store = localStore(storage)
++        let empty = WallpaperPack(id: UUID(), name: "Empty", descriptors: [])
++        try makePack(empty, storage: storage)
++        do {
++            _ = try await store.wallpaperImageData(empty.id)
++            XCTFail("Expected wallpaperImageData to throw for a pack with no descriptors")
++        } catch let failure as CustomizationFailure {
++            XCTAssertEqual(failure.key, "This pack contains no compatible wallpapers.")
++        }
++        let binOnly = WallpaperPack(id: UUID(), name: "Bin", descriptors: [.init(folder: UUID().uuidString, provider: .collections)])
++        try makePack(binOnly, storage: storage, files: ["Asset.bin": Data("not an image".utf8)])
++        do {
++            _ = try await store.wallpaperImageData(binOnly.id)
++            XCTFail("Expected wallpaperImageData to throw for a pack with no image files")
++        } catch {}
++    }
++}
