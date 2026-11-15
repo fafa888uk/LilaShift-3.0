@@ -32,7 +32,8 @@ struct LilaIntelligenceCard: View {
     /// snapshot tests, which only supply a GestaltManager), so the
     /// rendered output is identical either way.
     private var report: LilaDeviceReport? {
-        if let cached = diagnostics?.deviceReport { return cached }
+        if model.isReading { return nil }
+        if let diagnostics { return diagnostics.deviceReport }
         guard model.snapshot != nil else { return nil }
         return LilaIntelligence.report(
             snapshot: model.snapshot, backups: model.backups,

@@ -12,7 +12,7 @@ name: SwiftLint
 
 on:
   push:
-    branches: [main]
+    branches: [main, codex/lilashift-3.0-assist]
   pull_request:
     branches: [main]
   workflow_dispatch:

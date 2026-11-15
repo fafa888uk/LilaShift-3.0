@@ -60,6 +60,22 @@ final class UnchangedRestoreTests: XCTestCase {
         } catch is GestaltFailure {}
         XCTAssert(trace.writes == 0, "Rejected no-op restores never invoke the writer")
 
+        // Matching bytes and a valid digest do not promote local backup provenance.
+        let local = try await store.loadLocal(data: initial.data, name: "same-local.plist")
+        try await store.backup(local)
+        let localBackups = try await store.backups()
+        let localRecord = try XCTUnwrap(localBackups.first { $0.source == .local })
+        let localBytes = try await store.backupData(localRecord)
+        XCTAssertEqual(localBytes, initial.data)
+        do {
+            _ = try await store.commit(identical, expected: initial, restoring: localRecord)
+            XCTFail("An integrity-checked local backup cannot restore a live device")
+        } catch let failure as GestaltFailure {
+            XCTAssertEqual(failure.key, "This backup does not belong to this device. Open it as a local file instead.")
+        }
+        XCTAssertEqual(trace.writes, 0)
+        XCTAssertEqual(try Data(contentsOf: device), bytes)
+
         let corrected = try await store.commit(identical, expected: initial, restoring: record, originallyAbsentKeys: ["confirmed-added"])
         XCTAssert(corrected.originals["confirmed-added"] != nil && corrected.originals["confirmed-added"]?.value == nil,
                    "Explicit original-absence corrections are not discarded as no-ops")

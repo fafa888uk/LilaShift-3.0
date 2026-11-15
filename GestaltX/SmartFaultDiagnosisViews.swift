@@ -71,7 +71,8 @@ struct SmartFaultDiagnosisCard: View {
     /// evaluation; falls back to direct computation when no cache is
     /// provided (for example the SwiftUI snapshot tests).
     private var deviceReport: LilaDeviceReport? {
-        if let cached = diagnostics?.deviceReport { return cached }
+        if model.isReading { return nil }
+        if let diagnostics { return diagnostics.deviceReport }
         guard model.snapshot != nil else { return nil }
         return LilaIntelligence.report(
             snapshot: model.snapshot, backups: model.backups,
@@ -84,7 +85,7 @@ struct SmartFaultDiagnosisCard: View {
     /// Prefers the shared cache; the direct computation is only the
     /// fallback for a render without the cache.
     private var healthScore: SystemHealthScore? {
-        if let cached = diagnostics?.healthScore { return cached }
+        if let diagnostics { return diagnostics.healthScore }
         guard let report = deviceReport else { return nil }
         let verifications = RestoreIntelligence.verifyBackups(model.backups, against: model.working)
         let simulation = SafePatch.simulate(
@@ -111,7 +112,7 @@ struct SmartFaultDiagnosisCard: View {
     /// The current fingerprint from the latest read, or `nil` when
     /// the device has not been read yet. Prefers the cache.
     private var currentFingerprint: DeviceFingerprint? {
-        if let cached = diagnostics?.currentFingerprint { return cached }
+        if let diagnostics { return diagnostics.currentFingerprint }
         guard let report = deviceReport else { return nil }
         return DeviceFingerprintCapture.capture(profile: report.profile, snapshot: model.snapshot)
     }

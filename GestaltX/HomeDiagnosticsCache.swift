@@ -15,8 +15,9 @@
 // Fix: this cache computes each shared value ONCE per input change,
 // on a background task, and publishes the result. The cards read the
 // cached value (cheap) instead of recomputing. The cache keeps the
-// previous values while a refresh is in flight, so the home never
-// flashes empty. A value is only published when it actually changed
+// previous values for the same snapshot while a refresh is in flight.
+// A different snapshot clears the previous device's diagnostics immediately.
+// A value is only published when it actually changed
 // (all cached types are Equatable), so a refresh that produces the
 // same values does not rebuild the home.
 //
@@ -75,6 +76,12 @@ private struct HomeDiagnosticsResult: Sendable {
     /// Feature ids applied but not yet verified after a restart,
     /// for the compatibility status model (Phase F).
     var pendingRestartFeatureIDs: Set<String>
+
+    static let empty = HomeDiagnosticsResult(
+        deviceReport: nil, backupVerifications: [], simulations: [:], healthScore: nil,
+        externalModificationCount: 0, records: [], historyError: nil, storedFingerprint: nil,
+        fingerprintError: nil, currentFingerprint: nil, liveValues: [:], stagedFeatureIDs: [],
+        pendingRestartFeatureIDs: [])
 }
 
 /// Environment key for the shared diagnostics cache. The default is
@@ -140,11 +147,21 @@ final class HomeDiagnosticsCache: ObservableObject {
     /// Feature ids applied but not yet verified after a restart.
     /// See `HomeDiagnosticsResult.pendingRestartFeatureIDs`.
     @Published private(set) var pendingRestartFeatureIDs: Set<String> = []
-    /// True while a background refresh is in flight. The previous
-    /// cached values stay visible until the new ones arrive.
+    /// True while a background refresh is in flight.
     @Published private(set) var isComputing = false
 
+    private let backupDirectory: URL
     private var refreshTask: Task<Void, Never>?
+    private var refreshID = UUID()
+    private var lastSnapshot: DocumentSnapshot?
+    private var lastInstallationID: String?
+    private var lastBackups: [BackupRecord] = []
+
+    init(backupDirectory: URL = RestoreIntelligence.backupDirectory) {
+        self.backupDirectory = backupDirectory
+    }
+
+    deinit { refreshTask?.cancel() }
 
     /// The one-tap simulation, or `nil` when it has not been
     /// computed yet. Convenience for the health and diagnosis cards,
@@ -159,30 +176,59 @@ final class HomeDiagnosticsCache: ObservableObject {
     /// not publish anything. Call this when the snapshot, the working
     /// document or the backup inventory changes, and after an explicit
     /// backup or restore.
-    func refresh(snapshot: DocumentSnapshot?, working: GestaltDocument?, backups: [BackupRecord]) {
+    @discardableResult
+    func refresh(snapshot: DocumentSnapshot?, working: GestaltDocument?, backups: [BackupRecord]) -> Task<Void, Never> {
         refreshTask?.cancel()
-        isComputing = true
-        // These are cheap reads (URL construction / UserDefaults);
-        // the heavy file I/O happens inside the detached task.
+        let id = UUID()
+        refreshID = id
         let deviceID = RestoreIntelligence.installationDeviceID
         let historyDirectory = RestoreIntelligence.historyDirectory
-        refreshTask = Task { [weak self] in
-            let result = await Task.detached(priority: .userInitiated) {
-                Self.compute(
+        if deviceID != lastInstallationID || !Self.sameSnapshot(lastSnapshot, snapshot) {
+            apply(.empty)
+        } else if backups != lastBackups && !backupVerifications.isEmpty {
+            backupVerifications = []
+        }
+        lastSnapshot = snapshot
+        lastInstallationID = deviceID
+        lastBackups = backups
+        if !isComputing { isComputing = true }
+
+        let task = Task { [weak self, backupDirectory] in
+            guard self?.refreshID == id else { return }
+            if Task.isCancelled {
+                self?.isComputing = false
+                return
+            }
+            let worker = Task.detached(priority: .userInitiated) {
+                try Self.compute(
                     snapshot: snapshot, working: working, backups: backups,
-                    deviceID: deviceID, historyDirectory: historyDirectory)
-            }.value
-            guard let self, !Task.isCancelled else { return }
-            self.apply(result)
+                    deviceID: deviceID, historyDirectory: historyDirectory, backupDirectory: backupDirectory)
+            }
+            let result = await withTaskCancellationHandler {
+                await worker.result
+            } onCancel: {
+                worker.cancel()
+            }
+            guard let self, self.refreshID == id else { return }
+            if !Task.isCancelled, case let .success(value) = result { self.apply(value) }
             self.isComputing = false
         }
+        refreshTask = task
+        return task
+    }
+
+    private static func sameSnapshot(_ previous: DocumentSnapshot?, _ current: DocumentSnapshot?) -> Bool {
+        guard let previous, let current else { return previous == nil && current == nil }
+        return previous.source == current.source && previous.name == current.name
+            && previous.data == current.data
+            && (!current.data.isEmpty || previous.document.matches(current.document))
     }
 
     /// Applies one computed result, publishing only the values that
     /// actually changed, so a refresh that produces the same values
     /// does not rebuild the home.
     private func apply(_ result: HomeDiagnosticsResult) {
-        if deviceReport != result.deviceReport { deviceReport = result.deviceReport }
+        if !Self.sameReport(deviceReport, result.deviceReport) { deviceReport = result.deviceReport }
         if backupVerifications != result.backupVerifications { backupVerifications = result.backupVerifications }
         if simulations != result.simulations { simulations = result.simulations }
         if healthScore != result.healthScore { healthScore = result.healthScore }
@@ -191,10 +237,20 @@ final class HomeDiagnosticsCache: ObservableObject {
         if historyError != result.historyError { historyError = result.historyError }
         if storedFingerprint != result.storedFingerprint { storedFingerprint = result.storedFingerprint }
         if fingerprintError != result.fingerprintError { fingerprintError = result.fingerprintError }
-        if currentFingerprint != result.currentFingerprint { currentFingerprint = result.currentFingerprint }
+        if currentFingerprint?.digest != result.currentFingerprint?.digest { currentFingerprint = result.currentFingerprint }
         if liveValues != result.liveValues { liveValues = result.liveValues }
         if stagedFeatureIDs != result.stagedFeatureIDs { stagedFeatureIDs = result.stagedFeatureIDs }
         if pendingRestartFeatureIDs != result.pendingRestartFeatureIDs { pendingRestartFeatureIDs = result.pendingRestartFeatureIDs }
+    }
+
+    private static func sameReport(_ previous: LilaDeviceReport?, _ current: LilaDeviceReport?) -> Bool {
+        guard let previous, let current else { return previous == nil && current == nil }
+        let before = previous.chinaUnlockRecommendation
+        let after = current.chinaUnlockRecommendation
+        return previous.profile == current.profile && previous.evaluations == current.evaluations
+            && before.deviceID == after.deviceID && before.productType == after.productType
+            && before.steps == after.steps && before.blockers == after.blockers
+            && before.requiresRestart == after.requiresRestart
     }
 
     /// One background pass over the shared inputs. Pure: reads only
@@ -207,8 +263,10 @@ final class HomeDiagnosticsCache: ObservableObject {
         working: GestaltDocument?,
         backups: [BackupRecord],
         deviceID: String?,
-        historyDirectory: URL
-    ) -> HomeDiagnosticsResult {
+        historyDirectory: URL,
+        backupDirectory: URL
+    ) throws -> HomeDiagnosticsResult {
+        try Task.checkCancellation()
         // 1. History (disk I/O, background). A missing installation
         // id means the history stores are unavailable — never scoped
         // to a guessed id.
@@ -238,6 +296,7 @@ final class HomeDiagnosticsCache: ObservableObject {
 
         // 2. Device report (pure computation). Mirrors the cards:
         // no snapshot means no report, never a fabricated one.
+        try Task.checkCancellation()
         let deviceReport: LilaDeviceReport? = {
             guard let snapshot else { return nil }
             return LilaIntelligence.report(
@@ -248,7 +307,10 @@ final class HomeDiagnosticsCache: ObservableObject {
         // 3. Backup verifications (disk reads + SHA-256, background).
         // This is the same call the health, diagnosis and restore
         // cards used to make separately on every body evaluation.
-        let verifications = RestoreIntelligence.verifyBackups(backups, against: working)
+        let verifications = try backups.flatMap { record in
+            try Task.checkCancellation()
+            return RestoreIntelligence.verifyBackups([record], against: working, directory: backupDirectory)
+        }
 
         // 4. SafePatch simulations for the three proposals the home
         // shows (pure computation, no file I/O).
@@ -259,6 +321,7 @@ final class HomeDiagnosticsCache: ObservableObject {
         ]
         var simulations: [SafePatchProposal: SafePatchSimulation] = [:]
         for proposal in proposals {
+            try Task.checkCancellation()
             simulations[proposal] = SafePatch.simulate(
                 proposal: proposal, snapshot: snapshot,
                 currentDocument: working, backups: backups)
@@ -292,6 +355,7 @@ final class HomeDiagnosticsCache: ObservableObject {
         // 8. Live-probe values for the recorded CacheExtra changes.
         // The live Gestalt query can be slow, so it runs here on the
         // background task, never on the main thread or in a body.
+        try Task.checkCancellation()
         let liveValues = PostModificationAcceptance.liveValues(for: records)
 
         // 9. Compatibility-status inputs (Phase F): the staged set

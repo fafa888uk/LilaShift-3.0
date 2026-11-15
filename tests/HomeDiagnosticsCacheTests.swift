@@ -5,10 +5,7 @@
 //
 // These tests drive the REAL `HomeDiagnosticsCache` (no mock): the
 // cache computes on its background task and publishes on the main
-// actor, exactly as ContentView drives it. Waiting is a bounded
-// `Task.yield()` loop on `isComputing` — no sleeps, no timing
-// assertions; the loop only bounds how long a stuck refresh may
-// run before the test fails.
+// actor, exactly as ContentView drives it. Tests await the refresh task.
 //
 // What is proven here:
 //   - A snapshot change invalidates the report (nil -> populated
@@ -46,6 +43,7 @@
 // their contents are whatever the host has, so these tests assert
 // records/history are UNCHANGED across a refresh, never an
 // absolute value.
+import Foundation
 import XCTest
 
 @testable import GestaltX
@@ -92,25 +90,13 @@ final class HomeDiagnosticsCacheTests: XCTestCase {
 
     // MARK: - Helpers
 
-    /// Waits until no refresh is in flight. Bounded yield loop:
-    /// no sleep, no timing assertion — the budget only fails a
-    /// refresh that never finishes.
-    private func waitForIdle(_ cache: HomeDiagnosticsCache) async {
-        for _ in 0..<5000 {
-            if !cache.isComputing { return }
-            await Task.yield()
-        }
-        XCTFail("HomeDiagnosticsCache did not finish refreshing within the yield budget")
-    }
-
     private func refreshAndWait(
         _ cache: HomeDiagnosticsCache,
         snapshot: DocumentSnapshot?,
         working: GestaltDocument?,
         backups: [BackupRecord]
     ) async {
-        cache.refresh(snapshot: snapshot, working: working, backups: backups)
-        await waitForIdle(cache)
+        await cache.refresh(snapshot: snapshot, working: working, backups: backups).value
     }
 
     // MARK: - Snapshot change invalidates the report
@@ -249,5 +235,34 @@ final class HomeDiagnosticsCacheTests: XCTestCase {
         XCTAssertEqual(cache.externalModificationCount, 0)
         XCTAssertTrue(cache.stagedFeatureIDs.isEmpty)
         XCTAssertTrue(cache.backupVerifications.isEmpty)
+    }
+
+    func testBackupFileReplacementAndDeletionAreReverifiedWithIdenticalInventory() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+
+        let snapshot = try snapshotA()
+        let bytes = try snapshot.document.encoded()
+        let record = BackupRecord(
+            id: UUID(), date: Date(timeIntervalSince1970: 0), reason: "test", source: .device,
+            deviceID: "test-device", byteCount: bytes.count, sha256: GestaltFileStore.sha256Hex(of: bytes),
+            provenance: .preModification)
+        let url = directory.appendingPathComponent(record.filename)
+        try bytes.write(to: url)
+        let cache = HomeDiagnosticsCache(backupDirectory: directory)
+        await cache.refresh(snapshot: snapshot, working: snapshot.document, backups: [record]).value
+        XCTAssertEqual(cache.backupVerifications.first?.status, .verified)
+
+        try Data(repeating: 0, count: bytes.count).write(to: url)
+        await cache.refresh(snapshot: snapshot, working: snapshot.document, backups: [record]).value
+        let corrupted = try XCTUnwrap(cache.backupVerifications.first)
+        guard case .failed = corrupted.status else {
+            return XCTFail("A replacement with the same byte count must fail digest verification")
+        }
+
+        try FileManager.default.removeItem(at: url)
+        await cache.refresh(snapshot: snapshot, working: snapshot.document, backups: [record]).value
+        XCTAssertEqual(cache.backupVerifications.first?.status, .notFound)
     }
 }

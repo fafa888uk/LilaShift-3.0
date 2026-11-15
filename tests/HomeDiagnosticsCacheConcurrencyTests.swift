@@ -19,9 +19,7 @@
 // bounded number of times with `Task.yield()` between samples;
 // refreshes are issued a bounded number of times; the only
 // assertions are membership in the set of legitimate whole
-// values and the final converged state. A test fails (rather
-// than hanging) if a refresh never finishes, via the bounded
-// yield budget in `waitForIdle`.
+// values and the final converged state. Tests await refresh completion.
 import XCTest
 
 @testable import GestaltX
@@ -50,22 +48,26 @@ final class HomeDiagnosticsCacheConcurrencyTests: XCTestCase {
 
     // MARK: - Helpers
 
-    private func waitForIdle(_ cache: HomeDiagnosticsCache) async {
-        for _ in 0..<5000 {
-            if !cache.isComputing { return }
-            await Task.yield()
-        }
-        XCTFail("HomeDiagnosticsCache did not finish refreshing within the yield budget")
-    }
-
     private func refreshAndWait(
         _ cache: HomeDiagnosticsCache,
         snapshot: DocumentSnapshot?,
         working: GestaltDocument?,
         backups: [BackupRecord]
     ) async {
-        cache.refresh(snapshot: snapshot, working: working, backups: backups)
-        await waitForIdle(cache)
+        await cache.refresh(snapshot: snapshot, working: working, backups: backups).value
+    }
+
+    private func hasSameDiagnostics(_ report: LilaDeviceReport, as reference: LilaDeviceReport) -> Bool {
+        let recommendation = report.chinaUnlockRecommendation
+        let referenceRecommendation = reference.chinaUnlockRecommendation
+        // A fresh computation assigns new creation metadata to the same recommendation.
+        let normalized = LilaRecommendation(
+            id: referenceRecommendation.id, createdAt: referenceRecommendation.createdAt,
+            deviceID: recommendation.deviceID, productType: recommendation.productType,
+            steps: recommendation.steps, blockers: recommendation.blockers,
+            requiresRestart: recommendation.requiresRestart)
+        return LilaDeviceReport(profile: report.profile, evaluations: report.evaluations,
+                                chinaUnlockRecommendation: normalized) == reference
     }
 
     // MARK: - Concurrent refreshes converge
@@ -77,12 +79,10 @@ final class HomeDiagnosticsCacheConcurrencyTests: XCTestCase {
         await withTaskGroup(of: Void.self) { group in
             for _ in 0..<8 {
                 group.addTask {
-                    await cache.refresh(
-                        snapshot: snapshot, working: snapshot.document, backups: [])
+                    await cache.refresh(snapshot: snapshot, working: snapshot.document, backups: []).value
                 }
             }
         }
-        await waitForIdle(cache)
         XCTAssertFalse(cache.isComputing)
         XCTAssertNotNil(cache.deviceReport)
         XCTAssertEqual(cache.deviceReport?.profile.regionCode.value, "LL")
@@ -118,23 +118,27 @@ final class HomeDiagnosticsCacheConcurrencyTests: XCTestCase {
             // Alternate refreshes between the two snapshots while
             // the readers sample. The group body runs on the main
             // actor; each yield lets the refresh tasks apply.
+            var latest: Task<Void, Never>?
             for _ in 0..<4 {
                 cache.refresh(snapshot: first, working: first.document, backups: [])
                 await Task.yield()
-                cache.refresh(snapshot: second, working: second.document, backups: [])
+                latest = cache.refresh(snapshot: second, working: second.document, backups: [])
                 await Task.yield()
             }
             for await seen in group {
                 for report in seen {
-                    XCTAssertTrue(
-                        report == nil || report == reportA || report == reportB,
-                        "Reader observed a report that is neither snapshot's whole report")
+                    if let report {
+                        XCTAssertTrue(
+                            hasSameDiagnostics(report, as: reportA) || hasSameDiagnostics(report, as: reportB),
+                            "Reader observed a report that is neither snapshot's whole report")
+                    }
                 }
             }
+            await latest?.value
         }
-        await waitForIdle(cache)
         XCTAssertFalse(cache.isComputing)
         XCTAssertNotNil(cache.deviceReport)
+        XCTAssertEqual(cache.deviceReport?.profile.regionCode.value, "CH")
     }
 
     // MARK: - Refresh from a background task publishes on the main actor
@@ -144,12 +148,47 @@ final class HomeDiagnosticsCacheConcurrencyTests: XCTestCase {
         let snapshot = try snapshotA()
 
         await Task.detached {
-            await cache.refresh(
-                snapshot: snapshot, working: snapshot.document, backups: [])
+            await cache.refresh(snapshot: snapshot, working: snapshot.document, backups: []).value
         }.value
-        await waitForIdle(cache)
         XCTAssertFalse(cache.isComputing)
         XCTAssertNotNil(cache.deviceReport)
         XCTAssertEqual(cache.deviceReport?.profile.regionCode.value, "LL")
+    }
+
+    func testDeviceSwitchClearsPreviousDiagnosticsAndOnlyPublishesLatestRefresh() async throws {
+        let cache = HomeDiagnosticsCache()
+        let first = try snapshotA()
+        let second = try snapshotB()
+        await cache.refresh(snapshot: first, working: first.document, backups: []).value
+        XCTAssertEqual(cache.deviceReport?.profile.regionCode.value, "LL")
+        XCTAssertNotNil(cache.healthScore)
+        XCTAssertNotNil(cache.currentFingerprint)
+
+        let superseded = cache.refresh(snapshot: first, working: first.document, backups: [])
+        let latest = cache.refresh(snapshot: second, working: second.document, backups: [])
+        XCTAssertNil(cache.deviceReport)
+        XCTAssertNil(cache.healthScore)
+        XCTAssertNil(cache.currentFingerprint)
+        XCTAssertTrue(cache.simulations.isEmpty)
+
+        await latest.value
+        await superseded.value
+        XCTAssertTrue(superseded.isCancelled)
+        XCTAssertEqual(cache.deviceReport?.profile.regionCode.value, "CH")
+        XCTAssertEqual(cache.currentFingerprint?.regionCode, "CH")
+        XCTAssertFalse(cache.isComputing)
+    }
+
+    func testCancelledRefreshClearsLoadingAndDoesNotPublish() async throws {
+        let cache = HomeDiagnosticsCache()
+        let snapshot = try snapshotA()
+        let refresh = cache.refresh(snapshot: snapshot, working: snapshot.document, backups: [])
+        refresh.cancel()
+        await refresh.value
+
+        XCTAssertTrue(refresh.isCancelled)
+        XCTAssertNil(cache.deviceReport)
+        XCTAssertNil(cache.currentFingerprint)
+        XCTAssertFalse(cache.isComputing)
     }
 }
