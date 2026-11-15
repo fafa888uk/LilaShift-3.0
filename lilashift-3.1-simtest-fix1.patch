@@ -1,0 +1,17 @@
+diff --git a/tests/IconCacheSimulatorIntegrationTests.swift b/tests/IconCacheSimulatorIntegrationTests.swift
+index c403feb..ac5febc 100644
+--- a/tests/IconCacheSimulatorIntegrationTests.swift
++++ b/tests/IconCacheSimulatorIntegrationTests.swift
+@@ -40,6 +40,12 @@ final class IconCacheSimulatorIntegrationTests: XCTestCase {
+         let library = try XCTUnwrap(files.urls(for: .libraryDirectory, in: .userDomainMask).first)
+         let support = try XCTUnwrap(files.urls(for: .applicationSupportDirectory, in: .userDomainMask).first)
+         for directory in [caches, library, support] {
++            // iOS creates container directories lazily: on a fresh
++            // simulator container Library/Application Support does not
++            // exist yet. Creating it is the OS's deferred step, not a
++            // relaxed assertion — the existence, is-a-directory and
++            // in-sandbox checks below still run on the real path.
++            try files.createDirectory(at: directory, withIntermediateDirectories: true)
+             XCTAssertTrue(directory.isFileURL)
+             XCTAssertTrue(directory.path.hasPrefix(home),
+                           "\(directory.path) is outside the app sandbox home \(home)")
