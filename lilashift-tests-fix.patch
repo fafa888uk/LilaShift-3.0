@@ -1,0 +1,24 @@
+diff --git a/tests/WallpaperSaveToPhotosTests.swift b/tests/WallpaperSaveToPhotosTests.swift
+index 0035122..2fa3979 100644
+--- a/tests/WallpaperSaveToPhotosTests.swift
++++ b/tests/WallpaperSaveToPhotosTests.swift
+@@ -36,7 +36,8 @@ final class WallpaperSaveToPhotosTests: XCTestCase {
+         defer { try? fm.removeItem(at: storage) }
+         let pack = WallpaperPack(id: UUID(), name: "Test", descriptors: [.init(folder: UUID().uuidString, provider: .collections)])
+         try makePack(pack, storage: storage, files: ["Wallpaper.png": png])
+-        XCTAssertEqual(try await localStore(storage).wallpaperImageData(pack.id), png)
++        let data = try await localStore(storage).wallpaperImageData(pack.id)
++        XCTAssertEqual(data, png)
+     }
+ 
+     func testWallpaperImageDataReturnsLargestImage() async throws {
+@@ -44,7 +45,8 @@ final class WallpaperSaveToPhotosTests: XCTestCase {
+         defer { try? fm.removeItem(at: storage) }
+         let pack = WallpaperPack(id: UUID(), name: "Test", descriptors: [.init(folder: UUID().uuidString, provider: .collections)])
+         try makePack(pack, storage: storage, files: ["Wallpaper.png": png, "Photo.jpg": jpeg])
+-        XCTAssertEqual(try await localStore(storage).wallpaperImageData(pack.id), jpeg)
++        let data = try await localStore(storage).wallpaperImageData(pack.id)
++        XCTAssertEqual(data, jpeg)
+     }
+ 
+     func testWallpaperImageDataThrowsWithoutImages() async throws {
