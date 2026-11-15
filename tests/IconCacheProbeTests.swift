@@ -384,6 +384,9 @@ final class IconCacheProbeTests: XCTestCase {
     /// A synthetic cache file whose prefix contains the bundle ID and the
     /// current display name in UTF-8, plus the record the probe builds
     /// for it. Exactly one file matches, so the record is deterministic.
+    /// The separators are "/" on purpose: the probe only reports scoped
+    /// literals, and "-" is an identifier byte, so a dash-joined token
+    /// such as "header-com.yueyou.cyreader-..." would not match.
     private func makeWriteFixture() throws -> (root: URL, cache: URL, file: URL,
                                               record: VerifiedIconCacheRecord,
                                               evidence: DiskIconCacheEvidence) {
@@ -393,11 +396,11 @@ final class IconCacheProbeTests: XCTestCase {
         try files.createDirectory(at: cache, withIntermediateDirectories: true)
         let target = "com.yueyou.cyreader"
         var content = Data()
-        content.append(Data("header-".utf8))
+        content.append(Data("header/".utf8))
         content.append(Data(target.utf8))
-        content.append(Data("-".utf8))
+        content.append(Data("/".utf8))
         content.append(Data("七猫小说".utf8))
-        content.append(Data("-tail".utf8))
+        content.append(Data("/tail".utf8))
         let file = cache.appendingPathComponent("record.isdata")
         try content.write(to: file)
         let descriptor = open(cache.path, O_RDONLY | O_DIRECTORY | O_CLOEXEC)
