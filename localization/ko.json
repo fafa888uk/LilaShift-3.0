@@ -1150,5 +1150,7 @@
   "Some changes need a device restart to take effect. LilaShift cannot restart SpringBoard itself. Please restart your device manually: hold the side button and a volume button, then slide to power off, or use Settings → General → Shut Down.": "일부 변경 사항은 적용되려면 기기를 다시 시작해야 합니다. LilaShift는 SpringBoard를 직접 다시 시작할 수 없습니다. 측면 버튼과 음량 버튼을 길게 눌러 밀어 전원을 끄거나, 설정 → 일반 → 종료를 사용해 수동으로 다시 시작하세요.",
   "Suspended": "중단됨",
   "Manual Restart": "수동 다시 시작",
-  "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "LilaShift는 SpringBoard를 직접 다시 시작하지 않습니다. 변경 사항을 적용한 뒤 기능이 나타나지 않으면 기기를 수동으로 다시 시작하세요."
+  "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "LilaShift는 SpringBoard를 직접 다시 시작하지 않습니다. 변경 사항을 적용한 뒤 기능이 나타나지 않으면 기기를 수동으로 다시 시작하세요.",
+  "Share LilaShift": "LilaShift 공유",
+  "Pre-release": "프리릴리스"
 }

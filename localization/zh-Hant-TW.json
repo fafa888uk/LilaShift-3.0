@@ -1150,5 +1150,7 @@
   "Some changes need a device restart to take effect. LilaShift cannot restart SpringBoard itself. Please restart your device manually: hold the side button and a volume button, then slide to power off, or use Settings → General → Shut Down.": "部分更改需要重新啟動裝置才能生效。紫序無法自行重新啟動 SpringBoard，請手動重新啟動裝置：按住側邊按鈕和任一音量按鈕，然後滑動關機；或前往「設定 → 一般 → 關機」。",
   "Suspended": "已暫停",
   "Manual Restart": "手動重新啟動",
-  "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "紫序不會自行重新啟動 SpringBoard。套用更改後，若某項功能未出現，請手動重新啟動裝置。"
+  "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "紫序不會自行重新啟動 SpringBoard。套用更改後，若某項功能未出現，請手動重新啟動裝置。",
+  "Share LilaShift": "分享 LilaShift",
+  "Pre-release": "預發佈"
 }

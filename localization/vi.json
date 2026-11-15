@@ -1150,5 +1150,7 @@
   "Some changes need a device restart to take effect. LilaShift cannot restart SpringBoard itself. Please restart your device manually: hold the side button and a volume button, then slide to power off, or use Settings → General → Shut Down.": "Một số thay đổi cần khởi động lại thiết bị mới có hiệu lực. LilaShift không thể tự khởi động lại SpringBoard. Vui lòng khởi động lại thiết bị theo cách thủ công: giữ nút sườn và một nút âm lượng rồi trượt để tắt nguồn, hoặc vào Cài đặt → Cài đặt chung → Tắt nguồn.",
   "Suspended": "Đã tạm dừng",
   "Manual Restart": "Khởi động lại thủ công",
-  "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "LilaShift không tự khởi động lại SpringBoard. Sau khi áp dụng thay đổi, hãy khởi động lại thiết bị theo cách thủ công nếu một tính năng không xuất hiện."
+  "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "LilaShift không tự khởi động lại SpringBoard. Sau khi áp dụng thay đổi, hãy khởi động lại thiết bị theo cách thủ công nếu một tính năng không xuất hiện.",
+  "Share LilaShift": "Chia sẻ LilaShift",
+  "Pre-release": "Bản tiền phát hành"
 }
