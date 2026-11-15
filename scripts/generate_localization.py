@@ -1154,6 +1154,8 @@ Some changes need a device restart to take effect. LilaShift cannot restart Spri
 Suspended	已暂停
 Manual Restart	手动重启
 LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.	紫序不会自行重启 SpringBoard。应用更改后，若某项功能未出现，请手动重启设备。
+Share LilaShift	分享 LilaShift
+Pre-release	预发布
 '''
 entries = {}
 for line in TRANSLATIONS.strip().splitlines():

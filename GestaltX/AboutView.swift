@@ -64,6 +64,9 @@ struct AboutView: View {
                 Link(destination: URL(string: "https://t.me/LilaShiftUpdates")!) {
                     Label(L("Telegram Updates Channel"), systemImage: "paperplane.fill")
                 }
+                ShareLink(item: ShareLilaShift.text()) {
+                    Label(L("Share LilaShift"), systemImage: "square.and.arrow.up")
+                }
             }
             Section {
                 LabeledContent(L("Supported OS"), value: VersionSupport.range)
