@@ -27,6 +27,7 @@ Import a .tendies or .zip wallpaper pack. You can also share it to LilaShift.	�
 Applied	已应用
 Customization	个性化
 Import Wallpaper	导入壁纸
+Save to Photos	保存到相册
 No Wallpapers	暂无壁纸
 This only deletes the imported pack from LilaShift. Applied wallpapers will be kept.	只从 紫序 删除导入包，已应用的壁纸会保留。
 Open Wallpaper Gallery	打开壁纸图库
@@ -43,6 +44,7 @@ This adds new wallpapers without replacing your existing ones.	将添加新壁�
 This pack contains no compatible wallpapers.	此包中没有兼容的壁纸。
 This wallpaper was changed outside LilaShift. It was not removed.	壁纸已被其他方式修改，未执行移除。
 Wallpaper added. Open the wallpaper gallery to select it. If it does not appear, restart the device.	壁纸已添加，请打开图库选择。若未出现，请重新启动设备。
+Wallpaper saved to Photos. Set it from Photos (Use as Wallpaper) or with the Shortcuts Set Wallpaper action.	壁纸已保存到相册。请在“照片”中打开它并选择“用作壁纸”，或使用快捷指令的“设定壁纸”操作。
 Wallpaper Settings	壁纸设置
 WAPI	WAPI
 Disable WAPI	关闭 WAPI

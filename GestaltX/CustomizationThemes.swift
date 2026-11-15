@@ -113,6 +113,25 @@ enum CustomizationImages {
         guard CGImageDestinationFinalize(destination) else { throw CustomizationFailure("This pack contains no compatible wallpapers.") }
         return output as Data
     }
+    /// Image kind by magic-byte signature (PNG, JPEG, HEIC/HEIF). Returns the
+    /// file extension to use, or nil when the data is not a recognized image.
+    static func kind(of data: Data) -> String? {
+        if data.starts(with: [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A] as [UInt8]) { return "png" }
+        if data.starts(with: [0xFF, 0xD8, 0xFF] as [UInt8]) { return "jpg" }
+        guard data.count >= 12, data[4..<8] == Data("ftyp".utf8),
+              ["heic", "heix", "hevc", "hevx", "mif1", "msf1"].contains(String(decoding: data[8..<12], as: UTF8.self)) else { return nil }
+        return "heic"
+    }
+    /// True when the file at url starts with a PNG, JPEG or HEIC/HEIF signature.
+    /// Only the 12-byte header is read; symlinks are never followed.
+    static func isImageFile(_ url: URL) -> Bool {
+        guard let handle = try? FileHandle(forReadingFrom: url) else { return false }
+        defer { try? handle.close() }
+        do {
+            guard let header = try handle.read(upToCount: 12) else { return false }
+            return kind(of: header) != nil
+        } catch { return false }
+    }
     static func thumbnail(in root: URL) throws -> Data? {
         guard let iterator = FileManager.default.enumerator(at: root, includingPropertiesForKeys: [.isRegularFileKey, .fileSizeKey], options: [.skipsHiddenFiles]) else { return nil }
         for case let url as URL in iterator {

@@ -1153,4 +1153,7 @@
   "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "紫序不會自行重新啟動 SpringBoard。套用更改後，若某項功能未出現，請手動重新啟動裝置。",
   "Share LilaShift": "分享 LilaShift",
   "Pre-release": "預發佈"
+,
+  "Save to Photos": "儲存到照片",
+  "Wallpaper saved to Photos. Set it from Photos (Use as Wallpaper) or with the Shortcuts Set Wallpaper action.": "桌布已儲存到照片。請在「照片」中開啟並選擇「設為桌布」，或使用捷徑的「設定桌布」操作。"
 }

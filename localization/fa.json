@@ -1153,4 +1153,7 @@
   "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "LilaShift خودش SpringBoard را راه‌اندازی مجدد نمی‌کند. پس از اعمال تغییرات، اگر قابلیتی ظاهر نشد، دستگاه را به‌صورت دستی راه‌اندازی مجدد کنید.",
   "Share LilaShift": "اشتراک\u200cگذاری LilaShift",
   "Pre-release": "پیش\u200cانتشار"
+,
+  "Save to Photos": "ذخیره در عکس‌ها",
+  "Wallpaper saved to Photos. Set it from Photos (Use as Wallpaper) or with the Shortcuts Set Wallpaper action.": "تصویر پس‌زمینه در عکس‌ها ذخیره شد. آن را از عکس‌ها (استفاده به‌عنوان تصویر پس‌زمینه) یا با اقدام «تنظیم تصویر پس‌زمینه» در میانبرها تنظیم کنید."
 }

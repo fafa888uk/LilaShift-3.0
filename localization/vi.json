@@ -1153,4 +1153,7 @@
   "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "LilaShift không tự khởi động lại SpringBoard. Sau khi áp dụng thay đổi, hãy khởi động lại thiết bị theo cách thủ công nếu một tính năng không xuất hiện.",
   "Share LilaShift": "Chia sẻ LilaShift",
   "Pre-release": "Bản tiền phát hành"
+,
+  "Save to Photos": "Lưu vào Ảnh",
+  "Wallpaper saved to Photos. Set it from Photos (Use as Wallpaper) or with the Shortcuts Set Wallpaper action.": "Đã lưu hình nền vào Ảnh. Đặt từ Ảnh (Dùng làm Hình nền) hoặc bằng tác vụ Đặt Hình nền trong Phím tắt."
 }

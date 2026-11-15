@@ -1153,4 +1153,7 @@
   "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "LilaShift не перезапускает SpringBoard самостоятельно. После применения изменений перезапустите устройство вручную, если какая-либо функция не появилась.",
   "Share LilaShift": "Поделиться LilaShift",
   "Pre-release": "Предварительная версия"
+,
+  "Save to Photos": "Сохранить в Фото",
+  "Wallpaper saved to Photos. Set it from Photos (Use as Wallpaper) or with the Shortcuts Set Wallpaper action.": "Обои сохранены в Фото. Установите их из Фото («Использовать как обои») или с помощью действия «Установить обои» в Командах."
 }

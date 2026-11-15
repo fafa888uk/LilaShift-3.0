@@ -115,6 +115,28 @@ actor CustomizationStore {
         guard let name = try loadPack(id).preview else { return nil }
         return try CustomizationFiles.read(CustomizationFiles.checked(name, in: folder(id)))
     }
+    /// The largest real image file inside the pack's descriptor folders, by
+    /// magic-byte signature (PNG, JPEG, HEIC/HEIF). This only reads the pack
+    /// from LilaShift storage; it never touches the system wallpaper.
+    func wallpaperImageData(_ id: UUID) throws -> Data {
+        let pack = try loadPack(id)
+        var best: (url: URL, size: Int)?
+        for descriptor in pack.descriptors {
+            let directory = folder(id).appendingPathComponent(descriptor.folder)
+            guard fm.fileExists(atPath: directory.path) else { continue }
+            let folderURL = try CustomizationFiles.checked(descriptor.folder, in: folder(id))
+            guard let iterator = fm.enumerator(at: folderURL, includingPropertiesForKeys: [.isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey], options: [.skipsHiddenFiles]) else { continue }
+            for case let url as URL in iterator {
+                guard let values = try? url.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey]),
+                      values.isRegularFile == true, values.isSymbolicLink != true,
+                      let size = values.fileSize, size > 0, size <= CustomizationFiles.maximumFile,
+                      CustomizationImages.isImageFile(url) else { continue }
+                if best == nil || size > best!.size { best = (url, size) }
+            }
+        }
+        guard let best else { throw CustomizationFailure("This pack contains no compatible wallpapers.") }
+        return try CustomizationFiles.read(best.url)
+    }
     private func stageURL(_ relative: String, root: URL) throws -> URL {
         let target = try installationURL(relative, root: root)
         return target.deletingLastPathComponent().appendingPathComponent(".GestaltX-stage-\(target.lastPathComponent)")

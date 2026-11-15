@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import SwiftUI
 import Combine
+import Photos
 import UniformTypeIdentifiers
 
 @MainActor
@@ -44,6 +45,28 @@ final class CustomizationModel: ObservableObject {
         await run {
             packs = try await store.applyWallpaper(pack.id)
             message = L("Wallpaper added. Open the wallpaper gallery to select it. If it does not appear, restart the device.")
+        }
+    }
+    /// Saves the pack's wallpaper image to Photos (public Photos API). This
+    /// does not set the system wallpaper: the user sets it from Photos
+    /// (Use as Wallpaper) or with the Shortcuts Set Wallpaper action.
+    func saveWallpaperToPhotos(_ pack: WallpaperPack) async {
+        await run {
+            let data = try await store.wallpaperImageData(pack.id)
+            var authorization = PHPhotoLibrary.authorizationStatus(for: .addOnly)
+            if authorization == .notDetermined { authorization = await PHPhotoLibrary.requestAuthorization(for: .addOnly) }
+            guard authorization == .authorized || authorization == .limited else {
+                throw CustomizationFailure("Allow LilaShift to add photos in Settings, then try again.")
+            }
+            let kind = CustomizationImages.kind(of: data) ?? "png"
+            let name = pack.name.replacingOccurrences(of: "/", with: "-").trimmingCharacters(in: .whitespacesAndNewlines)
+            try await PHPhotoLibrary.shared().performChanges {
+                let request = PHAssetCreationRequest.forAsset()
+                let options = PHAssetResourceCreationOptions()
+                options.originalFilename = "\(name.isEmpty ? "wallpaper" : name)-wallpaper.\(kind)"
+                request.addResource(with: .photo, data: data, options: options)
+            }
+            message = L("Wallpaper saved to Photos. Set it from Photos (Use as Wallpaper) or with the Shortcuts Set Wallpaper action.")
         }
     }
     func removeWallpaper(_ pack: WallpaperPack) async {
@@ -128,6 +151,9 @@ struct WallpapersView: View {
                                 if pack.isApplied { Label(L("Applied"), systemImage: "checkmark.circle.fill").font(.caption).foregroundStyle(.green) }
                                 HStack {
                                     Button(L("Apply")) { pendingApply = pack }.disabled(pack.isApplied)
+                                    Button { Task { await model.saveWallpaperToPhotos(pack) } } label: {
+                                        Label(L("Save to Photos"), systemImage: "square.and.arrow.down")
+                                    }
                                     Spacer()
                                     Button(role: .destructive) { pendingDelete = pack } label: { Image(systemName: "trash") }
                                         .accessibilityLabel(L("Delete"))

@@ -84,6 +84,7 @@
 		BE026BD50295ABE265201260 /* DashboardV3SnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3624FBBE3C977DC36106724 /* DashboardV3SnapshotTests.swift */; };
 		7DED2B4236ED38CA1B96C42F /* CPUImageDiffing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B54C7F4463E10A786731690A /* CPUImageDiffing.swift */; };
 		C5463A77EE63DF48864201E8 /* ShareLilaShiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E50F80F2FADE84F33D5410C /* ShareLilaShiftTests.swift */; };
+		09F2D22304F64048B9E6369A /* WallpaperSaveToPhotosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A80799FA4AA04135A981E681 /* WallpaperSaveToPhotosTests.swift */; };
 		D43F6FE6E3F70F2FD3EC5873 /* DashboardV3NavigationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E1320CF71EABD8197C0EF5 /* DashboardV3NavigationTests.swift */; };
 		1A7AD902F4504E46B9FC8038 /* DiagnosticsEquatableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE7645FF99DB44D29B4CE01D /* DiagnosticsEquatableTests.swift */; };
 		100F74C65CA447F76A377DC2 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 368CCEAD13DE80A54EDDFBC1 /* XCTest.framework */; };
@@ -206,6 +207,7 @@
 		A3624FBBE3C977DC36106724 /* DashboardV3SnapshotTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DashboardV3SnapshotTests.swift; sourceTree = "<group>"; };
 		B54C7F4463E10A786731690A /* CPUImageDiffing.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CPUImageDiffing.swift; sourceTree = "<group>"; };
 		3E50F80F2FADE84F33D5410C /* ShareLilaShiftTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareLilaShiftTests.swift; sourceTree = "<group>"; };
+		A80799FA4AA04135A981E681 /* WallpaperSaveToPhotosTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WallpaperSaveToPhotosTests.swift; sourceTree = "<group>"; };
 		D4E1320CF71EABD8197C0EF5 /* DashboardV3NavigationTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DashboardV3NavigationTests.swift; sourceTree = "<group>"; };
 		DE7645FF99DB44D29B4CE01D /* DiagnosticsEquatableTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DiagnosticsEquatableTests.swift; sourceTree = "<group>"; };
 		368CCEAD13DE80A54EDDFBC1 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
@@ -402,6 +404,7 @@
 				A3624FBBE3C977DC36106724 /* DashboardV3SnapshotTests.swift */,
 				B54C7F4463E10A786731690A /* CPUImageDiffing.swift */,
 				3E50F80F2FADE84F33D5410C /* ShareLilaShiftTests.swift */,
+				A80799FA4AA04135A981E681 /* WallpaperSaveToPhotosTests.swift */,
 				D4E1320CF71EABD8197C0EF5 /* DashboardV3NavigationTests.swift */,
 				DE7645FF99DB44D29B4CE01D /* DiagnosticsEquatableTests.swift */,
 			);
@@ -632,6 +635,7 @@
 				BE026BD50295ABE265201260 /* DashboardV3SnapshotTests.swift in Sources */,
 				7DED2B4236ED38CA1B96C42F /* CPUImageDiffing.swift in Sources */,
 				C5463A77EE63DF48864201E8 /* ShareLilaShiftTests.swift in Sources */,
+				09F2D22304F64048B9E6369A /* WallpaperSaveToPhotosTests.swift in Sources */,
 				D43F6FE6E3F70F2FD3EC5873 /* DashboardV3NavigationTests.swift in Sources */,
 				1A7AD902F4504E46B9FC8038 /* DiagnosticsEquatableTests.swift in Sources */,
 			);
