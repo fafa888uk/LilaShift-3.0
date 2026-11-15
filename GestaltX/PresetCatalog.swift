@@ -430,7 +430,7 @@ enum PresetCatalog {
                 category: .group,
                 chineseName: "一键解锁（中国）",
                 englishTitle: "China Unlock (One-Tap)",
-                chineseDescription: "为国行 eSIM 设备一键暂存 9 项：2 个 eSIM 缓存标记、地区码 LL、6 个 Apple 智能键。不改监管型号与销售地区。siriOnDevice 刻意保留原值。重启后须重新读取验收；系统可能在重启时还原地区值。",
+                chineseDescription: "为国行 eSIM 设备一键暂存 9 项：2 个 eSIM 缓存标记、地区码 LL、6 个 Apple 智能键。原生支持 Apple Intelligence 的机型跳过 6 个 Apple 智能键，只暂存 3 项。不改监管型号与销售地区。siriOnDevice 刻意保留原值。重启后须重新读取验收；系统可能在重启时还原地区值。",
                 scope: .unknown(reason: "组合包含不同适用范围的项目：eSIM 仅限中国大陆市场设备，AI 功能依赖原生硬件或地区 LL。"),
                 scopeNote: "eSIM 仅限中国大陆市场设备（地区码 CH）；AI 功能依赖原生硬件或地区 LL；地区码暂存不依赖机型。",
                 minSystem: .known("iOS 27"),

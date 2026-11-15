@@ -4,10 +4,13 @@ import XCTest
 
 /// Offline tests for the item-5 region mode choice: the US regulatory
 /// model mapping (refuses unknown models) and the one-tap unlock, which
-/// stages exactly the 9 items in either region mode — the sales-region
-/// suffix and the regulatory model number are never staged, so a
-/// regulatory model that does not match the hardware cannot make the
-/// system discard the cache at boot. No device or signing is needed.
+/// stages exactly the 9 items in either region mode on non-native
+/// hardware — and exactly the 3 non-AI items on hardware that natively
+/// supports Apple Intelligence, where the six AI keys are skipped. The
+/// sales-region suffix and the regulatory model number are never
+/// staged, so a regulatory model that does not match the hardware
+/// cannot make the system discard the cache at boot. No device or
+/// signing is needed.
 final class RegionModeTests: XCTestCase {
     struct Failure: Error { let message: String }
 
@@ -50,7 +53,8 @@ final class RegionModeTests: XCTestCase {
                    "iPads map to nil: the unlock is iPhone-focused")
 
         // Default mode stays region-code-only: staging is byte-identical
-        // to the 9-item unlock (verified in ChinaUnlockTests).
+        // to the 3-item unlock on this native fixture (verified in
+        // ChinaUnlockTests).
         ChinaUnlockRegionMode.stored = .regionCodeOnly
         let original = try fixture()
         let snapshot = DocumentSnapshot(data: try original.encoded(), document: original,
@@ -60,12 +64,13 @@ final class RegionModeTests: XCTestCase {
         XCTAssert(manager.chinaUnlockRegionMode == .regionCodeOnly,
                    "Default region mode is region-code-only")
         manager.stageChinaUnlock()
-        XCTAssert(manager.changeCount == 9 && manager.regionID == "keep",
-                   "Region-code-only staging still changes exactly 9 items")
+        XCTAssert(manager.changeCount == 3 && manager.regionID == "keep",
+                   "Region-code-only staging still changes exactly 3 items on native hardware")
 
-        // Full US mode stages exactly the same 9 items as region-code-only:
-        // the sales-region suffix and the regulatory model number are
-        // never staged by the one-tap, in either mode.
+        // Full US mode stages exactly the same 3 items as region-code-only
+        // on this native fixture: the sales-region suffix and the
+        // regulatory model number are never staged by the one-tap, in
+        // either mode.
         ChinaUnlockRegionMode.stored = .fullUS
         let fullUS = GestaltManager()
         fullUS.loadSnapshotForTests(snapshot)
@@ -80,8 +85,8 @@ final class RegionModeTests: XCTestCase {
         XCTAssert(preview.extra[GestaltKeys.modelNumber] as? String == "A3518",
                    "Full US keeps the factory model number")
         XCTAssert(fullUS.isChinaUnlockedInPreview, "Full US preview reads as unlocked")
-        XCTAssert(fullUS.changeCount == 9 && fullUS.regionID == "keep",
-                   "Full US staging changes exactly 9 items, got \(fullUS.changeCount)")
+        XCTAssert(fullUS.changeCount == 3 && fullUS.regionID == "keep",
+                   "Full US staging changes exactly 3 items on native hardware, got \(fullUS.changeCount)")
 
         // Restore after staging returns the original document.
         fullUS.restoreChinaUnlock()

@@ -13,8 +13,26 @@ import SwiftUI
 struct DependencyAnalyzerCard: View {
     @EnvironmentObject private var model: GestaltManager
     @Environment(\.colorScheme) private var colorScheme
-    @State private var selectedProposal: SafePatchProposal = SafePatchProposal.oneTap()
+    @State private var selectedKind: SafePatchProposalKind = .oneTap
     @State private var showingDetails = false
+
+    /// Whether the loaded document belongs to hardware that natively
+    /// supports Apple Intelligence. The snapshot document's product
+    /// type is the source here — on a live read it is the device's
+    /// own, the same identity the profiler reads.
+    private var isNativeAppleIntelligence: Bool {
+        guard let productType = model.snapshot?.document.extra[GestaltKeys.productType] as? String else {
+            return false
+        }
+        return DeviceAIEligibility.isNativeAppleIntelligence(productType: productType)
+    }
+
+    /// The concrete proposal for the picked kind, built with the
+    /// native flag so the analysis never covers AI keys a native
+    /// device already supports.
+    private var selectedProposal: SafePatchProposal {
+        selectedKind.proposal(nativeAppleIntelligence: isNativeAppleIntelligence)
+    }
 
     private var heroTint: Color {
         colorScheme == .dark
@@ -60,10 +78,10 @@ struct DependencyAnalyzerCard: View {
                     .disabled(model.isBusy)
                     .opacity(model.isBusy ? 0.5 : 1)
                 } else if let analysis {
-                    Picker(L("Proposal"), selection: $selectedProposal) {
-                        Text(L("One-Tap Unlock")).tag(SafePatchProposal.oneTap())
-                        Text(L("AI Only")).tag(SafePatchProposal.aiOnly())
-                        Text(L("eSIM & Region")).tag(SafePatchProposal.esimRegion())
+                    Picker(L("Proposal"), selection: $selectedKind) {
+                        Text(L("One-Tap Unlock")).tag(SafePatchProposalKind.oneTap)
+                        Text(L("AI Only")).tag(SafePatchProposalKind.aiOnly)
+                        Text(L("eSIM & Region")).tag(SafePatchProposalKind.esimRegion)
                     }
                     .pickerStyle(.segmented)
 
@@ -95,6 +113,27 @@ struct DependencyAnalyzerCard: View {
                                         .foregroundStyle(.primary)
                                     ForEach(findings) { finding in
                                         findingRow(finding)
+                                    }
+                                }
+                            }
+                        }
+                        // Features the proposal deliberately leaves
+                        // unstaged: on native Apple Intelligence
+                        // hardware, the six AI capabilities.
+                        if !selectedProposal.skippedFeatureIDs.isEmpty {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(L("Skipped"))
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(.primary)
+                                ForEach(selectedProposal.skippedFeatureIDs, id: \.self) { featureID in
+                                    HStack(spacing: 6) {
+                                        Text(title(for: featureID))
+                                            .font(.subheadline)
+                                            .foregroundStyle(.primary)
+                                        Spacer()
+                                        Text(L("Native support — skipped"))
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
                                     }
                                 }
                             }

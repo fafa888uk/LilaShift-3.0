@@ -29,29 +29,91 @@ import Foundation
 struct SafePatchProposal: Hashable, Sendable {
     let featureIDs: [String]
     let regionMode: ChinaUnlockRegionMode
+    /// Feature ids the proposal deliberately leaves unstaged — never a
+    /// staged diff. On hardware that natively supports Apple
+    /// Intelligence this is the six AI capabilities; empty on
+    /// non-native hardware.
+    let skippedFeatureIDs: [String]
 
-    init(featureIDs: [String], regionMode: ChinaUnlockRegionMode = .regionCodeOnly) {
+    init(featureIDs: [String], regionMode: ChinaUnlockRegionMode = .regionCodeOnly,
+         skippedFeatureIDs: [String] = []) {
         self.featureIDs = featureIDs
         self.regionMode = regionMode
+        self.skippedFeatureIDs = skippedFeatureIDs
     }
 
-    /// The 9-item China Unlock: eSIM + region code + six AI keys.
-    static func oneTap(regionMode: ChinaUnlockRegionMode = .regionCodeOnly) -> SafePatchProposal {
-        SafePatchProposal(featureIDs: [FeatureEligibilityEvaluator.esimFeatureID,
+    /// The 9-item China Unlock on non-native hardware: eSIM + region
+    /// code + six AI keys. On hardware that natively supports Apple
+    /// Intelligence (`nativeAppleIntelligence: true`) only the 3
+    /// non-AI items are staged (2 eSIM + region code) and the six AI
+    /// capabilities are recorded as skipped, never staged — not even
+    /// as type-change diffs (1 → true) for values that are already on.
+    static func oneTap(nativeAppleIntelligence: Bool = false,
+                       regionMode: ChinaUnlockRegionMode = .regionCodeOnly) -> SafePatchProposal {
+        if nativeAppleIntelligence {
+            return SafePatchProposal(
+                featureIDs: [FeatureEligibilityEvaluator.esimFeatureID,
+                             FeatureEligibilityEvaluator.regionCodeFeatureID],
+                regionMode: regionMode, skippedFeatureIDs: ChinaUnlock.aiCapabilityIDs)
+        }
+        return SafePatchProposal(featureIDs: [FeatureEligibilityEvaluator.esimFeatureID,
                                        FeatureEligibilityEvaluator.regionCodeFeatureID]
                             + ChinaUnlock.aiCapabilityIDs, regionMode: regionMode)
     }
 
-    /// The six AI capabilities only (the standalone AI preset).
-    static func aiOnly(regionMode: ChinaUnlockRegionMode = .regionCodeOnly) -> SafePatchProposal {
-        SafePatchProposal(featureIDs: ChinaUnlock.aiCapabilityIDs, regionMode: regionMode)
+    /// The six AI capabilities only (the standalone AI preset). On
+    /// native Apple Intelligence hardware there is nothing to stage:
+    /// the proposal comes back empty with all six recorded as
+    /// skipped.
+    static func aiOnly(nativeAppleIntelligence: Bool = false,
+                       regionMode: ChinaUnlockRegionMode = .regionCodeOnly) -> SafePatchProposal {
+        if nativeAppleIntelligence {
+            return SafePatchProposal(featureIDs: [], regionMode: regionMode,
+                                     skippedFeatureIDs: ChinaUnlock.aiCapabilityIDs)
+        }
+        return SafePatchProposal(featureIDs: ChinaUnlock.aiCapabilityIDs, regionMode: regionMode)
     }
 
     /// eSIM + region only (the standalone eSIM & Region preset).
+    /// Unchanged by nativeness: it never contains an AI capability.
     static func esimRegion(regionMode: ChinaUnlockRegionMode = .regionCodeOnly) -> SafePatchProposal {
         SafePatchProposal(featureIDs: [FeatureEligibilityEvaluator.esimFeatureID,
                                        FeatureEligibilityEvaluator.regionCodeFeatureID],
                           regionMode: regionMode)
+    }
+
+    /// Resolves the native-Apple-Intelligence flag from a device
+    /// profile, fail closed: a known value wins; otherwise the
+    /// product type is looked up in the exact-match list
+    /// (`DeviceAIEligibility`); anything unknown reads as non-native,
+    /// so the full 9-item proposal is built (the existing behavior).
+    static func isNativeAppleIntelligence(profile: DeviceProfile?) -> Bool {
+        guard let profile else { return false }
+        if let known = profile.isNativeAppleIntelligence.value { return known }
+        guard let productType = profile.productType.value, !productType.isEmpty else { return false }
+        return DeviceAIEligibility.isNativeAppleIntelligence(productType: productType)
+    }
+}
+
+/// Which preset the user picked in a proposal picker. The picker
+/// binds to the kind (stable across devices); the concrete proposal
+/// is built from the kind plus the native-Apple-Intelligence flag, so
+/// a native device never keeps a stale non-native proposal selected.
+enum SafePatchProposalKind: String, CaseIterable, Hashable, Sendable {
+    case oneTap
+    case aiOnly
+    case esimRegion
+
+    func proposal(nativeAppleIntelligence: Bool,
+                  regionMode: ChinaUnlockRegionMode = .regionCodeOnly) -> SafePatchProposal {
+        switch self {
+        case .oneTap:
+            return .oneTap(nativeAppleIntelligence: nativeAppleIntelligence, regionMode: regionMode)
+        case .aiOnly:
+            return .aiOnly(nativeAppleIntelligence: nativeAppleIntelligence, regionMode: regionMode)
+        case .esimRegion:
+            return .esimRegion(regionMode: regionMode)
+        }
     }
 }
 
@@ -177,6 +239,10 @@ struct SafePatchSimulation: Equatable, Sendable {
     let diffs: [SafePatchDiff]
     let blockers: [String]
     let warnings: [String]
+    /// Feature ids the proposal deliberately left unstaged (copied
+    /// from the proposal): on native Apple Intelligence hardware, the
+    /// six AI capabilities. Never a staged diff.
+    let skippedFeatureIDs: [String]
     /// Keys in the diff that touch hardware-identity fields.
     let hardwareIdentityTouches: [String]
     let canProceed: Bool
@@ -186,6 +252,44 @@ struct SafePatchSimulation: Equatable, Sendable {
     /// Byte count of the simulated document, or `nil` when the
     /// simulation could not build one.
     let simulatedByteCount: Int?
+
+    /// Explicit initializer (not the synthesized memberwise one):
+    /// the memberwise initializer does not accept `skippedFeatureIDs`
+    /// as an argument (IPA #247: "extra argument 'skippedFeatureIDs'
+    /// in call" at the `finish` call site), so the simulation is
+    /// built through this init. `skippedFeatureIDs` defaults to `[]`
+    /// so existing call sites that omit it keep compiling.
+    /// NOTE: the property itself must NOT carry a `= []` default —
+    /// a `let` with a default plus an assignment in this init is a
+    /// second initialization (IPA #251: "immutable value may only be
+    /// initialized once"). The default lives on the parameter only.
+    init(
+        proposal: SafePatchProposal,
+        checks: [SafePatchCheck],
+        diffs: [SafePatchDiff],
+        blockers: [String],
+        warnings: [String],
+        skippedFeatureIDs: [String] = [],
+        hardwareIdentityTouches: [String],
+        canProceed: Bool,
+        serializationOK: Bool,
+        backupReady: Bool,
+        effectStates: [SafePatchEffectState],
+        simulatedByteCount: Int?
+    ) {
+        self.proposal = proposal
+        self.checks = checks
+        self.diffs = diffs
+        self.blockers = blockers
+        self.warnings = warnings
+        self.skippedFeatureIDs = skippedFeatureIDs
+        self.hardwareIdentityTouches = hardwareIdentityTouches
+        self.canProceed = canProceed
+        self.serializationOK = serializationOK
+        self.backupReady = backupReady
+        self.effectStates = effectStates
+        self.simulatedByteCount = simulatedByteCount
+    }
 
     func check(_ kind: SafePatchCheck.Kind) -> SafePatchCheck? {
         checks.first { $0.kind == kind }
@@ -424,6 +528,7 @@ enum SafePatch {
         return SafePatchSimulation(
             proposal: proposal, checks: checks, diffs: diffs,
             blockers: blockers, warnings: warnings,
+            skippedFeatureIDs: proposal.skippedFeatureIDs,
             hardwareIdentityTouches: hardwareIdentityTouches,
             canProceed: blockers.isEmpty,
             serializationOK: serializationOK, backupReady: backupReady,

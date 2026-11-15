@@ -21,8 +21,10 @@ final class ChinaUnlockTests: XCTestCase {
 
     /// China-mainland fixture: eSIM restricted (green-tea on), region CH
     /// with CH/A sales suffixes, no AI keys, a device-specific Siri
-    /// value (2) and an Air model number.
-    static func fixture(cacheUUID: String? = nil) throws -> GestaltDocument {
+    /// value (2) and an Air model number. The default product type is
+    /// the native iPhone18,1; pass a non-native product type (for
+    /// example iPhone14,7) for the full 9-item unlock.
+    static func fixture(cacheUUID: String? = nil, productType: String = "iPhone18,1") throws -> GestaltDocument {
         let layout = MobileGestaltCacheLayout.originalProfile
         var cache = Data(count: layout.byteCount)
         cache[layout.greenTeaOffset] = 1
@@ -30,7 +32,7 @@ final class ChinaUnlockTests: XCTestCase {
         cache[layout.validityOffset(for: layout.greenTeaIndex)] = 1
         cache[layout.validityOffset(for: layout.notGreenTeaIndex)] = 1
         let extra: [String: Any] = [
-            GestaltKeys.productType: "iPhone18,1",
+            GestaltKeys.productType: productType,
             GestaltKeys.regionCode: "CH",
             GestaltKeys.regionInfo: "CH/A",
             GestaltKeys.legacyRegionInfo: "CH/A",
@@ -90,7 +92,99 @@ final class ChinaUnlockTests: XCTestCase {
         XCTAssert(!manager.isChinaUnlockStaged && !manager.isChinaUnlockedInPreview,
                    "Fixture starts locked: eSIM restricted, region CH, AI absent")
 
-        // One tap stages the full unlock.
+        // One tap stages the unlock. The fixture is native Apple
+        // Intelligence hardware (iPhone18,1), so only the 3 non-AI
+        // items are staged (eSIM + region code) and the six AI keys
+        // are skipped, never staged.
+        manager.stageChinaUnlock()
+        XCTAssert(manager.isChinaUnlockStaged, "Staged flag is set after one tap")
+        XCTAssert(manager.isChinaUnlockedInPreview, "Preview shows the unlock")
+        XCTAssert(manager.isChinaESIMRegionStaged,
+                   "On native hardware the one-tap is the eSIM+region preset")
+        guard let preview = manager.preview else { throw Failure(message: "Preview exists after staging") }
+        XCTAssert(try DeviceCacheOptions.flags(in: preview) == .enabled,
+                   "Preview enables eSIM: green-tea false, not-green-tea true")
+        let before = original.root["CacheData"] as! Data
+        let after = preview.root["CacheData"] as! Data
+        XCTAssert(before.indices.filter { before[$0] != after[$0] } == [layout.greenTeaOffset, layout.notGreenTeaOffset].sorted(),
+                   "Only the two eSIM bytes change in CacheData")
+        XCTAssert(preview.extra[GestaltKeys.regionCode] as? String == "LL",
+                   "Preview sets RegionCode to LL")
+        XCTAssert(preview.extra[GestaltKeys.regionInfo] as? String == "CH/A"
+                   && preview.extra[GestaltKeys.legacyRegionInfo] as? String == "CH/A",
+                   "Sales-region suffixes stay CH/A")
+        for key in Self.aiKeys {
+            XCTAssert(preview.extra[key] == nil,
+                       "Preview leaves AI key \(key) unstaged on native hardware")
+        }
+        XCTAssert(manager.chinaUnlockAIEnabledCount == 0, "No AI preset reads as enabled on native hardware")
+        XCTAssert((preview.extra[Self.siriKey] as? NSNumber)?.intValue == 2,
+                   "siriOnDevice keeps its device-specific value")
+        XCTAssert((manager.choices["siriOnDevice"] ?? .keep) == .keep,
+                   "siriOnDevice is never staged by China Unlock")
+        XCTAssert(preview.extra[GestaltKeys.modelNumber] as? String == "A3518"
+                   && manager.modelID == "keep",
+                   "Model number is untouched")
+        XCTAssert(manager.regionID == "keep", "Sales Region stays keep")
+        // Boundary: staging touches exactly the region code in
+        // CacheExtra and no other field, added or removed.
+        let changedKeys = Set(original.extra.keys).union(preview.extra.keys).filter { key in
+            let before = original.extra[key] as? NSObject
+            let after = preview.extra[key] as? NSObject
+            return (before?.isEqual(after) ?? (after == nil)) == false
+        }
+        XCTAssert(changedKeys == Set([GestaltKeys.regionCode]),
+                   "Staging changes exactly the region key, got \(changedKeys.sorted())")
+        // 1 CacheExtra key (region code) + 2 cache bytes.
+        XCTAssert(manager.changeCount == 3,
+                   "Staged change count is 3 on native hardware, got \(manager.changeCount)")
+
+        // Staging twice is idempotent.
+        manager.stageChinaUnlock()
+        XCTAssert(manager.changeCount == 3, "Staging the unlock twice does not duplicate changes")
+
+        // One-tap restore returns all three groups to their originals.
+        manager.restoreChinaUnlock()
+        XCTAssert(!manager.isChinaUnlockStaged && !manager.isChinaUnlockedInPreview,
+                   "Restore clears the staged and unlocked state")
+        XCTAssert(manager.changeCount == 0, "Restore unstages every change")
+        guard let restored = manager.preview else { throw Failure(message: "Preview exists after restore") }
+        XCTAssert(restored.matches(original), "Restored preview matches the original document")
+        XCTAssert(try DeviceCacheOptions.flags(in: restored) == .restricted,
+                   "Restore returns the eSIM flags to restricted")
+        XCTAssert(restored.extra[GestaltKeys.regionCode] as? String == "CH",
+                   "Restore returns RegionCode to CH")
+        for key in Self.aiKeys {
+            XCTAssert(restored.extra[key] == nil, "Restore removes AI key \(key)")
+        }
+        XCTAssert((restored.extra[Self.siriKey] as? NSNumber)?.intValue == 2,
+                   "Restore preserves the device-specific Siri value")
+        XCTAssert(restored.extra[GestaltKeys.modelNumber] as? String == "A3518",
+                   "Restore preserves the model number")
+
+        // The unlock can be staged again after a restore.
+        manager.stageChinaUnlock()
+        XCTAssert(manager.isChinaUnlockStaged && manager.changeCount == 3,
+                   "Unlock stages again after a restore")
+    }
+
+    @MainActor
+    func testChinaUnlockNonNative() throws {
+        // The region mode is a persisted user setting; pin the default
+        // here so this test never inherits another run's opt-in Full US mode.
+        ChinaUnlockRegionMode.stored = .regionCodeOnly
+        let layout = MobileGestaltCacheLayout.originalProfile
+        let original = try Self.fixture(productType: "iPhone14,7")
+        let data = try original.encoded()
+        let snapshot = DocumentSnapshot(data: data, document: original, source: .local, name: "fixture")
+        let manager = GestaltManager()
+        manager.loadSnapshotForTests(snapshot)
+        XCTAssert(manager.chinaUnlockESIMLayoutError == nil,
+                   "Supported layout: no eSIM layout error")
+        XCTAssert(!manager.isChinaUnlockStaged && !manager.isChinaUnlockedInPreview,
+                   "Fixture starts locked: eSIM restricted, region CH, AI absent")
+
+        // One tap stages the full unlock on non-native hardware.
         manager.stageChinaUnlock()
         XCTAssert(manager.isChinaUnlockStaged, "Staged flag is set after one tap")
         XCTAssert(manager.isChinaUnlockedInPreview, "Preview shows the full unlock")
