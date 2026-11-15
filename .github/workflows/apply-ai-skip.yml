@@ -1,0 +1,120 @@
+name: Apply AI skip on native devices
+
+# One-shot: apply the #178 change (one-tap skips the six AI keys on
+# native Apple Intelligence hardware) to the ai-skip branch. Two
+# patch files must already be uploaded to the branch root:
+#  - lilashift-ai-skip-code.patch (code, tests, localization)
+#  - lilashift-ai-skip-snapshots.patch (deletes the 8 DashboardV3
+#    snapshot PNGs so CI re-records them)
+# The snapshots patch is non-binary (deletion markers only, with
+# full-index hashes) so it stays small; the full patch was split
+# because the binary version was 29 MB.
+# Dispatch with ref = feature/lila-ai-skip.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v7
+        with:
+          ref: feature/lila-ai-skip
+
+      - name: Verify patch files
+        run: |
+          ls -l lilashift-ai-skip-code.patch lilashift-ai-skip-snapshots.patch
+          sha256sum lilashift-ai-skip-code.patch lilashift-ai-skip-snapshots.patch
+          test "$(sha256sum lilashift-ai-skip-code.patch | cut -d' ' -f1)" = "da3e01393cf8f7762ac9f130226e0e64f27cc07aa3ebb47eead5cddda5dbc64f"
+          test "$(sha256sum lilashift-ai-skip-snapshots.patch | cut -d' ' -f1)" = "2276e35d07e5900b049c8446a1f8cdfd06317783571d83be91d74c6d0a4179a3"
+
+      - name: Apply patches
+        run: |
+          git config user.name "fafa920q-hue"
+          git config user.email "fafa920q-hue@users.noreply.github.com"
+          git apply --index --binary lilashift-ai-skip-code.patch
+          git apply --index lilashift-ai-skip-snapshots.patch
+
+      - name: Verify staged files
+        run: |
+          echo "=== staged files ==="
+          git diff --cached --name-only
+          echo "=== staged stat ==="
+          git diff --cached --stat
+          # Expect exactly 35 files, +936/-81
+          test "$(git diff --cached --name-only | wc -l)" -eq 35
+          git diff --cached --name-only | grep -qxF "GestaltX/AIReadinessCheckup.swift"
+          git diff --cached --name-only | grep -qxF "GestaltX/Capabilities.swift"
+          git diff --cached --name-only | grep -qxF "GestaltX/ContentView.swift"
+          git diff --cached --name-only | grep -qxF "GestaltX/DashboardV3.swift"
+          git diff --cached --name-only | grep -qxF "GestaltX/DependencyAnalyzer.swift"
+          git diff --cached --name-only | grep -qxF "GestaltX/DependencyAnalyzerViews.swift"
+          git diff --cached --name-only | grep -qxF "GestaltX/GestaltManager.swift"
+          git diff --cached --name-only | grep -qxF "GestaltX/HomeDiagnosticsCache.swift"
+          git diff --cached --name-only | grep -qxF "GestaltX/Localizable.xcstrings"
+          git diff --cached --name-only | grep -qxF "GestaltX/PresetCatalog.swift"
+          git diff --cached --name-only | grep -qxF "GestaltX/SafePatch.swift"
+          git diff --cached --name-only | grep -qxF "GestaltX/SafePatchViews.swift"
+          git diff --cached --name-only | grep -qxF "GestaltX/SmartFaultDiagnosisViews.swift"
+          git diff --cached --name-only | grep -qxF "GestaltX/SystemHealthScoreViews.swift"
+          git diff --cached --name-only | grep -qxF "localization/es.json"
+          git diff --cached --name-only | grep -qxF "localization/fa.json"
+          git diff --cached --name-only | grep -qxF "localization/ja.json"
+          git diff --cached --name-only | grep -qxF "localization/ko.json"
+          git diff --cached --name-only | grep -qxF "localization/ru.json"
+          git diff --cached --name-only | grep -qxF "localization/vi.json"
+          git diff --cached --name-only | grep -qxF "localization/zh-Hant-HK.json"
+          git diff --cached --name-only | grep -qxF "localization/zh-Hant-TW.json"
+          git diff --cached --name-only | grep -qxF "scripts/generate_localization.py"
+          git diff --cached --name-only | grep -qxF "tests/ChinaUnlockTests.swift"
+          git diff --cached --name-only | grep -qxF "tests/RegionModeTests.swift"
+          git diff --cached --name-only | grep -qxF "tests/SafePatchTests.swift"
+          git diff --cached --name-only | grep -qxF "tests/StandalonePresetsTests.swift"
+          git diff --cached --name-only | grep -qxF "tests/__Snapshots__/DashboardV3SnapshotTests/testV3DiagnosticsDestinationSnapshot.v3-diagnostics-populated.png"
+          git diff --cached --name-only | grep -qxF "tests/__Snapshots__/DashboardV3SnapshotTests/testV3HomePopulatedAccessibilitySnapshot.v3-home-populated-accessibility.png"
+          git diff --cached --name-only | grep -qxF "tests/__Snapshots__/DashboardV3SnapshotTests/testV3HomePopulatedDarkSnapshot.v3-home-populated-dark.png"
+          git diff --cached --name-only | grep -qxF "tests/__Snapshots__/DashboardV3SnapshotTests/testV3HomePopulatedNarrowSnapshot.v3-home-populated-narrow-320.png"
+          git diff --cached --name-only | grep -qxF "tests/__Snapshots__/DashboardV3SnapshotTests/testV3HomePopulatedSnapshot.v3-home-populated.png"
+          git diff --cached --name-only | grep -qxF "tests/__Snapshots__/DashboardV3SnapshotTests/testV3PresetsDestinationSnapshot.v3-presets-populated.png"
+          git diff --cached --name-only | grep -qxF "tests/__Snapshots__/DashboardV3SnapshotTests/testV3ToolsDestinationSnapshot.v3-tools-populated.png"
+          git diff --cached --name-only | grep -qxF "tests/__Snapshots__/DashboardV3SnapshotTests/testV3UnlockDestinationSnapshot.v3-unlock-populated.png"
+          test "$(git diff --cached --numstat | awk '{s+=$1; d+=$2} END {print s}')" -eq 936
+          test "$(git diff --cached --numstat | awk '{s+=$1; d+=$2} END {print d}')" -eq 81
+          # The branch also tracks the uploaded patch files and this
+          # workflow file, so the staged tree includes them and can
+          # never equal the expected tree. Remove them from the index
+          # (disk copies stay) before comparing the tree.
+          git rm --cached -q lilashift-ai-skip-code.patch lilashift-ai-skip-snapshots.patch .github/workflows/apply-ai-skip.yml
+          # Expect tree 55a3598350d03d7a51129a507b04809610e71069
+          test "$(git write-tree)" = "55a3598350d03d7a51129a507b04809610e71069"
+
+      - name: Commit and push
+        run: |
+          git commit -m "feat: skip the six AI keys on native Apple Intelligence hardware (#178)
+
+          One-tap unlock on native-Apple-Intelligence hardware now
+          stages only the 3 non-AI items (eSIM pair + region code);
+          the six AI keys are recorded as skipped, never staged (not
+          even as type-change diffs). The AI-only preset refuses on
+          native hardware with a localized reason. Non-native
+          hardware is unchanged (exactly 9 items); unknown native
+          status fails closed (stages all 9). The UI shows the
+          skipped items and a native note; the Air (iPhone18,4) is
+          in the native list. Includes 4 new localized strings (10
+          locales) and tests for both paths. The 8 DashboardV3
+          snapshot baselines are deleted so CI re-records them."
+          git push origin feature/lila-ai-skip
+
+      - name: Clean up patch files
+        # The patch files were already removed from the index by the
+        # verify step, so they are not in the fix commit; they are
+        # only untracked files on disk in this ephemeral runner.
+        # Delete them from disk; there is nothing to commit.
+        run: |
+          rm -f lilashift-ai-skip-code.patch lilashift-ai-skip-snapshots.patch
+          git status --porcelain
