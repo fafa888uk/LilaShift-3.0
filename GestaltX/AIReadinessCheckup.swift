@@ -6,22 +6,24 @@
 // GestaltX's staging model (read-only until Fix is tapped, then the
 // normal review + backup + readback flow).
 //
-// UNRESOLVED CONFLICT (#178) — READ BEFORE CHANGING THE UNLOCK:
+// #178 — DECIDED 2026-11-15, READ BEFORE CHANGING THE UNLOCK:
 // Erosion-CN's live probes (iPhone 18 Pro Max iPhone19,7 and iPhone 15 Pro
 // Max iPhone16,2, iOS 27) report that the Audio Intelligence CacheData
 // slot (rb2tKZxlj0Gm2tBmUQSLqQ, observed slot #178 on those devices) is
 // natively FALSE on iPhone/iPad, and forcing the *slot* to 1 breaks Photos
 // high-quality Clean Up. Erosion-CN therefore treats any presence of the
 // CacheExtra key as a conflict and strips it on native-AI hardware.
-// Our 9-item unlock sets CacheExtra `audioIntelligence` = 1 on every
-// device, including native-AI iPhones. The CacheData slot and the
+// The 9-item unlock used to set CacheExtra `audioIntelligence` = 1 on
+// every device, including native-AI iPhones. The CacheData slot and the
 // CacheExtra key are two different layers, and neither codebase establishes
 // from source alone whether setting the *CacheExtra key* to 1 on a
-// native-AI iPhone is harmless, redundant, or harmful. Until that is
-// verified on a native-AI device, the guards in this file are SLOT-ONLY:
-// they repair a slot that reads 1, and they never flag, strip, or change
-// the CacheExtra key the unlock sets. Do NOT "fix" this by changing the
-// 9-item default without a device-verified decision from the user.
+// native-AI iPhone is harmless, redundant, or harmful — that question is
+// still open for a device already carrying the key from an earlier
+// session. The user decided on 2026-11-15 that native-AI hardware skips
+// all six AI keys instead of staging them (the one-tap stages only eSIM
+// + region code there), so the unlock no longer stages the key on native
+// hardware. The guards in this file stay SLOT-ONLY: they repair a slot
+// that reads 1, and they never flag, strip, or change a CacheExtra key.
 //
 // LAYER MODEL — never conflate the two:
 // * CacheExtra key: a named entry in the plist's CacheExtra dictionary

@@ -716,12 +716,21 @@ private struct ChinaUnlockCard: View {
                 }
             }
 
+            // Native Apple Intelligence hardware already enables the
+            // six AI presets: one-tap stages eSIM and region code
+            // only, and the AI column below reads Native.
+            if model.isNativeAppleIntelligence {
+                Text(L("Apple Intelligence is already enabled natively — one-tap stages eSIM and region code only."))
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+
             HStack(spacing: 0) {
                 statusColumn(title: "eSIM", value: esimStatus ?? L("Not read yet"))
                 Divider().frame(height: 36).background(Color.primary.opacity(0.12))
                 statusColumn(title: L("Region Code"), value: model.previewRegionCode ?? L("Not read yet"))
                 Divider().frame(height: 36).background(Color.primary.opacity(0.12))
-                statusColumn(title: L("Apple Intelligence"), value: model.hasDocument ? "\(model.chinaUnlockAIEnabledCount)/\(ChinaUnlock.aiCapabilities.count)" : L("Not read yet"))
+                statusColumn(title: L("Apple Intelligence"), value: aiStatusText)
             }
 
             DisclosureGroup {
@@ -797,6 +806,15 @@ private struct ChinaUnlockCard: View {
         return L(flags == .enabled ? "Configured" : "Not Configured")
     }
 
+    /// The Apple Intelligence status: Native on hardware that
+    /// natively supports it (the six presets are skipped, not
+    /// staged), otherwise the enabled count out of six.
+    private var aiStatusText: String {
+        guard model.hasDocument else { return L("Not read yet") }
+        if model.isNativeAppleIntelligence { return L("Native") }
+        return "\(model.chinaUnlockAIEnabledCount)/\(ChinaUnlock.aiCapabilities.count)"
+    }
+
     private func statusColumn(title: String, value: String) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
@@ -846,11 +864,25 @@ private struct ChinaAIOnlyCard: View {
             }
 
             HStack(spacing: 0) {
-                statusColumn(title: L("Apple Intelligence"), value: model.hasDocument ? "\(model.chinaUnlockAIEnabledCount)/\(ChinaUnlock.aiCapabilities.count)" : L("Not read yet"))
+                statusColumn(title: L("Apple Intelligence"), value: aiStatusText)
             }
 
             if model.hasDocument {
-                if model.isChinaAIOnlyStaged && model.changeCount > 0 {
+                if model.isNativeAppleIntelligence {
+                    // Native hardware already enables all six presets:
+                    // there is nothing to stage, so no Enable button.
+                    // Restore stays available when anything reads as
+                    // enabled, to undo a change applied earlier.
+                    Text(L("Apple Intelligence is already enabled natively on this device — nothing to stage."))
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                    if model.chinaUnlockAIEnabledCount > 0 {
+                        Button(L("Restore AI")) { stageChanges(restoring: true) }
+                            .buttonStyle(GlassPrimaryButtonStyle())
+                            .disabled(model.isBusy)
+                            .opacity(model.isBusy ? 0.5 : 1)
+                    }
+                } else if model.isChinaAIOnlyStaged && model.changeCount > 0 {
                     Button(L("Review Changes")) { onReviewChanges() }
                         .buttonStyle(GlassPrimaryButtonStyle())
                     Button(L("Restore AI")) { stageChanges(restoring: true) }
@@ -886,6 +918,15 @@ private struct ChinaAIOnlyCard: View {
         }
             .padding(GlassTokens.cardPadding)
         }
+    }
+
+    /// The Apple Intelligence status: Native on hardware that
+    /// natively supports it (there is nothing to stage), otherwise
+    /// the enabled count out of six.
+    private var aiStatusText: String {
+        guard model.hasDocument else { return L("Not read yet") }
+        if model.isNativeAppleIntelligence { return L("Native") }
+        return "\(model.chinaUnlockAIEnabledCount)/\(ChinaUnlock.aiCapabilities.count)"
     }
 
     private func statusColumn(title: String, value: String) -> some View {

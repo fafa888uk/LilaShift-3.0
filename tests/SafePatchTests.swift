@@ -155,4 +155,131 @@ final class SafePatchTests: XCTestCase {
         XCTAssertEqual(simulation.check(.diff)?.isBlocker, false,
                        "Changing nothing is a warning, not a blocker")
     }
+
+    /// The native one-tap (iPhone Air, iPhone18,4): the proposal
+    /// stages exactly the 3 non-AI fields (region + the eSIM pair),
+    /// the six AI keys are absent from the diff and recorded as
+    /// skipped, and the simulation proceeds.
+    func testOneTapSimulationNativeSkipsAI() throws {
+        let document = try CoreModuleFixtures.document(extra: [GestaltKeys.productType: "iPhone18,4"])
+        let snapshot = CoreModuleFixtures.snapshot(
+            document: document,
+            cachedOptions: try CachedOptionsOriginal(document: document),
+            wapi: try WAPIOriginal(document: document))
+        let profile = CoreModuleFixtures.profile(productType: "iPhone18,4", isNativeAI: true)
+        let proposal = SafePatchProposal.oneTap(nativeAppleIntelligence: true)
+        XCTAssertEqual(proposal.featureIDs,
+                       [FeatureEligibilityEvaluator.esimFeatureID,
+                        FeatureEligibilityEvaluator.regionCodeFeatureID],
+                       "Native one-tap stages only eSIM and region code")
+        XCTAssertEqual(proposal.skippedFeatureIDs, ChinaUnlock.aiCapabilityIDs,
+                       "Native one-tap records all six AI capabilities as skipped")
+        let simulation = SafePatch.simulate(proposal: proposal, snapshot: snapshot, profile: profile)
+        XCTAssertTrue(simulation.canProceed, "Native one-tap must proceed; blockers: \(simulation.blockers)")
+        XCTAssertTrue(simulation.serializationOK, "The simulated document must encode and decode back to itself")
+        XCTAssertEqual(simulation.diffs.count, 3,
+                       "Native one-tap changes exactly 3 fields, got: \(simulation.diffs.map(\.key))")
+        XCTAssertEqual(simulation.skippedFeatureIDs, ChinaUnlock.aiCapabilityIDs,
+                       "Native one-tap simulation records all six AI capabilities as skipped")
+        let aiKeys = ChinaUnlock.aiCapabilityIDs.flatMap { id in
+            Capability.all.first { $0.id == id }?.keys ?? []
+        }
+        for key in aiKeys {
+            XCTAssertNil(simulation.diffs.first { $0.key == key },
+                         "AI key \(key) must not be staged on native hardware")
+        }
+        let regionDiff = simulation.diffs.first { $0.key == GestaltKeys.regionCode }
+        XCTAssertEqual(regionDiff?.original, .string("CH"))
+        XCTAssertEqual(regionDiff?.target, .string("LL"))
+        let greenTea = simulation.diffs.first { $0.key == DeviceCacheOptions.greenTeaKey }
+        XCTAssertEqual(greenTea?.original, .bool(true))
+        XCTAssertEqual(greenTea?.target, .bool(false))
+        let notGreenTea = simulation.diffs.first { $0.key == DeviceCacheOptions.notGreenTeaKey }
+        XCTAssertEqual(notGreenTea?.original, .bool(false))
+        XCTAssertEqual(notGreenTea?.target, .bool(true))
+    }
+
+    /// The AI-only preset on native hardware: the proposal comes back
+    /// empty with all six recorded as skipped, the simulation changes
+    /// nothing (a warning, not a blocker) and still proceeds.
+    func testAIOnlyNativeSkipsAllSix() throws {
+        let document = try CoreModuleFixtures.document(extra: [GestaltKeys.productType: "iPhone18,4"])
+        let snapshot = CoreModuleFixtures.snapshot(
+            document: document,
+            cachedOptions: try CachedOptionsOriginal(document: document),
+            wapi: try WAPIOriginal(document: document))
+        let profile = CoreModuleFixtures.profile(productType: "iPhone18,4", isNativeAI: true)
+        let proposal = SafePatchProposal.aiOnly(nativeAppleIntelligence: true)
+        XCTAssertTrue(proposal.featureIDs.isEmpty,
+                      "Native AI-only stages nothing")
+        XCTAssertEqual(proposal.skippedFeatureIDs, ChinaUnlock.aiCapabilityIDs,
+                       "Native AI-only records all six AI capabilities as skipped")
+        let simulation = SafePatch.simulate(proposal: proposal, snapshot: snapshot, profile: profile)
+        XCTAssertTrue(simulation.diffs.isEmpty, "Native AI-only changes nothing")
+        XCTAssertEqual(simulation.skippedFeatureIDs, ChinaUnlock.aiCapabilityIDs,
+                       "Native AI-only simulation records all six AI capabilities as skipped")
+        XCTAssertEqual(simulation.check(.diff)?.passed, false)
+        XCTAssertEqual(simulation.check(.diff)?.isBlocker, false,
+                       "Changing nothing is a warning, not a blocker")
+        XCTAssertTrue(simulation.canProceed, "An empty AI-only proposal must not block")
+    }
+
+    /// The native flag resolves from a known profile value first,
+    /// and falls back to the product-type list when the profile value
+    /// is unknown.
+    func testNativeFlagResolution() {
+        let native = CoreModuleFixtures.profile(productType: "iPhone18,4", isNativeAI: true)
+        XCTAssertTrue(SafePatchProposal.isNativeAppleIntelligence(profile: native))
+        let nonNative = CoreModuleFixtures.profile(productType: "iPhone14,7", isNativeAI: false)
+        XCTAssertFalse(SafePatchProposal.isNativeAppleIntelligence(profile: nonNative))
+        let fallbackNative = profileWithUnknownNative(productType: "iPhone18,4")
+        XCTAssertTrue(SafePatchProposal.isNativeAppleIntelligence(profile: fallbackNative),
+                      "Unknown native flag falls back to the product-type list")
+        let fallbackUnknown = profileWithUnknownNative(productType: "iPhone99,9")
+        XCTAssertFalse(SafePatchProposal.isNativeAppleIntelligence(profile: fallbackUnknown),
+                       "Unknown native flag and unknown product type fail closed")
+    }
+
+    /// Unknown native status fails closed: the helper reads
+    /// non-native, and the one-tap proposal still carries all 9
+    /// items with nothing skipped. (At the simulation level an
+    /// unknown model blocks — see `testUnknownModelBlocksSimulation`;
+    /// at the manager level the unknown device stages all 9 — see
+    /// `RegionModeTests`.)
+    func testUnknownNativeStatusFailsClosed() {
+        XCTAssertFalse(SafePatchProposal.isNativeAppleIntelligence(profile: nil),
+                       "No profile reads as non-native")
+        let unknownProfile = profileWithUnknownNative(productType: "iPhone99,9")
+        XCTAssertFalse(SafePatchProposal.isNativeAppleIntelligence(profile: unknownProfile),
+                       "Unknown product type reads as non-native")
+        let proposal = SafePatchProposal.oneTap(nativeAppleIntelligence: false)
+        XCTAssertEqual(proposal.featureIDs.count, 9,
+                       "Fail-closed one-tap still carries all 9 items")
+        XCTAssertTrue(proposal.skippedFeatureIDs.isEmpty,
+                      "Fail-closed one-tap skips nothing")
+    }
+
+    /// A profile whose native flag is `.unknown`, so the helper must
+    /// fall back to the product-type list (or fail closed when the
+    /// product type is unknown too).
+    private func profileWithUnknownNative(productType: String) -> DeviceProfile {
+        DeviceProfile(
+            productType: .known(productType),
+            modelNumber: .known("A1234"),
+            osVersion: .known("27.0.1"),
+            osBuild: .known("23A344"),
+            regionCode: .known("CH"),
+            salesRegionSuffix: .known("CH/A"),
+            isNativeAppleIntelligence: .unknown(reason: "test"),
+            modelDecision: DeviceModelSupport.decision(for: productType, originalRegModel: nil),
+            cacheLayout: .known(MobileGestaltCacheLayout.originalProfile),
+            cacheReadState: .read(cacheUUID: CoreModuleFixtures.uuid, byteCount: CoreModuleFixtures.layout.byteCount),
+            liveAIEnabled: .unknown(reason: "test"),
+            liveRegionCode: .known("CH"),
+            appGroupAvailable: .known(true),
+            shareExtensionPresent: .known(false),
+            backupCount: 0,
+            hasTrustedBackup: false,
+            changeRecordCount: 0)
+    }
 }

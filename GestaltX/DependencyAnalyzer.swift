@@ -86,7 +86,7 @@ struct DependencyAnalysis: Equatable, Sendable {
 // MARK: - Analyzer
 
 /// Pure analysis over explicit inputs. `featureIDs` is the set the
-/// user selected (one-tap's 9 items, the AI-only preset, the
+/// user selected (the one-tap set, the AI-only preset, the
 /// eSIM+region preset, or individual capabilities). `snapshot` is
 /// `nil` when the device has never been read: then the analysis is
 /// `.unknown`, because dependencies cannot be checked without a

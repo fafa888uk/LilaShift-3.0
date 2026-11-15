@@ -28,7 +28,10 @@ final class StandalonePresetsTests: XCTestCase {
     /// with CH/A sales suffixes, no AI keys, a device-specific Siri
     /// value (2) and an Air model number. Pass a bogus cacheUUID for an
     /// unsupported layout (the eSIM cache layout cannot be verified).
-    static func fixture(cacheUUID: String? = nil) throws -> GestaltDocument {
+    /// The default product type is the native iPhone18,1; pass a
+    /// non-native product type (for example iPhone14,7) for the full
+    /// AI-only preset.
+    static func fixture(cacheUUID: String? = nil, productType: String = "iPhone18,1") throws -> GestaltDocument {
         let layout = MobileGestaltCacheLayout.originalProfile
         var cache = Data(count: layout.byteCount)
         cache[layout.greenTeaOffset] = 1
@@ -36,7 +39,7 @@ final class StandalonePresetsTests: XCTestCase {
         cache[layout.validityOffset(for: layout.greenTeaIndex)] = 1
         cache[layout.validityOffset(for: layout.notGreenTeaIndex)] = 1
         let extra: [String: Any] = [
-            GestaltKeys.productType: "iPhone18,1",
+            GestaltKeys.productType: productType,
             GestaltKeys.regionCode: "CH",
             GestaltKeys.regionInfo: "CH/A",
             GestaltKeys.legacyRegionInfo: "CH/A",
@@ -63,7 +66,41 @@ final class StandalonePresetsTests: XCTestCase {
         // The region mode is a persisted user setting; pin the default
         // here so this test never inherits another run's opt-in Full US mode.
         ChinaUnlockRegionMode.stored = .regionCodeOnly
+        // The fixture is native Apple Intelligence hardware
+        // (iPhone18,1): the AI-only preset is refused — the six
+        // presets are already on — and nothing is staged.
         let original = try Self.fixture()
+        let manager = try manager(for: original)
+        XCTAssert(manager.chinaUnlockESIMLayoutError == nil,
+                   "Supported layout: no eSIM layout error")
+        XCTAssert(!manager.isChinaAIOnlyStaged && !manager.isChinaAIOnlyApplied,
+                   "Fixture starts with AI absent")
+        XCTAssert(!manager.stageChinaAIOnly(),
+                   "AI-only staging is refused on native hardware")
+        XCTAssert(manager.message?.isEmpty == false,
+                   "AI-only refusal shows the reason")
+        XCTAssert(!manager.isChinaAIOnlyStaged && !manager.isChinaAIOnlyApplied,
+                   "A refused AI-only staging stages nothing")
+        XCTAssert(manager.changeCount == 0,
+                   "A refused AI-only staging changes nothing, got \(manager.changeCount)")
+        XCTAssert(manager.restoreChinaAIOnly(),
+                   "AI-only restore is a no-op when nothing was staged")
+        XCTAssert(manager.changeCount == 0, "Restore of nothing staged changes nothing")
+        XCTAssert(!manager.isChinaAIOnlyStaged && !manager.isChinaAIOnlyApplied,
+                   "Restore leaves the AI-only staged and applied state clear")
+
+        // Staging again is refused the same way.
+        XCTAssert(!manager.stageChinaAIOnly(),
+                   "AI-only staging stays refused on native hardware")
+        XCTAssert(manager.changeCount == 0, "A refused AI-only staging still changes nothing")
+    }
+
+    @MainActor
+    func testAIOnlyPresetNonNative() throws {
+        // The region mode is a persisted user setting; pin the default
+        // here so this test never inherits another run's opt-in Full US mode.
+        ChinaUnlockRegionMode.stored = .regionCodeOnly
+        let original = try Self.fixture(productType: "iPhone14,7")
         let manager = try manager(for: original)
         XCTAssert(manager.chinaUnlockESIMLayoutError == nil,
                    "Supported layout: no eSIM layout error")
@@ -123,7 +160,10 @@ final class StandalonePresetsTests: XCTestCase {
     @MainActor
     func testESIMRegionPreset() throws {
         ChinaUnlockRegionMode.stored = .regionCodeOnly
-        let original = try Self.fixture()
+        // Non-native fixture: the "eSIM+region is not the full
+        // one-tap" assertion only holds there — on native hardware
+        // eSIM+region IS the full one-tap (the AI keys are skipped).
+        let original = try Self.fixture(productType: "iPhone14,7")
         let manager = try manager(for: original)
         XCTAssert(manager.chinaUnlockESIMLayoutError == nil,
                    "Supported layout: no eSIM layout error")
@@ -189,7 +229,10 @@ final class StandalonePresetsTests: XCTestCase {
     @MainActor
     func testStandalonePresetsLayoutGating() throws {
         // Unsupported cache layout: the eSIM layout cannot be verified.
-        let unsupported = try Self.fixture(cacheUUID: "unsupported-layout")
+        // Non-native fixture: the AI-only preset's layout independence
+        // is verified here — on native hardware AI-only is refused
+        // regardless of the layout (see `testAIOnlyPreset`).
+        let unsupported = try Self.fixture(cacheUUID: "unsupported-layout", productType: "iPhone14,7")
         let manager = try manager(for: unsupported)
         XCTAssert(manager.chinaUnlockESIMLayoutError != nil,
                    "Unsupported layout: the eSIM layout error names the reason")
@@ -228,9 +271,12 @@ final class StandalonePresetsTests: XCTestCase {
     func testStandalonePresetsComposeIntoOneTap() throws {
         // The two subsets compose into the full 9-item one-tap: staging
         // AI-only and then eSIM+region stages exactly the 9 items, and
-        // the one-tap staged flag reads true.
+        // the one-tap staged flag reads true. Non-native fixture: on
+        // native hardware the AI-only preset is refused, so the two
+        // subsets compose into the 3-item one-tap instead (see
+        // `testStandalonePresetsComposeIntoOneTapNative`).
         ChinaUnlockRegionMode.stored = .regionCodeOnly
-        let original = try Self.fixture()
+        let original = try Self.fixture(productType: "iPhone14,7")
         let manager = try manager(for: original)
         manager.stageChinaAIOnly()
         manager.stageChinaESIMRegion()
@@ -243,6 +289,29 @@ final class StandalonePresetsTests: XCTestCase {
         // Restoring the full one-tap clears both subsets.
         manager.restoreChinaUnlock()
         XCTAssert(manager.changeCount == 0, "One-tap restore clears both subsets")
+        guard let restored = manager.preview else { throw Failure(message: "Preview exists after one-tap restore") }
+        XCTAssert(restored.matches(original), "One-tap restore returns the original document")
+    }
+
+    @MainActor
+    func testStandalonePresetsComposeIntoOneTapNative() throws {
+        // On native hardware the AI-only preset is refused, so the
+        // two subsets compose into the 3-item one-tap: eSIM+region
+        // alone is the full unlock there.
+        ChinaUnlockRegionMode.stored = .regionCodeOnly
+        let original = try Self.fixture()
+        let manager = try manager(for: original)
+        XCTAssert(!manager.stageChinaAIOnly(), "AI-only staging is refused on native hardware")
+        manager.stageChinaESIMRegion()
+        XCTAssert(manager.changeCount == 3,
+                   "Native compose changes exactly 3 items, got \(manager.changeCount)")
+        XCTAssert(manager.isChinaUnlockStaged,
+                   "eSIM+region staged reads as the full one-tap on native hardware")
+        XCTAssert(manager.isChinaUnlockedInPreview,
+                   "eSIM+region staged reads as unlocked in preview on native hardware")
+        // Restoring the full one-tap clears the native staging.
+        manager.restoreChinaUnlock()
+        XCTAssert(manager.changeCount == 0, "One-tap restore clears the native staging")
         guard let restored = manager.preview else { throw Failure(message: "Preview exists after one-tap restore") }
         XCTAssert(restored.matches(original), "One-tap restore returns the original document")
     }

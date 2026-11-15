@@ -40001,6 +40001,262 @@
         }
       }
     },
+    "Skipped": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skipped"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已跳过"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Omitido"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "رد شد"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スキップ済み"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "건너뜀"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пропущено"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã bỏ qua"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已跳過"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已跳過"
+          }
+        }
+      }
+    },
+    "Native support — skipped": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Native support — skipped"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "原生支持，已跳过"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Soporte nativo: omitido"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "پشتیبانی بومی — رد شد"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ネイティブ対応 — スキップ済み"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "네이티브 지원 — 건너뜀"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нативная поддержка — пропущено"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hỗ trợ gốc — đã bỏ qua"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "原生支援，已跳過"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "原生支援，已跳過"
+          }
+        }
+      }
+    },
+    "Apple Intelligence is already enabled natively on this device — nothing to stage.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence is already enabled natively on this device — nothing to stage."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此设备已原生支持 Apple Intelligence，无需暂存。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence ya está activado de forma nativa en este dispositivo; no hay nada que preparar."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence در این دستگاه به‌صورت بومی فعال است — چیزی برای آماده‌سازی نیست."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このデバイスでは Apple Intelligence がネイティブで既に有効になっています — 準備するものはありません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 기기에서는 Apple Intelligence가 네이티브로 이미 활성화되어 있습니다 — 준비할 항목이 없습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence уже включён на этом устройстве нативно — подготавливать нечего."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence đã được bật sẵn trên thiết bị này — không có gì cần chuẩn bị."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此裝置已原生支援 Apple Intelligence，無需暫存。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此裝置已原生支援 Apple Intelligence，無需暫存。"
+          }
+        }
+      }
+    },
+    "Apple Intelligence is already enabled natively — one-tap stages eSIM and region code only.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence is already enabled natively — one-tap stages eSIM and region code only."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence 已原生支持，一键解锁只暂存 eSIM 和地区码。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence ya está activado de forma nativa; el desbloqueo en un toque solo prepara la eSIM y el código de región."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence به‌صورت بومی فعال است — بازکردن با یک ضربه فقط eSIM و کد منطقه را آماده می‌کند."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence はネイティブで既に有効です — ワンタップ解除では eSIM と地域コードのみを準備します。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence는 네이티브로 이미 활성화되어 있습니다 — 원탭 잠금 해제는 eSIM과 지역 코드만 준비합니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence уже включён нативно — разблокировка в одно касание подготавливает только eSIM и код региона."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence đã được bật sẵn — mở khóa một chạm chỉ chuẩn bị eSIM và mã vùng."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence 已原生支援，一鍵解鎖只暫存 eSIM 和地區碼。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence 已原生支援，一鍵解鎖只暫存 eSIM 和地區碼。"
+          }
+        }
+      }
+    },
     "No backups stored yet.": {
       "localizations": {
         "en": {

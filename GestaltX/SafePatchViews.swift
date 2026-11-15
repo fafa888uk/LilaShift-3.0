@@ -14,8 +14,29 @@ struct SafePatchCard: View {
     @EnvironmentObject private var model: GestaltManager
     @Environment(\.homeDiagnosticsCache) private var diagnostics: HomeDiagnosticsCache?
     @Environment(\.colorScheme) private var colorScheme
-    @State private var selectedProposal: SafePatchProposal = SafePatchProposal.oneTap()
+    @State private var selectedKind: SafePatchProposalKind = .oneTap
     @State private var showingChecks = false
+
+    /// Whether this device natively supports Apple Intelligence. The
+    /// cached report's profile is the source of truth on a read
+    /// device; without a cache the snapshot document's product type
+    /// is the fallback (on a real device both agree — the document is
+    /// the device's own read).
+    private var isNativeAppleIntelligence: Bool {
+        if let profile = diagnostics?.deviceReport?.profile {
+            return SafePatchProposal.isNativeAppleIntelligence(profile: profile)
+        }
+        guard let productType = model.snapshot?.document.extra[GestaltKeys.productType] as? String else {
+            return false
+        }
+        return DeviceAIEligibility.isNativeAppleIntelligence(productType: productType)
+    }
+
+    /// The concrete proposal for the picked kind, built with the
+    /// native flag so the cache lookup (keyed by proposal) hits.
+    private var selectedProposal: SafePatchProposal {
+        selectedKind.proposal(nativeAppleIntelligence: isNativeAppleIntelligence)
+    }
 
     private var heroTint: Color {
         colorScheme == .dark
@@ -64,10 +85,10 @@ struct SafePatchCard: View {
                     .disabled(model.isBusy)
                     .opacity(model.isBusy ? 0.5 : 1)
                 } else {
-                    Picker(L("Proposal"), selection: $selectedProposal) {
-                        Text(L("One-Tap Unlock")).tag(SafePatchProposal.oneTap())
-                        Text(L("AI Only")).tag(SafePatchProposal.aiOnly())
-                        Text(L("eSIM & Region")).tag(SafePatchProposal.esimRegion())
+                    Picker(L("Proposal"), selection: $selectedKind) {
+                        Text(L("One-Tap Unlock")).tag(SafePatchProposalKind.oneTap)
+                        Text(L("AI Only")).tag(SafePatchProposalKind.aiOnly)
+                        Text(L("eSIM & Region")).tag(SafePatchProposalKind.esimRegion)
                     }
                     .pickerStyle(.segmented)
 
@@ -166,6 +187,40 @@ struct SafePatchCard: View {
                 }
             }
         }
+        if !simulation.skippedFeatureIDs.isEmpty {
+            skippedList(simulation)
+        }
+    }
+
+    /// The features this proposal deliberately leaves unstaged: on
+    /// native Apple Intelligence hardware, the six AI capabilities.
+    /// They are shown as skipped with the reason, never as changes.
+    @ViewBuilder
+    private func skippedList(_ simulation: SafePatchSimulation) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(L("Skipped"))
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.primary)
+            ForEach(simulation.skippedFeatureIDs, id: \.self) { featureID in
+                HStack(spacing: 6) {
+                    Text(L(title(for: featureID)))
+                        .font(.subheadline)
+                        .foregroundStyle(.primary)
+                    Spacer()
+                    Text(L("Native support — skipped"))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+        .padding(10)
+        .background(Color.primary.opacity(0.04), in: RoundedRectangle(cornerRadius: 12))
+    }
+
+    /// The user-facing title for a skipped feature id: the
+    /// capability's title when it is one, the id otherwise.
+    private func title(for featureID: String) -> String {
+        Capability.all.first(where: { $0.id == featureID })?.title ?? featureID
     }
 
     @ViewBuilder

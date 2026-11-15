@@ -148,9 +148,19 @@ final class HomeDiagnosticsCache: ObservableObject {
 
     /// The one-tap simulation, or `nil` when it has not been
     /// computed yet. Convenience for the health and diagnosis cards,
-    /// which always use the one-tap proposal.
+    /// which always use the one-tap proposal. The lookup key uses the
+    /// same native-Apple-Intelligence flag the background computation
+    /// used, or the cached simulation is missed.
     var oneTapSimulation: SafePatchSimulation? {
-        simulations[SafePatchProposal.oneTap()]
+        simulations[SafePatchProposal.oneTap(nativeAppleIntelligence: isNativeAppleIntelligence)]
+    }
+
+    /// Whether the read device natively supports Apple Intelligence,
+    /// from the cached report's profile. Unknown (no report yet)
+    /// reads as non-native.
+    var isNativeAppleIntelligence: Bool {
+        guard let profile = deviceReport?.profile else { return false }
+        return SafePatchProposal.isNativeAppleIntelligence(profile: profile)
     }
 
     /// Recomputes all cached diagnostics for the given inputs on a
@@ -251,10 +261,15 @@ final class HomeDiagnosticsCache: ObservableObject {
         let verifications = RestoreIntelligence.verifyBackups(backups, against: working)
 
         // 4. SafePatch simulations for the three proposals the home
-        // shows (pure computation, no file I/O).
+        // shows (pure computation, no file I/O). The proposals are
+        // built with the native-Apple-Intelligence flag from the
+        // report's profile (step 2), so a native device simulates —
+        // and stages — only the 3 non-AI items of the one-tap, with
+        // the six AI capabilities recorded as skipped.
+        let isNative = deviceReport.map { SafePatchProposal.isNativeAppleIntelligence(profile: $0.profile) } ?? false
         let proposals = [
-            SafePatchProposal.oneTap(),
-            SafePatchProposal.aiOnly(),
+            SafePatchProposal.oneTap(nativeAppleIntelligence: isNative),
+            SafePatchProposal.aiOnly(nativeAppleIntelligence: isNative),
             SafePatchProposal.esimRegion(),
         ]
         var simulations: [SafePatchProposal: SafePatchSimulation] = [:]
@@ -278,7 +293,7 @@ final class HomeDiagnosticsCache: ObservableObject {
             return SystemHealthScorer.score(
                 profile: report.profile, snapshot: snapshot,
                 backups: backups, backupVerifications: verifications,
-                simulation: simulations[SafePatchProposal.oneTap()],
+                simulation: simulations[SafePatchProposal.oneTap(nativeAppleIntelligence: isNative)],
                 recordedChanges: records,
                 externalModificationCount: externalModificationCount)
         }()

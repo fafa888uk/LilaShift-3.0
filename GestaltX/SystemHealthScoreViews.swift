@@ -40,7 +40,9 @@ struct SystemHealthScoreCard: View {
             changeRecordCount: records.count)
         let verifications = RestoreIntelligence.verifyBackups(model.backups, against: model.working)
         let simulation = SafePatch.simulate(
-            proposal: SafePatchProposal.oneTap(), snapshot: model.snapshot,
+            proposal: SafePatchProposal.oneTap(
+                nativeAppleIntelligence: SafePatchProposal.isNativeAppleIntelligence(profile: report.profile)),
+            snapshot: model.snapshot,
             currentDocument: model.working, backups: model.backups)
         return SystemHealthScorer.score(
             profile: report.profile, snapshot: model.snapshot,

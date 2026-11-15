@@ -627,6 +627,10 @@ Modification Timeline	修改时间线
 Modification timeline and precise restore, from trusted records only.	修改时间线与精确恢复，仅依据可信记录。
 Native	原生
 Native support and conflicts	原生支持与冲突
+Skipped	已跳过
+Native support — skipped	原生支持，已跳过
+Apple Intelligence is already enabled natively on this device — nothing to stage.	此设备已原生支持 Apple Intelligence，无需暂存。
+Apple Intelligence is already enabled natively — one-tap stages eSIM and region code only.	Apple Intelligence 已原生支持，一键解锁只暂存 eSIM 和地区码。
 No backups stored yet.	尚未存储任何备份。
 No device document is available, so this feature cannot be judged.	没有可用的设备文档，无法判断此功能。
 No document has been read.	尚未读取任何文档。

@@ -318,7 +318,8 @@ struct DashboardV3Home<DestinationView: View>: View {
             return nil
         case .chinaUnlock:
             guard model.hasDocument else { return nil }
-            return "\(L("eSIM")): \(esimStatusText) · \(L("Region Code")): \(model.previewRegionCode ?? L("Not read yet")) · \(L("Apple Intelligence")): \(model.chinaUnlockAIEnabledCount)/\(ChinaUnlock.aiCapabilities.count)"
+            let aiStatus = model.isNativeAppleIntelligence ? L("Native") : "\(model.chinaUnlockAIEnabledCount)/\(ChinaUnlock.aiCapabilities.count)"
+            return "\(L("eSIM")): \(esimStatusText) · \(L("Region Code")): \(model.previewRegionCode ?? L("Not read yet")) · \(L("Apple Intelligence")): \(aiStatus)"
         case .appleIntelligenceEsim:
             guard let checkup = model.aiReadinessCheckup else {
                 return model.hasDocument ? L("Unknown") : nil

@@ -40,9 +40,10 @@ final class GestaltManager: ObservableObject {
     @Published var modelID = "keep"
     /// Region mode for China Unlock (default region-code-only).
     /// Persisted across launches; never reset by loading a document.
-    /// The one-tap unlock stages the same 9 items in either mode; the
-    /// mode only affects manual region presets and restoring an unlock
-    /// applied by an older build.
+    /// The one-tap unlock stages the same items in either mode (9 on
+    /// non-native hardware, 3 on native Apple Intelligence hardware);
+    /// the mode only affects manual region presets and restoring an
+    /// unlock applied by an older build.
     @Published var chinaUnlockRegionMode: ChinaUnlockRegionMode = .regionCodeOnly
     /// The user explicitly confirmed an unverified (warned) AI staging
     /// combination after reading its reason on the checkup card, by
@@ -208,13 +209,32 @@ final class GestaltManager: ObservableObject {
 
     // MARK: - China Unlock
 
+    /// True when the loaded document belongs to hardware that
+    /// natively supports Apple Intelligence (exact-match product-type
+    /// list in `DeviceAIEligibility`). The document's product type is
+    /// the source here — it is the device the file belongs to — and
+    /// on a live read it agrees with the profiler's live product
+    /// type. Unknown or absent product type reads as non-native
+    /// (fail closed: stage all 9).
+    var isNativeAppleIntelligence: Bool {
+        guard let productType = (working ?? snapshot?.document)?.extra[GestaltKeys.productType] as? String else {
+            return false
+        }
+        return DeviceAIEligibility.isNativeAppleIntelligence(productType: productType)
+    }
+
     /// True while the full China Unlock is staged (not yet applied):
-    /// eSIM flags enabled, region code US and all six AI presets enabled.
+    /// eSIM flags enabled, region code US and all six AI presets
+    /// enabled — or, on hardware that natively supports Apple
+    /// Intelligence, eSIM and region only, with the six AI presets
+    /// skipped by nativeness instead of staged (see
+    /// `stageChinaUnlock`).
     var isChinaUnlockStaged: Bool {
         guard hasDocument else { return false }
         return cacheOptionChoice == .enable
             && regionCodeID == ChinaUnlock.regionCodeID
-            && ChinaUnlock.aiCapabilityIDs.allSatisfy { (choices[$0] ?? .keep) == .enable }
+            && (isNativeAppleIntelligence
+                || ChinaUnlock.aiCapabilityIDs.allSatisfy { (choices[$0] ?? .keep) == .enable })
     }
 
     /// Region code shown by the staged preview (`LL` once unlocked).
@@ -238,12 +258,15 @@ final class GestaltManager: ObservableObject {
 
     /// True when the preview already shows the full unlock, whether it was
     /// just staged or applied in an earlier session: eSIM enabled, region
-    /// code LL and all six AI presets enabled. The sales-region suffix
-    /// and the regulatory model number are never part of the unlock, so
-    /// they are not required here.
+    /// code LL and all six AI presets enabled — or, on hardware that
+    /// natively supports Apple Intelligence, eSIM enabled and region
+    /// code LL with the six AI presets skipped by nativeness. The
+    /// sales-region suffix and the regulatory model number are never
+    /// part of the unlock, so they are not required here.
     var isChinaUnlockedInPreview: Bool {
         isESIMUnlockedInPreview && previewRegionCode == "LL"
-            && chinaUnlockAIEnabledCount == ChinaUnlock.aiCapabilityIDs.count
+            && (isNativeAppleIntelligence
+                || chinaUnlockAIEnabledCount == ChinaUnlock.aiCapabilityIDs.count)
     }
 
     /// True while the AI-only preset is staged: all six AI presets
@@ -539,7 +562,11 @@ final class GestaltManager: ObservableObject {
 
     /// Stages the full China Unlock: eSIM cache flags, region code US and
     /// the six Apple Intelligence presets — exactly the 9 items, in either
-    /// region mode. Nothing is written here; the user still reviews the
+    /// region mode. On hardware that natively supports Apple Intelligence
+    /// only the 3 non-AI items are staged (eSIM + region code) and the
+    /// six AI presets are skipped, never staged — staging them would
+    /// only record type-change diffs (1 → true) for values that are
+    /// already on. Nothing is written here; the user still reviews the
     /// changes and applies them, and a restart is required before they
     /// take effect. The sales-region suffix, the regulatory model number,
     /// `siriOnDevice` and WAPI are never staged: a regulatory model that
@@ -569,7 +596,13 @@ final class GestaltManager: ObservableObject {
         guard stageCacheOption(.enable) else { return false }
         regionCodeID = ChinaUnlock.regionCodeID
         regionID = "keep"
-        for id in ChinaUnlock.aiCapabilityIDs { choices[id] = .enable }
+        // Native Apple Intelligence hardware already supports the six
+        // AI presets: staging them would claim a change that is not
+        // one. Skip them; the staged flag reads the skip as satisfied
+        // (see `isChinaUnlockStaged`).
+        if !isNativeAppleIntelligence {
+            for id in ChinaUnlock.aiCapabilityIDs { choices[id] = .enable }
+        }
         return true
     }
 
@@ -609,10 +642,19 @@ final class GestaltManager: ObservableObject {
     /// keys are CacheExtra values and do not need the layout. Like the
     /// one-tap, this is an explicit user action, so it is not gated by
     /// the AI staging guard; the checkup surfaces any slot conflict with
-    /// a repair path.
+    /// a repair path. On hardware that natively supports Apple
+    /// Intelligence there is nothing to stage — the presets are already
+    /// on — so staging is refused with the reason shown (`message`)
+    /// instead of recording type-change diffs (1 → true).
     @discardableResult
     func stageChinaAIOnly() -> Bool {
         guard !isBusy else { return false }
+        if isNativeAppleIntelligence {
+            let reason = L("Apple Intelligence is already enabled natively on this device — nothing to stage.")
+            message = reason
+            log(reason)
+            return false
+        }
         for id in ChinaUnlock.aiCapabilityIDs { choices[id] = .enable }
         return true
     }
