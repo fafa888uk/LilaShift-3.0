@@ -35,12 +35,15 @@ jobs:
           xcode-version: latest-stable
 
       - name: Run unit tests
+        # tee saves the xcodebuild log for the job-summary step below.
+        # GitHub's default bash runs with pipefail, so a failing
+        # xcodebuild still fails this step.
         run: |
           xcodebuild test \
             -project GestaltX.xcodeproj \
             -scheme GestaltX \
             -destination 'platform=iOS Simulator,name=iPhone 17' \
-            -only-testing:GestaltXTests
+            -only-testing:GestaltXTests 2>&1 | tee "$RUNNER_TEMP/xcodebuild-test.log"
 
       - name: Upload snapshot references
         # The ViewSnapshotTests record their references on the first
@@ -77,3 +80,40 @@ jobs:
           name: snapshot-failures
           path: /tmp/snapshot-failures/
           if-no-files-found: ignore
+
+      - name: Publish job summary
+        # Writes a short summary (SHA, version, test counts) to the run
+        # page. Never fails the job: every parse is guarded and falls
+        # back to "not parsed" / "unknown".
+        if: always()
+        run: |
+          version="$(sed -n 's/^[[:space:]]*MARKETING_VERSION = \(.*\);/\1/p' GestaltX.xcodeproj/project.pbxproj | sort -u || true)"
+          build="$(sed -n 's/^[[:space:]]*CURRENT_PROJECT_VERSION = \(.*\);/\1/p' GestaltX.xcodeproj/project.pbxproj | sort -u || true)"
+          [ -n "$version" ] || version="unknown"
+          [ -n "$build" ] || build="unknown"
+          log="$RUNNER_TEMP/xcodebuild-test.log"
+          executed="not parsed"
+          skipped="not parsed"
+          failed="not parsed"
+          if [ -f "$log" ]; then
+            line="$(grep -E 'Executed [0-9]+ tests' "$log" | tail -n 1 || true)"
+            if [ -n "$line" ]; then
+              executed="$(printf '%s' "$line" | grep -oE 'Executed [0-9]+' | grep -oE '[0-9]+' || true)"
+              skipped="$(printf '%s' "$line" | grep -oE '[0-9]+ tests? skipped' | grep -oE '[0-9]+' || true)"
+              failed="$(printf '%s' "$line" | grep -oE '[0-9]+ failures' | grep -oE '[0-9]+' || true)"
+              [ -n "$executed" ] || executed="not parsed"
+              [ -n "$skipped" ] || skipped="not parsed"
+              [ -n "$failed" ] || failed="not parsed"
+            fi
+          fi
+          {
+            echo "## Run Swift Tests"
+            echo ""
+            echo "- Commit: ${{ github.sha }}"
+            echo "- Ref: ${{ github.ref }}"
+            echo "- Version: $version ($build)"
+            echo "- Tests executed: $executed"
+            echo "- Tests skipped: $skipped"
+            echo "- Tests failed: $failed"
+            echo "- Conclusion: ${{ job.status }}"
+          } >> "$GITHUB_STEP_SUMMARY" || true
