@@ -189,6 +189,8 @@ struct Capability: Identifiable, Equatable {
 /// are excluded as well; WAPI can still be disabled on its own.
 enum ChinaUnlock {
     static let regionCodeID = "US"
+    static let appleIntelligenceKey = "A62OafQ85EJAiiqKn4agtg"
+    static let onDeviceSiriKey = "K/R1GfGfCkXvEhaPS2Vrng"
     static let aiCapabilityIDs = ["ai", "audioIntelligence", "personalTranslator",
                                   "photosCleanUp", "handwritingSynthesis", "alwaysListeningSiri"]
     static let aiCapabilities = aiCapabilityIDs.compactMap { id in

@@ -215,12 +215,13 @@ struct RecordedChange: Equatable, Codable, Sendable {
     /// Defaults to false so records written before this field decode
     /// and construct unchanged.
     let restartVerified: Bool
+    let restartVerificationBoot: BootSession?
 
     init(id: UUID, date: Date, deviceID: String, osBuild: String,
          featureID: String, key: String, layer: ChangeLayer,
          original: ChangeValue, new: ChangeValue,
          backupProvenance: BackupProvenance, verified: Bool,
-         restartVerified: Bool = false) {
+         restartVerified: Bool = false, restartVerificationBoot: BootSession? = nil) {
         self.id = id
         self.date = date
         self.deviceID = deviceID
@@ -233,6 +234,7 @@ struct RecordedChange: Equatable, Codable, Sendable {
         self.backupProvenance = backupProvenance
         self.verified = verified
         self.restartVerified = restartVerified
+        self.restartVerificationBoot = restartVerificationBoot
     }
 
     /// Decodes records written before `restartVerified` existed as
@@ -250,7 +252,9 @@ struct RecordedChange: Equatable, Codable, Sendable {
         new = try container.decode(ChangeValue.self, forKey: .new)
         backupProvenance = try container.decode(BackupProvenance.self, forKey: .backupProvenance)
         verified = try container.decode(Bool.self, forKey: .verified)
-        restartVerified = try container.decodeIfPresent(Bool.self, forKey: .restartVerified) ?? false
+        restartVerificationBoot = try container.decodeIfPresent(BootSession.self, forKey: .restartVerificationBoot)
+        restartVerified = (try container.decodeIfPresent(Bool.self, forKey: .restartVerified) ?? false)
+            && restartVerificationBoot != nil
     }
 
     var wasAbsent: Bool { original == .absent }
@@ -297,6 +301,7 @@ struct DeviceProfile: Equatable, Sendable {
     let backupCount: Int
     let hasTrustedBackup: Bool
     let changeRecordCount: Int
+    var liveAICapabilityAnswers: [String: Bool] = [:]
 }
 
 /// A source of device identity facts. Implementations read what is

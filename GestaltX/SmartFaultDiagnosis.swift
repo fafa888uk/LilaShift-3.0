@@ -592,7 +592,7 @@ enum SmartFaultDiagnosis {
         _ input: FaultDiagnosisInput, add: (FaultDiagnosis) -> Void
     ) {
         guard let acceptance = input.acceptance else { return }
-        let disagreeing = acceptance.items.filter { item in item.liveAgrees == false }
+        let disagreeing = acceptance.items.filter { $0.filePersisted && $0.systemDisagrees }
         if !disagreeing.isEmpty {
             add(FaultDiagnosis(
                 code: "live-disagreement", severity: .warning,

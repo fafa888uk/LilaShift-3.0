@@ -28,7 +28,6 @@ struct SmartFaultDiagnosisCard: View {
     @State private var historyError: String?
     @State private var storedFingerprint: DeviceFingerprint?
     @State private var fingerprintError: String?
-    @State private var restartConfirmed = false
     @State private var showingDetails = false
     /// Structured operation events recorded this session (reads and
     /// backups). Write, restore and guard events are not connected
@@ -132,10 +131,7 @@ struct SmartFaultDiagnosisCard: View {
     /// itself is cheap and stays in the card because it depends on
     /// the restart-confirmed toggle.
     private var acceptanceReport: AcceptanceReport {
-        PostModificationAcceptance.accept(
-            records: effectiveRecords, current: model.working,
-            liveValues: diagnostics?.liveValues ?? PostModificationAcceptance.liveValues(for: effectiveRecords),
-            restartConfirmed: restartConfirmed)
+        model.persistenceAcceptance()
     }
 
     /// The diagnosis report, or `nil` when the device has not been
@@ -186,9 +182,6 @@ struct SmartFaultDiagnosisCard: View {
                     .disabled(model.isBusy)
                     .opacity(model.isBusy ? 0.5 : 1)
                 } else if let diagnosisReport {
-                    Toggle(L("I restarted the device after applying"), isOn: $restartConfirmed)
-                        .font(.subheadline)
-
                     Text(diagnosisReport.summary)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)

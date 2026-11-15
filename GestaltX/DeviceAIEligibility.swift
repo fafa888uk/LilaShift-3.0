@@ -11,6 +11,8 @@
 import Foundation
 
 enum DeviceAIEligibility {
+    static let persistenceProductType = "iPhone18,2"
+
     /// Exact-match only: an unlisted model (including a future
     /// `iPhone19,9`) is NOT native. No prefix catch-all — a new
     /// generation must be added here explicitly after it is verified.
@@ -57,6 +59,9 @@ enum DeviceAIEligibility {
     /// where the recorded original is the baseline, or any key on
     /// hardware with no known baseline).
     static func nativeAdvAISlotValue(key: String, productType: String) -> Bool? {
+        // The source probes came from different hardware. Use the measured
+        // first-read slot for this device's diagnostics and preserve it.
+        guard productType != persistenceProductType else { return nil }
         if key == DeviceCacheOptions.audioIntelligenceKey,
            nativeProductTypes.contains(productType) {
             return false

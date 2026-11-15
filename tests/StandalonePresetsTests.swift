@@ -61,6 +61,71 @@ final class StandalonePresetsTests: XCTestCase {
         return manager
     }
 
+    func testIPhone18_2NativeAppleIntelligenceEligibility() {
+        XCTAssertTrue(DeviceAIEligibility.isNativeAppleIntelligence(productType: "iPhone18,2"))
+        XCTAssertNil(DeviceAIEligibility.nativeAdvAISlotValue(key: DeviceCacheOptions.audioIntelligenceKey,
+                                                              productType: "iPhone18,2"))
+    }
+
+    @MainActor
+    func testNativeAIHardwareDoesNotStageRedundantKeys() throws {
+        let original = try Self.fixture(productType: "iPhone18,2")
+        let manager = try manager(for: original)
+        XCTAssertTrue(manager.stageChinaUnlock())
+        XCTAssertTrue(Set(manager.changeKeys).isDisjoint(with: Self.aiKeys))
+        let preview = try XCTUnwrap(manager.preview)
+        XCTAssertTrue(GestaltDocument.valuesEqual(try XCTUnwrap(original.extra[Self.siriKey]),
+                                                   try XCTUnwrap(preview.extra[Self.siriKey])))
+        XCTAssertEqual(PlistObservation(preview.extra[Self.siriKey]).type, "Integer")
+    }
+
+    @MainActor
+    func testNativeAIHardwareDoesNotCreateFalseChanges() throws {
+        var document = try Self.fixture(productType: "iPhone18,2")
+        document.set(NSNumber(value: 1), for: ChinaUnlock.appleIntelligenceKey)
+        let manager = try manager(for: document)
+        XCTAssertFalse(manager.stageChinaAIOnly())
+        XCTAssertEqual(manager.changeCount, 0)
+        XCTAssertEqual(PlistObservation(manager.preview?.extra[ChinaUnlock.appleIntelligenceKey]).type, "Integer")
+    }
+
+    func testIPhone18_2AudioAutomaticStagingIsBlocked() throws {
+        var request = AIStagingRequest(productType: "iPhone18,2", audioIntelligenceExtra: true,
+                                        audioIntelligenceSlot: false, userConfirmedUnverifiedCombination: true)
+        XCTAssertEqual(AIStagingGuard.decide(request).outcome, .block)
+        request.audioIntelligenceSlot = nil
+        XCTAssertEqual(AIStagingGuard.decide(request).outcome, .block)
+        let before = try Self.fixture(productType: "iPhone18,2")
+        var edited = before
+        edited.set(NSNumber(value: true), for: DeviceCacheOptions.audioIntelligenceKey)
+        XCTAssertThrowsError(try DeviceCacheOptions.validateTargetAudioEdit(from: before, to: edited))
+    }
+
+    func testSingleAIKeyWriteAndReadback() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let url = directory.appendingPathComponent("cache.plist")
+        let document = try Self.fixture(productType: "iPhone18,2")
+        try document.encoded().write(to: url)
+        let store = GestaltFileStore(deviceURL: url, backupDirectory: directory.appendingPathComponent("Backups"),
+                                     deviceID: "test", acquire: { 1 }, release: { _ in },
+                                     writeData: { data, url in try data.write(to: url) })
+        let first = try await store.loadDevice(maintainHistory: false)
+        let beforeWriteFiles = try FileManager.default.contentsOfDirectory(atPath: directory.path)
+        XCTAssertEqual(beforeWriteFiles, ["cache.plist"])
+        var edited = first.document
+        let key = try XCTUnwrap(Capability.all.first { $0.id == "photosCleanUp" }?.keys.first)
+        edited.set(NSNumber(value: true), for: key)
+        let written = try await store.commit(edited, expected: first)
+        let changes = PostModificationAcceptance.records(before: first, after: written, deviceID: "test",
+                                                           build: "test", date: Date())
+        XCTAssertEqual(changes.map(\.key), [key])
+        let reread = try await store.loadDevice(maintainHistory: false)
+        XCTAssertEqual(ChangeValue.fromPlistValue(reread.document.extra[key]), .bool(true))
+        XCTAssertEqual(ChangeValue.fromPlistValue(reread.document.extra[Self.siriKey]), .int(2))
+    }
+
     @MainActor
     func testAIOnlyPreset() throws {
         // The region mode is a persisted user setting; pin the default

@@ -196,8 +196,11 @@ final class LilaIntelligenceTests: XCTestCase {
                 featureID: featureID, profile: profile, document: snapshot,
                 layout: layout, liveAIEnabled: true,
                 userConfirmedUnverifiedCombination: false)
-            XCTAssertEqual(result.eligibility, .nativeSupported,
-                           "Native hardware with agreeing slot baselines must be native-supported for \(featureID)")
+            if featureID == "ai" {
+                XCTAssertEqual(result.eligibility, .nativeSupported)
+            } else {
+                XCTAssertNotEqual(result.eligibility, .nativeSupported, "Each feature requires its own answer")
+            }
         }
     }
 
@@ -286,8 +289,8 @@ final class LilaIntelligenceTests: XCTestCase {
         let report = LilaIntelligence.report(snapshot: snapshot, profile: profile)
         let aiEvaluations = report.evaluations.filter { ChinaUnlock.aiCapabilityIDs.contains($0.featureID) }
         XCTAssertEqual(aiEvaluations.count, ChinaUnlock.aiCapabilityIDs.count)
-        XCTAssertTrue(aiEvaluations.allSatisfy { $0.eligibility == .nativeSupported },
-                      "All six AI capabilities must be native-supported on this device")
+        XCTAssertEqual(aiEvaluations.filter { $0.eligibility == .nativeSupported }.map(\.featureID), ["ai"],
+                       "A main AI answer cannot establish the other five capabilities")
         let aiSteps = report.chinaUnlockRecommendation.steps.filter {
             ChinaUnlock.aiCapabilityIDs.contains($0.featureID)
         }

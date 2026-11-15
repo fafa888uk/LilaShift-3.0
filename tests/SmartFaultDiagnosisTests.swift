@@ -130,7 +130,7 @@ final class SmartFaultDiagnosisTests: XCTestCase {
     func testRegionRevertedKnownCause() throws {
         let current = try CoreModuleFixtures.document()
         let acceptance = PostModificationAcceptance.accept(
-            records: [regionRecord()], current: current, restartConfirmed: true)
+            records: [regionRecord()], current: current, restartEvidence: .verifiedBootChange)
         XCTAssertEqual(acceptance.revertedKeys, [GestaltKeys.regionCode])
         let record = backupRecord()
         let report = SmartFaultDiagnosis.diagnose(FaultDiagnosisInput(
@@ -149,7 +149,7 @@ final class SmartFaultDiagnosisTests: XCTestCase {
     func testRegionRevertedNeedsRestartConfirmation() throws {
         let current = try CoreModuleFixtures.document()
         let acceptance = PostModificationAcceptance.accept(
-            records: [regionRecord()], current: current, restartConfirmed: false)
+            records: [regionRecord()], current: current, restartEvidence: .sameBoot)
         let report = SmartFaultDiagnosis.diagnose(FaultDiagnosisInput(
             profile: profile(), acceptance: acceptance))
         XCTAssertNil(report.diagnosis(code: "region-reverted"),
@@ -222,7 +222,7 @@ final class SmartFaultDiagnosisTests: XCTestCase {
             backupProvenance: .preModification, verified: true)
         let current = try CoreModuleFixtures.document()
         let acceptance = PostModificationAcceptance.accept(
-            records: [audioRecord], current: current, restartConfirmed: true)
+            records: [audioRecord], current: current, restartEvidence: .verifiedBootChange)
         XCTAssertEqual(acceptance.items.first?.outcome, .unreadable)
         let report = SmartFaultDiagnosis.diagnose(FaultDiagnosisInput(
             profile: profile(), acceptance: acceptance))
@@ -351,7 +351,7 @@ final class SmartFaultDiagnosisTests: XCTestCase {
         let acceptance = PostModificationAcceptance.accept(
             records: [regionRecord()], current: current,
             liveValues: [GestaltKeys.regionCode: .string("CH")],
-            restartConfirmed: true)
+            restartEvidence: .verifiedBootChange)
         XCTAssertEqual(acceptance.items.first?.liveAgrees, false)
         let report = SmartFaultDiagnosis.diagnose(FaultDiagnosisInput(
             profile: profile(), acceptance: acceptance))
@@ -376,7 +376,7 @@ final class SmartFaultDiagnosisTests: XCTestCase {
             "CacheExtra": [GestaltKeys.regionCode: "CH"],
         ], format: .binary, options: 0))
         let acceptance = PostModificationAcceptance.accept(
-            records: [greenTeaRecord], current: current, restartConfirmed: true)
+            records: [greenTeaRecord], current: current, restartEvidence: .verifiedBootChange)
         XCTAssertEqual(acceptance.items.first?.outcome, .unreadable)
         let report = SmartFaultDiagnosis.diagnose(FaultDiagnosisInput(
             profile: profile(), acceptance: acceptance))

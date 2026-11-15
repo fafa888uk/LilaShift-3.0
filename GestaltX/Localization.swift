@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import Foundation
 func L(_ key: String) -> String { NSLocalizedString(key, comment: "") }
+func persistenceText(_ key: String) -> String {
+    NSLocalizedString(key, tableName: "PersistenceDiagnostics", comment: "")
+}
 
 enum GestaltBrand {
     static let developer = "huamidev"

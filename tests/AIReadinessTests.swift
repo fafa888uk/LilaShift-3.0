@@ -316,8 +316,8 @@ final class AIReadinessTests: XCTestCase {
                    "Manager decision allows the warned combination once the user confirmed it")
         let unstagedBaseline = try docWithSlots(audioSlot: false, translatorSlot: true, extraAudio: nil, extraTranslator: nil)
         let proposalDecision = GestaltManager.stagingDecision(for: unstagedBaseline, layout: layout, liveAIEnabled: nil, userConfirmedUnverifiedCombination: false, proposedUnlock: true)
-        XCTAssert(proposalDecision?.outcome == .warn,
-                   "Manager proposal decision warns for the unlock before it is staged (both guarded keys proposed as 1)")
+        XCTAssertEqual(proposalDecision?.outcome, .allow,
+                       "The native one-tap proposal retains both guarded keys")
         let unproposedDecision = GestaltManager.stagingDecision(for: unstagedBaseline, layout: layout, liveAIEnabled: nil, userConfirmedUnverifiedCombination: false, proposedUnlock: false)
         XCTAssert(unproposedDecision?.outcome == .allow,
                    "Manager decision allows when nothing is staged and the slots read their baselines")

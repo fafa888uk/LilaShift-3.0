@@ -53,6 +53,43 @@
 - **Gate 6**：整合智能兼容性、设备识别、原生 AI 过滤、SafePatch diff、可信恢复时间线、预设数据库、故障诊断，并保持各模块隔离与 fail-closed。
 - **Gate 7**：若上游 GestaltX 新版本有可核实提交，独立分支逐步迁移，确保 Bundle ID 和 App Group 一致，扫描器保持动态解析；铃声和配对分别做真机验收。
 
+## iPhone Air A3518 / iOS 27.0.1 取证入口
+
+在「工具 → 操作 → 应用图标与名称」选已安装应用。列表复用设备应用清单，进入页面后查看实际 iOS Build、LaunchServices 解析出的两个名称字段、数据库字节数和 SHA-256，以及系统图标查询返回的图片。可分享纯文本摘要。系统图标查询可能返回未知；查询结果不能用来定位磁盘图标记录。现有自定义图标、名称与撤销入口仍用于预览。
+
+写入还需要在该 Build 上定位实际读用的 IconServices 记录，确认 LaunchServices 名称记录、更新缓存的时序及恢复方式，再分别校验设备桌面与重启后的结果。
+
+Windows 签装版会随摘要附带磁盘图标缓存探针。它以只读方式检查两个历史候选目录，在根目录和一层 UUID 子目录中统计常见记录类型，并抽样匹配所选 Bundle ID 的文件名或 UTF-8 / UTF-16LE 字节。摘要记录打开错误、扫描限制及候选记录大小和 inode。候选仍须验证是否是主屏幕实际采用的图标；零匹配也可能表示条目使用散列索引或超出抽样范围。[Filza 路径记录](https://www.tigisoftware.com/default/?page_id=177) · [Bergamota 对 .isdata 的观察](https://github.com/ry-diffusion/Bergamota/blob/develop/NOTES.md)
+
+## 图标缓存探针 v2 与受控写入门禁（3.1，未在真机验证）
+
+### 探针 v2 诊断（`GXIconCacheProbe`，只读）
+上一轮探针无法说明唯一条目为什么不可读（fstatat、openat、fstat 校验、read、readdir 无法区分）。v2 为每个条目记录诊断，不改变扫描上限（1800 条、4 秒、24 MB 读取预算、128 KB 前缀、16 条匹配）：
+- 每个条目：名称、dirent `d_type`、stat mode（八进制）、大小、uid、gid、inode；失败时记录阶段 + errno。阶段：`readdir`、`iteratorOpen`、`fstatat`、`childOpen`、`prefixOpen`、`prefixFstat`、`prefixRead`、`nonRegular`。
+- 元数据枚举：即使内容读取被跳过或失败，也记录条目元数据；每根目录附 `directoryStat`（根目录 mode/uid/gid/inode）；`entriesDetail` 数组上限 32 条，`unreadableStages` 按阶段计数、`stageErrnos` 记录各阶段最近一次 errno。
+- fstatat 失败时，以完整路径再试一次 `stat()` 作为第二意见并记录其 errno；符号链接（及未知类型）改用 `lstat()`，绝不跟随链接到扫描根目录之外；符号链接记录 `readlink` 目标但不跟随。FIFO 等非正规文件记录类型（如 `fifo`）而不打开。
+- 匹配记录新增 `prefixSHA256`：对已匹配文件，取探针实际读取的前缀（至多 128 KB）的 SHA-256。探针不做全文件哈希——写路径的 TOCTOU 与回读校验比较的是同一前缀窗口，而不是探针从未计算过的全文件哈希。
+- 检查页新增一行本地化文案，显示不可读条目的阶段 breakdown（如 `fstatat ×1 · prefixOpen ×2`）；无不可读条目时显示“没有无法读取的条目”。
+
+### 最新真机证据与门禁状态（2026-11-16，iPhone Air iPhone18,4，iOS 27.0.1，Build 24A446）
+- systemgroup 图标缓存目录（`/private/var/containers/Shared/SystemGroup/systemgroup.com.apple.lsd.iconscache/Library/Caches/com.apple.IconsCache`）能打开（open 1，errno 0），但其唯一条目不可读、匹配 0 条、读取 0 字节，未触及扫描上限；另一候选路径（`/private/var/mobile/Library/Caches/com.apple.IconsCache`）不存在（errno 2）。系统图标 PNG 的 SHA-256 未知。LaunchServices 缓存已重建（14,696,448 字节，SHA `3b379675…`）。
+- **门禁状态：未在真机验证。** 该记录未被证实是主屏幕实际使用的记录，因此写路径保持门禁。v2 探针正是为回答“唯一条目为什么不可读”而设——在 v2 给出阶段 + errno 之前，不得假定该条目可写、不得绕过门禁。
+
+### 受控写入设计（仅代码，未在真机运行）
+- `VerifiedIconCacheRecord`（bundleID、缓存根内相对路径、大小、inode、探测时前缀 SHA `sha256AtProbe`、探测时 LaunchServices 缓存 SHA `probedCacheSHA`）：只能从包含至少一条该 bundleID 匹配且带前缀哈希的探针证据构造（`fromEvidence(_:bundleID:)`，否则为 nil）。
+- `IconCacheWriteGate.evaluate`：首个实现仅接受 bundleID `com.yueyou.cyreader`（七猫小说），其他一律 blocked（注释：微信/支付宝待七猫小说验证后跟进）。图标替换明确拒绝（`.blocked`，原因“图标记录格式未确认”），直至探针确认图标字节。
+- `WriteMutation`：显式描述一次字节替换（偏移 + 长度 + 替换字节）。首个构造器仅支持匹配前缀内的显示名称字节替换（UTF-8 与 UTF-16LE 两种形式）：新名称须与当前名称编码后字节长度相同、且在两种形式中合计恰好出现一次，否则拒绝；图标字节永不经此构造器修改。
+- `IconCacheWritePlan` 状态机：`idle -> backedUp -> written -> readBackVerified -> awaitingRestartVerification -> verifiedAfterRestart`，另有 `restored` 与 `failed(reason)`。备份在紫序自己的 Application Support 目录（`GestaltX/AppAppearance/IconCacheBackups/<bundleID>/`，PropertyList + SHA-256，沿用 `AppAppearanceDraft` 式存储），写前写后各算一次 SHA-256 并原子写入，恢复验证通过前不删除备份。写入为单条记录：证据匹配数不等于 1 即拒绝；当前前缀 SHA 与探测 SHA 不符即拒绝（TOCTOU）；无有效备份即拒绝。写入为原地同长替换（inode 与文件大小不变），回读时核对替换字节与预期写后前缀 SHA，不符立即用备份恢复并报告失败。重启复验复用仓库已有的启动证据（`BootSession.current()` + `RestartEvidence.compare`）：仅当确实重启过且新探针仍显示该替换时，才标记为 verified-effective；此前一直停留在“等待重启验证”。
+- “候选记录”与“重启后验证有效”在代码名、界面文案与本文档中严格区分，绝不把候选说成有效，绝不宣称已在真机验证。
+- 界面：仅七猫小说的检查页出现写入口——一行门禁状态、一个新显示名称输入框、“写入（实验性）”按钮（门禁未就绪时禁用）、一个独立的“从备份恢复”按钮（仅在写入待定/等待重启验证/失败持有备份时启用）。写入按钮执行“备份 → 写入 → 回读”后停在“等待重启验证”，不自动恢复、不提供未经重启检查的持久修改。
+
+### 下一步真机操作（按顺序）
+1. 安装含探针 v2 的构建，打开「工具 → 操作 → 应用图标与名称 → 七猫小说」，点“重新读取”，分享证据文本：`entriesDetail` 与 `unreadableStages` 会指明唯一条目的失败阶段与 errno。
+2. 若阶段为 `prefixOpen`/`prefixFstat`/`prefixRead` 且 errno 为 EACCES/EPERM：该条目在当前权限下不可读，门禁继续 blocked，不得尝试写入；记录 errno 并评估是否需要其他只读发现路径。
+3. 若出现匹配记录且门禁显示“已就绪——仅为候选记录”：输入与当前名称编码字节长度相同的新名称（例如同为 4 个汉字），点“写入（实验性）”，确认状态走到“等待重启验证”、回读无报错。
+4. 重启 iPhone，重新打开同一检查页并点“重新读取”：状态变为“重启后验证有效”且主屏幕名称确实改变，才算验证有效；否则状态保持“等待重启验证”，用“从备份恢复”还原，并记录重启前后两次探针的 `prefixSHA256` 与 LaunchServices 缓存 SHA。
+5. 在七猫小说验证有效之前，不对微信、支付宝或任何其他应用开放写入按钮。
+
 ### UI 原则
 - 与现有启动图编辑器明确隔离，不把启动快照当应用图标。
 - 真值状态分为：未读取、不可访问、仅预览、已验证写入、重启后验证、未知。

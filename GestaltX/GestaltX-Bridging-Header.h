@@ -18,3 +18,5 @@
 
 #import "GXDeviceIdentity.h"
 #import "GXCustomizationAccess.h"
+#import "GXLaunchServicesDatabase.h"
+#import "GXIconCacheProbe.h"

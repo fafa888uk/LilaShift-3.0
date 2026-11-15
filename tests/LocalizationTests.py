@@ -65,6 +65,23 @@ ALL_LOCALE_SCRIPTS = {
 
 
 class LocalizationTests(unittest.TestCase):
+    def test_persistence_diagnostics_have_english_and_simplified_chinese(self):
+        directory = ROOT / "GestaltX"
+        path = directory / "PersistenceDiagnostics.xcstrings"
+        strings = json.loads(path.read_text(encoding="utf-8"))["strings"]
+        pattern = re.compile(r'\bpersistenceText\("([^"\\]+)"\)')
+        used = {key for path in directory.glob("*.swift")
+                for key in pattern.findall(path.read_text(encoding="utf-8"))}
+        self.assertEqual(used, set(strings))
+        placeholders = re.compile(r"%[d@]")
+        for key, item in strings.items():
+            translations = item["localizations"]
+            self.assertEqual(set(translations), {"en", "zh-Hans"})
+            self.assertEqual(translations["en"]["stringUnit"]["value"], key)
+            chinese = translations["zh-Hans"]["stringUnit"]["value"]
+            self.assertNotEqual(chinese, key)
+            self.assertCountEqual(placeholders.findall(chinese), placeholders.findall(key))
+
     def test_all_locales_have_complete_valid_translations(self):
         catalog = json.loads((ROOT / "GestaltX/Localizable.xcstrings").read_text())
         self.assertEqual(catalog["sourceLanguage"], "en")

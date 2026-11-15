@@ -70,6 +70,20 @@ struct CacheDataDiff {
 }
 
 enum DeviceCacheOptions {
+    static func validateTargetAudioEdit(from original: GestaltDocument, to edited: GestaltDocument) throws {
+        guard original.extra[GestaltKeys.productType] as? String == DeviceAIEligibility.persistenceProductType else { return }
+        let oldExtra = original.extra[audioIntelligenceKey]
+        let newExtra = edited.extra[audioIntelligenceKey]
+        if let newExtra, PlistObservation(newExtra).capabilityBoolean == true,
+           oldExtra.map({ GestaltDocument.valuesEqual($0, newExtra) }) != true {
+            throw GestaltFailure(AIStagingGuard.targetAudioWarning)
+        }
+        guard let layout = try? MobileGestaltCacheLayout.resolve(in: original),
+              advAISlotValue(audioIntelligenceKey, in: original, using: layout) != true,
+              advAISlotValue(audioIntelligenceKey, in: edited, using: layout) == true else { return }
+        throw GestaltFailure(AIStagingGuard.targetAudioWarning)
+    }
+
     static let wapiKey = "hiHut/WR+B9Lx/vd0WyeNg"
     static let greenTeaKey = "iyfxmLogGVIaH7aEgqwcIA"
     static let notGreenTeaKey = "4snMZS8LJkSctKypt2m+xA"
