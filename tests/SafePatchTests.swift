@@ -253,8 +253,11 @@ final class SafePatchTests: XCTestCase {
         XCTAssertFalse(SafePatchProposal.isNativeAppleIntelligence(profile: unknownProfile),
                        "Unknown product type reads as non-native")
         let proposal = SafePatchProposal.oneTap(nativeAppleIntelligence: false)
-        XCTAssertEqual(proposal.featureIDs.count, 9,
-                       "Fail-closed one-tap still carries all 9 items")
+        // 8 feature IDs, not 9: the fail-closed one-tap stages 9
+        // FIELDS (2 eSIM keys + region + 6 AI keys), but eSIM is a
+        // single feature ID covering both keys, so featureIDs has 8.
+        XCTAssertEqual(proposal.featureIDs.count, 8,
+                       "Fail-closed one-tap still carries all 8 feature IDs (9 staged fields)")
         XCTAssertTrue(proposal.skippedFeatureIDs.isEmpty,
                       "Fail-closed one-tap skips nothing")
     }
