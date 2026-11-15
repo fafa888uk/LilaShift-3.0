@@ -126,6 +126,24 @@ final class DashboardV3SnapshotTests: XCTestCase {
     /// readers (press scale, statusText) do not animate in a
     /// snapshot, so the two remaining settles still address the
     /// settle mechanism.
+    ///
+    /// CPU diffing (Tests #220): settling fixed Accessibility and
+    /// Dark, but Tools/Unlock kept failing identically on #210 and
+    /// #220 with byte-identical captures — the settle had zero
+    /// effect on them. Root cause is the library's perceptual
+    /// comparison, which thresholds the CILabDeltaE image with a
+    /// Metal kernel (MPSImageThresholdBinary) whenever Metal is
+    /// available. On GitHub's virtualized runners the Metal device
+    /// is host-dependent: the same pixels measure at most Delta-E
+    /// 1.52 yet the harness reports max Delta-E 13.1. So the
+    /// comparison itself flips between hosts, not the rendering.
+    /// This helper therefore uses `.cpuPerceptualImage`
+    /// (tests/CPUImageDiffing.swift), which computes CIE76 Delta-E
+    /// in pure Swift on the CPU — no Core Image filter, no Metal
+    /// kernel, no GPU. Thresholds are unchanged (precision 1,
+    /// perceptualPrecision 0.98, i.e. Delta-E <= 2.0 for every
+    /// pixel); only the computation path changes, from
+    /// host-dependent Metal to deterministic CPU.
     private func assertV3Snapshot<V: View>(
         _ view: V, named name: String,
         width: CGFloat = 390,
@@ -147,7 +165,7 @@ final class DashboardV3SnapshotTests: XCTestCase {
                 .transaction { $0.animation = nil },
             as: .wait(
                 for: 0.5,
-                on: .image(
+                on: .cpuPerceptualImage(
                     drawHierarchyInKeyWindow: true,
                     precision: 1,
                     perceptualPrecision: 0.98,

@@ -149,7 +149,7 @@ final class ViewSnapshotTests: XCTestCase {
                 .transaction { $0.animation = nil },
             as: .wait(
                 for: 0.5,
-                on: .image(
+                on: .cpuPerceptualImage(
                     drawHierarchyInKeyWindow: true,
                     precision: 1,
                     perceptualPrecision: 0.98,
