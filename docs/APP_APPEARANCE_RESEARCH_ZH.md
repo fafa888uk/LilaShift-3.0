@@ -59,6 +59,8 @@
 
 写入还需要在该 Build 上定位实际读用的 IconServices 记录，确认 LaunchServices 名称记录、更新缓存的时序及恢复方式，再分别校验设备桌面与重启后的结果。
 
+Windows 签装版会随摘要附带磁盘图标缓存探针。它以只读方式检查两个历史候选目录，在根目录和一层 UUID 子目录中统计常见记录类型，并抽样匹配所选 Bundle ID 的文件名或 UTF-8 / UTF-16LE 字节。摘要记录打开错误、扫描限制及候选记录大小和 inode。候选仍须验证是否是主屏幕实际采用的图标；零匹配也可能表示条目使用散列索引或超出抽样范围。[Filza 路径记录](https://www.tigisoftware.com/default/?page_id=177) · [Bergamota 对 .isdata 的观察](https://github.com/ry-diffusion/Bergamota/blob/develop/NOTES.md)
+
 ### UI 原则
 - 与现有启动图编辑器明确隔离，不把启动快照当应用图标。
 - 真值状态分为：未读取、不可访问、仅预览、已验证写入、重启后验证、未知。

@@ -1,6 +1,33 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import SwiftUI
 
+struct DiskIconCacheEvidence: Sendable {
+    let openedDirectories: Int
+    let matches: Int
+    let report: String
+
+    static func inspect(_ bundleID: String) -> Self {
+        Self(fields: GXIconCacheProbe.inspect(bundleIdentifier: bundleID))
+    }
+
+    static func inspectDirectory(_ descriptor: Int32, bundleID: String) -> Self {
+        let field = GXIconCacheProbe.inspectDirectory(descriptor, bundleIdentifier: bundleID)
+        guard !field.isEmpty else { return Self(fields: []) }
+        var opened = field
+        opened["open"] = true
+        return Self(fields: [opened])
+    }
+
+    private init(fields: [[String: Any]]) {
+        openedDirectories = fields.filter { $0["open"] as? Bool == true }.count
+        matches = fields.reduce(0) { count, field in
+            count + ((field["matches"] as? [[String: Any]])?.count ?? 0)
+        }
+        let serialized = try? JSONSerialization.data(withJSONObject: fields, options: [.prettyPrinted, .sortedKeys])
+        report = serialized.flatMap { String(data: $0, encoding: .utf8) } ?? "[]"
+    }
+}
+
 func appearanceDiagnosticText(_ key: String) -> String {
     NSLocalizedString(key, tableName: "AppAppearanceDiagnostics", comment: "")
 }
@@ -83,6 +110,7 @@ private struct AppAppearanceInspectionView: View {
     let app: LaunchArtworkApp
     @State private var names: AppearanceNameEvidence?
     @State private var iconPNG: Data?
+    @State private var diskIconCache: DiskIconCacheEvidence?
     @State private var isReading = false
 
     private let device = SystemDeviceIdentitySource()
@@ -119,6 +147,14 @@ private struct AppAppearanceInspectionView: View {
                             Text(L("Unknown"))
                         }
                     }
+                    if let diskIconCache {
+                        LabeledContent(appearanceDiagnosticText("Readable icon cache directories"),
+                                       value: String(diskIconCache.openedDirectories))
+                        LabeledContent(appearanceDiagnosticText("Candidate records matching Bundle ID"),
+                                       value: String(diskIconCache.matches))
+                        Text(appearanceDiagnosticText("Candidate records require confirmation on the Home Screen."))
+                            .font(.caption).foregroundStyle(.secondary)
+                    }
                     ShareLink(item: evidenceText(names))
                 }
             } header: {
@@ -138,14 +174,16 @@ private struct AppAppearanceInspectionView: View {
         isReading = true
         names = nil
         iconPNG = nil
+        diskIconCache = nil
         defer { isReading = false }
         let bundleID = app.id
         let result = await Task.detached(priority: .userInitiated) {
-            AppearanceNameEvidence.inspect(bundleID)
+            (AppearanceNameEvidence.inspect(bundleID), DiskIconCacheEvidence.inspect(bundleID))
         }.value
         guard !Task.isCancelled else { return }
         iconPNG = GXCustomizationAccess.homeScreenIcon(for: bundleID)
-        names = result
+        diskIconCache = result.1
+        names = result.0
     }
 
     private func evidenceText(_ names: AppearanceNameEvidence) -> String {
@@ -159,7 +197,8 @@ private struct AppAppearanceInspectionView: View {
             "LaunchServices bundle name = \(names.bundleName ?? unknown)",
             "LaunchServices cache bytes = \(names.size.map(String.init) ?? unknown)",
             "LaunchServices cache SHA-256 = \(names.sha256 ?? unknown)",
-            "System icon PNG SHA-256 = \(iconPNG.map(GestaltFileStore.sha256Hex(of:)) ?? unknown)"
+            "System icon PNG SHA-256 = \(iconPNG.map(GestaltFileStore.sha256Hex(of:)) ?? unknown)",
+            "Disk icon cache candidates = \(diskIconCache?.report ?? unknown)"
         ].joined(separator: "\n")
     }
 }
