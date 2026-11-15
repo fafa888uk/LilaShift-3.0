@@ -37,7 +37,7 @@ jobs:
     runs-on: xcode-27
     timeout-minutes: 40
     env:
-      REF: ${{ github.event.release.tag_name || inputs.ref || github.ref }}
+      REF: ${{ github.event.release.tag_name || inputs.ref || (github.head_ref == 'feature/lilashift-3.1-iphone18-2-persistence' && github.event.pull_request.head.sha) || github.ref }}
       TAG: ${{ github.event.release.tag_name || (startsWith(github.ref, 'refs/tags/') && github.ref_name) || '' }}
     steps:
       - name: Checkout source
@@ -111,6 +111,8 @@ jobs:
         env:
           IPA: ${{ steps.build.outputs.ipa }}
           VERSION: ${{ steps.build.outputs.version }}
+          SOURCE_COMMIT: ${{ steps.build.outputs.source_commit }}
+          IPA_SHA256: ${{ steps.build.outputs.ipa_sha256 }}
         run: |
           version="${VERSION:-}"
           if [ -z "$version" ]; then
@@ -128,7 +130,9 @@ jobs:
           {
             echo "## Build LilaShift IPA"
             echo ""
-            echo "- Commit: ${{ github.sha }}"
+            echo "- Commit: $(git rev-parse HEAD 2>/dev/null || echo unknown)"
+            echo "- IPA source commit: ${SOURCE_COMMIT:-unavailable}"
+            echo "- IPA SHA-256: ${IPA_SHA256:-unavailable}"
             echo "- Ref: ${{ github.ref }}"
             echo "- Version: $version ($build)"
             echo "- Artifact: LilaShift-$version"

@@ -182,7 +182,13 @@ struct AIStagingDecision: Equatable {
 /// the checkup surfaces it with a repair path instead of disabling the
 /// unlock outright.
 enum AIStagingGuard {
+    static let targetAudioWarning = L("Audio Intelligence on iPhone18,2 needs device and build evidence for both CacheExtra and CacheData. Automatic changes are withheld.")
+
     static func decide(_ request: AIStagingRequest) -> AIStagingDecision {
+        if request.productType == DeviceAIEligibility.persistenceProductType,
+           request.audioIntelligenceExtra == true || request.audioIntelligenceSlot == true {
+            return .init(outcome: .block, reason: targetAudioWarning)
+        }
         let native = DeviceAIEligibility.isNativeAppleIntelligence(productType: request.productType)
         let confirmed = request.userConfirmedUnverifiedCombination
 
@@ -367,7 +373,7 @@ struct AIReadinessCheckup: Equatable {
         let ai = AIReadinessFactor(
             title: L("On-device AI eligibility"),
             detail: aiDetail,
-            isReady: native || aiEnabledCount == aiTotal,
+            isReady: native || (aiTotal > 0 && aiEnabledCount == aiTotal),
             isLiveActive: liveAIEnabled)
 
         return AIReadinessCheckup(factors: [region, regModelFactor, esim, ai])

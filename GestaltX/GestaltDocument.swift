@@ -327,6 +327,7 @@ struct DocumentSnapshot: @unchecked Sendable {
     var cachedOptionsOriginal: CachedOptionsOriginal?
     var wapiOriginal: WAPIOriginal?
     var ownershipVerified = false
+    var cacheFileIdentity: CacheFileIdentity?
     /// Where this snapshot's bytes came from. A live device snapshot is
     /// `.firstRead`, never factory state; a locally opened file is
     /// `.importedHistory`. A snapshot produced by writing is `.unknown`
@@ -480,13 +481,16 @@ actor GestaltFileStore {
         catch { eventSink("Access operation failed: " + error.localizedDescription); throw error }
     }
 
-    func loadDevice() throws -> DocumentSnapshot {
+    func loadDevice(maintainHistory: Bool = true) throws -> DocumentSnapshot {
         try withAccess {
-            let data = try Data(contentsOf: deviceURL)
+            let file = try FileHandle(forReadingFrom: deviceURL)
+            defer { try? file.close() }
+            let fileIdentity = CacheFileIdentity.read(descriptor: file.fileDescriptor)
+            let data = try file.readToEnd() ?? Data()
             eventSink("Read: \(data.count) bytes; validating plist")
             let document = try GestaltDocument(data: data)
-            let originals = try loadOriginals(for: document)
-            if try !backups().contains(where: { $0.source == .device && $0.deviceID == deviceID }) {
+            let originals = try loadOriginals(for: document, persistMigration: maintainHistory)
+            if maintainHistory, try !backups().contains(where: { $0.source == .device && $0.deviceID == deviceID }) {
                 // Fresh install or reinstall: try to recover the earliest
                 // known backup from the system vault before creating a fresh
                 // initial backup. The vault is best-effort redundancy,
@@ -527,7 +531,7 @@ actor GestaltFileStore {
             }
             return DocumentSnapshot(data: data, document: document, source: .device, name: "MobileGestalt",
                                     originals: originals.fields, cachedOptionsOriginal: originals.cachedOptions, wapiOriginal: originals.wapi,
-                                    provenance: .firstRead)
+                                    cacheFileIdentity: fileIdentity, provenance: .firstRead)
         }
     }
 
@@ -557,10 +561,10 @@ actor GestaltFileStore {
         return identity
     }
 
-    private func loadOriginals(for document: GestaltDocument) throws -> OriginalValues {
+    private func loadOriginals(for document: GestaltDocument, persistMigration: Bool = true) throws -> OriginalValues {
         guard FileManager.default.fileExists(atPath: originalsURL.path) else {
             let recovered = try recoverOriginals(from: document)
-            if !recovered.fields.isEmpty || recovered.cachedOptions != nil || recovered.wapi != nil {
+            if persistMigration, !recovered.fields.isEmpty || recovered.cachedOptions != nil || recovered.wapi != nil {
                 try saveOriginals(recovered, for: document)
             }
             return recovered
@@ -631,10 +635,10 @@ actor GestaltFileStore {
             }
             // Preserve the complete legacy record before updating either its
             // cache values or the fact that their original state is unavailable.
-            try archiveOriginals(data)
+            if persistMigration { try archiveOriginals(data) }
         }
         let state = OriginalValues(fields: originals, cachedOptions: audio, wapi: wapi, unavailableCacheOriginals: unavailable)
-        if needsMigration || migrateAudio || migrateWAPI { try saveOriginals(state, for: document) }
+        if persistMigration, needsMigration || migrateAudio || migrateWAPI { try saveOriginals(state, for: document) }
         return state
     }
 
@@ -980,6 +984,9 @@ actor GestaltFileStore {
         guard expected.source != .device || edited.preservesDeviceIdentity(of: expected.document) else {
             throw GestaltFailure("Device identity fields cannot be changed in the system plist. Open a local file to edit these fields.")
         }
+        if expected.source == .device {
+            try DeviceCacheOptions.validateTargetAudioEdit(from: expected.document, to: edited)
+        }
         if record == nil { try DeviceCacheOptions.validateEdit(from: expected.document, to: edited) }
         guard originallyAbsentKeys.allSatisfy({ edited.extra[$0] == nil }) else {
             throw GestaltFailure("The selected added fields must be removed before applying.")
@@ -1051,7 +1058,9 @@ actor GestaltFileStore {
             eventSink("Readback: verified")
             return DocumentSnapshot(data: readback, document: edited, source: .device, name: expected.name,
                                     originals: originals.fields, cachedOptionsOriginal: originals.cachedOptions,
-                                    wapiOriginal: originals.wapi, provenance: record?.provenance ?? .unknown)
+                                    wapiOriginal: originals.wapi,
+                                    cacheFileIdentity: writeData == nil ? expected.cacheFileIdentity : nil,
+                                    provenance: record?.provenance ?? .unknown)
         }
     }
 

@@ -701,7 +701,6 @@ private struct ChinaUnlockCard: View {
     }
 
     var body: some View {
-        let enabledAI = model.chinaUnlockEnabledAICapabilityIDs
         GlassCard(cornerRadius: GlassTokens.cardRadius, tint: heroTint) {
             VStack(alignment: GlassTokens.cardAlignment, spacing: GlassTokens.cardSpacing) {
             HStack(spacing: 12) {
@@ -720,7 +719,7 @@ private struct ChinaUnlockCard: View {
             // six AI presets: one-tap stages eSIM and region code
             // only, and the AI column below reads Native.
             if model.isNativeAppleIntelligence {
-                Text(L("Apple Intelligence is already enabled natively — one-tap stages eSIM and region code only."))
+                Text(L("Native Apple Intelligence hardware. One-tap stages eSIM and region code."))
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
@@ -736,16 +735,10 @@ private struct ChinaUnlockCard: View {
             DisclosureGroup {
                 VStack(alignment: .leading, spacing: 10) {
                     ForEach(ChinaUnlock.aiCapabilities) { capability in
-                        VStack(alignment: .leading, spacing: 3) {
-                            Label(
-                                L(capability.title),
-                                systemImage: enabledAI.contains(capability.id) ? "checkmark.circle.fill" : "circle"
-                            )
-                            .font(.subheadline.weight(.medium))
-                            .foregroundStyle(enabledAI.contains(capability.id) ? Color.green : .secondary)
-                            Text(L(capability.detail))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                        Text(L(capability.title)).font(.subheadline)
+                        ForEach(capability.keys, id: \.self) { key in
+                            Text(model.liveAIValues[key]?.display ?? L("Live status unknown"))
+                                .font(.caption).foregroundStyle(.secondary)
                         }
                     }
                 }
@@ -1074,7 +1067,7 @@ private struct AppleIntelligenceCheckupCard: View {
                                 Text(L("Apple Intelligence readiness"))
                                     .font(.headline)
                                     .foregroundStyle(.primary)
-                                Text(String(format: L("Ready %d/4"), checkup.readyCount))
+                                Text(String(format: L("Configuration checks %d/4"), checkup.readyCount))
                                     .font(.subheadline)
                                     .foregroundStyle(.secondary)
                             }
@@ -1134,7 +1127,7 @@ private struct AppleIntelligenceCheckupCard: View {
     private func liveStatusText(for factor: AIReadinessFactor) -> String {
         switch factor.isLiveActive {
         case true: return L("Live probe: on")
-        case false: return L("Live probe: off — restart to apply")
+        case false: return L("Live probe: off")
         case nil: return L("Live status unknown")
         }
     }
@@ -1611,7 +1604,8 @@ private struct PresetRow: View {
     @EnvironmentObject private var model: GestaltManager
 
     private var choice: PresetChoice { model.choices[capability.id] ?? .keep }
-    private var canEnable: Bool { capability.availableChoices.contains(.enable) }
+    private var restriction: String? { model.aiEnableRestriction(for: capability) }
+    private var canEnable: Bool { capability.availableChoices.contains(.enable) && restriction == nil }
 
     private enum Status { case pending, configured, unconfigured, keep, notRead }
     private var status: Status {
@@ -1628,7 +1622,7 @@ private struct PresetRow: View {
             title: L(capability.title),
             detail: L(capability.detail),
             caution: capability.caution,
-            effectHint: choice != .keep ? L(capability.effectHint) : nil,
+            effectHint: restriction ?? (choice != .keep ? L(capability.effectHint) : nil),
             statusText: statusText,
             statusTint: statusTint,
             actionTitle: status == .unconfigured ? L("Enable") : nil,
@@ -1659,7 +1653,7 @@ private struct PresetRow: View {
     private var optionsMenu: some View {
         Menu {
             Text(L(capability.effectHint))
-            ForEach(capability.availableChoices) { option in
+            ForEach(capability.availableChoices.filter { $0 != .enable || canEnable }) { option in
                 Button(L(optionTitle(option, for: capability))) { stage(option, for: capability) }
             }
             if model.canRestore(capability) {
@@ -1684,6 +1678,7 @@ private struct PresetRow: View {
     }
 
     private func stage(_ choice: PresetChoice, for capability: Capability) {
+        if choice == .enable && !canEnable { return }
         if capability.requiresEnableConfirmation, choice == .enable,
            model.choices[capability.id] != .enable {
             onStageInternalBuild()

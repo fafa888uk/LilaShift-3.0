@@ -297,6 +297,7 @@ struct DeviceProfile: Equatable, Sendable {
     let backupCount: Int
     let hasTrustedBackup: Bool
     let changeRecordCount: Int
+    var liveAICapabilityAnswers: [String: Bool] = [:]
 }
 
 /// A source of device identity facts. Implementations read what is

@@ -190,9 +190,12 @@ struct DeviceProfiler {
         // Live answers, following the GestaltManager pattern: the region
         // code as a string, Apple Intelligence from the "ai"
         // capability's first key. `nil` from the probe is unknown.
+        var liveAICapabilityAnswers: [String: Bool] = [:]
+        for key in ChinaUnlock.aiCapabilities.flatMap(\.keys) {
+            liveAICapabilityAnswers[key] = live.boolAnswer(for: key)
+        }
         let liveAIEnabled: ProfileValue<Bool>
-        if let aiKey = Capability.all.first(where: { $0.id == "ai" })?.keys.first,
-           let answer = live.boolAnswer(for: aiKey) {
+        if let answer = liveAICapabilityAnswers[ChinaUnlock.appleIntelligenceKey] {
             liveAIEnabled = .known(answer)
         } else {
             liveAIEnabled = .unknown(reason: liveUnknown)
@@ -214,7 +217,7 @@ struct DeviceProfiler {
             $0.provenance == .verifiedFactory || $0.provenance == .preModification
         }
 
-        return DeviceProfile(
+        var profile = DeviceProfile(
             productType: profileProductType,
             modelNumber: modelNumber,
             osVersion: osVersion,
@@ -232,6 +235,8 @@ struct DeviceProfiler {
             backupCount: records.count,
             hasTrustedBackup: hasTrustedBackup,
             changeRecordCount: changeRecordCount)
+        profile.liveAICapabilityAnswers = liveAICapabilityAnswers
+        return profile
     }
 }
 
@@ -455,7 +460,15 @@ enum FeatureEligibilityEvaluator {
         let productType = profile.productType.value ?? ""
         let isNativeHardware = profile.isNativeAppleIntelligence.value
             ?? (productType.isEmpty ? false : DeviceAIEligibility.isNativeAppleIntelligence(productType: productType))
-        let liveOn = (liveAIEnabled ?? profile.liveAIEnabled.value) == true
+        if isNativeHardware && featureID == "ai" {
+            return (.nativeSupported, L("Native Apple Intelligence hardware"))
+        }
+        if productType == DeviceAIEligibility.persistenceProductType && featureID == "audioIntelligence" {
+            return (.conflict, AIStagingGuard.targetAudioWarning)
+        }
+        guard let capability = Capability.all.first(where: { $0.id == featureID }) else {
+            return (.unknown, L("Unknown feature — eligibility cannot be determined."))
+        }
         // The caller's layout is authoritative; a nil layout stays nil
         // and fails closed in the slot checks below.
         let resolvedLayout = layout
@@ -467,9 +480,8 @@ enum FeatureEligibilityEvaluator {
         // proves the capability is natively present. A slot that does
         // not resolve is not agreement: it fails closed below, through
         // the guard.
-        if isNativeHardware, liveOn,
-           nativeSlotBaselinesAgree(productType: productType, document: document, layout: resolvedLayout) {
-            return (.nativeSupported, L("Native Apple Intelligence hardware"))
+        if isNativeHardware, capability.keys.allSatisfy({ profile.liveAICapabilityAnswers[$0] == true }) {
+            return (.nativeSupported, L("The device reports this capability."))
         }
 
         guard let snapshot = document else {
@@ -493,11 +505,11 @@ enum FeatureEligibilityEvaluator {
             break
         }
 
-        guard let capability = Capability.all.first(where: { $0.id == featureID }) else {
-            return (.unknown, L("Unknown feature — eligibility cannot be determined."))
+        if isNativeHardware {
+            return (.unknown, L("Individual capability availability remains unconfirmed."))
         }
         if capability.isEnabled(in: snapshot.document) {
-            return (.alreadyConfigured, L("Configured"))
+            return (.alreadyConfigured, L("Configured in the cache file"))
         }
         return (.eligibleToEnable, L(capability.effectHint))
     }
@@ -505,21 +517,6 @@ enum FeatureEligibilityEvaluator {
     /// Whether every native AdvAI slot baseline that exists for this
     /// product type agrees with the current slot value. A baseline with
     /// no resolvable slot is disagreement, never agreement.
-    private static func nativeSlotBaselinesAgree(
-        productType: String, document: DocumentSnapshot?,
-        layout: MobileGestaltCacheLayout?
-    ) -> Bool {
-        for key in [DeviceCacheOptions.audioIntelligenceKey,
-                    DeviceCacheOptions.personalTranslatorKey] {
-            guard let baseline = DeviceAIEligibility.nativeAdvAISlotValue(key: key, productType: productType) else {
-                continue
-            }
-            let current = document.flatMap { DeviceCacheOptions.advAISlotValue(key, in: $0.document, using: layout) }
-            guard current == baseline else { return false }
-        }
-        return true
-    }
-
     /// The guard request for staging `featureID`: the proposed value for
     /// the feature itself, the current staged values for the other
     /// guarded key, and the current slot values (staging never writes a

@@ -32,6 +32,11 @@ final class GestaltManager: ObservableObject {
     /// When the last successful read happened, or `nil` when no read
     /// has happened yet. Read-path state only.
     @Published private(set) var lastReadAt: Date?
+    @Published var deviceBaseline: DeviceBaseline?
+    @Published var devicePersistenceRead: DevicePersistenceRead?
+    @Published var persistenceWrite: PersistenceWrite?
+    @Published var persistenceError: String?
+    @Published var siriSettings = SiriSettingsObservation()
     @Published var message: String?
     @Published var needsRestart = false
     @Published var choices: [String: PresetChoice] = [:]
@@ -138,6 +143,9 @@ final class GestaltManager: ObservableObject {
     var previewValidationError: String? {
         guard let snapshot, let preview else { return nil }
         do {
+            if snapshot.source == .device {
+                try DeviceCacheOptions.validateTargetAudioEdit(from: snapshot.document, to: preview)
+            }
             try DeviceCacheOptions.validateEdit(from: snapshot.document, to: preview)
             return nil
         } catch {
@@ -191,6 +199,10 @@ final class GestaltManager: ObservableObject {
     private func failed(_ error: Error) { message = error.localizedDescription; log(error.localizedDescription) }
     private func accept(_ loaded: DocumentSnapshot) {
         snapshot = loaded; working = loaded.document
+        if loaded.source != .device {
+            devicePersistenceRead = nil
+            refreshLiveProbe()
+        }
         choices = [:]; regionID = "keep"; regionCodeID = "keep"; modelID = "keep"; changesName = false; subtype = 0
         userConfirmedUnverifiedAICombination = false
         cacheOptionChoice = .keep
@@ -221,6 +233,20 @@ final class GestaltManager: ObservableObject {
             return false
         }
         return DeviceAIEligibility.isNativeAppleIntelligence(productType: productType)
+    }
+
+    func aiEnableRestriction(for capability: Capability) -> String? {
+        guard ChinaUnlock.aiCapabilityIDs.contains(capability.id),
+              let productType = snapshot?.document.extra[GestaltKeys.productType] as? String else { return nil }
+        if productType == DeviceAIEligibility.persistenceProductType && capability.id == "audioIntelligence" {
+            return AIStagingGuard.targetAudioWarning
+        }
+        if isNativeAppleIntelligence && (capability.id == "ai" || capability.keys.allSatisfy({
+            liveAIValues[$0]?.capabilityBoolean == true
+        })) {
+            return L("Native Apple Intelligence hardware")
+        }
+        return nil
     }
 
     /// True while the full China Unlock is staged (not yet applied):
@@ -315,15 +341,16 @@ final class GestaltManager: ObservableObject {
     @Published var liveRegionCode: String?
     @Published var liveRegModel: String?
     @Published var liveAIEnabled: Bool?
+    @Published private(set) var liveAIValues: [String: PlistObservation] = [:]
 
     /// Refreshes the live probe answers. Read-only; safe to call from the
     /// checkup card's `onAppear`.
     func refreshLiveProbe() {
-        liveRegionCode = LiveGestaltProbe.queryString(GestaltKeys.regionCode)
-        liveRegModel = LiveGestaltProbe.queryString(GestaltKeys.modelNumber)
-        liveAIEnabled = Capability.all.first { $0.id == "ai" }.flatMap { capability in
-            capability.keys.first.flatMap { LiveGestaltProbe.queryBool($0) }
-        }
+        let answers = devicePersistenceRead?.liveProbeResults ?? [:]
+        liveRegionCode = answers[GestaltKeys.regionCode]?.value as? String
+        liveRegModel = answers[GestaltKeys.modelNumber]?.value as? String
+        liveAIValues = answers.filter { key, _ in ChinaUnlock.aiCapabilities.contains { $0.keys.contains(key) } }
+        liveAIEnabled = liveAIValues[ChinaUnlock.appleIntelligenceKey]?.capabilityBoolean
     }
 
     /// Slot and key conflicts on native-AI hardware, computed from the staged
@@ -391,7 +418,7 @@ final class GestaltManager: ObservableObject {
         guard audioIndex != nil || translatorIndex != nil else { return nil }
         let productType = document.extra[GestaltKeys.productType] as? String ?? ""
         var request = AIStagingRequest(productType: productType)
-        if proposedUnlock {
+        if proposedUnlock && !DeviceAIEligibility.isNativeAppleIntelligence(productType: productType) {
             request.audioIntelligenceExtra = true
             request.personalTranslatorExtra = true
         } else {
@@ -513,6 +540,9 @@ final class GestaltManager: ObservableObject {
     /// unlock card's path).
     @discardableResult
     func fixAIReadiness() -> Bool {
+        if (snapshot?.document.extra[GestaltKeys.productType] as? String) == DeviceAIEligibility.persistenceProductType {
+            return isChinaUnlockedInPreview ? false : stageChinaUnlock()
+        }
         var didSomething = false
         if repairAIConflicts() { didSomething = true }
         // Re-evaluate on the (possibly repaired) preview: a slot repaired
@@ -650,7 +680,7 @@ final class GestaltManager: ObservableObject {
     func stageChinaAIOnly() -> Bool {
         guard !isBusy else { return false }
         if isNativeAppleIntelligence {
-            let reason = L("Apple Intelligence is already enabled natively on this device — nothing to stage.")
+            let reason = L("This hardware supports Apple Intelligence. Check the individual system answers and Settings.")
             message = reason
             log(reason)
             return false
@@ -751,6 +781,7 @@ final class GestaltManager: ObservableObject {
     func restoreCacheOption() async {
         guard !isBusy, let before = snapshot, let pending = working else { return }
         isBusy = true
+        let boot = BootSession.current()
         defer { isBusy = false }
         do {
             var restored = before.document
@@ -761,6 +792,7 @@ final class GestaltManager: ObservableObject {
             } else {
                 logChanges(from: before.document, to: restored, prefix: "[restore-option] ")
                 result = try await files.commit(restored, expected: before)
+                observeVerifiedWrite(before: before, after: result, boot: boot)
                 needsRestart = result.source == .device
                 message = L(result.source == .device
                             ? "Write verified. Some features require a device restart."
@@ -798,6 +830,7 @@ final class GestaltManager: ObservableObject {
     func restoreCapability(_ capability: Capability) async {
         guard !isBusy, let before = snapshot, let pending = working else { return }
         isBusy = true
+        let boot = BootSession.current()
         defer { isBusy = false }
         do {
             var restored = before.document
@@ -810,6 +843,7 @@ final class GestaltManager: ObservableObject {
             } else {
                 for line in diffLines(before.document.extra, restored.extra) { log("[restore-field] " + line) }
                 result = try await files.commit(restored, expected: before, originallyAbsentKeys: absentKeys)
+                observeVerifiedWrite(before: before, after: result, boot: boot)
                 needsRestart = result.source == .device
                 message = L(result.source == .device ? "Original values restored." : "Local changes saved. Export the plist to keep a copy.")
             }
@@ -905,12 +939,16 @@ final class GestaltManager: ObservableObject {
     func connect(showErrorAlert: Bool = true) async {
         guard !isBusy else { return }
         isBusy = true; isReading = true; status = "Checking device access…"
+        devicePersistenceRead = nil
+        persistenceError = nil
+        refreshLiveProbe()
         log("[read] Starting MobileGestalt access")
         defer { isBusy = false; isReading = false }
         do {
-            let result = try await files.loadDevice()
+            let result = try await files.loadDevice(maintainHistory: false)
             accept(result); deviceAccessible = true; status = "Device connected"
             lastReadAt = Date()
+            observeDeviceRead(result)
             log("[read] plist: \(result.data.count) bytes")
             for line in summarize(result.document) { log("[read] " + line) }
             log(L("Device connected"))
@@ -963,7 +1001,7 @@ final class GestaltManager: ObservableObject {
         // Only a fresh read from the actual device path is a trusted fallback.
         // Previously imported documents and user-provided backups are never used.
         do {
-            let live = try await files.loadDevice()
+            let live = try await files.loadDevice(maintainHistory: false)
             trusted = try trusted.mergingTrusted(DevicePlistIdentity(properties: live.document.extra))
         } catch { throw DevicePlistIdentity.unavailable }
         try incoming.requireMatch(with: trusted)
@@ -1027,11 +1065,13 @@ final class GestaltManager: ObservableObject {
         guard canRestoreImportedPlist, let imported = snapshot else { return }
         isBusy = true; defer { isBusy = false }
         do {
+            let boot = BootSession.current()
             let live = try await files.loadDevice()
             let restored = try await files.restoreVerifiedImport(imported, expected: live)
             let changed = !restored.document.matches(live.document)
             accept(restored); needsRestart = needsRestart || changed
-            status = "Changes verified on device"
+            observeVerifiedWrite(before: live, after: restored, boot: boot)
+            status = "Device file write verified"
             message = changed ? L("Backup restored and verified.") + " " + L("Some changes require a device restart.")
                 : L("This backup already matches the device. No changes were made.")
             log("[restore] Verified imported document restored")
@@ -1092,6 +1132,7 @@ final class GestaltManager: ObservableObject {
         guard changeCount > 0 else { return }
         if changesName && modelName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { failed(GestaltFailure("Enter a model name before applying.")); return }
         isBusy = true
+        let boot = snapshot.source == .device ? BootSession.current() : nil
         defer { isBusy = false }
         do {
             log("[apply] source=\(snapshot.source.rawValue) fields=\(changeCount)")
@@ -1099,7 +1140,8 @@ final class GestaltManager: ObservableObject {
             let absentKeys = Set(Capability.all.filter { choices[$0.id] == .removeAdded }.flatMap(\.keys))
             let result = try await files.commit(edited, expected: snapshot, originallyAbsentKeys: absentKeys)
             accept(result); needsRestart = result.source == .device
-            status = result.source == .device ? "Changes verified on device" : "Local changes saved"
+            observeVerifiedWrite(before: snapshot, after: result, boot: boot)
+            status = result.source == .device ? "Device file write verified" : "Local changes saved"
             let changedCacheOption = !DeviceCacheOptions.changes(from: snapshot.document, to: edited).isEmpty
             message = L(result.source == .device
                         ? (changedCacheOption ? "Write verified. Some features require a device restart." : "Write verified. Some features require a device restart.")
@@ -1129,6 +1171,7 @@ final class GestaltManager: ObservableObject {
         }
         isBusy = true; defer { isBusy = false }
         do {
+            let boot = BootSession.current()
             let data = try await files.backupData(record)
             let restored = try GestaltDocument(data: data)
             log("[restore] \(record.filename) · \(record.byteCount) bytes · reason=\(record.reason)")
@@ -1136,6 +1179,7 @@ final class GestaltManager: ObservableObject {
             let result = try await files.commit(restored, expected: snapshot, restoring: record)
             let changed = !result.document.matches(snapshot.document)
             accept(result); needsRestart = result.source == .device && (needsRestart || changed)
+            observeVerifiedWrite(before: snapshot, after: result, boot: boot)
             message = L(result.source == .device
                         ? (changed ? "Backup restored and verified." : "This backup already matches the device. No changes were made.")
                         : "Backup opened as a local document.")

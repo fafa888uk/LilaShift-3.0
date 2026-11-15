@@ -25,7 +25,8 @@ final class PostModificationAcceptanceTests: XCTestCase {
         let record = regionRecord()
         let current = try CoreModuleFixtures.document(extra: [GestaltKeys.regionCode: "LL"])
         let report = PostModificationAcceptance.accept(
-            records: [record], current: current, restartConfirmed: true)
+            records: [record], current: current, liveValues: [record.key: .string("LL")],
+            restartEvidence: .verifiedBootChange)
         XCTAssertEqual(report.acceptedCount, 1)
         XCTAssertEqual(report.items.first?.outcome, .accepted)
         XCTAssertEqual(report.restartVerifiedCandidateIDs, [record.id])
@@ -38,7 +39,7 @@ final class PostModificationAcceptanceTests: XCTestCase {
         let record = regionRecord()
         let current = try CoreModuleFixtures.document()
         let report = PostModificationAcceptance.accept(
-            records: [record], current: current, restartConfirmed: true)
+            records: [record], current: current, restartEvidence: .verifiedBootChange)
         XCTAssertEqual(report.revertedCount, 1)
         XCTAssertEqual(report.items.first?.outcome, .reverted)
         XCTAssertEqual(report.revertedKeys, [GestaltKeys.regionCode])
@@ -67,9 +68,10 @@ final class PostModificationAcceptanceTests: XCTestCase {
             backupProvenance: .preModification, verified: true)
         let current = try CoreModuleFixtures.document(greenTea: false, notGreenTea: true)
         let report = PostModificationAcceptance.accept(
-            records: [greenTea, notGreenTea], current: current, restartConfirmed: true)
+            records: [greenTea, notGreenTea], current: current, restartEvidence: .verifiedBootChange)
         XCTAssertEqual(report.acceptedCount, 2)
-        XCTAssertEqual(Set(report.restartVerifiedCandidateIDs), [greenTea.id, notGreenTea.id])
+        XCTAssertEqual(report.filePersistedCount, 2)
+        XCTAssertTrue(report.restartVerifiedCandidateIDs.isEmpty)
     }
 
     /// A post-restart document whose layout cannot resolve leaves
@@ -114,14 +116,15 @@ final class PostModificationAcceptanceTests: XCTestCase {
         let record = regionRecord()
         let current = try CoreModuleFixtures.document(extra: [GestaltKeys.regionCode: "LL"])
         let unconfirmed = PostModificationAcceptance.accept(
-            records: [record], current: current, restartConfirmed: false)
+            records: [record], current: current, restartEvidence: .sameBoot)
         let confirmed = PostModificationAcceptance.accept(
-            records: [record], current: current, restartConfirmed: true)
-        XCTAssertTrue(unconfirmed.summary.contains("not confirmed restarted"),
-                      "Without a confirmed restart the summary must say so, got: \(unconfirmed.summary)")
-        XCTAssertFalse(confirmed.summary.contains("not confirmed restarted"))
-        XCTAssertEqual(unconfirmed.acceptedCount, confirmed.acceptedCount,
-                       "The counts are the same; only the claim differs")
+            records: [record], current: current, restartEvidence: .verifiedBootChange)
+        XCTAssertEqual(unconfirmed.restartEvidence, .sameBoot)
+        XCTAssertEqual(confirmed.restartEvidence, .verifiedBootChange)
+        XCTAssertEqual(unconfirmed.filePersistedCount, 0)
+        XCTAssertEqual(confirmed.filePersistedCount, 1)
+        XCTAssertEqual(confirmed.systemConfirmedCount, 0)
+        XCTAssertTrue(confirmed.restartVerifiedCandidateIDs.isEmpty)
     }
 
     // MARK: - Live values from the probe
@@ -183,6 +186,111 @@ final class PostModificationAcceptanceTests: XCTestCase {
         let fake = FakeLiveAnswers(bools: ["test-int-key": true], strings: [:])
         let values = PostModificationAcceptance.liveValues(for: [intRecord], using: fake)
         XCTAssertTrue(values.isEmpty, "An integer-valued key must not be read as a bool")
+    }
+
+    func testSixAIKeysAreProbedAndAcceptedIndependently() throws {
+        let keys = ChinaUnlock.aiCapabilities.flatMap(\.keys)
+        XCTAssertEqual(Set(keys).count, 6)
+        let records = keys.map(aiRecord)
+        let cache = try CoreModuleFixtures.document(extra: Dictionary(uniqueKeysWithValues: keys.map {
+            ($0, NSNumber(value: true))
+        }))
+        var queried = Set<String>()
+        let raw = LiveGestaltProbe.answers(for: Set(keys)) { key in
+            queried.insert(key)
+            if key == keys[0] { return PlistObservation(NSNumber(value: true)) }
+            if key == keys[1] { return PlistObservation(NSNumber(value: false)) }
+            if key == keys[2] { return PlistObservation(NSNumber(value: 1)) }
+            return nil
+        }
+        XCTAssertEqual(queried, Set(keys))
+        let values = raw.compactMapValues { $0.value.flatMap(ChangeValue.fromPlistValue) }
+        let report = PostModificationAcceptance.accept(records: records, current: cache,
+                                                       liveValues: values, restartEvidence: .verifiedBootChange)
+        XCTAssertEqual(report.items.map(\.status), [
+            .systemConfirmed, .systemDisagrees, .systemConfirmed, .filePersisted, .filePersisted, .filePersisted
+        ])
+        XCTAssertEqual(report.filePersistedCount, 6)
+        XCTAssertEqual(report.systemConfirmedCount, 2)
+        XCTAssertEqual(report.systemDisagreesCount, 1)
+        XCTAssertEqual(report.restartVerifiedCandidateIDs, [records[0].id, records[2].id])
+    }
+
+    func testErrorStateAndManualRestartCannotConfirmSystem() throws {
+        let record = aiRecord(ChinaUnlock.appleIntelligenceKey)
+        let current = try CoreModuleFixtures.document(extra: [record.key: NSNumber(value: true)])
+        let answer = [record.key: ChangeValue.bool(true)]
+        let failed = PostModificationAcceptance.accept(records: [record], current: nil, liveValues: answer,
+                                                       restartEvidence: .verifiedBootChange)
+        let manual = PostModificationAcceptance.accept(records: [record], current: current, liveValues: answer,
+                                                       restartEvidence: .manualWithFreshRead)
+        let otherBuild = PostModificationAcceptance.accept(records: [record], current: current, liveValues: answer,
+                                                           restartEvidence: .verifiedBootChange, sameBuild: false)
+        XCTAssertEqual(failed.items.first?.status, .unknown)
+        XCTAssertEqual(manual.items.first?.status, .filePersisted)
+        XCTAssertEqual(otherBuild.items.first?.status, .unknown)
+        XCTAssertTrue([failed, manual, otherBuild].allSatisfy { $0.restartVerifiedCandidateIDs.isEmpty })
+    }
+
+    func testBootSessionRequiresFreshReadAndBootAfterWrite() {
+        let before = BootSession(seconds: 100, microseconds: 0)
+        let after = BootSession(seconds: 200, microseconds: 0)
+        let write = Date(timeIntervalSince1970: 150)
+        let read = Date(timeIntervalSince1970: 210)
+        XCTAssertEqual(RestartEvidence.compare(before: before, after: after, referenceDate: write,
+                                               readAt: read, manual: false), .verifiedBootChange)
+        XCTAssertEqual(RestartEvidence.compare(before: before, after: before, referenceDate: write,
+                                               readAt: read, manual: true), .sameBoot)
+        XCTAssertEqual(RestartEvidence.compare(before: before, after: after, referenceDate: write,
+                                               readAt: write, manual: true), .noFreshRead)
+        XCTAssertEqual(RestartEvidence.compare(before: nil, after: after, referenceDate: write,
+                                               readAt: read, manual: true), .manualWithFreshRead)
+    }
+
+    func testCacheUUIDChangeAloneDoesNotProveRebuild() throws {
+        let before = try StandalonePresetsTests.fixture()
+        let after = try StandalonePresetsTests.fixture(cacheUUID: UUID().uuidString)
+        func fingerprint(_ document: GestaltDocument, inode: UInt64) throws -> CacheFingerprint {
+            CacheFingerprint(snapshot: DocumentSnapshot(data: try document.encoded(), document: document,
+                source: .local, name: "fixture", cacheFileIdentity: CacheFileIdentity(inode: inode,
+                    birthSeconds: Int64(inode), birthMicroseconds: 0)), osBuild: "test")
+        }
+        let original = try fingerprint(before, inode: 1)
+        let uuidOnly = try original.compare(to: fingerprint(after, inode: 1))
+        let replaced = try original.compare(to: fingerprint(after, inode: 2))
+        XCTAssertTrue(uuidOnly.uuidChanged)
+        XCTAssertTrue(uuidOnly.layoutResolutionChanged)
+        XCTAssertFalse(uuidOnly.layoutChanged)
+        XCTAssertFalse(uuidOnly.rebuildEvidence)
+        XCTAssertTrue(replaced.rebuildEvidence)
+    }
+
+    func testSiriBetaRegionAndLanguagesAreIndependentOfMG() {
+        var settings = SiriSettingsObservation()
+        settings.appleAccountRegion = "CN"
+        settings.siriLanguage = "en-US"
+        settings.appleIntelligenceEnabled = true
+        settings.betaEntry = true
+        settings.betaEnabled = true
+        settings.voiceConfigured = true
+        settings.modelDownloaded = true
+        func status(_ settings: SiriSettingsObservation) -> SiriBetaStatus.Outcome {
+            SiriBetaStatus(nativeHardware: true, osVersion: "27.0", deviceLanguage: "en-US", settings: settings).outcome
+        }
+        XCTAssertEqual(status(settings), .unsupportedRegion)
+        settings.appleAccountRegion = ""
+        XCTAssertEqual(status(settings), .pendingConfirmation)
+        settings.appleAccountRegion = "US"
+        settings.siriLanguage = "zh-CN"
+        XCTAssertEqual(status(settings), .unsupportedLanguage)
+        settings.siriLanguage = "en-US"
+        XCTAssertEqual(status(settings), .readyInSettings)
+    }
+
+    private func aiRecord(_ key: String) -> RecordedChange {
+        RecordedChange(id: UUID(), date: .distantPast, deviceID: "test", osBuild: "test",
+                       featureID: "ai", key: key, layer: .cacheExtra, original: .absent, new: .bool(true),
+                       backupProvenance: .preModification, verified: true)
     }
 
     // MARK: - Helpers

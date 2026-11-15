@@ -22,6 +22,20 @@
 // records, and only for records whose items all accepted.
 import Foundation
 
+enum AcceptanceStatus: String, Equatable, Sendable {
+    case filePersisted, systemConfirmed, systemDisagrees, revertedAfterRestart, unknown, unsupported
+
+    var title: String {
+        switch self {
+        case .filePersisted: L("File value persisted")
+        case .systemConfirmed: L("System answer confirmed")
+        case .systemDisagrees: L("System answer disagrees")
+        case .revertedAfterRestart: L("File value reverted after restart")
+        case .unknown: L("Unknown")
+        case .unsupported: L("Live query unsupported for this layer")
+        }
+    }
+}
 // MARK: - Outcomes
 
 /// What the post-restart re-read says about one modification.
@@ -43,7 +57,7 @@ enum AcceptanceOutcome: String, Equatable, Sendable {
 
     var title: String {
         switch self {
-        case .accepted: return L("Accepted")
+        case .accepted: return L("File matches target")
         case .reverted: return L("Reverted")
         case .changed: return L("Changed")
         case .unreadable: return L("Unreadable")
@@ -77,6 +91,19 @@ struct AcceptanceItem: Equatable, Identifiable, Sendable {
     let outcome: AcceptanceOutcome
     let liveValue: ChangeValue?
     let liveAgrees: Bool?
+    let restartEvidence: RestartEvidence
+
+    var filePersisted: Bool { restartEvidence.hasPostRestartRead && outcome == .accepted }
+    var revertedAfterRestart: Bool { restartEvidence.hasPostRestartRead && outcome == .reverted }
+    var systemConfirmed: Bool { restartEvidence == .verifiedBootChange && liveAgrees == true }
+    var systemDisagrees: Bool { restartEvidence.hasPostRestartRead && liveAgrees == false }
+    var status: AcceptanceStatus {
+        if revertedAfterRestart { return .revertedAfterRestart }
+        if systemDisagrees { return .systemDisagrees }
+        if systemConfirmed { return .systemConfirmed }
+        if filePersisted { return .filePersisted }
+        return layer == .cacheExtra ? .unknown : .unsupported
+    }
 }
 
 /// The acceptance report for one re-read. `restartVerifiedCandidateIDs`
@@ -95,13 +122,17 @@ struct AcceptanceReport: Equatable, Sendable {
     /// restarted after the changes were applied. Without a restart
     /// the file values say nothing about whether the system took
     /// the change, and the summary says so.
-    let restartConfirmed: Bool
+    let restartEvidence: RestartEvidence
+    var restartConfirmed: Bool { restartEvidence == .verifiedBootChange }
+    var filePersistedCount: Int { items.filter(\.filePersisted).count }
+    var systemConfirmedCount: Int { items.filter(\.systemConfirmed).count }
+    var systemDisagreesCount: Int { items.filter(\.systemDisagrees).count }
     let revertedKeys: [String]
     let restartVerifiedCandidateIDs: [UUID]
     let summary: String
 
     /// The disclaimer every display of this report must carry.
-    static let disclaimer = L("Only fields that were re-read after a restart are claimed accepted. A value in the file does not prove the system uses it.")
+    static let disclaimer = L("File persistence, system answers and feature availability require separate evidence.")
 }
 
 // MARK: - Acceptance
@@ -121,7 +152,8 @@ enum PostModificationAcceptance {
         records: [RecordedChange],
         current: GestaltDocument?,
         liveValues: [String: ChangeValue] = [:],
-        restartConfirmed: Bool = false
+        restartEvidence: RestartEvidence = .unknown,
+        sameBuild: Bool = true
     ) -> AcceptanceReport {
         let layout = current.flatMap { try? MobileGestaltCacheLayout.resolve(in: $0) }
         var items: [AcceptanceItem] = []
@@ -141,8 +173,8 @@ enum PostModificationAcceptance {
             } else {
                 outcome = .unreadable
             }
-            let liveValue = liveValues[record.key]
-            let liveAgrees = liveValue.map { $0 == record.new }
+            let liveValue = record.layer == .cacheExtra && current != nil ? liveValues[record.key] : nil
+            let liveAgrees = liveValue.flatMap { liveAgreement($0, target: record.new) }
             items.append(AcceptanceItem(
                 recordID: record.id,
                 key: record.key,
@@ -150,33 +182,62 @@ enum PostModificationAcceptance {
                 layer: record.layer,
                 original: record.original, target: record.new,
                 current: currentValue, outcome: outcome,
-                liveValue: liveValue, liveAgrees: liveAgrees))
+                liveValue: liveValue, liveAgrees: liveAgrees,
+                restartEvidence: sameBuild ? restartEvidence : .unknown))
         }
         let accepted = items.filter { $0.outcome == .accepted }.count
         let reverted = items.filter { $0.outcome == .reverted }.count
         let changed = items.filter { $0.outcome == .changed }.count
         let unreadable = items.filter { $0.outcome == .unreadable }.count
         let notReRead = items.filter { $0.outcome == .notReRead }.count
-        let revertedKeys = items.filter { $0.outcome == .reverted }.map(\.key)
-        let candidateIDs = records.filter { record in
-            items.contains { $0.recordID == record.id && $0.outcome == .accepted }
-        }.map(\.id)
-        let summary: String
-        if current == nil {
-            summary = L("No post-restart document has been read. Nothing is claimed accepted.")
-        } else if !restartConfirmed {
-            summary = String(format: L("%d of %d fields hold the staged value, but the device was not confirmed restarted."), accepted, items.count)
-        } else if reverted > 0 {
-            summary = String(format: L("%d of %d fields accepted after restart; %d reverted."), accepted, items.count, reverted)
-        } else {
-            summary = String(format: L("%d of %d fields accepted after restart."), accepted, items.count)
+        let revertedKeys = items.filter(\.revertedAfterRestart).map(\.key)
+        let candidateIDs = zip(records, items).compactMap { record, item in
+            record.verified && record.original != record.new && item.filePersisted && item.systemConfirmed
+                ? record.id : nil
         }
+        let summary = sameBuild ? restartEvidence.label : L("iOS build changed. Review these observations on the new build.")
         return AcceptanceReport(
             items: items, acceptedCount: accepted, revertedCount: reverted,
             changedCount: changed, unreadableCount: unreadable, notReReadCount: notReRead,
-            generatedAt: Date(), restartConfirmed: restartConfirmed,
+            generatedAt: Date(), restartEvidence: restartEvidence,
             revertedKeys: revertedKeys, restartVerifiedCandidateIDs: candidateIDs,
             summary: summary)
+    }
+
+    private static func liveAgreement(_ value: ChangeValue, target: ChangeValue) -> Bool? {
+        if value == target { return true }
+        switch (value, target) {
+        case (.bool(let flag), .int(let number)), (.int(let number), .bool(let flag)):
+            guard number == 0 || number == 1 else { return nil }
+            return number == (flag ? 1 : 0)
+        case (.bool, .bool), (.int, .int), (.string, .string), (.data, .data):
+            return false
+        default:
+            return nil
+        }
+    }
+
+    static func records(before: DocumentSnapshot, after: DocumentSnapshot,
+                        deviceID: String, build: String, date: Date) -> [RecordedChange] {
+        let priorLayout = try? MobileGestaltCacheLayout.resolve(in: before.document)
+        let currentLayout = try? MobileGestaltCacheLayout.resolve(in: after.document)
+        let layers: [(ChangeLayer, Set<String>)] = [
+            (.cacheExtra, Set(before.document.extra.keys).union(after.document.extra.keys)),
+            (.artwork, Set(before.document.artwork.keys).union(after.document.artwork.keys)),
+            (.cacheData, [DeviceCacheOptions.greenTeaKey, DeviceCacheOptions.notGreenTeaKey, DeviceCacheOptions.wapiKey,
+                          DeviceCacheOptions.audioIntelligenceKey, DeviceCacheOptions.personalTranslatorKey])
+        ]
+        return layers.flatMap { layer, keys in
+            keys.sorted().compactMap { key in
+                guard let original = readValue(key: key, layer: layer, in: before.document, using: priorLayout),
+                      let new = readValue(key: key, layer: layer, in: after.document, using: currentLayout),
+                      original != new else { return nil }
+                let feature = Capability.all.first(where: { $0.keys.contains(key) })?.id ?? key
+                return RecordedChange(id: UUID(), date: date, deviceID: deviceID, osBuild: build,
+                                      featureID: feature, key: key, layer: layer, original: original,
+                                      new: new, backupProvenance: .preModification, verified: true)
+            }
+        }
     }
 
     /// Builds live-probe values for the recorded changes' CacheExtra
@@ -225,14 +286,19 @@ enum PostModificationAcceptance {
         _ change: RecordedChange, in document: GestaltDocument,
         using layout: MobileGestaltCacheLayout?
     ) -> ChangeValue? {
-        switch change.layer {
+        readValue(key: change.key, layer: change.layer, in: document, using: layout)
+    }
+
+    private static func readValue(key: String, layer: ChangeLayer, in document: GestaltDocument,
+                                  using layout: MobileGestaltCacheLayout?) -> ChangeValue? {
+        switch layer {
         case .cacheExtra:
-            return ChangeValue.fromPlistValue(document.extra[change.key])
+            return ChangeValue.fromPlistValue(document.extra[key])
         case .artwork:
-            return ChangeValue.fromPlistValue(document.artwork[change.key])
+            return ChangeValue.fromPlistValue(document.artwork[key])
         case .cacheData:
             guard let layout else { return nil }
-            switch change.key {
+            switch key {
             case DeviceCacheOptions.greenTeaKey:
                 return (try? DeviceCacheOptions.flags(in: document, using: layout)).map { .bool($0.greenTea) }
             case DeviceCacheOptions.notGreenTeaKey:
@@ -240,7 +306,7 @@ enum PostModificationAcceptance {
             case DeviceCacheOptions.wapiKey:
                 return (try? DeviceCacheOptions.wapi(in: document, using: layout)).map(ChangeValue.bool)
             case DeviceCacheOptions.audioIntelligenceKey, DeviceCacheOptions.personalTranslatorKey:
-                return DeviceCacheOptions.advAISlotValue(change.key, in: document, using: layout)
+                return DeviceCacheOptions.advAISlotValue(key, in: document, using: layout)
                     .map(ChangeValue.bool)
             default:
                 return nil

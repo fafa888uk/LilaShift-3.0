@@ -52,6 +52,12 @@ cp -R "$root/build/Release-iphoneos/GestaltX.app" "$stage/Payload/"
 app="$stage/Payload/GestaltX.app"
 appex="$app/PlugIns/GestaltXShare.appex"
 
+source_commit="$(git rev-parse HEAD)"
+/usr/libexec/PlistBuddy -c "Add :LilaShiftGitCommit string $source_commit" "$app/Info.plist"
+if [[ -d "$appex" ]]; then
+  /usr/libexec/PlistBuddy -c "Add :LilaShiftGitCommit string $source_commit" "$appex/Info.plist"
+fi
+
 echo "==> Signing with entitlements"
 # Sign nested code from the inside out: frameworks and dylibs, then the
 # extension, then the app
@@ -99,6 +105,8 @@ echo "==> Wrote $ipa"
 if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
   {
     echo "version=$version"
+    echo "source_commit=$source_commit"
+    echo "ipa_sha256=$(shasum -a 256 "$ipa" | cut -d' ' -f1)"
     echo "ipa=$ipa"
   } >> "$GITHUB_OUTPUT"
 fi
