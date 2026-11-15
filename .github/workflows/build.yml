@@ -102,3 +102,36 @@ jobs:
           [[ -f CHANGELOG.md ]] && assets+=("CHANGELOG.md")
           [[ -f CHANGELOG_ZH-CN.md ]] && assets+=("CHANGELOG_ZH-CN.md")
           gh release upload "$TAG" "${assets[@]}" --clobber
+
+      - name: Publish job summary
+        # Writes a short summary (SHA, version, artifact) to the run
+        # page. Never fails the job: every lookup is guarded and falls
+        # back to "unknown" / "not parsed".
+        if: always()
+        env:
+          IPA: ${{ steps.build.outputs.ipa }}
+          VERSION: ${{ steps.build.outputs.version }}
+        run: |
+          version="${VERSION:-}"
+          if [ -z "$version" ]; then
+            version="$(sed -n 's/^[[:space:]]*MARKETING_VERSION = \(.*\);/\1/p' GestaltX.xcodeproj/project.pbxproj | sort -u || true)"
+          fi
+          build="$(sed -n 's/^[[:space:]]*CURRENT_PROJECT_VERSION = \(.*\);/\1/p' GestaltX.xcodeproj/project.pbxproj | sort -u || true)"
+          [ -n "$version" ] || version="unknown"
+          [ -n "$build" ] || build="unknown"
+          ipa_file="LilaShift_${version}.ipa"
+          size="not parsed"
+          if [ -n "${IPA:-}" ] && [ -f "$IPA" ]; then
+            size="$(stat -f%z "$IPA" 2>/dev/null || true)"
+            [ -n "$size" ] || size="not parsed"
+          fi
+          {
+            echo "## Build LilaShift IPA"
+            echo ""
+            echo "- Commit: ${{ github.sha }}"
+            echo "- Ref: ${{ github.ref }}"
+            echo "- Version: $version ($build)"
+            echo "- Artifact: LilaShift-$version"
+            echo "- IPA file: $ipa_file ($size bytes)"
+            echo "- Conclusion: ${{ job.status }}"
+          } >> "$GITHUB_STEP_SUMMARY" || true
