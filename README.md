@@ -14,7 +14,9 @@
 > restore have **not** been verified on a real iPhone for this build — see
 > [What is verified](#what-is-verified-and-what-is-not).
 
-[![Version](https://img.shields.io/badge/version-3.0.0--rc.1%20pre--release-purple)](https://github.com/fafa920q-hue/LilaShift-2.0/releases/tag/v3.0.0-rc.1)
+[![Version](https://img.shields.io/badge/version-3.1.0--draft-purple)](https://github.com/fafa920q-hue/LilaShift-2.0/pull/19)
+
+The 3.1.0 development build is available as a Draft PR CI artifact. The public download below is the 3.0 RC.
 [![Build LilaShift IPA](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/build.yml/badge.svg)](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/build.yml)
 [![Run Swift Tests](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/run-swift-tests.yml/badge.svg)](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/run-swift-tests.yml)
 [![Check Licenses](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/check-licenses.yml/badge.svg)](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/check-licenses.yml)

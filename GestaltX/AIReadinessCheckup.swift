@@ -182,7 +182,7 @@ struct AIStagingDecision: Equatable {
 /// the checkup surfaces it with a repair path instead of disabling the
 /// unlock outright.
 enum AIStagingGuard {
-    static let targetAudioWarning = L("Audio Intelligence on iPhone18,2 needs device and build evidence for both CacheExtra and CacheData. Automatic changes are withheld.")
+    static let targetAudioWarning = persistenceText("Audio Intelligence on iPhone18,2 needs device and build evidence for both CacheExtra and CacheData. Automatic changes are withheld.")
 
     static func decide(_ request: AIStagingRequest) -> AIStagingDecision {
         if request.productType == DeviceAIEligibility.persistenceProductType,

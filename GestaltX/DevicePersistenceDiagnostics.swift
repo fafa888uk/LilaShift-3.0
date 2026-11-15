@@ -12,7 +12,7 @@ extension GestaltManager {
         guard FileManager.default.fileExists(atPath: url.path) else { return nil }
         do { return try JSONDecoder().decode(type, from: Data(contentsOf: url)) }
         catch {
-            persistenceError = L("Saved persistence evidence could not be read.")
+            persistenceError = persistenceText("Saved persistence evidence could not be read.")
             return nil
         }
     }
@@ -25,7 +25,7 @@ extension GestaltManager {
             try JSONEncoder().encode(value).write(to: url, options: .atomic)
             return true
         } catch {
-            persistenceError = L("Persistence evidence could not be saved.")
+            persistenceError = persistenceText("Persistence evidence could not be saved.")
             return false
         }
     }
@@ -34,7 +34,7 @@ extension GestaltManager {
         let identity = SystemDeviceIdentitySource()
         let fingerprint = CacheFingerprint(snapshot: snapshot, osBuild: identity.osBuild)
         guard let productType = fingerprint.productType, productType == identity.productType else {
-            persistenceError = L("The cache product type could not be matched to this device.")
+            persistenceError = persistenceText("The cache product type could not be matched to this device.")
             return
         }
 

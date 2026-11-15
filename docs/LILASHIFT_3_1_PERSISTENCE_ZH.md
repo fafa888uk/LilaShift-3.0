@@ -6,12 +6,12 @@
 
 | 包 | 对应源码 | IPA SHA-256 |
 | --- | --- | --- |
-| 公开 `v3.0.0-rc.1` | `c709ae84a697a82a2a4d51c7336e0d12d9f4d903`，tag 和构建来源 | `ce3207e5d233b6da8a958545ca77974440d98f6338bb2e3a37f514294acc9ae2` |
+| 公开 `v3.0.0-rc.1` | `c709ae84a697a82a2a4d51c7336e0d12d9f4d903`，tag 和 release 事件的构建来源 | `ce3207e5d233b6da8a958545ca77974440d98f6338bb2e3a37f514294acc9ae2` |
 | 历史本地测试包 `fc022893` | `fc0228932b895dfc63029e5ac3ba4dbab2f3a425`，历史 Actions 归属 | `1d51fe73e189c2f9c4b08d5d02da7a2801bf0f416ca67ae2751703bdc2b37415` |
 | 历史本地测试包 `faa9426f` | `faa9426f50a0fa862f879f9ead23362883f683b4`，历史 Actions 归属 | `51a60b8d4fbb8d4c25ad381fc3b1b58a6404ac5243edd94b7aec7ddb497d77fe` |
 | 本专项 CI 测试包 | `3.1.0 (31000001)`，实际 SHA 写入两个 bundle 的 `LilaShiftGitCommit` | 从 Draft PR 对应的 Build IPA job 摘要与下载的 IPA 原件核对 |
 
-[公开 RC 与 GitHub 资产](https://github.com/fafa920q-hue/LilaShift-2.0/releases/tag/v3.0.0-rc.1) · [公开 RC 对应源码](https://github.com/fafa920q-hue/LilaShift-2.0/tree/c709ae84a697a82a2a4d51c7336e0d12d9f4d903) · [main 的测试基线](https://github.com/fafa920q-hue/LilaShift-2.0/actions/runs/43710108428) · [历史协作包构建](https://github.com/fafa920q-hue/LilaShift-2.0/actions/runs/43611895984)
+[公开 RC 与 GitHub 资产](https://github.com/fafa920q-hue/LilaShift-2.0/releases/tag/v3.0.0-rc.1) · [公开 RC 对应源码](https://github.com/fafa920q-hue/LilaShift-2.0/tree/c709ae84a697a82a2a4d51c7336e0d12d9f4d903) · [公开 RC 的打包与签名检查](https://github.com/fafa920q-hue/LilaShift-2.0/actions/runs/43670996198) · [main 的测试基线](https://github.com/fafa920q-hue/LilaShift-2.0/actions/runs/43710108428) · [历史协作包构建](https://github.com/fafa920q-hue/LilaShift-2.0/actions/runs/43611895984)
 
 ## 根因
 
@@ -58,8 +58,8 @@
 - 基线与观察：`DeviceBaseline.swift`、`DevicePersistenceDiagnostics.swift`、`GestaltDocument.swift`、`GestaltManager.swift`、`LiveGestaltProbe.swift`。
 - 资格、分层和自动写入：`DeviceAIEligibility.swift`、`Capabilities.swift`、`AIReadinessCheckup.swift`、`DeviceCacheOptions.swift`、`LilaIntelligence.swift`、`LilaIntelligenceCore.swift`。
 - 真机诊断、Siri UI、验收：`SiriBetaStatus.swift`、`ContentView.swift`、`PostModificationAcceptance.swift`、`PostModificationAcceptanceViews.swift`、`SmartFaultDiagnosis.swift`、`SmartFaultDiagnosisViews.swift`。
-- XCTest：`StandalonePresetsTests.swift`、`PostModificationAcceptanceTests.swift`、`LilaIntelligenceTests.swift`、`SmartFaultDiagnosisTests.swift`。覆盖原生资格、无冗余写入、单键写入、按键探测、文件和系统分歧、重启回退、UUID、无实时回答、Siri 原样保留、地区/语言、重启证据和错误。
-- 构建：`.github/scripts/build-ipa.sh`、`.github/workflows/build.yml`、`GestaltX.xcodeproj/project.pbxproj`。单元测试和产物校验的实际结果见 Draft PR 对应 Actions。模拟器任务验证实现和 fixtures，A3527 真机步骤单独留证。
+- XCTest：`StandalonePresetsTests.swift`、`PostModificationAcceptanceTests.swift`、`LilaIntelligenceTests.swift`、`SmartFaultDiagnosisTests.swift`。Python 检查包含专项英中双语诊断表、原有本地化和许可测试。新增诊断在其他界面语言回落英语。XCTest 覆盖原生资格、无冗余写入、单键写入、按键探测、文件和系统分歧、重启回退、UUID、无实时回答、Siri 原样保留、地区/语言、重启证据和错误。
+- 构建：`.github/scripts/build-ipa.sh`、`.github/workflows/build.yml`、`GestaltX.xcodeproj/project.pbxproj`。单元测试和产物校验的实际结果见 [Draft PR #19](https://github.com/fafa920q-hue/LilaShift-2.0/pull/19) 对应 Actions。模拟器任务验证实现和 fixtures，A3527 真机步骤单独留证。
 
 ## 未决
 

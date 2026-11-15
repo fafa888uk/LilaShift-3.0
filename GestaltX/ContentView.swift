@@ -719,7 +719,7 @@ private struct ChinaUnlockCard: View {
             // six AI presets: one-tap stages eSIM and region code
             // only, and the AI column below reads Native.
             if model.isNativeAppleIntelligence {
-                Text(L("Native Apple Intelligence hardware. One-tap stages eSIM and region code."))
+                Text(persistenceText("Native Apple Intelligence hardware. One-tap stages eSIM and region code."))
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
@@ -1067,7 +1067,7 @@ private struct AppleIntelligenceCheckupCard: View {
                                 Text(L("Apple Intelligence readiness"))
                                     .font(.headline)
                                     .foregroundStyle(.primary)
-                                Text(String(format: L("Configuration checks %d/4"), checkup.readyCount))
+                                Text(String(format: persistenceText("Configuration checks %d/4"), checkup.readyCount))
                                     .font(.subheadline)
                                     .foregroundStyle(.secondary)
                             }
@@ -1127,7 +1127,7 @@ private struct AppleIntelligenceCheckupCard: View {
     private func liveStatusText(for factor: AIReadinessFactor) -> String {
         switch factor.isLiveActive {
         case true: return L("Live probe: on")
-        case false: return L("Live probe: off")
+        case false: return persistenceText("Live probe: off")
         case nil: return L("Live status unknown")
         }
     }

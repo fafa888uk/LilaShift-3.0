@@ -680,7 +680,7 @@ final class GestaltManager: ObservableObject {
     func stageChinaAIOnly() -> Bool {
         guard !isBusy else { return false }
         if isNativeAppleIntelligence {
-            let reason = L("This hardware supports Apple Intelligence. Check the individual system answers and Settings.")
+            let reason = persistenceText("This hardware supports Apple Intelligence. Check the individual system answers and Settings.")
             message = reason
             log(reason)
             return false
@@ -1071,7 +1071,7 @@ final class GestaltManager: ObservableObject {
             let changed = !restored.document.matches(live.document)
             accept(restored); needsRestart = needsRestart || changed
             observeVerifiedWrite(before: live, after: restored, boot: boot)
-            status = "Device file write verified"
+            status = persistenceText("Device file write verified")
             message = changed ? L("Backup restored and verified.") + " " + L("Some changes require a device restart.")
                 : L("This backup already matches the device. No changes were made.")
             log("[restore] Verified imported document restored")
@@ -1141,7 +1141,7 @@ final class GestaltManager: ObservableObject {
             let result = try await files.commit(edited, expected: snapshot, originallyAbsentKeys: absentKeys)
             accept(result); needsRestart = result.source == .device
             observeVerifiedWrite(before: snapshot, after: result, boot: boot)
-            status = result.source == .device ? "Device file write verified" : "Local changes saved"
+            status = result.source == .device ? persistenceText("Device file write verified") : "Local changes saved"
             let changedCacheOption = !DeviceCacheOptions.changes(from: snapshot.document, to: edited).isEmpty
             message = L(result.source == .device
                         ? (changedCacheOption ? "Write verified. Some features require a device restart." : "Write verified. Some features require a device restart.")

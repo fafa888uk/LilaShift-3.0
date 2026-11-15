@@ -13,7 +13,9 @@
 > 本版在真机上的安装、eSIM 开通、Apple Intelligence 开通与还原均**未验证**——见
 > [验证情况](#验证情况)。
 
-[![Version](https://img.shields.io/badge/version-3.0.0--rc.1%20pre--release-purple)](https://github.com/fafa920q-hue/LilaShift-2.0/releases/tag/v3.0.0-rc.1)
+[![Version](https://img.shields.io/badge/version-3.1.0--draft-purple)](https://github.com/fafa920q-hue/LilaShift-2.0/pull/19)
+
+3.1.0 开发构建见 Draft PR 的 CI 产物。下方公开下载为 3.0 RC。
 [![Build LilaShift IPA](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/build.yml/badge.svg)](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/build.yml)
 [![Run Swift Tests](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/run-swift-tests.yml/badge.svg)](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/run-swift-tests.yml)
 [![Check Licenses](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/check-licenses.yml/badge.svg)](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/check-licenses.yml)

@@ -116,11 +116,11 @@ enum RestartEvidence: String, Equatable, Sendable {
 
     var label: String {
         switch self {
-        case .noFreshRead: L("Reconnect and read the device")
-        case .sameBoot: L("Same system boot session")
-        case .verifiedBootChange: L("Restart verified by system boot time")
-        case .manualWithFreshRead: L("Manual restart report with a fresh device read")
-        case .unknown: L("Restart evidence unavailable")
+        case .noFreshRead: persistenceText("Reconnect and read the device")
+        case .sameBoot: persistenceText("Same system boot session")
+        case .verifiedBootChange: persistenceText("Restart verified by system boot time")
+        case .manualWithFreshRead: persistenceText("Manual restart report with a fresh device read")
+        case .unknown: persistenceText("Restart evidence unavailable")
         }
     }
 }

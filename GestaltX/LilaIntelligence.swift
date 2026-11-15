@@ -481,7 +481,7 @@ enum FeatureEligibilityEvaluator {
         // not resolve is not agreement: it fails closed below, through
         // the guard.
         if isNativeHardware, capability.keys.allSatisfy({ profile.liveAICapabilityAnswers[$0] == true }) {
-            return (.nativeSupported, L("The device reports this capability."))
+            return (.nativeSupported, persistenceText("The device reports this capability."))
         }
 
         guard let snapshot = document else {
@@ -506,10 +506,10 @@ enum FeatureEligibilityEvaluator {
         }
 
         if isNativeHardware {
-            return (.unknown, L("Individual capability availability remains unconfirmed."))
+            return (.unknown, persistenceText("Individual capability availability remains unconfirmed."))
         }
         if capability.isEnabled(in: snapshot.document) {
-            return (.alreadyConfigured, L("Configured in the cache file"))
+            return (.alreadyConfigured, persistenceText("Configured in the cache file"))
         }
         return (.eligibleToEnable, L(capability.effectHint))
     }

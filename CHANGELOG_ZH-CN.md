@@ -2,6 +2,12 @@
 
 [English](CHANGELOG.md) | 简体中文
 
+## [3.1.0] - 真机验收草稿
+
+- 采集 iPhone18,2 首读基线，逐键比较文件回读、重启证据与 MobileGestalt 实时回答。
+- 一键配置保留原生 Apple 智能值，独立记录 Siri 设置及 Siri AI 测试版。
+- CI 记录实际源码提交和测试 IPA 的 SHA-256。
+
 ## [3.0.0-rc.1] - 预发布（非稳定版）
 
 由 `feature/lilashift-3.0-dashboard` 分支构建，提交 `37c4a36`

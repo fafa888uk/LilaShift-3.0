@@ -27,12 +27,12 @@ enum AcceptanceStatus: String, Equatable, Sendable {
 
     var title: String {
         switch self {
-        case .filePersisted: L("File value persisted")
-        case .systemConfirmed: L("System answer confirmed")
-        case .systemDisagrees: L("System answer disagrees")
-        case .revertedAfterRestart: L("File value reverted after restart")
+        case .filePersisted: persistenceText("File value persisted")
+        case .systemConfirmed: persistenceText("System answer confirmed")
+        case .systemDisagrees: persistenceText("System answer disagrees")
+        case .revertedAfterRestart: persistenceText("File value reverted after restart")
         case .unknown: L("Unknown")
-        case .unsupported: L("Live query unsupported for this layer")
+        case .unsupported: persistenceText("Live query unsupported for this layer")
         }
     }
 }
@@ -57,7 +57,7 @@ enum AcceptanceOutcome: String, Equatable, Sendable {
 
     var title: String {
         switch self {
-        case .accepted: return L("File matches target")
+        case .accepted: return persistenceText("File matches target")
         case .reverted: return L("Reverted")
         case .changed: return L("Changed")
         case .unreadable: return L("Unreadable")
@@ -132,7 +132,7 @@ struct AcceptanceReport: Equatable, Sendable {
     let summary: String
 
     /// The disclaimer every display of this report must carry.
-    static let disclaimer = L("File persistence, system answers and feature availability require separate evidence.")
+    static let disclaimer = persistenceText("File persistence, system answers and feature availability require separate evidence.")
 }
 
 // MARK: - Acceptance
@@ -195,7 +195,7 @@ enum PostModificationAcceptance {
             record.verified && record.original != record.new && item.filePersisted && item.systemConfirmed
                 ? record.id : nil
         }
-        let summary = sameBuild ? restartEvidence.label : L("iOS build changed. Review these observations on the new build.")
+        let summary = sameBuild ? restartEvidence.label : persistenceText("iOS build changed. Review these observations on the new build.")
         return AcceptanceReport(
             items: items, acceptedCount: accepted, revertedCount: reverted,
             changedCount: changed, unreadableCount: unreadable, notReReadCount: notReRead,

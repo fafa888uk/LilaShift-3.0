@@ -2,6 +2,12 @@
 
 English | [简体中文](CHANGELOG_ZH-CN.md)
 
+## [3.1.0] - Draft device validation
+
+- Capture an iPhone18,2 baseline and compare the file readback, reboot evidence and independent MobileGestalt answers.
+- Keep native Apple Intelligence values in one-tap configurations and report Siri settings and Siri AI Beta independently.
+- Record the built source commit and test IPA SHA-256 in CI.
+
 ## [3.0.0-rc.1] - Pre-release (not stable)
 
 Built from branch `feature/lilashift-3.0-dashboard` at commit `37c4a36`

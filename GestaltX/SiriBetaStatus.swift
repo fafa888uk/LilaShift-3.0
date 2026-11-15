@@ -36,15 +36,15 @@ struct SiriBetaStatus {
 
         var title: String {
             switch self {
-            case .unsupportedHardware: L("Siri AI Beta requires supported hardware")
-            case .unsupportedOS: L("Siri AI Beta requires iOS 27 or later")
-            case .unsupportedRegion: L("Siri AI Beta is unavailable in the confirmed account region")
-            case .unsupportedLanguage: L("Siri AI Beta requires English for the device and Siri")
-            case .pendingConfirmation: L("Pending user confirmation")
-            case .entryUnavailable: L("Beta entry is absent in Settings")
-            case .waitlisted: L("Waiting for access according to Settings")
-            case .setupPending: L("Siri AI Beta setup pending")
-            case .readyInSettings: L("Siri AI Beta setup reported complete in Settings")
+            case .unsupportedHardware: persistenceText("Siri AI Beta requires supported hardware")
+            case .unsupportedOS: persistenceText("Siri AI Beta requires iOS 27 or later")
+            case .unsupportedRegion: persistenceText("Siri AI Beta is unavailable in the confirmed account region")
+            case .unsupportedLanguage: persistenceText("Siri AI Beta requires English for the device and Siri")
+            case .pendingConfirmation: persistenceText("Pending user confirmation")
+            case .entryUnavailable: persistenceText("Beta entry is absent in Settings")
+            case .waitlisted: persistenceText("Waiting for access according to Settings")
+            case .setupPending: persistenceText("Siri AI Beta setup pending")
+            case .readyInSettings: persistenceText("Siri AI Beta setup reported complete in Settings")
             }
         }
     }

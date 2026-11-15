@@ -10,7 +10,7 @@ struct PostModificationAcceptanceCard: View {
         GlassCard(cornerRadius: GlassTokens.cardRadius) {
             VStack(alignment: .leading, spacing: 14) {
                 Text(L("Post-Modification Acceptance")).font(.headline)
-                Button(L("Reconnect and read the device")) {
+                Button(persistenceText("Reconnect and read the device")) {
                     Task { await model.connect() }
                 }
                 .buttonStyle(GlassPrimaryButtonStyle())
@@ -21,10 +21,10 @@ struct PostModificationAcceptanceCard: View {
                 if let baseline = model.deviceBaseline, let read = model.devicePersistenceRead {
                     evidence(baseline: baseline, read: read)
                 } else {
-                    if model.matchingPersistenceWrite != nil {
-                        Text(L("Device file write verified")).font(.subheadline)
+                    if model.deviceAccessible && model.status == persistenceText("Device file write verified") {
+                        Text(persistenceText("Device file write verified")).font(.subheadline)
                     }
-                    Text(L("A fresh device read is required for persistence diagnostics."))
+                    Text(persistenceText("A fresh device read is required for persistence diagnostics."))
                         .font(.subheadline).foregroundStyle(.secondary)
                 }
             }
@@ -42,21 +42,21 @@ struct PostModificationAcceptanceCard: View {
         let restart = model.restartEvidence(manual: manualRestart)
         Text(report.summary).font(.subheadline)
         if restart == .unknown || restart == .manualWithFreshRead {
-            Toggle(L("I restarted before this device read"), isOn: $manualRestart).font(.subheadline)
+            Toggle(persistenceText("I restarted before this device read"), isOn: $manualRestart).font(.subheadline)
         }
         if !report.items.isEmpty {
-            Text(String(format: L("File persisted %d · System confirmed %d · System disagrees %d"),
+            Text(String(format: persistenceText("File persisted %d · System confirmed %d · System disagrees %d"),
                         report.filePersistedCount, report.systemConfirmedCount, report.systemDisagreesCount))
                 .font(.caption)
-            DisclosureGroup(L("Written fields")) {
+            DisclosureGroup(persistenceText("Written fields")) {
                 ForEach(report.items) { item in
                     VStack(alignment: .leading, spacing: 3) {
                         Text(item.title).font(.subheadline.weight(.medium))
                         Text(item.status.title)
                         if item.restartEvidence.hasPostRestartRead && item.outcome == .changed {
-                            Text(L("The target file value was replaced by a different value."))
+                            Text(persistenceText("The target file value was replaced by a different value."))
                         }
-                        Text(String(format: L("Target %@ · File %@ · Live %@"),
+                        Text(String(format: persistenceText("Target %@ · File %@ · Live %@"),
                                     item.target.displayText, item.current?.displayText ?? L("Unknown"),
                                     item.liveValue?.displayText ?? L("Unknown")))
                     }
@@ -65,17 +65,20 @@ struct PostModificationAcceptanceCard: View {
                 }
             }
         }
-        DisclosureGroup(L("Cache fingerprints")) {
-            fingerprint(baseline.fingerprint, title: L("First read"))
+        DisclosureGroup(persistenceText("Cache fingerprints")) {
+            fingerprint(baseline.fingerprint, title: persistenceText("First read"))
+            LabeledContent(persistenceText("Hardware"), value: baseline.hardwareModel ?? L("Unknown"))
+                .font(.caption)
+            Text(baseline.capturedAt, format: .dateTime).font(.caption)
             if let write = model.matchingPersistenceWrite {
-                fingerprint(write.fingerprint, title: L("After verified write"))
+                fingerprint(write.fingerprint, title: persistenceText("After verified write"))
                 comparison(write.fingerprint.compare(to: read.fingerprint))
             } else {
                 comparison(baseline.fingerprint.compare(to: read.fingerprint))
             }
-            fingerprint(read.fingerprint, title: L("Current device read"))
+            fingerprint(read.fingerprint, title: persistenceText("Current device read"))
         }
-        DisclosureGroup(L("Apple Intelligence key diagnostics")) {
+        DisclosureGroup(persistenceText("Apple Intelligence key diagnostics")) {
             ForEach(model.aiKeyDiagnostics(manual: manualRestart)) { item in
                 AIKeyDiagnosticRow(item: item)
             }
@@ -90,16 +93,16 @@ struct PostModificationAcceptanceCard: View {
             Text(fingerprint.observedScope)
             Text("UUID \(fingerprint.cacheUUID ?? L("Unknown"))")
             Text("SHA-256 \(fingerprint.fileSHA256)").textSelection(.enabled)
-            Text(String(format: L("File bytes %d · CacheData bytes %@"), fingerprint.fileSize,
+            Text(String(format: persistenceText("File bytes %d · CacheData bytes %@"), fingerprint.fileSize,
                         fingerprint.cacheDataLength.map(String.init) ?? L("Unknown")))
             if let layout = fingerprint.layout {
-                Text(String(format: L("Slots %d · eSIM %d/%d · WAPI %@ · Audio %@ · Translator %@"),
+                Text(String(format: persistenceText("Slots %d · eSIM %d/%d · WAPI %@ · Audio %@ · Translator %@"),
                             layout.slotCount, layout.greenTeaIndex, layout.notGreenTeaIndex,
                             layout.wapiIndex.map(String.init) ?? L("Unknown"),
                             layout.audioIntellIndex.map(String.init) ?? L("Unknown"),
                             layout.personalTranslatorIndex.map(String.init) ?? L("Unknown")))
             } else {
-                Text(L("Dynamic layout unknown"))
+                Text(persistenceText("Dynamic layout unknown"))
             }
         }
         .font(.caption)
@@ -109,12 +112,12 @@ struct PostModificationAcceptanceCard: View {
     @ViewBuilder
     private func comparison(_ result: CacheFingerprintComparison) -> some View {
         VStack(alignment: .leading, spacing: 3) {
-            if result.rebuildEvidence { Text(L("File replacement and cache generation evidence are consistent with a rebuild.")) }
-            if result.fileReplaced == true { Text(L("File identity changed.")) }
-            if result.uuidChanged { Text(L("CacheUUID changed.")) }
-            if result.bytesChanged { Text(L("Cache file bytes changed.")) }
-            if result.layoutChanged { Text(L("Cache layout or CacheData length changed.")) }
-            if result.layoutResolutionChanged { Text(L("Dynamic layout resolution changed.")) }
+            if result.rebuildEvidence { Text(persistenceText("File replacement and cache generation evidence are consistent with a rebuild.")) }
+            if result.fileReplaced == true { Text(persistenceText("File identity changed.")) }
+            if result.uuidChanged { Text(persistenceText("CacheUUID changed.")) }
+            if result.bytesChanged { Text(persistenceText("Cache file bytes changed.")) }
+            if result.layoutChanged { Text(persistenceText("Cache layout or CacheData length changed.")) }
+            if result.layoutResolutionChanged { Text(persistenceText("Dynamic layout resolution changed.")) }
         }
         .font(.caption)
     }
@@ -124,37 +127,37 @@ struct PostModificationAcceptanceCard: View {
         let siri = SiriBetaStatus(nativeHardware: DeviceAIEligibility.isNativeAppleIntelligence(productType: baseline.productType),
                                   osVersion: SystemDeviceIdentitySource().osVersion,
                                   deviceLanguage: Locale.preferredLanguages.first, settings: settings)
-        return DisclosureGroup(L("Siri and Apple Intelligence status")) {
+        return DisclosureGroup(persistenceText("Siri and Apple Intelligence status")) {
             VStack(alignment: .leading, spacing: 6) {
-                field(L("Traditional Siri in Settings"), manual(settings.traditionalSiriEnabled))
-                field(L("On-Device Siri CacheExtra"),
+                field(persistenceText("Traditional Siri in Settings"), manual(settings.traditionalSiriEnabled))
+                field(persistenceText("On-Device Siri CacheExtra"),
                       PlistObservation(read.snapshot.document.extra[ChinaUnlock.onDeviceSiriKey]).display)
-                field(L("On-Device Siri live answer"), read.liveProbeResults[ChinaUnlock.onDeviceSiriKey]?.display)
-                Text(L("The one-tap preset preserves the On-Device Siri value."))
-                field(L("Apple Intelligence in Settings"), manual(settings.appleIntelligenceEnabled))
-                field(L("Siri AI Beta"), siri.outcome.title)
-                field(L("Hardware"), siri.nativeHardware ? L("Native Apple Intelligence hardware") : L("Unsupported hardware"))
+                field(persistenceText("On-Device Siri live answer"), read.liveProbeResults[ChinaUnlock.onDeviceSiriKey]?.display)
+                Text(persistenceText("The one-tap preset preserves the On-Device Siri value."))
+                field(persistenceText("Apple Intelligence in Settings"), manual(settings.appleIntelligenceEnabled))
+                field(persistenceText("Siri AI Beta"), siri.outcome.title)
+                field(persistenceText("Hardware"), siri.nativeHardware ? L("Native Apple Intelligence hardware") : persistenceText("Unsupported hardware"))
                 field("iOS", siri.osVersion)
-                field(L("Device language"), siri.deviceLanguage)
-                field(L("Siri language"), settings.confirmedSiriLanguage.map { "\($0) (\(L("User provided")))" })
-                field(L("Apple Account region"), settings.confirmedRegion.map { "\($0) (\(L("User provided")))" })
-                field(L("Beta entry"), manual(settings.betaEntry))
-                field(L("Beta enabled"), manual(settings.betaEnabled))
-                field(L("Waitlist joined"), manual(settings.joinedWaitlist))
-                field(L("Voice configured"), manual(settings.voiceConfigured))
-                field(L("Model downloaded"), manual(settings.modelDownloaded))
-                Button(L("Record Settings observations")) { showingSiriSettings = true }
+                field(persistenceText("Device language"), siri.deviceLanguage)
+                field(persistenceText("Siri language"), settings.confirmedSiriLanguage.map { "\($0) (\(persistenceText("User provided")))" })
+                field(persistenceText("Apple Account region"), settings.confirmedRegion.map { "\($0) (\(persistenceText("User provided")))" })
+                field(persistenceText("Beta entry"), manual(settings.betaEntry))
+                field(persistenceText("Beta enabled"), manual(settings.betaEnabled))
+                field(persistenceText("Waitlist joined"), manual(settings.joinedWaitlist))
+                field(persistenceText("Voice configured"), manual(settings.voiceConfigured))
+                field(persistenceText("Model downloaded"), manual(settings.modelDownloaded))
+                Button(persistenceText("Record Settings observations")) { showingSiriSettings = true }
             }
             .font(.caption)
         }
     }
 
     private func manual(_ value: Bool?) -> String? {
-        value.map { "\($0 ? L("Yes") : L("No")) (\(L("User provided")))" }
+        value.map { "\($0 ? L("Yes") : L("No")) (\(persistenceText("User provided")))" }
     }
 
     private func field(_ label: String, _ value: String?) -> some View {
-        LabeledContent(label, value: value ?? L("Pending user confirmation"))
+        LabeledContent(label, value: value ?? persistenceText("Pending user confirmation"))
     }
 }
 
@@ -165,20 +168,20 @@ struct AIKeyDiagnosticRow: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(L(item.title)).font(.subheadline.weight(.medium))
             Text(item.key).font(.caption.monospaced()).textSelection(.enabled)
-            LabeledContent(L("Observed model and build"), value: item.observedScope)
+            LabeledContent(persistenceText("Observed model and build"), value: item.observedScope)
             if item.nativeHardware { Text(L("Native Apple Intelligence hardware")) }
-            LabeledContent(L("Original value and type"), value: item.original.display)
-            LabeledContent(L("Current file value"), value: item.file.display)
-            LabeledContent(L("Current MG answer"), value: item.live?.display ?? L("Unknown"))
-            LabeledContent(L("Target"), value: item.target?.displayText ?? L("No target written"))
-            LabeledContent(L("File after restart"), value: item.postRestartFile?.display ?? L("Unknown"))
-            LabeledContent(L("Live after restart"), value: item.postRestartLive?.display ?? L("Unknown"))
+            LabeledContent(persistenceText("Original value and type"), value: item.original.display)
+            LabeledContent(persistenceText("Current file value"), value: item.file.display)
+            LabeledContent(persistenceText("Current MG answer"), value: item.live?.display ?? L("Unknown"))
+            LabeledContent(persistenceText("Target"), value: item.target?.displayText ?? persistenceText("No target written"))
+            LabeledContent(persistenceText("File after restart"), value: item.postRestartFile?.display ?? L("Unknown"))
+            LabeledContent(persistenceText("Live after restart"), value: item.postRestartLive?.display ?? L("Unknown"))
             if item.target != nil { Text(item.status.title) }
             if item.key == DeviceCacheOptions.audioIntelligenceKey || item.key == DeviceCacheOptions.personalTranslatorKey {
-                LabeledContent(L("CacheData slot"), value: item.cacheDataSlot.map(String.init) ?? L("Unknown"))
-                LabeledContent(L("First-read CacheData slot"), value: item.originalCacheDataSlot.map(String.init) ?? L("Unknown"))
+                LabeledContent(persistenceText("CacheData slot"), value: item.cacheDataSlot.map(String.init) ?? L("Unknown"))
+                LabeledContent(persistenceText("First-read CacheData slot"), value: item.originalCacheDataSlot.map(String.init) ?? L("Unknown"))
                 if let slot = item.cacheDataSlot, item.live?.capabilityBoolean == slot, item.file.capabilityBoolean != slot {
-                    Text(L("The system answer agrees with the resolved CacheData slot. The effective configuration layer remains unverified."))
+                    Text(persistenceText("The system answer agrees with the resolved CacheData slot. The effective configuration layer remains unverified."))
                 }
             }
             if item.key == DeviceCacheOptions.audioIntelligenceKey,
@@ -199,26 +202,26 @@ private struct SiriObservationForm: View {
     var body: some View {
         NavigationStack {
             Form {
-                Text(L("Check Apple Intelligence & Siri and your Apple Account country or region in Settings. Enter the observed values."))
-                TextField(L("Apple Account region (ISO code, e.g. CN or US)"), text: $settings.appleAccountRegion)
+                Text(persistenceText("Check Apple Intelligence & Siri and your Apple Account country or region in Settings. Enter the observed values."))
+                TextField(persistenceText("Apple Account region (ISO code, e.g. CN or US)"), text: $settings.appleAccountRegion)
                     .textInputAutocapitalization(.characters)
                     .autocorrectionDisabled()
-                TextField(L("Siri language (e.g. en-US or zh-CN)"), text: $settings.siriLanguage)
+                TextField(persistenceText("Siri language (e.g. en-US or zh-CN)"), text: $settings.siriLanguage)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
-                answer(L("Traditional Siri enabled"), $settings.traditionalSiriEnabled)
-                answer(L("Apple Intelligence enabled"), $settings.appleIntelligenceEnabled)
-                answer(L("Beta entry"), $settings.betaEntry)
-                answer(L("Beta enabled"), $settings.betaEnabled)
-                answer(L("Waitlist joined"), $settings.joinedWaitlist)
-                answer(L("Voice configured"), $settings.voiceConfigured)
-                answer(L("Model downloaded"), $settings.modelDownloaded)
+                answer(persistenceText("Traditional Siri enabled"), $settings.traditionalSiriEnabled)
+                answer(persistenceText("Apple Intelligence enabled"), $settings.appleIntelligenceEnabled)
+                answer(persistenceText("Beta entry"), $settings.betaEntry)
+                answer(persistenceText("Beta enabled"), $settings.betaEnabled)
+                answer(persistenceText("Waitlist joined"), $settings.joinedWaitlist)
+                answer(persistenceText("Voice configured"), $settings.voiceConfigured)
+                answer(persistenceText("Model downloaded"), $settings.modelDownloaded)
             }
-            .navigationTitle(L("Settings observations"))
+            .navigationTitle(persistenceText("Settings observations"))
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button(L("Cancel")) { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(L("Save")) { save(settings); dismiss() }
+                    Button(persistenceText("Save")) { save(settings); dismiss() }
                         .disabled(!settings.appleAccountRegion.isEmpty && settings.confirmedRegion == nil)
                 }
             }
