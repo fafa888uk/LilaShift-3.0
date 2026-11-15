@@ -1,0 +1,383 @@
+diff --git a/GestaltX.xcodeproj/project.pbxproj b/GestaltX.xcodeproj/project.pbxproj
+index d0f3af2..641ea64 100644
+--- a/GestaltX.xcodeproj/project.pbxproj
++++ b/GestaltX.xcodeproj/project.pbxproj
+@@ -83,6 +83,7 @@
+ 		DB12434CDC500609761216B1 /* HomeDiagnosticsCacheConcurrencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 007542ED35DFB2E93B7F0F41 /* HomeDiagnosticsCacheConcurrencyTests.swift */; };
+ 		BE026BD50295ABE265201260 /* DashboardV3SnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3624FBBE3C977DC36106724 /* DashboardV3SnapshotTests.swift */; };
+ 		7DED2B4236ED38CA1B96C42F /* CPUImageDiffing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B54C7F4463E10A786731690A /* CPUImageDiffing.swift */; };
++		C5463A77EE63DF48864201E8 /* ShareLilaShiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E50F80F2FADE84F33D5410C /* ShareLilaShiftTests.swift */; };
+ 		D43F6FE6E3F70F2FD3EC5873 /* DashboardV3NavigationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E1320CF71EABD8197C0EF5 /* DashboardV3NavigationTests.swift */; };
+ 		1A7AD902F4504E46B9FC8038 /* DiagnosticsEquatableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE7645FF99DB44D29B4CE01D /* DiagnosticsEquatableTests.swift */; };
+ 		100F74C65CA447F76A377DC2 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 368CCEAD13DE80A54EDDFBC1 /* XCTest.framework */; };
+@@ -204,6 +205,7 @@
+ 		007542ED35DFB2E93B7F0F41 /* HomeDiagnosticsCacheConcurrencyTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HomeDiagnosticsCacheConcurrencyTests.swift; sourceTree = "<group>"; };
+ 		A3624FBBE3C977DC36106724 /* DashboardV3SnapshotTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DashboardV3SnapshotTests.swift; sourceTree = "<group>"; };
+ 		B54C7F4463E10A786731690A /* CPUImageDiffing.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CPUImageDiffing.swift; sourceTree = "<group>"; };
++		3E50F80F2FADE84F33D5410C /* ShareLilaShiftTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareLilaShiftTests.swift; sourceTree = "<group>"; };
+ 		D4E1320CF71EABD8197C0EF5 /* DashboardV3NavigationTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DashboardV3NavigationTests.swift; sourceTree = "<group>"; };
+ 		DE7645FF99DB44D29B4CE01D /* DiagnosticsEquatableTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DiagnosticsEquatableTests.swift; sourceTree = "<group>"; };
+ 		368CCEAD13DE80A54EDDFBC1 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+@@ -399,6 +401,7 @@
+ 				007542ED35DFB2E93B7F0F41 /* HomeDiagnosticsCacheConcurrencyTests.swift */,
+ 				A3624FBBE3C977DC36106724 /* DashboardV3SnapshotTests.swift */,
+ 				B54C7F4463E10A786731690A /* CPUImageDiffing.swift */,
++				3E50F80F2FADE84F33D5410C /* ShareLilaShiftTests.swift */,
+ 				D4E1320CF71EABD8197C0EF5 /* DashboardV3NavigationTests.swift */,
+ 				DE7645FF99DB44D29B4CE01D /* DiagnosticsEquatableTests.swift */,
+ 			);
+@@ -628,6 +631,7 @@
+ 				DB12434CDC500609761216B1 /* HomeDiagnosticsCacheConcurrencyTests.swift in Sources */,
+ 				BE026BD50295ABE265201260 /* DashboardV3SnapshotTests.swift in Sources */,
+ 				7DED2B4236ED38CA1B96C42F /* CPUImageDiffing.swift in Sources */,
++				C5463A77EE63DF48864201E8 /* ShareLilaShiftTests.swift in Sources */,
+ 				D43F6FE6E3F70F2FD3EC5873 /* DashboardV3NavigationTests.swift in Sources */,
+ 				1A7AD902F4504E46B9FC8038 /* DiagnosticsEquatableTests.swift in Sources */,
+ 			);
+diff --git a/GestaltX/AboutView.swift b/GestaltX/AboutView.swift
+index 00da973..81381c3 100644
+--- a/GestaltX/AboutView.swift
++++ b/GestaltX/AboutView.swift
+@@ -64,6 +64,9 @@ struct AboutView: View {
+                 Link(destination: URL(string: "https://t.me/LilaShiftUpdates")!) {
+                     Label(L("Telegram Updates Channel"), systemImage: "paperplane.fill")
+                 }
++                ShareLink(item: ShareLilaShift.text()) {
++                    Label(L("Share LilaShift"), systemImage: "square.and.arrow.up")
++                }
+             }
+             Section {
+                 LabeledContent(L("Supported OS"), value: VersionSupport.range)
+diff --git a/GestaltX/Localizable.xcstrings b/GestaltX/Localizable.xcstrings
+index 6482a33..669660d 100644
+--- a/GestaltX/Localizable.xcstrings
++++ b/GestaltX/Localizable.xcstrings
+@@ -73728,6 +73728,134 @@
+           }
+         }
+       }
++    },
++    "Share LilaShift": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Share LilaShift"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "分享 LilaShift"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Compartir LilaShift"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "اشتراک‌گذاری LilaShift"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "LilaShift を共有"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "LilaShift 공유"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Поделиться LilaShift"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Chia sẻ LilaShift"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "分享 LilaShift"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "分享 LilaShift"
++          }
++        }
++      }
++    },
++    "Pre-release": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Pre-release"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "预发布"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Prelanzamiento"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "پیش‌انتشار"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "プレリリース"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "프리릴리스"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Предварительная версия"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Bản tiền phát hành"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "預發佈"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "預發佈"
++          }
++        }
++      }
+     }
+   },
+   "version": "1.0"
+diff --git a/GestaltX/ShareLilaShift.swift b/GestaltX/ShareLilaShift.swift
+new file mode 100644
+index 0000000..b53afa5
+--- /dev/null
++++ b/GestaltX/ShareLilaShift.swift
+@@ -0,0 +1,29 @@
++// SPDX-License-Identifier: GPL-3.0-only
++// LilaShift 3.0: share the current pre-release with others.
++// There are no referral codes, invite links or rewards — the share
++// only points at the public release page and the Telegram updates
++// channel. The shared build is 3.0.0-rc.1, a pre-release, never a
++// stable release.
++import Foundation
++
++/// Content for the "Share LilaShift" row in About.
++enum ShareLilaShift {
++    /// Public release page for 3.0.0-rc.1.
++    static let releaseURLString = "https://github.com/fafa920q-hue/LilaShift-2.0/releases/tag/v3.0.0-rc.1"
++    /// Telegram updates channel.
++    static let telegramURLString = "https://t.me/LilaShiftUpdates"
++    /// Version label of the shared build.
++    static let versionLabel = "3.0.0-rc.1"
++
++    static var releaseURL: URL { URL(string: releaseURLString)! }
++    static var telegramURL: URL { URL(string: telegramURLString)! }
++
++    /// Localized label stating the shared build is a pre-release.
++    static var preReleaseLabel: String { L("Pre-release") }
++
++    /// The full share text: app name, version, pre-release label and
++    /// both links. The URLs are constants and are never translated.
++    static func text() -> String {
++        "LilaShift \(versionLabel) (\(preReleaseLabel))\n\(releaseURLString)\n\(L("Telegram Updates Channel")): \(telegramURLString)"
++    }
++}
+diff --git a/localization/es.json b/localization/es.json
+index baff320..09f3f16 100644
+--- a/localization/es.json
++++ b/localization/es.json
+@@ -1150,5 +1150,7 @@
+   "Some changes need a device restart to take effect. LilaShift cannot restart SpringBoard itself. Please restart your device manually: hold the side button and a volume button, then slide to power off, or use Settings → General → Shut Down.": "Algunos cambios necesitan reiniciar el dispositivo para surtir efecto. LilaShift no puede reiniciar SpringBoard por sí mismo. Reinicia el dispositivo manualmente: mantén pulsado el botón lateral y un botón de volumen y desliza para apagar, o ve a Ajustes → General → Apagar.",
+   "Suspended": "Suspendido",
+   "Manual Restart": "Reinicio manual",
+-  "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "LilaShift no reinicia SpringBoard por sí mismo. Después de aplicar los cambios, reinicia el dispositivo manualmente si una función no aparece."
++  "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "LilaShift no reinicia SpringBoard por sí mismo. Después de aplicar los cambios, reinicia el dispositivo manualmente si una función no aparece.",
++  "Share LilaShift": "Compartir LilaShift",
++  "Pre-release": "Prelanzamiento"
+ }
+diff --git a/localization/fa.json b/localization/fa.json
+index 6e6d614..1503ce8 100644
+--- a/localization/fa.json
++++ b/localization/fa.json
+@@ -1150,5 +1150,7 @@
+   "Some changes need a device restart to take effect. LilaShift cannot restart SpringBoard itself. Please restart your device manually: hold the side button and a volume button, then slide to power off, or use Settings → General → Shut Down.": "برخی تغییرات برای اعمال شدن به راه‌اندازی مجدد دستگاه نیاز دارند. LilaShift نمی‌تواند SpringBoard را خودش راه‌اندازی مجدد کند. لطفاً دستگاه را به‌صورت دستی راه‌اندازی مجدد کنید: دکمه کناری و یک دکمه صدا را نگه دارید و برای خاموش کردن بکشید، یا از تنظیمات → عمومی → خاموش کردن استفاده کنید.",
+   "Suspended": "متوقف‌شده",
+   "Manual Restart": "راه‌اندازی مجدد دستی",
+-  "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "LilaShift خودش SpringBoard را راه‌اندازی مجدد نمی‌کند. پس از اعمال تغییرات، اگر قابلیتی ظاهر نشد، دستگاه را به‌صورت دستی راه‌اندازی مجدد کنید."
++  "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "LilaShift خودش SpringBoard را راه‌اندازی مجدد نمی‌کند. پس از اعمال تغییرات، اگر قابلیتی ظاهر نشد، دستگاه را به‌صورت دستی راه‌اندازی مجدد کنید.",
++  "Share LilaShift": "اشتراک\u200cگذاری LilaShift",
++  "Pre-release": "پیش\u200cانتشار"
+ }
+diff --git a/localization/ja.json b/localization/ja.json
+index 455b4dc..17445e4 100644
+--- a/localization/ja.json
++++ b/localization/ja.json
+@@ -1150,5 +1150,7 @@
+   "Some changes need a device restart to take effect. LilaShift cannot restart SpringBoard itself. Please restart your device manually: hold the side button and a volume button, then slide to power off, or use Settings → General → Shut Down.": "一部の変更を有効にするには、デバイスの再起動が必要です。LilaShift は SpringBoard を自動で再起動できません。サイドボタンと音量ボタンを長押ししてスライドして電源を切るか、「設定」→「一般」→「電源を切る」から手動で再起動してください。",
+   "Suspended": "一時停止",
+   "Manual Restart": "手動再起動",
+-  "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "LilaShift は SpringBoard を自動で再起動しません。変更を適用した後、機能が表示されない場合はデバイスを手動で再起動してください。"
++  "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "LilaShift は SpringBoard を自動で再起動しません。変更を適用した後、機能が表示されない場合はデバイスを手動で再起動してください。",
++  "Share LilaShift": "LilaShift を共有",
++  "Pre-release": "プレリリース"
+ }
+diff --git a/localization/ko.json b/localization/ko.json
+index 1b00fb8..c3c7f38 100644
+--- a/localization/ko.json
++++ b/localization/ko.json
+@@ -1150,5 +1150,7 @@
+   "Some changes need a device restart to take effect. LilaShift cannot restart SpringBoard itself. Please restart your device manually: hold the side button and a volume button, then slide to power off, or use Settings → General → Shut Down.": "일부 변경 사항은 적용되려면 기기를 다시 시작해야 합니다. LilaShift는 SpringBoard를 직접 다시 시작할 수 없습니다. 측면 버튼과 음량 버튼을 길게 눌러 밀어 전원을 끄거나, 설정 → 일반 → 종료를 사용해 수동으로 다시 시작하세요.",
+   "Suspended": "중단됨",
+   "Manual Restart": "수동 다시 시작",
+-  "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "LilaShift는 SpringBoard를 직접 다시 시작하지 않습니다. 변경 사항을 적용한 뒤 기능이 나타나지 않으면 기기를 수동으로 다시 시작하세요."
++  "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "LilaShift는 SpringBoard를 직접 다시 시작하지 않습니다. 변경 사항을 적용한 뒤 기능이 나타나지 않으면 기기를 수동으로 다시 시작하세요.",
++  "Share LilaShift": "LilaShift 공유",
++  "Pre-release": "프리릴리스"
+ }
+diff --git a/localization/ru.json b/localization/ru.json
+index 4601876..41d5f6a 100644
+--- a/localization/ru.json
++++ b/localization/ru.json
+@@ -1150,5 +1150,7 @@
+   "Some changes need a device restart to take effect. LilaShift cannot restart SpringBoard itself. Please restart your device manually: hold the side button and a volume button, then slide to power off, or use Settings → General → Shut Down.": "Для вступления некоторых изменений в силу требуется перезапуск устройства. LilaShift не может перезапустить SpringBoard самостоятельно. Перезапустите устройство вручную: удерживайте боковую кнопку и кнопку громкости, затем проведите, чтобы выключить, или откройте «Настройки» → «Основные» → «Выключить».",
+   "Suspended": "Приостановлено",
+   "Manual Restart": "Ручной перезапуск",
+-  "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "LilaShift не перезапускает SpringBoard самостоятельно. После применения изменений перезапустите устройство вручную, если какая-либо функция не появилась."
++  "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "LilaShift не перезапускает SpringBoard самостоятельно. После применения изменений перезапустите устройство вручную, если какая-либо функция не появилась.",
++  "Share LilaShift": "Поделиться LilaShift",
++  "Pre-release": "Предварительная версия"
+ }
+diff --git a/localization/vi.json b/localization/vi.json
+index d69627f..1c93c98 100644
+--- a/localization/vi.json
++++ b/localization/vi.json
+@@ -1150,5 +1150,7 @@
+   "Some changes need a device restart to take effect. LilaShift cannot restart SpringBoard itself. Please restart your device manually: hold the side button and a volume button, then slide to power off, or use Settings → General → Shut Down.": "Một số thay đổi cần khởi động lại thiết bị mới có hiệu lực. LilaShift không thể tự khởi động lại SpringBoard. Vui lòng khởi động lại thiết bị theo cách thủ công: giữ nút sườn và một nút âm lượng rồi trượt để tắt nguồn, hoặc vào Cài đặt → Cài đặt chung → Tắt nguồn.",
+   "Suspended": "Đã tạm dừng",
+   "Manual Restart": "Khởi động lại thủ công",
+-  "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "LilaShift không tự khởi động lại SpringBoard. Sau khi áp dụng thay đổi, hãy khởi động lại thiết bị theo cách thủ công nếu một tính năng không xuất hiện."
++  "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "LilaShift không tự khởi động lại SpringBoard. Sau khi áp dụng thay đổi, hãy khởi động lại thiết bị theo cách thủ công nếu một tính năng không xuất hiện.",
++  "Share LilaShift": "Chia sẻ LilaShift",
++  "Pre-release": "Bản tiền phát hành"
+ }
+diff --git a/localization/zh-Hant-HK.json b/localization/zh-Hant-HK.json
+index dcf3ef9..ccc86be 100644
+--- a/localization/zh-Hant-HK.json
++++ b/localization/zh-Hant-HK.json
+@@ -1150,5 +1150,7 @@
+   "Some changes need a device restart to take effect. LilaShift cannot restart SpringBoard itself. Please restart your device manually: hold the side button and a volume button, then slide to power off, or use Settings → General → Shut Down.": "部分更改需要重新啟動裝置才能生效。紫序無法自行重新啟動 SpringBoard，請手動重新啟動裝置：按住側邊按鈕和任一音量按鈕，然後滑動關機；或前往「設定 → 一般 → 關機」。",
+   "Suspended": "已暫停",
+   "Manual Restart": "手動重新啟動",
+-  "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "紫序不會自行重新啟動 SpringBoard。套用更改後，若某項功能未出現，請手動重新啟動裝置。"
++  "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "紫序不會自行重新啟動 SpringBoard。套用更改後，若某項功能未出現，請手動重新啟動裝置。",
++  "Share LilaShift": "分享 LilaShift",
++  "Pre-release": "預發佈"
+ }
+diff --git a/localization/zh-Hant-TW.json b/localization/zh-Hant-TW.json
+index 14a27ac..4c95020 100644
+--- a/localization/zh-Hant-TW.json
++++ b/localization/zh-Hant-TW.json
+@@ -1150,5 +1150,7 @@
+   "Some changes need a device restart to take effect. LilaShift cannot restart SpringBoard itself. Please restart your device manually: hold the side button and a volume button, then slide to power off, or use Settings → General → Shut Down.": "部分更改需要重新啟動裝置才能生效。紫序無法自行重新啟動 SpringBoard，請手動重新啟動裝置：按住側邊按鈕和任一音量按鈕，然後滑動關機；或前往「設定 → 一般 → 關機」。",
+   "Suspended": "已暫停",
+   "Manual Restart": "手動重新啟動",
+-  "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "紫序不會自行重新啟動 SpringBoard。套用更改後，若某項功能未出現，請手動重新啟動裝置。"
++  "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "紫序不會自行重新啟動 SpringBoard。套用更改後，若某項功能未出現，請手動重新啟動裝置。",
++  "Share LilaShift": "分享 LilaShift",
++  "Pre-release": "預發佈"
+ }
+diff --git a/scripts/generate_localization.py b/scripts/generate_localization.py
+index e129114..53791f3 100644
+--- a/scripts/generate_localization.py
++++ b/scripts/generate_localization.py
+@@ -1154,6 +1154,8 @@ Some changes need a device restart to take effect. LilaShift cannot restart Spri
+ Suspended	已暂停
+ Manual Restart	手动重启
+ LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.	紫序不会自行重启 SpringBoard。应用更改后，若某项功能未出现，请手动重启设备。
++Share LilaShift	分享 LilaShift
++Pre-release	预发布
+ '''
+ entries = {}
+ for line in TRANSLATIONS.strip().splitlines():
+diff --git a/tests/ShareLilaShiftTests.swift b/tests/ShareLilaShiftTests.swift
+new file mode 100644
+index 0000000..7b8f7af
+--- /dev/null
++++ b/tests/ShareLilaShiftTests.swift
+@@ -0,0 +1,36 @@
++// SPDX-License-Identifier: GPL-3.0-only
++// Tests for the About "Share LilaShift" row: the shared text must
++// link the release page and the Telegram updates channel, name the
++// shared version, and mark the build as a pre-release — never as a
++// stable release. There are no referral codes, invite links or
++// rewards to test for; the share only points at public links.
++import XCTest
++@testable import GestaltX
++
++final class ShareLilaShiftTests: XCTestCase {
++    func testShareTextContainsReleaseURLAndTelegramLink() {
++        let text = ShareLilaShift.text()
++        XCTAssertTrue(text.contains(ShareLilaShift.releaseURLString), "Share text must link the release page")
++        XCTAssertTrue(text.contains(ShareLilaShift.telegramURLString), "Share text must link the Telegram updates channel")
++    }
++
++    func testShareTextNamesVersionAndMarksPreRelease() {
++        let text = ShareLilaShift.text()
++        XCTAssertTrue(text.contains(ShareLilaShift.versionLabel), "Share text must name the shared version")
++        XCTAssertTrue(text.contains(ShareLilaShift.preReleaseLabel), "Share text must mark the build as a pre-release")
++        XCTAssertTrue(text.contains(L("Telegram Updates Channel")), "Share text must label the Telegram link")
++    }
++
++    func testShareTextDoesNotClaimStableRelease() {
++        let text = ShareLilaShift.text()
++        XCTAssertFalse(text.localizedCaseInsensitiveContains("stable release"), "A pre-release must never be presented as stable")
++        XCTAssertFalse(text.contains("正式版"), "A pre-release must never be presented as stable")
++    }
++
++    func testShareURLsAreValid() {
++        XCTAssertEqual(ShareLilaShift.releaseURL.host, "github.com")
++        XCTAssertEqual(ShareLilaShift.releaseURL.path, "/fafa920q-hue/LilaShift-2.0/releases/tag/v3.0.0-rc.1")
++        XCTAssertEqual(ShareLilaShift.telegramURL.host, "t.me")
++        XCTAssertEqual(ShareLilaShift.telegramURL.path, "/LilaShiftUpdates")
++    }
++}
