@@ -196,6 +196,16 @@ struct PersistenceWrite: Codable {
     let bootSession: BootSession?
     let writtenAt: Date
     let records: [RecordedChange]
+
+    func retainingUnchangedRecords(from previous: Self?) -> Self {
+        guard let previous, let bootSession, previous.bootSession == bootSession,
+              previous.fingerprint.productType == fingerprint.productType,
+              let osBuild = fingerprint.osBuild, previous.fingerprint.osBuild == osBuild else { return self }
+        let kept = previous.records.filter { earlier in
+            !records.contains { $0.key == earlier.key && $0.layer == earlier.layer }
+        }
+        return Self(fingerprint: fingerprint, bootSession: bootSession, writtenAt: writtenAt, records: kept + records)
+    }
 }
 
 struct AIKeyDiagnostic: Identifiable {

@@ -195,7 +195,7 @@ enum PostModificationAcceptance {
             record.verified && record.original != record.new && item.filePersisted && item.systemConfirmed
                 ? record.id : nil
         }
-        let summary = sameBuild ? restartEvidence.label : persistenceText("iOS build changed. Review these observations on the new build.")
+        let summary = sameBuild ? restartEvidence.label : persistenceText("The iOS build differs or could not be read.")
         return AcceptanceReport(
             items: items, acceptedCount: accepted, revertedCount: reverted,
             changedCount: changed, unreadableCount: unreadable, notReReadCount: notReRead,
@@ -232,11 +232,20 @@ enum PostModificationAcceptance {
                 guard let original = readValue(key: key, layer: layer, in: before.document, using: priorLayout),
                       let new = readValue(key: key, layer: layer, in: after.document, using: currentLayout),
                       original != new else { return nil }
-                let feature = Capability.all.first(where: { $0.keys.contains(key) })?.id ?? key
                 return RecordedChange(id: UUID(), date: date, deviceID: deviceID, osBuild: build,
-                                      featureID: feature, key: key, layer: layer, original: original,
+                                      featureID: featureID(for: key), key: key, layer: layer, original: original,
                                       new: new, backupProvenance: .preModification, verified: true)
             }
+        }
+    }
+
+    private static func featureID(for key: String) -> String {
+        switch key {
+        case GestaltKeys.regionCode: return FeatureEligibilityEvaluator.regionCodeFeatureID
+        case DeviceCacheOptions.greenTeaKey, DeviceCacheOptions.notGreenTeaKey:
+            return FeatureEligibilityEvaluator.esimFeatureID
+        case DeviceCacheOptions.wapiKey: return FeatureEligibilityEvaluator.wapiFeatureID
+        default: return Capability.all.first(where: { $0.keys.contains(key) })?.id ?? key
         }
     }
 

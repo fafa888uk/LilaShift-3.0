@@ -247,6 +247,18 @@ final class PostModificationAcceptanceTests: XCTestCase {
                                                readAt: read, manual: true), .manualWithFreshRead)
     }
 
+    func testLegacyRestartMarkerRequiresBootProof() throws {
+        let data = try JSONEncoder().encode(regionRecord())
+        var legacy = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        legacy["restartVerified"] = true
+        let old = try JSONDecoder().decode(RecordedChange.self, from: JSONSerialization.data(withJSONObject: legacy))
+        XCTAssertFalse(old.restartVerified)
+
+        legacy["restartVerificationBoot"] = ["seconds": 200, "microseconds": 0]
+        let verified = try JSONDecoder().decode(RecordedChange.self, from: JSONSerialization.data(withJSONObject: legacy))
+        XCTAssertTrue(verified.restartVerified)
+    }
+
     func testCacheUUIDChangeAloneDoesNotProveRebuild() throws {
         let before = try StandalonePresetsTests.fixture()
         let after = try StandalonePresetsTests.fixture(cacheUUID: UUID().uuidString)

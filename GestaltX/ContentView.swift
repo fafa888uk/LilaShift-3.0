@@ -1633,7 +1633,13 @@ private struct PresetRow: View {
     }
 
     private var statusText: String {
-        switch status {
+        if model.hasDocument && choice == .keep && ChinaUnlock.aiCapabilityIDs.contains(capability.id) {
+            let answers = capability.keys.compactMap { model.liveAIValues[$0]?.capabilityBoolean }
+            guard answers.count == capability.keys.count, let first = answers.first,
+                  answers.allSatisfy({ $0 == first }) else { return L("Live status unknown") }
+            return first ? L("Live probe: on") : persistenceText("Live probe: off")
+        }
+        return switch status {
         case .pending: L("Pending")
         case .configured: L("Configured")
         case .unconfigured: L("Not Configured")
@@ -1643,7 +1649,8 @@ private struct PresetRow: View {
     }
 
     private var statusTint: Color {
-        switch status {
+        if ChinaUnlock.aiCapabilityIDs.contains(capability.id) && choice == .keep { return .secondary }
+        return switch status {
         case .pending: .orange
         case .configured: .green
         case .unconfigured, .keep, .notRead: .secondary

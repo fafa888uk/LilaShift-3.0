@@ -5,6 +5,7 @@ struct PostModificationAcceptanceCard: View {
     @EnvironmentObject private var model: GestaltManager
     @State private var manualRestart = false
     @State private var showingSiriSettings = false
+    @State private var historyMessage: String?
 
     var body: some View {
         GlassCard(cornerRadius: GlassTokens.cardRadius) {
@@ -30,7 +31,10 @@ struct PostModificationAcceptanceCard: View {
             }
             .padding(GlassTokens.cardPadding)
         }
-        .onChange(of: model.persistenceWrite?.writtenAt) { _, _ in manualRestart = false }
+        .onChange(of: model.devicePersistenceRead?.readAt) { _, _ in
+            manualRestart = false
+            historyMessage = nil
+        }
         .sheet(isPresented: $showingSiriSettings) {
             SiriObservationForm(settings: model.siriSettings) { model.saveSiriSettings($0) }
         }
@@ -63,6 +67,19 @@ struct PostModificationAcceptanceCard: View {
                     .font(.caption)
                     .padding(.vertical, 3)
                 }
+            }
+        }
+        if !report.restartVerifiedCandidateIDs.isEmpty {
+            Button(L("Mark accepted as restart-verified")) {
+                do {
+                    try model.saveRestartVerifiedHistory()
+                    historyMessage = L("Accepted changes marked restart-verified in history.")
+                } catch {
+                    historyMessage = L("The change history could not be saved. No system changes were made.")
+                }
+            }
+            if let historyMessage {
+                Text(historyMessage).font(.caption)
             }
         }
         DisclosureGroup(persistenceText("Cache fingerprints")) {

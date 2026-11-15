@@ -95,6 +95,7 @@ extension GestaltManager {
         let records = PostModificationAcceptance.records(before: before, after: after, deviceID: deviceID,
                                                            build: fingerprint.osBuild ?? "", date: date)
         let write = PersistenceWrite(fingerprint: fingerprint, bootSession: boot, writtenAt: date, records: records)
+            .retainingUnchangedRecords(from: matchingPersistenceWrite)
         persistenceWrite = write
         savePersistence(write, name: "cache-write-evidence")
     }
@@ -134,6 +135,24 @@ extension GestaltManager {
         return PostModificationAcceptance.accept(records: write?.records ?? [], current: read?.snapshot.document,
                                                  liveValues: live, restartEvidence: restartEvidence(manual: manual),
                                                  sameBuild: sameBuild || read == nil || write == nil)
+    }
+
+    func saveRestartVerifiedHistory() throws {
+        guard let write = matchingPersistenceWrite, let boot = devicePersistenceRead?.bootSession,
+              let id = RestoreIntelligence.installationDeviceID else { return }
+        let candidates = Set(persistenceAcceptance().restartVerifiedCandidateIDs)
+        guard !candidates.isEmpty else { return }
+        let store = ChangeRecordStore(directory: RestoreIntelligence.historyDirectory, deviceID: id)
+        var history = try store.load()
+        let confirmed = write.records.filter { candidates.contains($0.id) }.map { record in
+            RecordedChange(id: record.id, date: record.date, deviceID: record.deviceID, osBuild: record.osBuild,
+                           featureID: record.featureID, key: record.key, layer: record.layer, original: record.original,
+                           new: record.new, backupProvenance: record.backupProvenance, verified: record.verified,
+                           restartVerified: true, restartVerificationBoot: boot)
+        }
+        history.removeAll { candidates.contains($0.id) }
+        history.append(contentsOf: confirmed)
+        try store.save(history)
     }
 
     func aiKeyDiagnostics(manual: Bool = false) -> [AIKeyDiagnostic] {

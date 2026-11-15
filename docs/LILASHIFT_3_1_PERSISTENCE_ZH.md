@@ -33,7 +33,7 @@
 | Handwriting Synthesis | `YgYIIViDt1kgzyIsIV61vA` | 历史目标 Boolean true。独立读取并在适用 App 验证。 |
 | Always-Listening Hey Siri | `TusANsf9Lfe3P/9fIXXSrQ` | 历史目标 Boolean true。独立查询，实际唤醒用系统测试。 |
 
-验收同时记录文件匹配和 MG 回答。文件目标值保留而 MG 无回答时仅给出文件证据。强证据、文件与实时值都符合且原值确实不同的记录才进入 `restartVerifiedCandidateIDs`。
+验收同时记录文件匹配和 MG 回答。文件目标值保留而 MG 无回答时仅给出文件证据。同一系统启动会话内保存各键的最近一次已核验写入。强证据、文件与实时值都符合且原值确实不同的记录才进入 `restartVerifiedCandidateIDs`。旧版仅有布尔标记的历史记录需要重新取得系统证据。
 
 ## Siri 独立状态
 

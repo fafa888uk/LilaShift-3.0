@@ -1327,6 +1327,23 @@
         }
       }
     },
+    "The iOS build differs or could not be read.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The iOS build differs or could not be read."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iOS 构建不同或未能读取。"
+          }
+        }
+      }
+    },
     "The one-tap preset preserves the On-Device Siri value.": {
       "extractionState": "manual",
       "localizations": {
@@ -1340,6 +1357,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "一键配置保留 Siri 本机能力原值。"
+          }
+        }
+      }
+    },
+    "The one-tap proposal preserves the native AI values.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The one-tap proposal preserves the native AI values."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "一键配置提案保留原生 AI 的值。"
           }
         }
       }
@@ -1527,23 +1561,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "已写入字段"
-          }
-        }
-      }
-    },
-    "iOS build changed. Review these observations on the new build.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iOS build changed. Review these observations on the new build."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iOS 构建已变化，请按新构建核验观察结果。"
           }
         }
       }

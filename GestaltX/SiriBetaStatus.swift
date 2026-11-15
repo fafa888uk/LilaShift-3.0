@@ -51,9 +51,8 @@ struct SiriBetaStatus {
 
     var outcome: Outcome {
         if !nativeHardware { return .unsupportedHardware }
-        if let major = osVersion?.split(separator: ".").first.flatMap({ Int($0) }), major < 27 {
-            return .unsupportedOS
-        }
+        guard let major = osVersion?.split(separator: ".").first.flatMap({ Int($0) }) else { return .pendingConfirmation }
+        if major < 27 { return .unsupportedOS }
         if let region = settings.confirmedRegion, Self.restrictedAccountRegions.contains(region) {
             return .unsupportedRegion
         }
@@ -61,7 +60,7 @@ struct SiriBetaStatus {
         if let siriLanguage = settings.confirmedSiriLanguage, !Self.isEnglish(siriLanguage) {
             return .unsupportedLanguage
         }
-        guard osVersion != nil, deviceLanguage != nil, settings.confirmedRegion != nil,
+        guard deviceLanguage != nil, settings.confirmedRegion != nil,
               settings.confirmedSiriLanguage != nil, let entry = settings.betaEntry
         else { return .pendingConfirmation }
         if !entry { return .entryUnavailable }
