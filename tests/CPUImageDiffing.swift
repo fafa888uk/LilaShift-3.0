@@ -29,6 +29,7 @@
 // also kept, so encoding noise cannot cause a false failure.
 
 #if os(iOS) || os(tvOS)
+import SwiftUI
 import UIKit
 import SnapshotTesting
 
