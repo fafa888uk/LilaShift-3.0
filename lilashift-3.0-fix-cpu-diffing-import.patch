@@ -1,0 +1,12 @@
+diff --git a/tests/CPUImageDiffing.swift b/tests/CPUImageDiffing.swift
+index 831da97..5d37f1c 100644
+--- a/tests/CPUImageDiffing.swift
++++ b/tests/CPUImageDiffing.swift
+@@ -29,6 +29,7 @@
+ // also kept, so encoding noise cannot cause a false failure.
+ 
+ #if os(iOS) || os(tvOS)
++import SwiftUI
+ import UIKit
+ import SnapshotTesting
+ 
