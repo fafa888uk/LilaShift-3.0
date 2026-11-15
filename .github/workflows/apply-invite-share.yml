@@ -47,6 +47,11 @@ jobs:
           git diff --cached --name-only | grep -qxF "scripts/generate_localization.py"
           test "$(git diff --cached --numstat | awk '{s+=$1; d+=$2} END {print s}')" -eq 226
           test "$(git diff --cached --numstat | awk '{s+=$1; d+=$2} END {print d}')" -eq 8
+          # The branch also tracks the uploaded patch file and this
+          # workflow file, so the staged tree includes them and can
+          # never equal the expected tree. Remove them from the index
+          # (disk copies stay) before comparing the tree.
+          git rm --cached -q lilashift-3.0-invite.patch .github/workflows/apply-invite-share.yml
           # Expect tree ccacb00c27fc14c3aa76ceafe845f880d331e361
           test "$(git write-tree)" = "ccacb00c27fc14c3aa76ceafe845f880d331e361"
 
@@ -64,7 +69,10 @@ jobs:
           git push origin feature/lila-invite-share
 
       - name: Clean up patch file
+        # The patch file was already removed from the index by the
+        # verify step, so it is not in the fix commit; it is only an
+        # untracked file on disk in this ephemeral runner. Delete it
+        # from disk; there is nothing to commit.
         run: |
-          git rm -q lilashift-3.0-invite.patch
-          git commit -m "chore: remove applied invite share patch file"
-          git push origin feature/lila-invite-share
+          rm -f lilashift-3.0-invite.patch
+          git status --porcelain
