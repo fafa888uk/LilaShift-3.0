@@ -1,0 +1,74 @@
+name: Apply DashboardV3 snapshot baselines
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out feature/lila-tests-fix
+        uses: actions/checkout@v4
+        with:
+          ref: feature/lila-tests-fix
+
+      - name: Download snapshot-references artifact from Tests run 43704762049
+        uses: actions/download-artifact@v4
+        with:
+          name: snapshot-references
+          run-id: 43704762049
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: /tmp/snapshot-references
+
+      - name: Copy the 8 recorded DashboardV3 PNGs into the branch
+        run: |
+          set -euo pipefail
+          ls -R /tmp/snapshot-references
+          target="tests/__Snapshots__/DashboardV3SnapshotTests"
+          mkdir -p "$target"
+          expected=(
+            "testV3HomePopulatedSnapshot.v3-home-populated.png"
+            "testV3HomePopulatedDarkSnapshot.v3-home-populated-dark.png"
+            "testV3HomePopulatedNarrowSnapshot.v3-home-populated-narrow-320.png"
+            "testV3HomePopulatedAccessibilitySnapshot.v3-home-populated-accessibility.png"
+            "testV3UnlockDestinationSnapshot.v3-unlock-populated.png"
+            "testV3DiagnosticsDestinationSnapshot.v3-diagnostics-populated.png"
+            "testV3PresetsDestinationSnapshot.v3-presets-populated.png"
+            "testV3ToolsDestinationSnapshot.v3-tools-populated.png"
+          )
+          for name in "${expected[@]}"; do
+            found=""
+            count=0
+            while IFS= read -r path; do
+              found="$path"
+              count=$((count + 1))
+            done < <(find /tmp/snapshot-references -type f -name "$name")
+            if [ "$count" -ne 1 ]; then
+              echo "ERROR: expected exactly 1 copy of $name in the artifact, found $count" >&2
+              exit 1
+            fi
+            cp "$found" "$target/$name"
+          done
+          echo "Copied files:"
+          ls -la "$target"
+          echo "Sizes (bytes):"
+          wc -c "$target"/testV3*.png
+
+      - name: Commit the 8 baselines and remove this one-shot workflow
+        run: |
+          set -euo pipefail
+          git config user.name "fafa920q-hue"
+          git config user.email "fafa920q-hue@users.noreply.github.com"
+          git add tests/__Snapshots__/DashboardV3SnapshotTests
+          git rm -q .github/workflows/apply-dashboardv3-snapshot-baselines.yml
+          git status --porcelain
+          added=$(git diff --cached --name-only --diff-filter=A -- tests/__Snapshots__/DashboardV3SnapshotTests | wc -l)
+          if [ "$added" -ne 8 ]; then
+            echo "ERROR: expected 8 added PNGs, got $added" >&2
+            exit 1
+          fi
+          git commit -m "test(snapshots): record 8 DashboardV3 baselines from Tests run 43704762049" -m "Recorded by Tests #258 (run 43704762049): the 8 DashboardV3 snapshot tests had no reference on disk and recorded these baselines. Copied byte-for-byte from the run's snapshot-references artifact; no image was generated locally."
+          git push
