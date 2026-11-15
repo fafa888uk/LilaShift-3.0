@@ -1,0 +1,70 @@
+name: Apply invite share feature
+
+# One-shot: apply lilashift-3.0-invite.patch (Share LilaShift row
+# in About) to the invite-share branch. The patch file must already
+# be uploaded to the branch root.
+# Dispatch with ref = feature/lila-invite-share.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v7
+        with:
+          ref: feature/lila-invite-share
+
+      - name: Verify patch file
+        run: |
+          ls -l lilashift-3.0-invite.patch
+          sha256sum lilashift-3.0-invite.patch
+
+      - name: Apply patch
+        run: |
+          git config user.name "fafa920q-hue"
+          git config user.email "fafa920q-hue@users.noreply.github.com"
+          git apply --index lilashift-3.0-invite.patch
+
+      - name: Verify staged files
+        run: |
+          echo "=== staged files ==="
+          git diff --cached --name-only
+          echo "=== staged stat ==="
+          git diff --cached --stat
+          # Expect exactly 14 files, +226/-8
+          test "$(git diff --cached --name-only | wc -l)" -eq 14
+          git diff --cached --name-only | grep -qxF "GestaltX/ShareLilaShift.swift"
+          git diff --cached --name-only | grep -qxF "tests/ShareLilaShiftTests.swift"
+          git diff --cached --name-only | grep -qxF "GestaltX/AboutView.swift"
+          git diff --cached --name-only | grep -qxF "GestaltX.xcodeproj/project.pbxproj"
+          git diff --cached --name-only | grep -qxF "GestaltX/Localizable.xcstrings"
+          git diff --cached --name-only | grep -qxF "scripts/generate_localization.py"
+          test "$(git diff --cached --numstat | awk '{s+=$1; d+=$2} END {print s}')" -eq 226
+          test "$(git diff --cached --numstat | awk '{s+=$1; d+=$2} END {print d}')" -eq 8
+          # Expect tree ccacb00c27fc14c3aa76ceafe845f880d331e361
+          test "$(git write-tree)" = "ccacb00c27fc14c3aa76ceafe845f880d331e361"
+
+      - name: Commit and push
+        run: |
+          git commit -m "feat: add Share LilaShift row in About
+
+          Adds a ShareLink row in About (below the Telegram updates
+          channel link) sharing the 3.0.0-rc.1 pre-release page and
+          the Telegram updates channel. The shared text states the
+          build is a pre-release, never a stable release. No
+          referral codes, invite links or rewards exist, none are
+          invented. Includes ShareLilaShiftTests (4 tests) and
+          localization for all 10 locales."
+          git push origin feature/lila-invite-share
+
+      - name: Clean up patch file
+        run: |
+          git rm -q lilashift-3.0-invite.patch
+          git commit -m "chore: remove applied invite share patch file"
+          git push origin feature/lila-invite-share
