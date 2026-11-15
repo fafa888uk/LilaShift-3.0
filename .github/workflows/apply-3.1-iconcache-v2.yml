@@ -1,0 +1,84 @@
+name: Apply 3.1 icon cache probe v2
+
+# One-shot: apply lilashift-3.1-iconcache-v2.patch (per-entry probe
+# diagnostics + gated single-item write for 七猫小说） to the 3.1
+# persistence branch. The patch file must already be uploaded to the
+# branch root. Dispatch with ref =
+# feature/lilashift-3.1-iphone18-2-persistence.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v7
+        with:
+          ref: feature/lilashift-3.1-iphone18-2-persistence
+
+      - name: Verify patch file
+        run: |
+          ls -l lilashift-3.1-iconcache-v2.patch
+          sha256sum lilashift-3.1-iconcache-v2.patch
+          test "$(sha256sum lilashift-3.1-iconcache-v2.patch | cut -d' ' -f1)" = "7763f8121424ce878b456788b6ba85a06d9febfc5b2512e6415cd361ff3dfb48"
+
+      - name: Apply patch
+        run: |
+          git config user.name "fafa920q-hue"
+          git config user.email "fafa920q-hue@users.noreply.github.com"
+          git apply --check --index lilashift-3.1-iconcache-v2.patch
+          git apply --index lilashift-3.1-iconcache-v2.patch
+
+      - name: Verify staged files
+        run: |
+          echo "=== staged files ==="
+          git diff --cached --name-only
+          echo "=== staged stat ==="
+          git diff --cached --stat
+          # Expect exactly 6 files
+          test "$(git diff --cached --name-only | wc -l)" -eq 6
+          git diff --cached --name-only | grep -qxF "GestaltX/AppAppearance.swift"
+          git diff --cached --name-only | grep -qxF "GestaltX/AppAppearanceDiagnostics.xcstrings"
+          git diff --cached --name-only | grep -qxF "GestaltX/AppAppearanceInspectionViews.swift"
+          git diff --cached --name-only | grep -qxF "GestaltX/GXIconCacheProbe.m"
+          git diff --cached --name-only | grep -qxF "docs/APP_APPEARANCE_RESEARCH_ZH.md"
+          git diff --cached --name-only | grep -qxF "tests/IconCacheProbeTests.swift"
+          # Expect +2517/-55
+          test "$(git diff --cached --numstat | awk '{s+=$1; d+=$2} END {print s}')" -eq 2517
+          test "$(git diff --cached --numstat | awk '{s+=$1; d+=$2} END {print d}')" -eq 55
+
+      - name: Run Python tests
+        run: |
+          python3 -X utf8 tests/LocalizationTests.py
+          python3 -X utf8 tests/ThirdPartyNoticesTests.py
+
+      - name: Commit and push
+        run: |
+          git commit -m "feat(iconcache): per-entry probe diagnostics and gated single-item write (七猫小说 only)
+
+          Probe v2 diagnoses why the single IconsCache entry is unreadable:
+          per-entry name, d_type, stat mode/size/uid/gid/inode, failure
+          stage + errno (readdir/iteratorOpen/fstatat/childOpen/prefixOpen/
+          prefixFstat/prefixRead/nonRegular), metadata-only enumeration,
+          stat() second opinion, symlink targets recorded but never
+          followed. Limits unchanged. Matches now carry the probed
+          prefix SHA-256.
+          Gated write path (code only, NOT verified on device): backup,
+          single-item display-name replacement for com.yueyou.cyreader
+          only, read-back verification, restore, and restart
+          re-verification behind a gate that requires a confirmed
+          matching probe record. Icon replacement is refused until a
+          probe confirms the icon bytes. Candidate records and
+          verified-effective state stay distinct."
+          git push origin feature/lilashift-3.1-iphone18-2-persistence
+
+      - name: Clean up patch file
+        run: |
+          git rm -q lilashift-3.1-iconcache-v2.patch
+          git commit -m "chore: remove applied icon cache probe v2 patch file"
+          git push origin feature/lilashift-3.1-iphone18-2-persistence
