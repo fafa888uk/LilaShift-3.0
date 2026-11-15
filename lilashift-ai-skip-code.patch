@@ -1,0 +1,1551 @@
+diff --git a/GestaltX/AIReadinessCheckup.swift b/GestaltX/AIReadinessCheckup.swift
+index 82cc7a2..63f9e87 100644
+--- a/GestaltX/AIReadinessCheckup.swift
++++ b/GestaltX/AIReadinessCheckup.swift
+@@ -6,22 +6,24 @@
+ // GestaltX's staging model (read-only until Fix is tapped, then the
+ // normal review + backup + readback flow).
+ //
+-// UNRESOLVED CONFLICT (#178) — READ BEFORE CHANGING THE UNLOCK:
++// #178 — DECIDED 2026-11-15, READ BEFORE CHANGING THE UNLOCK:
+ // Erosion-CN's live probes (iPhone 18 Pro Max iPhone19,7 and iPhone 15 Pro
+ // Max iPhone16,2, iOS 27) report that the Audio Intelligence CacheData
+ // slot (rb2tKZxlj0Gm2tBmUQSLqQ, observed slot #178 on those devices) is
+ // natively FALSE on iPhone/iPad, and forcing the *slot* to 1 breaks Photos
+ // high-quality Clean Up. Erosion-CN therefore treats any presence of the
+ // CacheExtra key as a conflict and strips it on native-AI hardware.
+-// Our 9-item unlock sets CacheExtra `audioIntelligence` = 1 on every
+-// device, including native-AI iPhones. The CacheData slot and the
++// The 9-item unlock used to set CacheExtra `audioIntelligence` = 1 on
++// every device, including native-AI iPhones. The CacheData slot and the
+ // CacheExtra key are two different layers, and neither codebase establishes
+ // from source alone whether setting the *CacheExtra key* to 1 on a
+-// native-AI iPhone is harmless, redundant, or harmful. Until that is
+-// verified on a native-AI device, the guards in this file are SLOT-ONLY:
+-// they repair a slot that reads 1, and they never flag, strip, or change
+-// the CacheExtra key the unlock sets. Do NOT "fix" this by changing the
+-// 9-item default without a device-verified decision from the user.
++// native-AI iPhone is harmless, redundant, or harmful — that question is
++// still open for a device already carrying the key from an earlier
++// session. The user decided on 2026-11-15 that native-AI hardware skips
++// all six AI keys instead of staging them (the one-tap stages only eSIM
++// + region code there), so the unlock no longer stages the key on native
++// hardware. The guards in this file stay SLOT-ONLY: they repair a slot
++// that reads 1, and they never flag, strip, or change a CacheExtra key.
+ //
+ // LAYER MODEL — never conflate the two:
+ // * CacheExtra key: a named entry in the plist's CacheExtra dictionary
+diff --git a/GestaltX/Capabilities.swift b/GestaltX/Capabilities.swift
+index 4310657..909c09f 100644
+--- a/GestaltX/Capabilities.swift
++++ b/GestaltX/Capabilities.swift
+@@ -247,13 +247,15 @@ enum DeviceModelDecision: Equatable {
+ 
+ /// Region mode for China Unlock. The one-tap unlock always stages exactly
+ /// the 9-item definition (eSIM + region code LL + six AI keys) in either
+-/// mode — the sales-region suffix and the regulatory model number are
+-/// never staged by the one-tap, because a regulatory model that does not
+-/// match the hardware makes the system discard the whole MobileGestalt
+-/// cache at boot and rebuild it from factory data, so the region change
+-/// does not stick. The mode only affects manual region presets (which
+-/// sales-region key is created on iOS 27) and restoring an unlock applied
+-/// by an older build.
++/// mode — except on hardware that natively supports Apple Intelligence,
++/// where it stages only the 3 non-AI items (eSIM + region code LL) and
++/// skips the six AI keys. The sales-region suffix and the regulatory
++/// model number are never staged by the one-tap, because a regulatory
++/// model that does not match the hardware makes the system discard the
++/// whole MobileGestalt cache at boot and rebuild it from factory data,
++/// so the region change does not stick. The mode only affects manual
++/// region presets (which sales-region key is created on iOS 27) and
++/// restoring an unlock applied by an older build.
+ enum ChinaUnlockRegionMode: String, CaseIterable, Identifiable {
+     case regionCodeOnly, fullUS
+     var id: String { rawValue }
+diff --git a/GestaltX/ContentView.swift b/GestaltX/ContentView.swift
+index 9ce8a6e..a1acf22 100644
+--- a/GestaltX/ContentView.swift
++++ b/GestaltX/ContentView.swift
+@@ -716,12 +716,21 @@ private struct ChinaUnlockCard: View {
+                 }
+             }
+ 
++            // Native Apple Intelligence hardware already enables the
++            // six AI presets: one-tap stages eSIM and region code
++            // only, and the AI column below reads Native.
++            if model.isNativeAppleIntelligence {
++                Text(L("Apple Intelligence is already enabled natively — one-tap stages eSIM and region code only."))
++                    .font(.footnote)
++                    .foregroundStyle(.secondary)
++            }
++
+             HStack(spacing: 0) {
+                 statusColumn(title: "eSIM", value: esimStatus ?? L("Not read yet"))
+                 Divider().frame(height: 36).background(Color.primary.opacity(0.12))
+                 statusColumn(title: L("Region Code"), value: model.previewRegionCode ?? L("Not read yet"))
+                 Divider().frame(height: 36).background(Color.primary.opacity(0.12))
+-                statusColumn(title: L("Apple Intelligence"), value: model.hasDocument ? "\(model.chinaUnlockAIEnabledCount)/\(ChinaUnlock.aiCapabilities.count)" : L("Not read yet"))
++                statusColumn(title: L("Apple Intelligence"), value: aiStatusText)
+             }
+ 
+             DisclosureGroup {
+@@ -797,6 +806,15 @@ private struct ChinaUnlockCard: View {
+         return L(flags == .enabled ? "Configured" : "Not Configured")
+     }
+ 
++    /// The Apple Intelligence status: Native on hardware that
++    /// natively supports it (the six presets are skipped, not
++    /// staged), otherwise the enabled count out of six.
++    private var aiStatusText: String {
++        guard model.hasDocument else { return L("Not read yet") }
++        if model.isNativeAppleIntelligence { return L("Native") }
++        return "\(model.chinaUnlockAIEnabledCount)/\(ChinaUnlock.aiCapabilities.count)"
++    }
++
+     private func statusColumn(title: String, value: String) -> some View {
+         VStack(alignment: .leading, spacing: 4) {
+             Text(title)
+@@ -846,11 +864,25 @@ private struct ChinaAIOnlyCard: View {
+             }
+ 
+             HStack(spacing: 0) {
+-                statusColumn(title: L("Apple Intelligence"), value: model.hasDocument ? "\(model.chinaUnlockAIEnabledCount)/\(ChinaUnlock.aiCapabilities.count)" : L("Not read yet"))
++                statusColumn(title: L("Apple Intelligence"), value: aiStatusText)
+             }
+ 
+             if model.hasDocument {
+-                if model.isChinaAIOnlyStaged && model.changeCount > 0 {
++                if model.isNativeAppleIntelligence {
++                    // Native hardware already enables all six presets:
++                    // there is nothing to stage, so no Enable button.
++                    // Restore stays available when anything reads as
++                    // enabled, to undo a change applied earlier.
++                    Text(L("Apple Intelligence is already enabled natively on this device — nothing to stage."))
++                        .font(.footnote)
++                        .foregroundStyle(.secondary)
++                    if model.chinaUnlockAIEnabledCount > 0 {
++                        Button(L("Restore AI")) { stageChanges(restoring: true) }
++                            .buttonStyle(GlassPrimaryButtonStyle())
++                            .disabled(model.isBusy)
++                            .opacity(model.isBusy ? 0.5 : 1)
++                    }
++                } else if model.isChinaAIOnlyStaged && model.changeCount > 0 {
+                     Button(L("Review Changes")) { onReviewChanges() }
+                         .buttonStyle(GlassPrimaryButtonStyle())
+                     Button(L("Restore AI")) { stageChanges(restoring: true) }
+@@ -888,6 +920,15 @@ private struct ChinaAIOnlyCard: View {
+         }
+     }
+ 
++    /// The Apple Intelligence status: Native on hardware that
++    /// natively supports it (there is nothing to stage), otherwise
++    /// the enabled count out of six.
++    private var aiStatusText: String {
++        guard model.hasDocument else { return L("Not read yet") }
++        if model.isNativeAppleIntelligence { return L("Native") }
++        return "\(model.chinaUnlockAIEnabledCount)/\(ChinaUnlock.aiCapabilities.count)"
++    }
++
+     private func statusColumn(title: String, value: String) -> some View {
+         VStack(alignment: .leading, spacing: 4) {
+             Text(title)
+diff --git a/GestaltX/DashboardV3.swift b/GestaltX/DashboardV3.swift
+index 8a98881..a403aa0 100644
+--- a/GestaltX/DashboardV3.swift
++++ b/GestaltX/DashboardV3.swift
+@@ -318,7 +318,8 @@ struct DashboardV3Home<DestinationView: View>: View {
+             return nil
+         case .chinaUnlock:
+             guard model.hasDocument else { return nil }
+-            return "\(L("eSIM")): \(esimStatusText) · \(L("Region Code")): \(model.previewRegionCode ?? L("Not read yet")) · \(L("Apple Intelligence")): \(model.chinaUnlockAIEnabledCount)/\(ChinaUnlock.aiCapabilities.count)"
++            let aiStatus = model.isNativeAppleIntelligence ? L("Native") : "\(model.chinaUnlockAIEnabledCount)/\(ChinaUnlock.aiCapabilities.count)"
++            return "\(L("eSIM")): \(esimStatusText) · \(L("Region Code")): \(model.previewRegionCode ?? L("Not read yet")) · \(L("Apple Intelligence")): \(aiStatus)"
+         case .appleIntelligenceEsim:
+             guard let checkup = model.aiReadinessCheckup else {
+                 return model.hasDocument ? L("Unknown") : nil
+diff --git a/GestaltX/DependencyAnalyzer.swift b/GestaltX/DependencyAnalyzer.swift
+index b784179..1114345 100644
+--- a/GestaltX/DependencyAnalyzer.swift
++++ b/GestaltX/DependencyAnalyzer.swift
+@@ -86,7 +86,7 @@ struct DependencyAnalysis: Equatable, Sendable {
+ // MARK: - Analyzer
+ 
+ /// Pure analysis over explicit inputs. `featureIDs` is the set the
+-/// user selected (one-tap's 9 items, the AI-only preset, the
++/// user selected (the one-tap set, the AI-only preset, the
+ /// eSIM+region preset, or individual capabilities). `snapshot` is
+ /// `nil` when the device has never been read: then the analysis is
+ /// `.unknown`, because dependencies cannot be checked without a
+diff --git a/GestaltX/DependencyAnalyzerViews.swift b/GestaltX/DependencyAnalyzerViews.swift
+index 84f58cc..cf6b624 100644
+--- a/GestaltX/DependencyAnalyzerViews.swift
++++ b/GestaltX/DependencyAnalyzerViews.swift
+@@ -13,9 +13,27 @@ import SwiftUI
+ struct DependencyAnalyzerCard: View {
+     @EnvironmentObject private var model: GestaltManager
+     @Environment(\.colorScheme) private var colorScheme
+-    @State private var selectedProposal: SafePatchProposal = SafePatchProposal.oneTap()
++    @State private var selectedKind: SafePatchProposalKind = .oneTap
+     @State private var showingDetails = false
+ 
++    /// Whether the loaded document belongs to hardware that natively
++    /// supports Apple Intelligence. The snapshot document's product
++    /// type is the source here — on a live read it is the device's
++    /// own, the same identity the profiler reads.
++    private var isNativeAppleIntelligence: Bool {
++        guard let productType = model.snapshot?.document.extra[GestaltKeys.productType] as? String else {
++            return false
++        }
++        return DeviceAIEligibility.isNativeAppleIntelligence(productType: productType)
++    }
++
++    /// The concrete proposal for the picked kind, built with the
++    /// native flag so the analysis never covers AI keys a native
++    /// device already supports.
++    private var selectedProposal: SafePatchProposal {
++        selectedKind.proposal(nativeAppleIntelligence: isNativeAppleIntelligence)
++    }
++
+     private var heroTint: Color {
+         colorScheme == .dark
+             ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
+@@ -60,10 +78,10 @@ struct DependencyAnalyzerCard: View {
+                     .disabled(model.isBusy)
+                     .opacity(model.isBusy ? 0.5 : 1)
+                 } else if let analysis {
+-                    Picker(L("Proposal"), selection: $selectedProposal) {
+-                        Text(L("One-Tap Unlock")).tag(SafePatchProposal.oneTap())
+-                        Text(L("AI Only")).tag(SafePatchProposal.aiOnly())
+-                        Text(L("eSIM & Region")).tag(SafePatchProposal.esimRegion())
++                    Picker(L("Proposal"), selection: $selectedKind) {
++                        Text(L("One-Tap Unlock")).tag(SafePatchProposalKind.oneTap)
++                        Text(L("AI Only")).tag(SafePatchProposalKind.aiOnly)
++                        Text(L("eSIM & Region")).tag(SafePatchProposalKind.esimRegion)
+                     }
+                     .pickerStyle(.segmented)
+ 
+@@ -99,6 +117,27 @@ struct DependencyAnalyzerCard: View {
+                                 }
+                             }
+                         }
++                        // Features the proposal deliberately leaves
++                        // unstaged: on native Apple Intelligence
++                        // hardware, the six AI capabilities.
++                        if !selectedProposal.skippedFeatureIDs.isEmpty {
++                            VStack(alignment: .leading, spacing: 4) {
++                                Text(L("Skipped"))
++                                    .font(.subheadline.weight(.semibold))
++                                    .foregroundStyle(.primary)
++                                ForEach(selectedProposal.skippedFeatureIDs, id: \.self) { featureID in
++                                    HStack(spacing: 6) {
++                                        Text(title(for: featureID))
++                                            .font(.subheadline)
++                                            .foregroundStyle(.primary)
++                                        Spacer()
++                                        Text(L("Native support — skipped"))
++                                            .font(.caption)
++                                            .foregroundStyle(.secondary)
++                                    }
++                                }
++                            }
++                        }
+                         if let setFindings = analysis.perFeature[""], !setFindings.isEmpty {
+                             VStack(alignment: .leading, spacing: 4) {
+                                 Text(L("Across the selected set"))
+diff --git a/GestaltX/GestaltManager.swift b/GestaltX/GestaltManager.swift
+index 04fe503..90756d0 100644
+--- a/GestaltX/GestaltManager.swift
++++ b/GestaltX/GestaltManager.swift
+@@ -40,9 +40,10 @@ final class GestaltManager: ObservableObject {
+     @Published var modelID = "keep"
+     /// Region mode for China Unlock (default region-code-only).
+     /// Persisted across launches; never reset by loading a document.
+-    /// The one-tap unlock stages the same 9 items in either mode; the
+-    /// mode only affects manual region presets and restoring an unlock
+-    /// applied by an older build.
++    /// The one-tap unlock stages the same items in either mode (9 on
++    /// non-native hardware, 3 on native Apple Intelligence hardware);
++    /// the mode only affects manual region presets and restoring an
++    /// unlock applied by an older build.
+     @Published var chinaUnlockRegionMode: ChinaUnlockRegionMode = .regionCodeOnly
+     /// The user explicitly confirmed an unverified (warned) AI staging
+     /// combination after reading its reason on the checkup card, by
+@@ -208,13 +209,32 @@ final class GestaltManager: ObservableObject {
+ 
+     // MARK: - China Unlock
+ 
++    /// True when the loaded document belongs to hardware that
++    /// natively supports Apple Intelligence (exact-match product-type
++    /// list in `DeviceAIEligibility`). The document's product type is
++    /// the source here — it is the device the file belongs to — and
++    /// on a live read it agrees with the profiler's live product
++    /// type. Unknown or absent product type reads as non-native
++    /// (fail closed: stage all 9).
++    var isNativeAppleIntelligence: Bool {
++        guard let productType = (working ?? snapshot?.document)?.extra[GestaltKeys.productType] as? String else {
++            return false
++        }
++        return DeviceAIEligibility.isNativeAppleIntelligence(productType: productType)
++    }
++
+     /// True while the full China Unlock is staged (not yet applied):
+-    /// eSIM flags enabled, region code US and all six AI presets enabled.
++    /// eSIM flags enabled, region code US and all six AI presets
++    /// enabled — or, on hardware that natively supports Apple
++    /// Intelligence, eSIM and region only, with the six AI presets
++    /// skipped by nativeness instead of staged (see
++    /// `stageChinaUnlock`).
+     var isChinaUnlockStaged: Bool {
+         guard hasDocument else { return false }
+         return cacheOptionChoice == .enable
+             && regionCodeID == ChinaUnlock.regionCodeID
+-            && ChinaUnlock.aiCapabilityIDs.allSatisfy { (choices[$0] ?? .keep) == .enable }
++            && (isNativeAppleIntelligence
++                || ChinaUnlock.aiCapabilityIDs.allSatisfy { (choices[$0] ?? .keep) == .enable })
+     }
+ 
+     /// Region code shown by the staged preview (`LL` once unlocked).
+@@ -238,12 +258,15 @@ final class GestaltManager: ObservableObject {
+ 
+     /// True when the preview already shows the full unlock, whether it was
+     /// just staged or applied in an earlier session: eSIM enabled, region
+-    /// code LL and all six AI presets enabled. The sales-region suffix
+-    /// and the regulatory model number are never part of the unlock, so
+-    /// they are not required here.
++    /// code LL and all six AI presets enabled — or, on hardware that
++    /// natively supports Apple Intelligence, eSIM enabled and region
++    /// code LL with the six AI presets skipped by nativeness. The
++    /// sales-region suffix and the regulatory model number are never
++    /// part of the unlock, so they are not required here.
+     var isChinaUnlockedInPreview: Bool {
+         isESIMUnlockedInPreview && previewRegionCode == "LL"
+-            && chinaUnlockAIEnabledCount == ChinaUnlock.aiCapabilityIDs.count
++            && (isNativeAppleIntelligence
++                || chinaUnlockAIEnabledCount == ChinaUnlock.aiCapabilityIDs.count)
+     }
+ 
+     /// True while the AI-only preset is staged: all six AI presets
+@@ -539,7 +562,11 @@ final class GestaltManager: ObservableObject {
+ 
+     /// Stages the full China Unlock: eSIM cache flags, region code US and
+     /// the six Apple Intelligence presets — exactly the 9 items, in either
+-    /// region mode. Nothing is written here; the user still reviews the
++    /// region mode. On hardware that natively supports Apple Intelligence
++    /// only the 3 non-AI items are staged (eSIM + region code) and the
++    /// six AI presets are skipped, never staged — staging them would
++    /// only record type-change diffs (1 → true) for values that are
++    /// already on. Nothing is written here; the user still reviews the
+     /// changes and applies them, and a restart is required before they
+     /// take effect. The sales-region suffix, the regulatory model number,
+     /// `siriOnDevice` and WAPI are never staged: a regulatory model that
+@@ -569,7 +596,13 @@ final class GestaltManager: ObservableObject {
+         guard stageCacheOption(.enable) else { return false }
+         regionCodeID = ChinaUnlock.regionCodeID
+         regionID = "keep"
+-        for id in ChinaUnlock.aiCapabilityIDs { choices[id] = .enable }
++        // Native Apple Intelligence hardware already supports the six
++        // AI presets: staging them would claim a change that is not
++        // one. Skip them; the staged flag reads the skip as satisfied
++        // (see `isChinaUnlockStaged`).
++        if !isNativeAppleIntelligence {
++            for id in ChinaUnlock.aiCapabilityIDs { choices[id] = .enable }
++        }
+         return true
+     }
+ 
+@@ -609,10 +642,19 @@ final class GestaltManager: ObservableObject {
+     /// keys are CacheExtra values and do not need the layout. Like the
+     /// one-tap, this is an explicit user action, so it is not gated by
+     /// the AI staging guard; the checkup surfaces any slot conflict with
+-    /// a repair path.
++    /// a repair path. On hardware that natively supports Apple
++    /// Intelligence there is nothing to stage — the presets are already
++    /// on — so staging is refused with the reason shown (`message`)
++    /// instead of recording type-change diffs (1 → true).
+     @discardableResult
+     func stageChinaAIOnly() -> Bool {
+         guard !isBusy else { return false }
++        if isNativeAppleIntelligence {
++            let reason = L("Apple Intelligence is already enabled natively on this device — nothing to stage.")
++            message = reason
++            log(reason)
++            return false
++        }
+         for id in ChinaUnlock.aiCapabilityIDs { choices[id] = .enable }
+         return true
+     }
+diff --git a/GestaltX/HomeDiagnosticsCache.swift b/GestaltX/HomeDiagnosticsCache.swift
+index ce417b8..2fae854 100644
+--- a/GestaltX/HomeDiagnosticsCache.swift
++++ b/GestaltX/HomeDiagnosticsCache.swift
+@@ -148,9 +148,19 @@ final class HomeDiagnosticsCache: ObservableObject {
+ 
+     /// The one-tap simulation, or `nil` when it has not been
+     /// computed yet. Convenience for the health and diagnosis cards,
+-    /// which always use the one-tap proposal.
++    /// which always use the one-tap proposal. The lookup key uses the
++    /// same native-Apple-Intelligence flag the background computation
++    /// used, or the cached simulation is missed.
+     var oneTapSimulation: SafePatchSimulation? {
+-        simulations[SafePatchProposal.oneTap()]
++        simulations[SafePatchProposal.oneTap(nativeAppleIntelligence: isNativeAppleIntelligence)]
++    }
++
++    /// Whether the read device natively supports Apple Intelligence,
++    /// from the cached report's profile. Unknown (no report yet)
++    /// reads as non-native.
++    var isNativeAppleIntelligence: Bool {
++        guard let profile = deviceReport?.profile else { return false }
++        return SafePatchProposal.isNativeAppleIntelligence(profile: profile)
+     }
+ 
+     /// Recomputes all cached diagnostics for the given inputs on a
+@@ -251,10 +261,15 @@ final class HomeDiagnosticsCache: ObservableObject {
+         let verifications = RestoreIntelligence.verifyBackups(backups, against: working)
+ 
+         // 4. SafePatch simulations for the three proposals the home
+-        // shows (pure computation, no file I/O).
++        // shows (pure computation, no file I/O). The proposals are
++        // built with the native-Apple-Intelligence flag from the
++        // report's profile (step 2), so a native device simulates —
++        // and stages — only the 3 non-AI items of the one-tap, with
++        // the six AI capabilities recorded as skipped.
++        let isNative = deviceReport.map { SafePatchProposal.isNativeAppleIntelligence(profile: $0.profile) } ?? false
+         let proposals = [
+-            SafePatchProposal.oneTap(),
+-            SafePatchProposal.aiOnly(),
++            SafePatchProposal.oneTap(nativeAppleIntelligence: isNative),
++            SafePatchProposal.aiOnly(nativeAppleIntelligence: isNative),
+             SafePatchProposal.esimRegion(),
+         ]
+         var simulations: [SafePatchProposal: SafePatchSimulation] = [:]
+@@ -278,7 +293,7 @@ final class HomeDiagnosticsCache: ObservableObject {
+             return SystemHealthScorer.score(
+                 profile: report.profile, snapshot: snapshot,
+                 backups: backups, backupVerifications: verifications,
+-                simulation: simulations[SafePatchProposal.oneTap()],
++                simulation: simulations[SafePatchProposal.oneTap(nativeAppleIntelligence: isNative)],
+                 recordedChanges: records,
+                 externalModificationCount: externalModificationCount)
+         }()
+diff --git a/GestaltX/Localizable.xcstrings b/GestaltX/Localizable.xcstrings
+index a74040e..a1fdb7b 100644
+--- a/GestaltX/Localizable.xcstrings
++++ b/GestaltX/Localizable.xcstrings
+@@ -40001,6 +40001,262 @@
+         }
+       }
+     },
++    "Skipped": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Skipped"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "已跳过"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Omitido"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "رد شد"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "スキップ済み"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "건너뜀"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Пропущено"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Đã bỏ qua"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "已跳過"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "已跳過"
++          }
++        }
++      }
++    },
++    "Native support — skipped": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Native support — skipped"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "原生支持，已跳过"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Soporte nativo: omitido"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "پشتیبانی بومی — رد شد"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "ネイティブ対応 — スキップ済み"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "네이티브 지원 — 건너뜀"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Нативная поддержка — пропущено"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Hỗ trợ gốc — đã bỏ qua"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "原生支援，已跳過"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "原生支援，已跳過"
++          }
++        }
++      }
++    },
++    "Apple Intelligence is already enabled natively on this device — nothing to stage.": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Apple Intelligence is already enabled natively on this device — nothing to stage."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "此设备已原生支持 Apple Intelligence，无需暂存。"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Apple Intelligence ya está activado de forma nativa en este dispositivo; no hay nada que preparar."
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Apple Intelligence در این دستگاه به‌صورت بومی فعال است — چیزی برای آماده‌سازی نیست."
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "このデバイスでは Apple Intelligence がネイティブで既に有効になっています — 準備するものはありません。"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "이 기기에서는 Apple Intelligence가 네이티브로 이미 활성화되어 있습니다 — 준비할 항목이 없습니다."
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Apple Intelligence уже включён на этом устройстве нативно — подготавливать нечего."
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Apple Intelligence đã được bật sẵn trên thiết bị này — không có gì cần chuẩn bị."
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "此裝置已原生支援 Apple Intelligence，無需暫存。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "此裝置已原生支援 Apple Intelligence，無需暫存。"
++          }
++        }
++      }
++    },
++    "Apple Intelligence is already enabled natively — one-tap stages eSIM and region code only.": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Apple Intelligence is already enabled natively — one-tap stages eSIM and region code only."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Apple Intelligence 已原生支持，一键解锁只暂存 eSIM 和地区码。"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Apple Intelligence ya está activado de forma nativa; el desbloqueo en un toque solo prepara la eSIM y el código de región."
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Apple Intelligence به‌صورت بومی فعال است — بازکردن با یک ضربه فقط eSIM و کد منطقه را آماده می‌کند."
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Apple Intelligence はネイティブで既に有効です — ワンタップ解除では eSIM と地域コードのみを準備します。"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Apple Intelligence는 네이티브로 이미 활성화되어 있습니다 — 원탭 잠금 해제는 eSIM과 지역 코드만 준비합니다."
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Apple Intelligence уже включён нативно — разблокировка в одно касание подготавливает только eSIM и код региона."
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Apple Intelligence đã được bật sẵn — mở khóa một chạm chỉ chuẩn bị eSIM và mã vùng."
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Apple Intelligence 已原生支援，一鍵解鎖只暫存 eSIM 和地區碼。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Apple Intelligence 已原生支援，一鍵解鎖只暫存 eSIM 和地區碼。"
++          }
++        }
++      }
++    },
+     "No backups stored yet.": {
+       "localizations": {
+         "en": {
+diff --git a/GestaltX/PresetCatalog.swift b/GestaltX/PresetCatalog.swift
+index f5a5fad..4209f1d 100644
+--- a/GestaltX/PresetCatalog.swift
++++ b/GestaltX/PresetCatalog.swift
+@@ -430,7 +430,7 @@ enum PresetCatalog {
+                 category: .group,
+                 chineseName: "一键解锁（中国）",
+                 englishTitle: "China Unlock (One-Tap)",
+-                chineseDescription: "为国行 eSIM 设备一键暂存 9 项：2 个 eSIM 缓存标记、地区码 LL、6 个 Apple 智能键。不改监管型号与销售地区。siriOnDevice 刻意保留原值。重启后须重新读取验收；系统可能在重启时还原地区值。",
++                chineseDescription: "为国行 eSIM 设备一键暂存 9 项：2 个 eSIM 缓存标记、地区码 LL、6 个 Apple 智能键。原生支持 Apple Intelligence 的机型跳过 6 个 Apple 智能键，只暂存 3 项。不改监管型号与销售地区。siriOnDevice 刻意保留原值。重启后须重新读取验收；系统可能在重启时还原地区值。",
+                 scope: .unknown(reason: "组合包含不同适用范围的项目：eSIM 仅限中国大陆市场设备，AI 功能依赖原生硬件或地区 LL。"),
+                 scopeNote: "eSIM 仅限中国大陆市场设备（地区码 CH）；AI 功能依赖原生硬件或地区 LL；地区码暂存不依赖机型。",
+                 minSystem: .known("iOS 27"),
+diff --git a/GestaltX/SafePatch.swift b/GestaltX/SafePatch.swift
+index 7432fda..410a45c 100644
+--- a/GestaltX/SafePatch.swift
++++ b/GestaltX/SafePatch.swift
+@@ -29,30 +29,92 @@ import Foundation
+ struct SafePatchProposal: Hashable, Sendable {
+     let featureIDs: [String]
+     let regionMode: ChinaUnlockRegionMode
+-
+-    init(featureIDs: [String], regionMode: ChinaUnlockRegionMode = .regionCodeOnly) {
++    /// Feature ids the proposal deliberately leaves unstaged — never a
++    /// staged diff. On hardware that natively supports Apple
++    /// Intelligence this is the six AI capabilities; empty on
++    /// non-native hardware.
++    let skippedFeatureIDs: [String]
++
++    init(featureIDs: [String], regionMode: ChinaUnlockRegionMode = .regionCodeOnly,
++         skippedFeatureIDs: [String] = []) {
+         self.featureIDs = featureIDs
+         self.regionMode = regionMode
++        self.skippedFeatureIDs = skippedFeatureIDs
+     }
+ 
+-    /// The 9-item China Unlock: eSIM + region code + six AI keys.
+-    static func oneTap(regionMode: ChinaUnlockRegionMode = .regionCodeOnly) -> SafePatchProposal {
+-        SafePatchProposal(featureIDs: [FeatureEligibilityEvaluator.esimFeatureID,
++    /// The 9-item China Unlock on non-native hardware: eSIM + region
++    /// code + six AI keys. On hardware that natively supports Apple
++    /// Intelligence (`nativeAppleIntelligence: true`) only the 3
++    /// non-AI items are staged (2 eSIM + region code) and the six AI
++    /// capabilities are recorded as skipped, never staged — not even
++    /// as type-change diffs (1 → true) for values that are already on.
++    static func oneTap(nativeAppleIntelligence: Bool = false,
++                       regionMode: ChinaUnlockRegionMode = .regionCodeOnly) -> SafePatchProposal {
++        if nativeAppleIntelligence {
++            return SafePatchProposal(
++                featureIDs: [FeatureEligibilityEvaluator.esimFeatureID,
++                             FeatureEligibilityEvaluator.regionCodeFeatureID],
++                regionMode: regionMode, skippedFeatureIDs: ChinaUnlock.aiCapabilityIDs)
++        }
++        return SafePatchProposal(featureIDs: [FeatureEligibilityEvaluator.esimFeatureID,
+                                        FeatureEligibilityEvaluator.regionCodeFeatureID]
+                             + ChinaUnlock.aiCapabilityIDs, regionMode: regionMode)
+     }
+ 
+-    /// The six AI capabilities only (the standalone AI preset).
+-    static func aiOnly(regionMode: ChinaUnlockRegionMode = .regionCodeOnly) -> SafePatchProposal {
+-        SafePatchProposal(featureIDs: ChinaUnlock.aiCapabilityIDs, regionMode: regionMode)
++    /// The six AI capabilities only (the standalone AI preset). On
++    /// native Apple Intelligence hardware there is nothing to stage:
++    /// the proposal comes back empty with all six recorded as
++    /// skipped.
++    static func aiOnly(nativeAppleIntelligence: Bool = false,
++                       regionMode: ChinaUnlockRegionMode = .regionCodeOnly) -> SafePatchProposal {
++        if nativeAppleIntelligence {
++            return SafePatchProposal(featureIDs: [], regionMode: regionMode,
++                                     skippedFeatureIDs: ChinaUnlock.aiCapabilityIDs)
++        }
++        return SafePatchProposal(featureIDs: ChinaUnlock.aiCapabilityIDs, regionMode: regionMode)
+     }
+ 
+     /// eSIM + region only (the standalone eSIM & Region preset).
++    /// Unchanged by nativeness: it never contains an AI capability.
+     static func esimRegion(regionMode: ChinaUnlockRegionMode = .regionCodeOnly) -> SafePatchProposal {
+         SafePatchProposal(featureIDs: [FeatureEligibilityEvaluator.esimFeatureID,
+                                        FeatureEligibilityEvaluator.regionCodeFeatureID],
+                           regionMode: regionMode)
+     }
++
++    /// Resolves the native-Apple-Intelligence flag from a device
++    /// profile, fail closed: a known value wins; otherwise the
++    /// product type is looked up in the exact-match list
++    /// (`DeviceAIEligibility`); anything unknown reads as non-native,
++    /// so the full 9-item proposal is built (the existing behavior).
++    static func isNativeAppleIntelligence(profile: DeviceProfile?) -> Bool {
++        guard let profile else { return false }
++        if let known = profile.isNativeAppleIntelligence.value { return known }
++        guard let productType = profile.productType.value, !productType.isEmpty else { return false }
++        return DeviceAIEligibility.isNativeAppleIntelligence(productType: productType)
++    }
++}
++
++/// Which preset the user picked in a proposal picker. The picker
++/// binds to the kind (stable across devices); the concrete proposal
++/// is built from the kind plus the native-Apple-Intelligence flag, so
++/// a native device never keeps a stale non-native proposal selected.
++enum SafePatchProposalKind: String, CaseIterable, Hashable, Sendable {
++    case oneTap
++    case aiOnly
++    case esimRegion
++
++    func proposal(nativeAppleIntelligence: Bool,
++                  regionMode: ChinaUnlockRegionMode = .regionCodeOnly) -> SafePatchProposal {
++        switch self {
++        case .oneTap:
++            return .oneTap(nativeAppleIntelligence: nativeAppleIntelligence, regionMode: regionMode)
++        case .aiOnly:
++            return .aiOnly(nativeAppleIntelligence: nativeAppleIntelligence, regionMode: regionMode)
++        case .esimRegion:
++            return .esimRegion(regionMode: regionMode)
++        }
++    }
+ }
+ 
+ // MARK: - Simulation result types
+@@ -177,6 +239,10 @@ struct SafePatchSimulation: Equatable, Sendable {
+     let diffs: [SafePatchDiff]
+     let blockers: [String]
+     let warnings: [String]
++    /// Feature ids the proposal deliberately left unstaged (copied
++    /// from the proposal): on native Apple Intelligence hardware, the
++    /// six AI capabilities. Never a staged diff.
++    let skippedFeatureIDs: [String] = []
+     /// Keys in the diff that touch hardware-identity fields.
+     let hardwareIdentityTouches: [String]
+     let canProceed: Bool
+@@ -424,6 +490,7 @@ enum SafePatch {
+         return SafePatchSimulation(
+             proposal: proposal, checks: checks, diffs: diffs,
+             blockers: blockers, warnings: warnings,
++            skippedFeatureIDs: proposal.skippedFeatureIDs,
+             hardwareIdentityTouches: hardwareIdentityTouches,
+             canProceed: blockers.isEmpty,
+             serializationOK: serializationOK, backupReady: backupReady,
+diff --git a/GestaltX/SafePatchViews.swift b/GestaltX/SafePatchViews.swift
+index e183e6d..c01be88 100644
+--- a/GestaltX/SafePatchViews.swift
++++ b/GestaltX/SafePatchViews.swift
+@@ -14,9 +14,30 @@ struct SafePatchCard: View {
+     @EnvironmentObject private var model: GestaltManager
+     @Environment(\.homeDiagnosticsCache) private var diagnostics: HomeDiagnosticsCache?
+     @Environment(\.colorScheme) private var colorScheme
+-    @State private var selectedProposal: SafePatchProposal = SafePatchProposal.oneTap()
++    @State private var selectedKind: SafePatchProposalKind = .oneTap
+     @State private var showingChecks = false
+ 
++    /// Whether this device natively supports Apple Intelligence. The
++    /// cached report's profile is the source of truth on a read
++    /// device; without a cache the snapshot document's product type
++    /// is the fallback (on a real device both agree — the document is
++    /// the device's own read).
++    private var isNativeAppleIntelligence: Bool {
++        if let profile = diagnostics?.deviceReport?.profile {
++            return SafePatchProposal.isNativeAppleIntelligence(profile: profile)
++        }
++        guard let productType = model.snapshot?.document.extra[GestaltKeys.productType] as? String else {
++            return false
++        }
++        return DeviceAIEligibility.isNativeAppleIntelligence(productType: productType)
++    }
++
++    /// The concrete proposal for the picked kind, built with the
++    /// native flag so the cache lookup (keyed by proposal) hits.
++    private var selectedProposal: SafePatchProposal {
++        selectedKind.proposal(nativeAppleIntelligence: isNativeAppleIntelligence)
++    }
++
+     private var heroTint: Color {
+         colorScheme == .dark
+             ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
+@@ -64,10 +85,10 @@ struct SafePatchCard: View {
+                     .disabled(model.isBusy)
+                     .opacity(model.isBusy ? 0.5 : 1)
+                 } else {
+-                    Picker(L("Proposal"), selection: $selectedProposal) {
+-                        Text(L("One-Tap Unlock")).tag(SafePatchProposal.oneTap())
+-                        Text(L("AI Only")).tag(SafePatchProposal.aiOnly())
+-                        Text(L("eSIM & Region")).tag(SafePatchProposal.esimRegion())
++                    Picker(L("Proposal"), selection: $selectedKind) {
++                        Text(L("One-Tap Unlock")).tag(SafePatchProposalKind.oneTap)
++                        Text(L("AI Only")).tag(SafePatchProposalKind.aiOnly)
++                        Text(L("eSIM & Region")).tag(SafePatchProposalKind.esimRegion)
+                     }
+                     .pickerStyle(.segmented)
+ 
+@@ -166,6 +187,40 @@ struct SafePatchCard: View {
+                 }
+             }
+         }
++        if !simulation.skippedFeatureIDs.isEmpty {
++            skippedList(simulation)
++        }
++    }
++
++    /// The features this proposal deliberately leaves unstaged: on
++    /// native Apple Intelligence hardware, the six AI capabilities.
++    /// They are shown as skipped with the reason, never as changes.
++    @ViewBuilder
++    private func skippedList(_ simulation: SafePatchSimulation) -> some View {
++        VStack(alignment: .leading, spacing: 6) {
++            Text(L("Skipped"))
++                .font(.subheadline.weight(.semibold))
++                .foregroundStyle(.primary)
++            ForEach(simulation.skippedFeatureIDs, id: \.self) { featureID in
++                HStack(spacing: 6) {
++                    Text(L(title(for: featureID)))
++                        .font(.subheadline)
++                        .foregroundStyle(.primary)
++                    Spacer()
++                    Text(L("Native support — skipped"))
++                        .font(.caption)
++                        .foregroundStyle(.secondary)
++                }
++            }
++        }
++        .padding(10)
++        .background(Color.primary.opacity(0.04), in: RoundedRectangle(cornerRadius: 12))
++    }
++
++    /// The user-facing title for a skipped feature id: the
++    /// capability's title when it is one, the id otherwise.
++    private func title(for featureID: String) -> String {
++        Capability.all.first(where: { $0.id == featureID })?.title ?? featureID
+     }
+ 
+     @ViewBuilder
+diff --git a/GestaltX/SmartFaultDiagnosisViews.swift b/GestaltX/SmartFaultDiagnosisViews.swift
+index 620c0f4..b26069e 100644
+--- a/GestaltX/SmartFaultDiagnosisViews.swift
++++ b/GestaltX/SmartFaultDiagnosisViews.swift
+@@ -88,7 +88,9 @@ struct SmartFaultDiagnosisCard: View {
+         guard let report = deviceReport else { return nil }
+         let verifications = RestoreIntelligence.verifyBackups(model.backups, against: model.working)
+         let simulation = SafePatch.simulate(
+-            proposal: SafePatchProposal.oneTap(), snapshot: model.snapshot,
++            proposal: SafePatchProposal.oneTap(
++                nativeAppleIntelligence: SafePatchProposal.isNativeAppleIntelligence(profile: report.profile)),
++            snapshot: model.snapshot,
+             currentDocument: model.working, backups: model.backups)
+         return SystemHealthScorer.score(
+             profile: report.profile, snapshot: model.snapshot,
+diff --git a/GestaltX/SystemHealthScoreViews.swift b/GestaltX/SystemHealthScoreViews.swift
+index b1e2742..e22faba 100644
+--- a/GestaltX/SystemHealthScoreViews.swift
++++ b/GestaltX/SystemHealthScoreViews.swift
+@@ -40,7 +40,9 @@ struct SystemHealthScoreCard: View {
+             changeRecordCount: records.count)
+         let verifications = RestoreIntelligence.verifyBackups(model.backups, against: model.working)
+         let simulation = SafePatch.simulate(
+-            proposal: SafePatchProposal.oneTap(), snapshot: model.snapshot,
++            proposal: SafePatchProposal.oneTap(
++                nativeAppleIntelligence: SafePatchProposal.isNativeAppleIntelligence(profile: report.profile)),
++            snapshot: model.snapshot,
+             currentDocument: model.working, backups: model.backups)
+         return SystemHealthScorer.score(
+             profile: report.profile, snapshot: model.snapshot,
+diff --git a/localization/es.json b/localization/es.json
+index 3fa4f6b..7ed4235 100644
+--- a/localization/es.json
++++ b/localization/es.json
+@@ -617,6 +617,10 @@
+   "Modification timeline and precise restore, from trusted records only.": "Cronología de modificaciones y restauración precisa, solo a partir de registros de confianza.",
+   "Native": "Nativo",
+   "Native support and conflicts": "Soporte nativo y conflictos",
++  "Skipped": "Omitido",
++  "Native support — skipped": "Soporte nativo: omitido",
++  "Apple Intelligence is already enabled natively on this device — nothing to stage.": "Apple Intelligence ya está activado de forma nativa en este dispositivo; no hay nada que preparar.",
++  "Apple Intelligence is already enabled natively — one-tap stages eSIM and region code only.": "Apple Intelligence ya está activado de forma nativa; el desbloqueo en un toque solo prepara la eSIM y el código de región.",
+   "No backups stored yet.": "Aún no hay copias de seguridad guardadas.",
+   "No device document is available, so this feature cannot be judged.": "No hay ningún documento del dispositivo disponible, así que no se puede evaluar esta función.",
+   "No document has been read.": "No se ha leído ningún documento.",
+diff --git a/localization/fa.json b/localization/fa.json
+index dca2c39..a7daa2b 100644
+--- a/localization/fa.json
++++ b/localization/fa.json
+@@ -617,6 +617,10 @@
+   "Modification timeline and precise restore, from trusted records only.": "خط زمانی تغییرات و بازیابی دقیق، فقط بر اساس سوابق مورد اعتماد.",
+   "Native": "بومی",
+   "Native support and conflicts": "پشتیبانی بومی و تعارض‌ها",
++  "Skipped": "رد شد",
++  "Native support — skipped": "پشتیبانی بومی — رد شد",
++  "Apple Intelligence is already enabled natively on this device — nothing to stage.": "Apple Intelligence در این دستگاه به‌صورت بومی فعال است — چیزی برای آماده‌سازی نیست.",
++  "Apple Intelligence is already enabled natively — one-tap stages eSIM and region code only.": "Apple Intelligence به‌صورت بومی فعال است — بازکردن با یک ضربه فقط eSIM و کد منطقه را آماده می‌کند.",
+   "No backups stored yet.": "هنوز هیچ پشتیبانی ذخیره نشده است.",
+   "No device document is available, so this feature cannot be judged.": "سندی از دستگاه در دسترس نیست، بنابراین نمی‌توان این ویژگی را ارزیابی کرد.",
+   "No document has been read.": "هنوز هیچ سندی خوانده نشده است.",
+diff --git a/localization/ja.json b/localization/ja.json
+index 426080c..2b0eafe 100644
+--- a/localization/ja.json
++++ b/localization/ja.json
+@@ -617,6 +617,10 @@
+   "Modification timeline and precise restore, from trusted records only.": "変更タイムラインと正確な復元は、信頼できる記録のみに基づきます。",
+   "Native": "ネイティブ",
+   "Native support and conflicts": "ネイティブ対応と競合",
++  "Skipped": "スキップ済み",
++  "Native support — skipped": "ネイティブ対応 — スキップ済み",
++  "Apple Intelligence is already enabled natively on this device — nothing to stage.": "このデバイスでは Apple Intelligence がネイティブで既に有効になっています — 準備するものはありません。",
++  "Apple Intelligence is already enabled natively — one-tap stages eSIM and region code only.": "Apple Intelligence はネイティブで既に有効です — ワンタップ解除では eSIM と地域コードのみを準備します。",
+   "No backups stored yet.": "保存されたバックアップはまだありません。",
+   "No device document is available, so this feature cannot be judged.": "デバイスのドキュメントがないため、この機能を判断できません。",
+   "No document has been read.": "ドキュメントがまだ読み取られていません。",
+diff --git a/localization/ko.json b/localization/ko.json
+index 6c84e07..d6e0418 100644
+--- a/localization/ko.json
++++ b/localization/ko.json
+@@ -617,6 +617,10 @@
+   "Modification timeline and precise restore, from trusted records only.": "수정 타임라인과 정확한 복원은 신뢰할 수 있는 기록만을 기준으로 합니다.",
+   "Native": "네이티브",
+   "Native support and conflicts": "네이티브 지원 및 충돌",
++  "Skipped": "건너뜀",
++  "Native support — skipped": "네이티브 지원 — 건너뜀",
++  "Apple Intelligence is already enabled natively on this device — nothing to stage.": "이 기기에서는 Apple Intelligence가 네이티브로 이미 활성화되어 있습니다 — 준비할 항목이 없습니다.",
++  "Apple Intelligence is already enabled natively — one-tap stages eSIM and region code only.": "Apple Intelligence는 네이티브로 이미 활성화되어 있습니다 — 원탭 잠금 해제는 eSIM과 지역 코드만 준비합니다.",
+   "No backups stored yet.": "저장된 백업이 아직 없습니다.",
+   "No device document is available, so this feature cannot be judged.": "사용 가능한 기기 문서가 없어 이 기능을 판단할 수 없습니다.",
+   "No document has been read.": "읽은 문서가 없습니다.",
+diff --git a/localization/ru.json b/localization/ru.json
+index fb9030d..120a39b 100644
+--- a/localization/ru.json
++++ b/localization/ru.json
+@@ -617,6 +617,10 @@
+   "Modification timeline and precise restore, from trusted records only.": "Хронология изменений и точное восстановление — только на основе доверенных записей.",
+   "Native": "Встроено",
+   "Native support and conflicts": "Встроенная поддержка и конфликты",
++  "Skipped": "Пропущено",
++  "Native support — skipped": "Нативная поддержка — пропущено",
++  "Apple Intelligence is already enabled natively on this device — nothing to stage.": "Apple Intelligence уже включён на этом устройстве нативно — подготавливать нечего.",
++  "Apple Intelligence is already enabled natively — one-tap stages eSIM and region code only.": "Apple Intelligence уже включён нативно — разблокировка в одно касание подготавливает только eSIM и код региона.",
+   "No backups stored yet.": "Резервных копий пока нет.",
+   "No device document is available, so this feature cannot be judged.": "Документ устройства недоступен, поэтому оценить эту функцию невозможно.",
+   "No document has been read.": "Документ ещё не прочитан.",
+diff --git a/localization/vi.json b/localization/vi.json
+index b2134ac..e60232d 100644
+--- a/localization/vi.json
++++ b/localization/vi.json
+@@ -617,6 +617,10 @@
+   "Modification timeline and precise restore, from trusted records only.": "Dòng thời gian sửa đổi và khôi phục chính xác, chỉ dựa trên bản ghi đáng tin cậy.",
+   "Native": "Gốc",
+   "Native support and conflicts": "Hỗ trợ gốc và xung đột",
++  "Skipped": "Đã bỏ qua",
++  "Native support — skipped": "Hỗ trợ gốc — đã bỏ qua",
++  "Apple Intelligence is already enabled natively on this device — nothing to stage.": "Apple Intelligence đã được bật sẵn trên thiết bị này — không có gì cần chuẩn bị.",
++  "Apple Intelligence is already enabled natively — one-tap stages eSIM and region code only.": "Apple Intelligence đã được bật sẵn — mở khóa một chạm chỉ chuẩn bị eSIM và mã vùng.",
+   "No backups stored yet.": "Chưa có bản sao lưu nào được lưu.",
+   "No device document is available, so this feature cannot be judged.": "Không có tài liệu thiết bị nên không thể đánh giá tính năng này.",
+   "No document has been read.": "Chưa đọc tài liệu nào.",
+diff --git a/localization/zh-Hant-HK.json b/localization/zh-Hant-HK.json
+index 9b573fc..e9838fd 100644
+--- a/localization/zh-Hant-HK.json
++++ b/localization/zh-Hant-HK.json
+@@ -617,6 +617,10 @@
+   "Modification timeline and precise restore, from trusted records only.": "修改時間軸與精確還原，僅依據可信記錄。",
+   "Native": "原生",
+   "Native support and conflicts": "原生支援與衝突",
++  "Skipped": "已跳過",
++  "Native support — skipped": "原生支援，已跳過",
++  "Apple Intelligence is already enabled natively on this device — nothing to stage.": "此裝置已原生支援 Apple Intelligence，無需暫存。",
++  "Apple Intelligence is already enabled natively — one-tap stages eSIM and region code only.": "Apple Intelligence 已原生支援，一鍵解鎖只暫存 eSIM 和地區碼。",
+   "No backups stored yet.": "尚未儲存任何備份。",
+   "No device document is available, so this feature cannot be judged.": "沒有可用的設備文件，無法判斷此功能。",
+   "No document has been read.": "尚未讀取任何文件。",
+diff --git a/localization/zh-Hant-TW.json b/localization/zh-Hant-TW.json
+index 4f006b2..a5e88e8 100644
+--- a/localization/zh-Hant-TW.json
++++ b/localization/zh-Hant-TW.json
+@@ -617,6 +617,10 @@
+   "Modification timeline and precise restore, from trusted records only.": "修改時間軸與精確還原，僅依據可信記錄。",
+   "Native": "原生",
+   "Native support and conflicts": "原生支援與衝突",
++  "Skipped": "已跳過",
++  "Native support — skipped": "原生支援，已跳過",
++  "Apple Intelligence is already enabled natively on this device — nothing to stage.": "此裝置已原生支援 Apple Intelligence，無需暫存。",
++  "Apple Intelligence is already enabled natively — one-tap stages eSIM and region code only.": "Apple Intelligence 已原生支援，一鍵解鎖只暫存 eSIM 和地區碼。",
+   "No backups stored yet.": "尚未儲存任何備份。",
+   "No device document is available, so this feature cannot be judged.": "沒有可用的裝置文件，無法判斷此功能。",
+   "No document has been read.": "尚未讀取任何文件。",
+diff --git a/scripts/generate_localization.py b/scripts/generate_localization.py
+index 9dcff70..3390dda 100644
+--- a/scripts/generate_localization.py
++++ b/scripts/generate_localization.py
+@@ -627,6 +627,10 @@ Modification Timeline	修改时间线
+ Modification timeline and precise restore, from trusted records only.	修改时间线与精确恢复，仅依据可信记录。
+ Native	原生
+ Native support and conflicts	原生支持与冲突
++Skipped	已跳过
++Native support — skipped	原生支持，已跳过
++Apple Intelligence is already enabled natively on this device — nothing to stage.	此设备已原生支持 Apple Intelligence，无需暂存。
++Apple Intelligence is already enabled natively — one-tap stages eSIM and region code only.	Apple Intelligence 已原生支持，一键解锁只暂存 eSIM 和地区码。
+ No backups stored yet.	尚未存储任何备份。
+ No device document is available, so this feature cannot be judged.	没有可用的设备文档，无法判断此功能。
+ No document has been read.	尚未读取任何文档。
+diff --git a/tests/ChinaUnlockTests.swift b/tests/ChinaUnlockTests.swift
+index cff4669..ae400dc 100644
+--- a/tests/ChinaUnlockTests.swift
++++ b/tests/ChinaUnlockTests.swift
+@@ -21,8 +21,10 @@ final class ChinaUnlockTests: XCTestCase {
+ 
+     /// China-mainland fixture: eSIM restricted (green-tea on), region CH
+     /// with CH/A sales suffixes, no AI keys, a device-specific Siri
+-    /// value (2) and an Air model number.
+-    static func fixture(cacheUUID: String? = nil) throws -> GestaltDocument {
++    /// value (2) and an Air model number. The default product type is
++    /// the native iPhone18,1; pass a non-native product type (for
++    /// example iPhone14,7) for the full 9-item unlock.
++    static func fixture(cacheUUID: String? = nil, productType: String = "iPhone18,1") throws -> GestaltDocument {
+         let layout = MobileGestaltCacheLayout.originalProfile
+         var cache = Data(count: layout.byteCount)
+         cache[layout.greenTeaOffset] = 1
+@@ -30,7 +32,7 @@ final class ChinaUnlockTests: XCTestCase {
+         cache[layout.validityOffset(for: layout.greenTeaIndex)] = 1
+         cache[layout.validityOffset(for: layout.notGreenTeaIndex)] = 1
+         let extra: [String: Any] = [
+-            GestaltKeys.productType: "iPhone18,1",
++            GestaltKeys.productType: productType,
+             GestaltKeys.regionCode: "CH",
+             GestaltKeys.regionInfo: "CH/A",
+             GestaltKeys.legacyRegionInfo: "CH/A",
+@@ -90,7 +92,99 @@ final class ChinaUnlockTests: XCTestCase {
+         XCTAssert(!manager.isChinaUnlockStaged && !manager.isChinaUnlockedInPreview,
+                    "Fixture starts locked: eSIM restricted, region CH, AI absent")
+ 
+-        // One tap stages the full unlock.
++        // One tap stages the unlock. The fixture is native Apple
++        // Intelligence hardware (iPhone18,1), so only the 3 non-AI
++        // items are staged (eSIM + region code) and the six AI keys
++        // are skipped, never staged.
++        manager.stageChinaUnlock()
++        XCTAssert(manager.isChinaUnlockStaged, "Staged flag is set after one tap")
++        XCTAssert(manager.isChinaUnlockedInPreview, "Preview shows the unlock")
++        XCTAssert(manager.isChinaESIMRegionStaged,
++                   "On native hardware the one-tap is the eSIM+region preset")
++        guard let preview = manager.preview else { throw Failure(message: "Preview exists after staging") }
++        XCTAssert(try DeviceCacheOptions.flags(in: preview) == .enabled,
++                   "Preview enables eSIM: green-tea false, not-green-tea true")
++        let before = original.root["CacheData"] as! Data
++        let after = preview.root["CacheData"] as! Data
++        XCTAssert(before.indices.filter { before[$0] != after[$0] } == [layout.greenTeaOffset, layout.notGreenTeaOffset].sorted(),
++                   "Only the two eSIM bytes change in CacheData")
++        XCTAssert(preview.extra[GestaltKeys.regionCode] as? String == "LL",
++                   "Preview sets RegionCode to LL")
++        XCTAssert(preview.extra[GestaltKeys.regionInfo] as? String == "CH/A"
++                   && preview.extra[GestaltKeys.legacyRegionInfo] as? String == "CH/A",
++                   "Sales-region suffixes stay CH/A")
++        for key in Self.aiKeys {
++            XCTAssert(preview.extra[key] == nil,
++                       "Preview leaves AI key \(key) unstaged on native hardware")
++        }
++        XCTAssert(manager.chinaUnlockAIEnabledCount == 0, "No AI preset reads as enabled on native hardware")
++        XCTAssert((preview.extra[Self.siriKey] as? NSNumber)?.intValue == 2,
++                   "siriOnDevice keeps its device-specific value")
++        XCTAssert((manager.choices["siriOnDevice"] ?? .keep) == .keep,
++                   "siriOnDevice is never staged by China Unlock")
++        XCTAssert(preview.extra[GestaltKeys.modelNumber] as? String == "A3518"
++                   && manager.modelID == "keep",
++                   "Model number is untouched")
++        XCTAssert(manager.regionID == "keep", "Sales Region stays keep")
++        // Boundary: staging touches exactly the region code in
++        // CacheExtra and no other field, added or removed.
++        let changedKeys = Set(original.extra.keys).union(preview.extra.keys).filter { key in
++            let before = original.extra[key] as? NSObject
++            let after = preview.extra[key] as? NSObject
++            return (before?.isEqual(after) ?? (after == nil)) == false
++        }
++        XCTAssert(changedKeys == Set([GestaltKeys.regionCode]),
++                   "Staging changes exactly the region key, got \(changedKeys.sorted())")
++        // 1 CacheExtra key (region code) + 2 cache bytes.
++        XCTAssert(manager.changeCount == 3,
++                   "Staged change count is 3 on native hardware, got \(manager.changeCount)")
++
++        // Staging twice is idempotent.
++        manager.stageChinaUnlock()
++        XCTAssert(manager.changeCount == 3, "Staging the unlock twice does not duplicate changes")
++
++        // One-tap restore returns all three groups to their originals.
++        manager.restoreChinaUnlock()
++        XCTAssert(!manager.isChinaUnlockStaged && !manager.isChinaUnlockedInPreview,
++                   "Restore clears the staged and unlocked state")
++        XCTAssert(manager.changeCount == 0, "Restore unstages every change")
++        guard let restored = manager.preview else { throw Failure(message: "Preview exists after restore") }
++        XCTAssert(restored.matches(original), "Restored preview matches the original document")
++        XCTAssert(try DeviceCacheOptions.flags(in: restored) == .restricted,
++                   "Restore returns the eSIM flags to restricted")
++        XCTAssert(restored.extra[GestaltKeys.regionCode] as? String == "CH",
++                   "Restore returns RegionCode to CH")
++        for key in Self.aiKeys {
++            XCTAssert(restored.extra[key] == nil, "Restore removes AI key \(key)")
++        }
++        XCTAssert((restored.extra[Self.siriKey] as? NSNumber)?.intValue == 2,
++                   "Restore preserves the device-specific Siri value")
++        XCTAssert(restored.extra[GestaltKeys.modelNumber] as? String == "A3518",
++                   "Restore preserves the model number")
++
++        // The unlock can be staged again after a restore.
++        manager.stageChinaUnlock()
++        XCTAssert(manager.isChinaUnlockStaged && manager.changeCount == 3,
++                   "Unlock stages again after a restore")
++    }
++
++    @MainActor
++    func testChinaUnlockNonNative() throws {
++        // The region mode is a persisted user setting; pin the default
++        // here so this test never inherits another run's opt-in Full US mode.
++        ChinaUnlockRegionMode.stored = .regionCodeOnly
++        let layout = MobileGestaltCacheLayout.originalProfile
++        let original = try Self.fixture(productType: "iPhone14,7")
++        let data = try original.encoded()
++        let snapshot = DocumentSnapshot(data: data, document: original, source: .local, name: "fixture")
++        let manager = GestaltManager()
++        manager.loadSnapshotForTests(snapshot)
++        XCTAssert(manager.chinaUnlockESIMLayoutError == nil,
++                   "Supported layout: no eSIM layout error")
++        XCTAssert(!manager.isChinaUnlockStaged && !manager.isChinaUnlockedInPreview,
++                   "Fixture starts locked: eSIM restricted, region CH, AI absent")
++
++        // One tap stages the full unlock on non-native hardware.
+         manager.stageChinaUnlock()
+         XCTAssert(manager.isChinaUnlockStaged, "Staged flag is set after one tap")
+         XCTAssert(manager.isChinaUnlockedInPreview, "Preview shows the full unlock")
+diff --git a/tests/RegionModeTests.swift b/tests/RegionModeTests.swift
+index 94d1e78..98b4e0f 100644
+--- a/tests/RegionModeTests.swift
++++ b/tests/RegionModeTests.swift
+@@ -4,10 +4,13 @@ import XCTest
+ 
+ /// Offline tests for the item-5 region mode choice: the US regulatory
+ /// model mapping (refuses unknown models) and the one-tap unlock, which
+-/// stages exactly the 9 items in either region mode — the sales-region
+-/// suffix and the regulatory model number are never staged, so a
+-/// regulatory model that does not match the hardware cannot make the
+-/// system discard the cache at boot. No device or signing is needed.
++/// stages exactly the 9 items in either region mode on non-native
++/// hardware — and exactly the 3 non-AI items on hardware that natively
++/// supports Apple Intelligence, where the six AI keys are skipped. The
++/// sales-region suffix and the regulatory model number are never
++/// staged, so a regulatory model that does not match the hardware
++/// cannot make the system discard the cache at boot. No device or
++/// signing is needed.
+ final class RegionModeTests: XCTestCase {
+     struct Failure: Error { let message: String }
+ 
+@@ -50,7 +53,8 @@ final class RegionModeTests: XCTestCase {
+                    "iPads map to nil: the unlock is iPhone-focused")
+ 
+         // Default mode stays region-code-only: staging is byte-identical
+-        // to the 9-item unlock (verified in ChinaUnlockTests).
++        // to the 3-item unlock on this native fixture (verified in
++        // ChinaUnlockTests).
+         ChinaUnlockRegionMode.stored = .regionCodeOnly
+         let original = try fixture()
+         let snapshot = DocumentSnapshot(data: try original.encoded(), document: original,
+@@ -60,12 +64,13 @@ final class RegionModeTests: XCTestCase {
+         XCTAssert(manager.chinaUnlockRegionMode == .regionCodeOnly,
+                    "Default region mode is region-code-only")
+         manager.stageChinaUnlock()
+-        XCTAssert(manager.changeCount == 9 && manager.regionID == "keep",
+-                   "Region-code-only staging still changes exactly 9 items")
++        XCTAssert(manager.changeCount == 3 && manager.regionID == "keep",
++                   "Region-code-only staging still changes exactly 3 items on native hardware")
+ 
+-        // Full US mode stages exactly the same 9 items as region-code-only:
+-        // the sales-region suffix and the regulatory model number are
+-        // never staged by the one-tap, in either mode.
++        // Full US mode stages exactly the same 3 items as region-code-only
++        // on this native fixture: the sales-region suffix and the
++        // regulatory model number are never staged by the one-tap, in
++        // either mode.
+         ChinaUnlockRegionMode.stored = .fullUS
+         let fullUS = GestaltManager()
+         fullUS.loadSnapshotForTests(snapshot)
+@@ -80,8 +85,8 @@ final class RegionModeTests: XCTestCase {
+         XCTAssert(preview.extra[GestaltKeys.modelNumber] as? String == "A3518",
+                    "Full US keeps the factory model number")
+         XCTAssert(fullUS.isChinaUnlockedInPreview, "Full US preview reads as unlocked")
+-        XCTAssert(fullUS.changeCount == 9 && fullUS.regionID == "keep",
+-                   "Full US staging changes exactly 9 items, got \(fullUS.changeCount)")
++        XCTAssert(fullUS.changeCount == 3 && fullUS.regionID == "keep",
++                   "Full US staging changes exactly 3 items on native hardware, got \(fullUS.changeCount)")
+ 
+         // Restore after staging returns the original document.
+         fullUS.restoreChinaUnlock()
+diff --git a/tests/SafePatchTests.swift b/tests/SafePatchTests.swift
+index a6df3ef..2c26c34 100644
+--- a/tests/SafePatchTests.swift
++++ b/tests/SafePatchTests.swift
+@@ -155,4 +155,131 @@ final class SafePatchTests: XCTestCase {
+         XCTAssertEqual(simulation.check(.diff)?.isBlocker, false,
+                        "Changing nothing is a warning, not a blocker")
+     }
++
++    /// The native one-tap (iPhone Air, iPhone18,4): the proposal
++    /// stages exactly the 3 non-AI fields (region + the eSIM pair),
++    /// the six AI keys are absent from the diff and recorded as
++    /// skipped, and the simulation proceeds.
++    func testOneTapSimulationNativeSkipsAI() throws {
++        let document = try CoreModuleFixtures.document(extra: [GestaltKeys.productType: "iPhone18,4"])
++        let snapshot = CoreModuleFixtures.snapshot(
++            document: document,
++            cachedOptions: try CachedOptionsOriginal(document: document),
++            wapi: try WAPIOriginal(document: document))
++        let profile = CoreModuleFixtures.profile(productType: "iPhone18,4", isNativeAI: true)
++        let proposal = SafePatchProposal.oneTap(nativeAppleIntelligence: true)
++        XCTAssertEqual(proposal.featureIDs,
++                       [FeatureEligibilityEvaluator.esimFeatureID,
++                        FeatureEligibilityEvaluator.regionCodeFeatureID],
++                       "Native one-tap stages only eSIM and region code")
++        XCTAssertEqual(proposal.skippedFeatureIDs, ChinaUnlock.aiCapabilityIDs,
++                       "Native one-tap records all six AI capabilities as skipped")
++        let simulation = SafePatch.simulate(proposal: proposal, snapshot: snapshot, profile: profile)
++        XCTAssertTrue(simulation.canProceed, "Native one-tap must proceed; blockers: \(simulation.blockers)")
++        XCTAssertTrue(simulation.serializationOK, "The simulated document must encode and decode back to itself")
++        XCTAssertEqual(simulation.diffs.count, 3,
++                       "Native one-tap changes exactly 3 fields, got: \(simulation.diffs.map(\.key))")
++        XCTAssertEqual(simulation.skippedFeatureIDs, ChinaUnlock.aiCapabilityIDs,
++                       "Native one-tap simulation records all six AI capabilities as skipped")
++        let aiKeys = ChinaUnlock.aiCapabilityIDs.flatMap { id in
++            Capability.all.first { $0.id == id }?.keys ?? []
++        }
++        for key in aiKeys {
++            XCTAssertNil(simulation.diffs.first { $0.key == key },
++                         "AI key \(key) must not be staged on native hardware")
++        }
++        let regionDiff = simulation.diffs.first { $0.key == GestaltKeys.regionCode }
++        XCTAssertEqual(regionDiff?.original, .string("CH"))
++        XCTAssertEqual(regionDiff?.target, .string("LL"))
++        let greenTea = simulation.diffs.first { $0.key == DeviceCacheOptions.greenTeaKey }
++        XCTAssertEqual(greenTea?.original, .bool(true))
++        XCTAssertEqual(greenTea?.target, .bool(false))
++        let notGreenTea = simulation.diffs.first { $0.key == DeviceCacheOptions.notGreenTeaKey }
++        XCTAssertEqual(notGreenTea?.original, .bool(false))
++        XCTAssertEqual(notGreenTea?.target, .bool(true))
++    }
++
++    /// The AI-only preset on native hardware: the proposal comes back
++    /// empty with all six recorded as skipped, the simulation changes
++    /// nothing (a warning, not a blocker) and still proceeds.
++    func testAIOnlyNativeSkipsAllSix() throws {
++        let document = try CoreModuleFixtures.document(extra: [GestaltKeys.productType: "iPhone18,4"])
++        let snapshot = CoreModuleFixtures.snapshot(
++            document: document,
++            cachedOptions: try CachedOptionsOriginal(document: document),
++            wapi: try WAPIOriginal(document: document))
++        let profile = CoreModuleFixtures.profile(productType: "iPhone18,4", isNativeAI: true)
++        let proposal = SafePatchProposal.aiOnly(nativeAppleIntelligence: true)
++        XCTAssertTrue(proposal.featureIDs.isEmpty,
++                      "Native AI-only stages nothing")
++        XCTAssertEqual(proposal.skippedFeatureIDs, ChinaUnlock.aiCapabilityIDs,
++                       "Native AI-only records all six AI capabilities as skipped")
++        let simulation = SafePatch.simulate(proposal: proposal, snapshot: snapshot, profile: profile)
++        XCTAssertTrue(simulation.diffs.isEmpty, "Native AI-only changes nothing")
++        XCTAssertEqual(simulation.skippedFeatureIDs, ChinaUnlock.aiCapabilityIDs,
++                       "Native AI-only simulation records all six AI capabilities as skipped")
++        XCTAssertEqual(simulation.check(.diff)?.passed, false)
++        XCTAssertEqual(simulation.check(.diff)?.isBlocker, false,
++                       "Changing nothing is a warning, not a blocker")
++        XCTAssertTrue(simulation.canProceed, "An empty AI-only proposal must not block")
++    }
++
++    /// The native flag resolves from a known profile value first,
++    /// and falls back to the product-type list when the profile value
++    /// is unknown.
++    func testNativeFlagResolution() {
++        let native = CoreModuleFixtures.profile(productType: "iPhone18,4", isNativeAI: true)
++        XCTAssertTrue(SafePatchProposal.isNativeAppleIntelligence(profile: native))
++        let nonNative = CoreModuleFixtures.profile(productType: "iPhone14,7", isNativeAI: false)
++        XCTAssertFalse(SafePatchProposal.isNativeAppleIntelligence(profile: nonNative))
++        let fallbackNative = profileWithUnknownNative(productType: "iPhone18,4")
++        XCTAssertTrue(SafePatchProposal.isNativeAppleIntelligence(profile: fallbackNative),
++                      "Unknown native flag falls back to the product-type list")
++        let fallbackUnknown = profileWithUnknownNative(productType: "iPhone99,9")
++        XCTAssertFalse(SafePatchProposal.isNativeAppleIntelligence(profile: fallbackUnknown),
++                       "Unknown native flag and unknown product type fail closed")
++    }
++
++    /// Unknown native status fails closed: the helper reads
++    /// non-native, and the one-tap proposal still carries all 9
++    /// items with nothing skipped. (At the simulation level an
++    /// unknown model blocks — see `testUnknownModelBlocksSimulation`;
++    /// at the manager level the unknown device stages all 9 — see
++    /// `RegionModeTests`.)
++    func testUnknownNativeStatusFailsClosed() {
++        XCTAssertFalse(SafePatchProposal.isNativeAppleIntelligence(profile: nil),
++                       "No profile reads as non-native")
++        let unknownProfile = profileWithUnknownNative(productType: "iPhone99,9")
++        XCTAssertFalse(SafePatchProposal.isNativeAppleIntelligence(profile: unknownProfile),
++                       "Unknown product type reads as non-native")
++        let proposal = SafePatchProposal.oneTap(nativeAppleIntelligence: false)
++        XCTAssertEqual(proposal.featureIDs.count, 9,
++                       "Fail-closed one-tap still carries all 9 items")
++        XCTAssertTrue(proposal.skippedFeatureIDs.isEmpty,
++                      "Fail-closed one-tap skips nothing")
++    }
++
++    /// A profile whose native flag is `.unknown`, so the helper must
++    /// fall back to the product-type list (or fail closed when the
++    /// product type is unknown too).
++    private func profileWithUnknownNative(productType: String) -> DeviceProfile {
++        DeviceProfile(
++            productType: .known(productType),
++            modelNumber: .known("A1234"),
++            osVersion: .known("27.0.1"),
++            osBuild: .known("23A344"),
++            regionCode: .known("CH"),
++            salesRegionSuffix: .known("CH/A"),
++            isNativeAppleIntelligence: .unknown(reason: "test"),
++            modelDecision: DeviceModelSupport.decision(for: productType, originalRegModel: nil),
++            cacheLayout: .known(MobileGestaltCacheLayout.originalProfile),
++            cacheReadState: .read(cacheUUID: CoreModuleFixtures.uuid, byteCount: CoreModuleFixtures.layout.byteCount),
++            liveAIEnabled: .unknown(reason: "test"),
++            liveRegionCode: .known("CH"),
++            appGroupAvailable: .known(true),
++            shareExtensionPresent: .known(false),
++            backupCount: 0,
++            hasTrustedBackup: false,
++            changeRecordCount: 0)
++    }
+ }
+diff --git a/tests/StandalonePresetsTests.swift b/tests/StandalonePresetsTests.swift
+index 6f5b9b9..46affe9 100644
+--- a/tests/StandalonePresetsTests.swift
++++ b/tests/StandalonePresetsTests.swift
+@@ -28,7 +28,10 @@ final class StandalonePresetsTests: XCTestCase {
+     /// with CH/A sales suffixes, no AI keys, a device-specific Siri
+     /// value (2) and an Air model number. Pass a bogus cacheUUID for an
+     /// unsupported layout (the eSIM cache layout cannot be verified).
+-    static func fixture(cacheUUID: String? = nil) throws -> GestaltDocument {
++    /// The default product type is the native iPhone18,1; pass a
++    /// non-native product type (for example iPhone14,7) for the full
++    /// AI-only preset.
++    static func fixture(cacheUUID: String? = nil, productType: String = "iPhone18,1") throws -> GestaltDocument {
+         let layout = MobileGestaltCacheLayout.originalProfile
+         var cache = Data(count: layout.byteCount)
+         cache[layout.greenTeaOffset] = 1
+@@ -36,7 +39,7 @@ final class StandalonePresetsTests: XCTestCase {
+         cache[layout.validityOffset(for: layout.greenTeaIndex)] = 1
+         cache[layout.validityOffset(for: layout.notGreenTeaIndex)] = 1
+         let extra: [String: Any] = [
+-            GestaltKeys.productType: "iPhone18,1",
++            GestaltKeys.productType: productType,
+             GestaltKeys.regionCode: "CH",
+             GestaltKeys.regionInfo: "CH/A",
+             GestaltKeys.legacyRegionInfo: "CH/A",
+@@ -63,8 +66,42 @@ final class StandalonePresetsTests: XCTestCase {
+         // The region mode is a persisted user setting; pin the default
+         // here so this test never inherits another run's opt-in Full US mode.
+         ChinaUnlockRegionMode.stored = .regionCodeOnly
++        // The fixture is native Apple Intelligence hardware
++        // (iPhone18,1): the AI-only preset is refused — the six
++        // presets are already on — and nothing is staged.
+         let original = try Self.fixture()
+         let manager = try manager(for: original)
++        XCTAssert(manager.chinaUnlockESIMLayoutError == nil,
++                   "Supported layout: no eSIM layout error")
++        XCTAssert(!manager.isChinaAIOnlyStaged && !manager.isChinaAIOnlyApplied,
++                   "Fixture starts with AI absent")
++        XCTAssert(!manager.stageChinaAIOnly(),
++                   "AI-only staging is refused on native hardware")
++        XCTAssert(manager.message?.isEmpty == false,
++                   "AI-only refusal shows the reason")
++        XCTAssert(!manager.isChinaAIOnlyStaged && !manager.isChinaAIOnlyApplied,
++                   "A refused AI-only staging stages nothing")
++        XCTAssert(manager.changeCount == 0,
++                   "A refused AI-only staging changes nothing, got \(manager.changeCount)")
++        XCTAssert(manager.restoreChinaAIOnly(),
++                   "AI-only restore is a no-op when nothing was staged")
++        XCTAssert(manager.changeCount == 0, "Restore of nothing staged changes nothing")
++        XCTAssert(!manager.isChinaAIOnlyStaged && !manager.isChinaAIOnlyApplied,
++                   "Restore leaves the AI-only staged and applied state clear")
++
++        // Staging again is refused the same way.
++        XCTAssert(!manager.stageChinaAIOnly(),
++                   "AI-only staging stays refused on native hardware")
++        XCTAssert(manager.changeCount == 0, "A refused AI-only staging still changes nothing")
++    }
++
++    @MainActor
++    func testAIOnlyPresetNonNative() throws {
++        // The region mode is a persisted user setting; pin the default
++        // here so this test never inherits another run's opt-in Full US mode.
++        ChinaUnlockRegionMode.stored = .regionCodeOnly
++        let original = try Self.fixture(productType: "iPhone14,7")
++        let manager = try manager(for: original)
+         XCTAssert(manager.chinaUnlockESIMLayoutError == nil,
+                    "Supported layout: no eSIM layout error")
+         XCTAssert(!manager.isChinaAIOnlyStaged && !manager.isChinaAIOnlyApplied,
+@@ -123,7 +160,10 @@ final class StandalonePresetsTests: XCTestCase {
+     @MainActor
+     func testESIMRegionPreset() throws {
+         ChinaUnlockRegionMode.stored = .regionCodeOnly
+-        let original = try Self.fixture()
++        // Non-native fixture: the "eSIM+region is not the full
++        // one-tap" assertion only holds there — on native hardware
++        // eSIM+region IS the full one-tap (the AI keys are skipped).
++        let original = try Self.fixture(productType: "iPhone14,7")
+         let manager = try manager(for: original)
+         XCTAssert(manager.chinaUnlockESIMLayoutError == nil,
+                    "Supported layout: no eSIM layout error")
+@@ -189,7 +229,10 @@ final class StandalonePresetsTests: XCTestCase {
+     @MainActor
+     func testStandalonePresetsLayoutGating() throws {
+         // Unsupported cache layout: the eSIM layout cannot be verified.
+-        let unsupported = try Self.fixture(cacheUUID: "unsupported-layout")
++        // Non-native fixture: the AI-only preset's layout independence
++        // is verified here — on native hardware AI-only is refused
++        // regardless of the layout (see `testAIOnlyPreset`).
++        let unsupported = try Self.fixture(cacheUUID: "unsupported-layout", productType: "iPhone14,7")
+         let manager = try manager(for: unsupported)
+         XCTAssert(manager.chinaUnlockESIMLayoutError != nil,
+                    "Unsupported layout: the eSIM layout error names the reason")
+@@ -228,9 +271,12 @@ final class StandalonePresetsTests: XCTestCase {
+     func testStandalonePresetsComposeIntoOneTap() throws {
+         // The two subsets compose into the full 9-item one-tap: staging
+         // AI-only and then eSIM+region stages exactly the 9 items, and
+-        // the one-tap staged flag reads true.
++        // the one-tap staged flag reads true. Non-native fixture: on
++        // native hardware the AI-only preset is refused, so the two
++        // subsets compose into the 3-item one-tap instead (see
++        // `testStandalonePresetsComposeIntoOneTapNative`).
+         ChinaUnlockRegionMode.stored = .regionCodeOnly
+-        let original = try Self.fixture()
++        let original = try Self.fixture(productType: "iPhone14,7")
+         let manager = try manager(for: original)
+         manager.stageChinaAIOnly()
+         manager.stageChinaESIMRegion()
+@@ -246,4 +292,27 @@ final class StandalonePresetsTests: XCTestCase {
+         guard let restored = manager.preview else { throw Failure(message: "Preview exists after one-tap restore") }
+         XCTAssert(restored.matches(original), "One-tap restore returns the original document")
+     }
++
++    @MainActor
++    func testStandalonePresetsComposeIntoOneTapNative() throws {
++        // On native hardware the AI-only preset is refused, so the
++        // two subsets compose into the 3-item one-tap: eSIM+region
++        // alone is the full unlock there.
++        ChinaUnlockRegionMode.stored = .regionCodeOnly
++        let original = try Self.fixture()
++        let manager = try manager(for: original)
++        XCTAssert(!manager.stageChinaAIOnly(), "AI-only staging is refused on native hardware")
++        manager.stageChinaESIMRegion()
++        XCTAssert(manager.changeCount == 3,
++                   "Native compose changes exactly 3 items, got \(manager.changeCount)")
++        XCTAssert(manager.isChinaUnlockStaged,
++                   "eSIM+region staged reads as the full one-tap on native hardware")
++        XCTAssert(manager.isChinaUnlockedInPreview,
++                   "eSIM+region staged reads as unlocked in preview on native hardware")
++        // Restoring the full one-tap clears the native staging.
++        manager.restoreChinaUnlock()
++        XCTAssert(manager.changeCount == 0, "One-tap restore clears the native staging")
++        guard let restored = manager.preview else { throw Failure(message: "Preview exists after one-tap restore") }
++        XCTAssert(restored.matches(original), "One-tap restore returns the original document")
++    }
+ }
