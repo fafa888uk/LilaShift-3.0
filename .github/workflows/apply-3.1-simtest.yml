@@ -1,0 +1,72 @@
+name: Apply 3.1 simulator integration test
+
+# One-shot: apply lilashift-3.1-simtest.patch (simulator integration
+# test for probe v2 + the gated write on real simulator paths) to the
+# 3.1 branch. The patch file must already be uploaded to the branch root.
+# Patch SHA-256: ed600475950518423a0d46aa4be03b129f535e69fb7cbc45b78e3f0211fe2ac0
+# Dispatch with ref = feature/lilashift-3.1-iphone18-2-persistence.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v7
+        with:
+          ref: feature/lilashift-3.1-iphone18-2-persistence
+
+      - name: Verify patch file
+        run: |
+          ls -l lilashift-3.1-simtest.patch
+          sha256sum lilashift-3.1-simtest.patch
+
+      - name: Apply patch
+        run: |
+          git config user.name "fafa920q-hue"
+          git config user.email "fafa920q-hue@users.noreply.github.com"
+          git apply --index lilashift-3.1-simtest.patch
+
+      - name: Verify staged files
+        run: |
+          echo "=== staged files ==="
+          git diff --cached --name-only
+          echo "=== staged stat ==="
+          git diff --cached --stat
+          # Expect exactly 2 files
+          test "$(git diff --cached --name-only | wc -l)" -eq 2
+          git diff --cached --name-only | grep -qxF "GestaltX.xcodeproj/project.pbxproj"
+          git diff --cached --name-only | grep -qxF "tests/IconCacheSimulatorIntegrationTests.swift"
+          # Expect +288/-0
+          test "$(git diff --cached --numstat | awk '{s+=$1; d+=$2} END {print s}')" -eq 288
+          test "$(git diff --cached --numstat | awk '{s+=$1; d+=$2} END {print d}')" -eq 0
+
+      - name: Commit and push
+        run: |
+          git commit -m "test(iconcache): simulator integration test for probe v2 + gated write on real paths
+
+          New IconCacheSimulatorIntegrationTests runs probe v2 and the
+          gated write state machine against real paths inside the iOS
+          Simulator sandbox: container paths resolved through
+          FileManager system APIs, the two device icon-cache roots
+          recorded by their open() errno, per-entry diagnostics on a
+          real directory descriptor, the gate opening for a real-path
+          match and blocking without one, and the full
+          backup-write-readback-restart-wait-restore walk inside the
+          app's own container. The whole-bundle inspect is pinned as
+          empty on the simulator (compiled out under
+          TARGET_OS_SIMULATOR), so the gate refusing it is asserted as
+          the expected honest result. No production code changes; no
+          skips; no relaxed assertions."
+          git push origin feature/lilashift-3.1-iphone18-2-persistence
+
+      - name: Clean up patch file
+        run: |
+          git rm -q lilashift-3.1-simtest.patch
+          git commit -m "chore: remove applied simulator integration test patch file"
+          git push origin feature/lilashift-3.1-iphone18-2-persistence
