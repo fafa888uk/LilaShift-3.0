@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSArray<NSDictionary<NSString *, NSString *> *> *)launchApplications;
 + (nullable NSString *)launchContainerForIdentifier:(NSString *)identifier NS_SWIFT_NAME(launchContainer(for:));
 + (NSDictionary<NSString *, id> *)launchApplicationInventory:(BOOL)discover;
++ (nullable NSData *)homeScreenIconForIdentifier:(NSString *)identifier NS_SWIFT_NAME(homeScreenIcon(for:));
 + (NSDictionary<NSString *, id> *)verifyLaunchApplication:(NSDictionary<NSString *, id> *)metadata;
 @end
 NS_ASSUME_NONNULL_END

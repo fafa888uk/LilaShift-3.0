@@ -5,6 +5,7 @@
 #import "GXLaunchServicesDatabase.h"
 #import "GXCustomizationAccess.h"
 #import "worse_query.h"
+#import <CommonCrypto/CommonDigest.h>
 #include <sys/stat.h>
 #include <sys/mount.h>
 #include <sys/fsgetpath.h>
@@ -69,6 +70,39 @@ static NSString *GXLSFindStore(void) {
 static NSDictionary<NSString *,NSDictionary *> *GXLSApps;
 static NSString *GXLSSignature;
 @implementation GXLaunchServicesDatabase
++ (NSDictionary<NSString *, id> *)inspectDisplayNameForIdentifier:(NSString *)identifier {
+    @synchronized (self) {
+        NSString *path = [NSUserDefaults.standardUserDefaults stringForKey:@"GestaltX.launch.database"];
+        NSString *container = GXLSStoreContainer(path);
+        if (!container) {
+            path = GXLSFindStore();
+            container = GXLSStoreContainer(path);
+        }
+        if (!container) return @{};
+        int64_t lease = [GXCustomizationAccess acquirePath:container];
+        @try {
+            NSData *data = GXLSRead(path, 64 * 1024 * 1024);
+            if (!data) return @{};
+            GXLaunchServicesSnapshot *snapshot = [GXLaunchServicesParser decode:data];
+            NSString *bundle = snapshot.bundles[identifier];
+            unsigned char digest[CC_SHA256_DIGEST_LENGTH];
+            CC_SHA256(data.bytes, (CC_LONG)data.length, digest);
+            NSMutableString *sha256 = [NSMutableString stringWithCapacity:CC_SHA256_DIGEST_LENGTH * 2];
+            for (NSUInteger index = 0; index < CC_SHA256_DIGEST_LENGTH; index++) {
+                [sha256 appendFormat:@"%02x", (unsigned int)digest[index]];
+            }
+            NSMutableDictionary *result = [@{@"size": @(data.length), @"sha256": sha256} mutableCopy];
+            if (GXLSBundlePath(bundle)) {
+                if (snapshot.displayNames[identifier]) result[@"displayName"] = snapshot.displayNames[identifier];
+                if (snapshot.names[identifier]) result[@"bundleName"] = snapshot.names[identifier];
+            }
+            return result;
+        } @finally {
+            if (lease >= 0) worse_query_release(lease);
+        }
+    }
+}
+
 + (NSDictionary<NSString *,NSDictionary *> *)applications:(BOOL)discover {
     @synchronized(self){
         NSString *key=@"GestaltX.launch.database",*path=[NSUserDefaults.standardUserDefaults stringForKey:key];

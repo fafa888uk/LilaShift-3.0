@@ -8,6 +8,7 @@
 #import "GXLaunchServicesDatabase.h"
 #import "worse_query.h"
 #import <UIKit/UIKit.h>
+#import <TargetConditionals.h>
 #include <sys/stat.h>
 #include <sys/mount.h>
 #include <sys/fsgetpath.h>
@@ -101,6 +102,12 @@ static NSString *GXContainerDiagnostic(NSString *path) {
 - (NSNumber *)staticDiskUsage;
 - (NSNumber *)dynamicDiskUsage;
 - (BOOL)isInstalled;
+@end
+
+@interface UIImage (GXApplicationIcon)
++ (nullable UIImage *)_applicationIconImageForBundleIdentifier:(NSString *)identifier
+                                                        format:(int)format
+                                                         scale:(CGFloat)scale;
 @end
 
 static NSArray<NSString *> *GXAllowedApplications(void) {
@@ -204,6 +211,26 @@ static void GXDiscoverLaunchPaths(void) {
 }
 
 @implementation GXCustomizationAccess
++ (NSData *)homeScreenIconForIdentifier:(NSString *)identifier {
+#if TARGET_OS_SIMULATOR
+    return nil;
+#else
+    if (!GXLaunchIdentifier(identifier) ||
+        ![UIImage respondsToSelector:@selector(_applicationIconImageForBundleIdentifier:format:scale:)]) return nil;
+    @try {
+        UIImage *icon = [UIImage _applicationIconImageForBundleIdentifier:identifier format:2 scale:2.0];
+        if (!icon.CGImage || CGImageGetWidth(icon.CGImage) > 1024 ||
+            CGImageGetHeight(icon.CGImage) > 1024) return nil;
+        UIImage *missing = [UIImage _applicationIconImageForBundleIdentifier:@"invalid.lilashift.icon-probe" format:2 scale:2.0];
+        NSData *bytes = UIImagePNGRepresentation(icon);
+        NSData *placeholder = missing.CGImage ? UIImagePNGRepresentation(missing) : nil;
+        return [bytes isEqual:placeholder] ? nil : bytes;
+    } @catch (NSException *exception) {
+        return nil;
+    }
+#endif
+}
+
 + (NSDictionary<NSString *,id> *)launchApplicationInventory:(BOOL)discover {
     NSDictionary *database=[GXLaunchServicesDatabase applications:discover];
     if(discover&&!database.count)GXDiscoverLaunchPaths();

@@ -582,6 +582,11 @@ struct ContentView: View {
                             actionLabel(label: L("Log"), systemImage: "text.alignleft")
                         }
                         .buttonStyle(.plain)
+                        Divider()
+                        NavigationLink { AppAppearanceApplicationsView() } label: {
+                            actionLabel(label: appearanceDiagnosticText("App Icon & Name"), systemImage: "app.badge")
+                        }
+                        .buttonStyle(.plain)
                         }
                     }
                 }
