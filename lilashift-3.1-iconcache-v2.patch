@@ -1,0 +1,2934 @@
+diff --git a/GestaltX/AppAppearance.swift b/GestaltX/AppAppearance.swift
+index 9577074..c26e062 100644
+--- a/GestaltX/AppAppearance.swift
++++ b/GestaltX/AppAppearance.swift
+@@ -293,3 +293,451 @@ struct AppAppearanceDraft: Equatable, Codable, Sendable {
+         return FileManager.default.fileExists(atPath: directory.appendingPathComponent(bundleID + ".plist").path)
+     }
+ }
++
++// MARK: - Gated icon-cache write path (3.1, 七猫小说 first target)
++//
++// The probe is read-only and a match is only a *candidate* record: it is
++// NOT proof the Home Screen uses that record. Nothing here writes until
++// `IconCacheWriteGate` says the evidence qualifies, and a write only
++// becomes verified-effective after `IconCacheWritePlan.verifyAfterRestart`
++// sees a real reboot plus a fresh probe that still shows the mutation.
++// The probe never computes a full-file hash (it reads at most a 128 KB
++// prefix for matching), so `sha256AtProbe` is the SHA-256 of that probed
++// prefix, and the write/read-back guards compare the same prefix window.
++
++/// A candidate icon-cache record: one matched file from a read-only
++/// probe. "Candidate" is deliberate — this is not proof the Home Screen
++/// uses the record, and it must never be presented as effective.
++struct VerifiedIconCacheRecord: Codable, Equatable, Sendable {
++    let bundleID: String
++    /// Absolute path of the cache root that contained the match.
++    let cacheRoot: String
++    /// File path relative to the cache root, as reported by the probe.
++    let relativePath: String
++    let size: Int
++    let inode: UInt64
++    /// SHA-256 of the probed prefix (at most the first 128 KB), taken at
++    /// probe time. The write path compares the same prefix window, never
++    /// a full-file hash the probe never computed.
++    let sha256AtProbe: String
++    /// SHA-256 of the LaunchServices cache at probe time, when known.
++    /// Binds the record to the cache generation the probe saw.
++    let probedCacheSHA: String?
++
++    /// Builds a record only from evidence probed for this bundle ID that
++    /// contains at least one match with a probed prefix hash. Returns nil
++    /// otherwise (no match, or a match whose prefix could not be read).
++    static func fromEvidence(_ evidence: DiskIconCacheEvidence, bundleID: String,
++                             probedCacheSHA: String? = nil) -> Self? {
++        guard evidence.bundleID == bundleID,
++              let match = evidence.matchesDetail.first,
++              let prefixSHA = match.prefixSHA256 else { return nil }
++        return Self(bundleID: bundleID, cacheRoot: match.root, relativePath: match.file,
++                    size: match.bytes, inode: match.inode, sha256AtProbe: prefixSHA,
++                    probedCacheSHA: probedCacheSHA)
++    }
++}
++
++enum IconCacheWriteGateResult: Equatable, Sendable {
++    case blocked(reason: String)
++    case ready(record: VerifiedIconCacheRecord)
++}
++
++/// The gate in front of every icon-cache write. The first implementation
++/// accepts only 七猫小说; any other bundle ID is blocked.
++enum IconCacheWriteGate {
++    /// The only bundle ID in scope for the first write target. WeChat and
++    /// Alipay follow after 七猫小说 verification.
++    static let firstWriteTargetBundleID = "com.yueyou.cyreader"
++    static let iconCacheGroupPath = "/private/var/containers/Shared/SystemGroup/systemgroup.com.apple.lsd.iconscache"
++    /// The probe reads at most this many leading bytes of a matched file
++    /// for matching; the probed hash covers exactly that prefix.
++    static let probedPrefixLimit = 128 * 1024
++
++    static func evaluate(_ evidence: DiskIconCacheEvidence, bundleID: String,
++                         probedCacheSHA: String? = nil) -> IconCacheWriteGateResult {
++        guard bundleID == firstWriteTargetBundleID else {
++            // WeChat/Alipay follow after 七猫小说 verification.
++            return .blocked(reason: appearanceDiagnosticText("Only 七猫小说 is in scope for the first write target."))
++        }
++        guard let record = VerifiedIconCacheRecord.fromEvidence(evidence, bundleID: bundleID,
++                                                                probedCacheSHA: probedCacheSHA) else {
++            if evidence.matchesDetail.isEmpty {
++                return .blocked(reason: appearanceDiagnosticText("No candidate record matches this app."))
++            }
++            return .blocked(reason: appearanceDiagnosticText("The candidate record has no probed content hash."))
++        }
++        return .ready(record: record)
++    }
++
++    /// Icon replacement is refused until a probe confirms the icon bytes.
++    /// There is no code path that writes icon bytes.
++    static func evaluateIconReplacement() -> IconCacheWriteGateResult {
++        .blocked(reason: appearanceDiagnosticText("Icon record format not confirmed"))
++    }
++}
++
++enum WriteMutationFailure: Error, Equatable, Sendable {
++    case invalidName
++    case notFound
++    case ambiguous
++    case lengthMismatch
++}
++
++/// One byte-level edit inside a matched cache-file prefix: replace
++/// `length` bytes at `offset` with `replacement` (always the same length,
++/// so the file size and every other offset stay unchanged).
++struct WriteMutation: Codable, Equatable, Sendable {
++    let offset: Int
++    let length: Int
++    let replacement: Data
++
++    /// Builds the first supported mutation: replace the current display
++    /// name's bytes with a new name's bytes, in UTF-8 or UTF-16LE form,
++    /// inside the matched prefix only. It succeeds only when the current
++    /// name occurs exactly once across both forms, the new name encodes
++    /// to the same byte length in that form, and the new name is valid
++    /// (non-empty, at most 32 characters, no control characters).
++    /// Icon bytes are never mutated here; see
++    /// `IconCacheWriteGate.evaluateIconReplacement`.
++    static func displayNameReplacement(prefix: Data, currentName: String,
++                                       newName: String) -> Result<WriteMutation, WriteMutationFailure> {
++        let trimmed = newName.trimmingCharacters(in: .whitespacesAndNewlines)
++        guard !trimmed.isEmpty, trimmed.count <= 32,
++              !trimmed.unicodeScalars.contains(where: { CharacterSet.controlCharacters.contains($0) }) else {
++            return .failure(.invalidName)
++        }
++        guard let currentUTF8 = currentName.data(using: .utf8),
++              let currentUTF16 = currentName.data(using: .utf16LittleEndian),
++              let newUTF8 = trimmed.data(using: .utf8),
++              let newUTF16 = trimmed.data(using: .utf16LittleEndian),
++              !currentUTF8.isEmpty else { return .failure(.notFound) }
++        var found: WriteMutation?
++        var occurrences = 0
++        var anyLengthCompatible = false
++        for (current, replacement) in [(currentUTF8, newUTF8), (currentUTF16, newUTF16)] {
++            // A form whose lengths differ cannot be replaced in place.
++            guard current.count == replacement.count else { continue }
++            anyLengthCompatible = true
++            var searchRange = prefix.startIndex..<prefix.endIndex
++            while let range = prefix.range(of: current, options: [], in: searchRange) {
++                occurrences += 1
++                if occurrences == 1 {
++                    found = WriteMutation(offset: range.lowerBound, length: current.count, replacement: replacement)
++                }
++                if occurrences > 1 { return .failure(.ambiguous) }
++                searchRange = range.upperBound..<prefix.endIndex
++            }
++        }
++        if let mutation = found, occurrences == 1 { return .success(mutation) }
++        return .failure(anyLengthCompatible ? .notFound : .lengthMismatch)
++    }
++
++    /// Returns `data` with this mutation applied, or nil when the
++    /// mutation lies outside `data`.
++    func applied(to data: Data) -> Data? {
++        guard offset >= 0, length == replacement.count, length > 0,
++              offset + length <= data.count else { return nil }
++        var result = data
++        result.replaceSubrange(offset..<(offset + length), with: replacement)
++        return result
++    }
++
++    /// SHA-256 of the prefix after this mutation, for read-back comparison.
++    func expectedSHA(afterApplyingTo prefix: Data) -> String? {
++        applied(to: prefix).map { CustomizationFiles.digest($0) }
++    }
++}
++
++enum IconCacheWriteError: Error, Equatable, Sendable {
++    case notBackedUp
++    case backupMissing
++    case unexpectedMatchCount(Int)
++    case shaMismatch
++    case mutationFailed(WriteMutationFailure)
++    case readBackMismatch
++    case restoreFailed
++    case invalidState
++    case fileUnavailable
++}
++
++extension IconCacheWriteError: LocalizedError {
++    var errorDescription: String? {
++        switch self {
++        case .notBackedUp:
++            return appearanceDiagnosticText("A backup is required before writing.")
++        case .backupMissing:
++            return appearanceDiagnosticText("The backup is missing or does not match.")
++        case .unexpectedMatchCount:
++            return appearanceDiagnosticText("More than one candidate record matches. Only a single record can be written.")
++        case .shaMismatch:
++            return appearanceDiagnosticText("The cache file changed since the probe. Read again before writing.")
++        case .mutationFailed(let failure):
++            switch failure {
++            case .invalidName:
++                return appearanceDiagnosticText("The new display name is invalid.")
++            case .notFound:
++                return appearanceDiagnosticText("The current display name was not found in the matched prefix.")
++            case .ambiguous:
++                return appearanceDiagnosticText("The display name occurs more than once in the matched prefix.")
++            case .lengthMismatch:
++                return appearanceDiagnosticText("The display name must encode to the same byte length as the current name.")
++            }
++        case .readBackMismatch:
++            return appearanceDiagnosticText("Read-back did not match the expected bytes. The backup was restored.")
++        case .restoreFailed:
++            return appearanceDiagnosticText("The backup could not be restored. The backup has been kept.")
++        case .invalidState:
++            return appearanceDiagnosticText("The write plan is not in the expected state.")
++        case .fileUnavailable:
++            return appearanceDiagnosticText("The icon cache could not be opened for writing.")
++        }
++    }
++}
++
++/// The gated write state machine. The only forward path is
++/// idle -> backedUp -> written -> readBackVerified ->
++/// awaitingRestartVerification -> verifiedAfterRestart. Any state may go
++/// to restored (backup copied back and verified) or failed. The write
++/// action stops at awaitingRestartVerification: it never auto-restores
++/// and never claims the change is effective before the restart check.
++struct IconCacheWritePlan: Codable, Equatable, Sendable {
++    enum State: String, Codable, Equatable, Sendable {
++        case idle
++        case backedUp
++        case written
++        case readBackVerified
++        case awaitingRestartVerification
++        case verifiedAfterRestart
++        case restored
++        case failed
++    }
++
++    var state: State = .idle
++    var record: VerifiedIconCacheRecord?
++    var mutation: WriteMutation?
++    var backupSHA256: String?
++    var expectedPostWriteSHA256: String?
++    var preWriteBootSession: BootSession?
++    var writtenAt: Date?
++    var failureReason: String?
++
++    // MARK: Storage in the app's own container (AppAppearanceDraft-style)
++
++    /// Per-app backup directory under Application Support. The backup
++    /// bytes and this plan's plist live here, never in the cache root.
++    static func backupDirectory(for bundleID: String) -> URL {
++        FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
++            .appendingPathComponent("GestaltX/AppAppearance/IconCacheBackups/\(bundleID)", isDirectory: true)
++    }
++
++    static func backupFileURL(in backupDirectory: URL) -> URL {
++        backupDirectory.appendingPathComponent("backup.bin")
++    }
++
++    static func planFileURL(in backupDirectory: URL) -> URL {
++        backupDirectory.appendingPathComponent("plan.plist")
++    }
++
++    /// Persists this plan (PropertyList, verified round-trip) so the
++    /// awaiting-restart state survives an app relaunch.
++    func save(to backupDirectory: URL) throws {
++        try CustomizationFiles.saveVerified(self, to: Self.planFileURL(in: backupDirectory))
++    }
++
++    static func load(from backupDirectory: URL) throws -> Self? {
++        let url = planFileURL(in: backupDirectory)
++        guard FileManager.default.fileExists(atPath: url.path) else { return nil }
++        return try PropertyListDecoder().decode(Self.self, from: CustomizationFiles.read(url))
++    }
++
++    // MARK: File access (confined to the cache root and the backup directory)
++
++    private static func cacheFileURL(cacheRoot: URL, record: VerifiedIconCacheRecord) throws -> URL {
++        // CustomizationFiles.checked rejects "..", absolute paths and any
++        // symlink component, so the resolved file stays inside the root.
++        try CustomizationFiles.checked(record.relativePath, in: cacheRoot)
++    }
++
++    private static func inode(of url: URL) throws -> UInt64 {
++        let attributes = try FileManager.default.attributesOfItem(atPath: url.path)
++        guard let number = attributes[.systemFileNumber] as? NSNumber else {
++            throw IconCacheWriteError.fileUnavailable
++        }
++        return number.uint64Value
++    }
++
++    private static func backupIsValid(backupDirectory: URL, expectedSHA: String) -> Bool {
++        guard let backup = try? CustomizationFiles.read(backupFileURL(in: backupDirectory)) else { return false }
++        return CustomizationFiles.digest(backup) == expectedSHA
++    }
++
++    /// Copies the matched file's bytes into the app's own backup
++    /// directory and records the SHA-256 before and after the copy. The
++    /// backup is kept until a restore is verified; the plan never
++    /// deletes it.
++    mutating func backup(cacheRoot: URL, backupDirectory: URL, record: VerifiedIconCacheRecord) throws {
++        guard state == .idle || state == .restored else { throw IconCacheWriteError.invalidState }
++        let url = try Self.cacheFileURL(cacheRoot: cacheRoot, record: record)
++        let bytes = try CustomizationFiles.read(url)
++        let inode = try Self.inode(of: url)
++        guard bytes.count == record.size, inode == record.inode else {
++            throw IconCacheWriteError.shaMismatch
++        }
++        let sha = CustomizationFiles.digest(bytes)
++        try FileManager.default.createDirectory(at: backupDirectory, withIntermediateDirectories: true)
++        try bytes.write(to: Self.backupFileURL(in: backupDirectory), options: .atomic)
++        guard Self.backupIsValid(backupDirectory: backupDirectory, expectedSHA: sha) else {
++            throw IconCacheWriteError.backupMissing
++        }
++        self.record = record
++        backupSHA256 = sha
++        mutation = nil
++        expectedPostWriteSHA256 = nil
++        preWriteBootSession = nil
++        writtenAt = nil
++        failureReason = nil
++        state = .backedUp
++    }
++
++    /// Writes the display-name mutation in place (same byte length, same
++    /// inode, same file size). Single-item only: refuses unless the fresh
++    /// evidence has exactly one match for the recorded file, a valid
++    /// backup exists, and the current prefix hash still equals the probed
++    /// hash (TOCTOU guard). Records the boot session from before the
++    /// write so the restart check can prove a reboot happened.
++    mutating func write(cacheRoot: URL, backupDirectory: URL, evidence: DiskIconCacheEvidence,
++                        currentName: String, newName: String, bootBefore: BootSession?) throws {
++        guard state == .backedUp, let record else { throw IconCacheWriteError.notBackedUp }
++        guard let backupSHA256, Self.backupIsValid(backupDirectory: backupDirectory, expectedSHA: backupSHA256) else {
++            throw IconCacheWriteError.backupMissing
++        }
++        guard evidence.matchesDetail.count == 1,
++              evidence.matchesDetail.first?.file == record.relativePath else {
++            throw IconCacheWriteError.unexpectedMatchCount(evidence.matchesDetail.count)
++        }
++        let url = try Self.cacheFileURL(cacheRoot: cacheRoot, record: record)
++        let bytes = try CustomizationFiles.read(url)
++        guard bytes.count == record.size else { throw IconCacheWriteError.shaMismatch }
++        let prefix = Data(bytes.prefix(IconCacheWriteGate.probedPrefixLimit))
++        guard CustomizationFiles.digest(prefix) == record.sha256AtProbe else {
++            throw IconCacheWriteError.shaMismatch
++        }
++        let mutation: WriteMutation
++        switch WriteMutation.displayNameReplacement(prefix: prefix, currentName: currentName, newName: newName) {
++        case .success(let built):
++            mutation = built
++        case .failure(let failure):
++            throw IconCacheWriteError.mutationFailed(failure)
++        }
++        guard let expected = mutation.expectedSHA(afterApplyingTo: prefix) else {
++            throw IconCacheWriteError.mutationFailed(.notFound)
++        }
++        do {
++            // In-place, inode-preserving write of only the replaced
++            // bytes. The file size never changes.
++            let handle = try FileHandle(forWritingTo: url)
++            defer { try? handle.close() }
++            try handle.seek(toOffset: UInt64(mutation.offset))
++            try handle.write(contentsOf: mutation.replacement)
++            try handle.synchronize()
++        } catch {
++            // A partial in-place write must not be left behind.
++            if (try? restore(cacheRoot: cacheRoot, backupDirectory: backupDirectory)) != nil {
++                throw IconCacheWriteError.fileUnavailable
++            }
++            state = .failed
++            failureReason = IconCacheWriteError.restoreFailed.errorDescription
++            throw IconCacheWriteError.restoreFailed
++        }
++        self.mutation = mutation
++        expectedPostWriteSHA256 = expected
++        preWriteBootSession = bootBefore
++        writtenAt = Date()
++        state = .written
++    }
++
++    /// Re-reads the file and verifies the mutation bytes are present and
++    /// the prefix hash equals the expected post-write hash. On mismatch
++    /// the backup is restored immediately and the failure is reported.
++    mutating func readBack(cacheRoot: URL, backupDirectory: URL) throws {
++        guard state == .written, let record, let mutation, let expectedPostWriteSHA256 else {
++            throw IconCacheWriteError.invalidState
++        }
++        let url = try Self.cacheFileURL(cacheRoot: cacheRoot, record: record)
++        let bytes = try CustomizationFiles.read(url)
++        let prefix = Data(bytes.prefix(IconCacheWriteGate.probedPrefixLimit))
++        let offset = mutation.offset, length = mutation.length
++        guard bytes.count == record.size, offset >= 0, offset + length <= bytes.count,
++              bytes[offset..<(offset + length)] == mutation.replacement,
++              CustomizationFiles.digest(prefix) == expectedPostWriteSHA256 else {
++            try restore(cacheRoot: cacheRoot, backupDirectory: backupDirectory)
++            throw IconCacheWriteError.readBackMismatch
++        }
++        state = .readBackVerified
++    }
++
++    /// Stops after a verified read-back: the change is a candidate until
++    /// a restart proves it effective. This never auto-restores.
++    mutating func beginRestartWait() throws {
++        guard state == .readBackVerified else { throw IconCacheWriteError.invalidState }
++        state = .awaitingRestartVerification
++    }
++
++    /// Copies the backup bytes back in place and verifies the SHA equals
++    /// the pre-write SHA. The backup is kept until this verification
++    /// succeeds, and is not deleted by the plan afterwards.
++    @discardableResult
++    mutating func restore(cacheRoot: URL, backupDirectory: URL) throws -> Self {
++        guard state != .idle, let record, let backupSHA256 else {
++            throw IconCacheWriteError.invalidState
++        }
++        guard let backup = try? CustomizationFiles.read(Self.backupFileURL(in: backupDirectory)),
++              CustomizationFiles.digest(backup) == backupSHA256 else {
++            state = .failed
++            failureReason = IconCacheWriteError.backupMissing.errorDescription
++            throw IconCacheWriteError.backupMissing
++        }
++        let url = try Self.cacheFileURL(cacheRoot: cacheRoot, record: record)
++        do {
++            let handle = try FileHandle(forWritingTo: url)
++            defer { try? handle.close() }
++            try handle.seek(toOffset: 0)
++            try handle.write(contentsOf: backup)
++            try handle.synchronize()
++            // Drop any tail if the live file grew since the backup.
++            try handle.truncate(atOffset: UInt64(backup.count))
++        } catch {
++            state = .failed
++            failureReason = IconCacheWriteError.restoreFailed.errorDescription
++            throw IconCacheWriteError.restoreFailed
++        }
++        let restored = try CustomizationFiles.read(url)
++        guard CustomizationFiles.digest(restored) == backupSHA256 else {
++            state = .failed
++            failureReason = IconCacheWriteError.restoreFailed.errorDescription
++            throw IconCacheWriteError.restoreFailed
++        }
++        mutation = nil
++        expectedPostWriteSHA256 = nil
++        state = .restored
++        return self
++    }
++
++    /// Marks the change verified-effective ONLY when the device actually
++    /// rebooted after the write AND a fresh probe still shows the mutated
++    /// prefix. `bootChanged` must come from `RestartEvidence.compare`
++    /// on the boot session recorded before the write. Until then the plan
++    /// stays "awaiting restart verification".
++    @discardableResult
++    mutating func verifyAfterRestart(newEvidence: DiskIconCacheEvidence, bootChanged: Bool) -> Bool {
++        guard state == .awaitingRestartVerification,
++              bootChanged,
++              let record, let expectedPostWriteSHA256,
++              newEvidence.bundleID == record.bundleID else { return false }
++        guard let fresh = newEvidence.matchesDetail.first(where: { $0.file == record.relativePath }),
++              fresh.prefixSHA256 == expectedPostWriteSHA256 else { return false }
++        state = .verifiedAfterRestart
++        return true
++    }
++}
+diff --git a/GestaltX/AppAppearanceDiagnostics.xcstrings b/GestaltX/AppAppearanceDiagnostics.xcstrings
+index d5005a0..db6f4af 100644
+--- a/GestaltX/AppAppearanceDiagnostics.xcstrings
++++ b/GestaltX/AppAppearanceDiagnostics.xcstrings
+@@ -1,6 +1,41 @@
+ {
+   "sourceLanguage": "en",
+   "strings": {
++    "A backup is required before writing.": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "A backup is required before writing."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "写入前需要先备份。"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "寫入前需要先備份。"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "寫入前需要先備份。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "寫入前需要先備份。"
++          }
++        }
++      }
++    },
+     "App Icon & Name": {
+       "extractionState": "manual",
+       "localizations": {
+@@ -36,6 +71,76 @@
+         }
+       }
+     },
++    "Awaiting restart verification": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Awaiting restart verification"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "等待重启验证"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "等待重新啟動驗證"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "等待重新啟動驗證"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "等待重新啟動驗證"
++          }
++        }
++      }
++    },
++    "Backup saved": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Backup saved"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "备份已保存"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "備份已儲存"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "備份已儲存"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "備份已儲存"
++          }
++        }
++      }
++    },
+     "Cache bytes": {
+       "extractionState": "manual",
+       "localizations": {
+@@ -141,6 +246,76 @@
+         }
+       }
+     },
++    "Icon record format not confirmed": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Icon record format not confirmed"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "图标记录格式未确认"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "圖示記錄格式未確認"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "圖示記錄格式未確認"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "圖示記錄格式未確認"
++          }
++        }
++      }
++    },
++    "Icon-cache write (experimental)": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Icon-cache write (experimental)"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "图标缓存写入（实验性）"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "圖示快取寫入（實驗性）"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "圖示快取寫入（實驗性）"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "圖示快取寫入（實驗性）"
++          }
++        }
++      }
++    },
+     "Installed application": {
+       "extractionState": "manual",
+       "localizations": {
+@@ -246,6 +421,76 @@
+         }
+       }
+     },
++    "More than one candidate record matches. Only a single record can be written.": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "More than one candidate record matches. Only a single record can be written."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "匹配的候选记录超过一条，仅可写入单条记录。"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "相符的候選記錄超過一條，僅可寫入單一記錄。"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "相符的候選記錄超過一條，僅可寫入單一記錄。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "相符的候選記錄超過一條，僅可寫入單一記錄。"
++          }
++        }
++      }
++    },
++    "New display name (experimental)": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "New display name (experimental)"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "新显示名称（实验性）"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "新顯示名稱（實驗性）"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "新顯示名稱（實驗性）"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "新顯示名稱（實驗性）"
++          }
++        }
++      }
++    },
+     "No applications returned": {
+       "extractionState": "manual",
+       "localizations": {
+@@ -281,142 +526,982 @@
+         }
+       }
+     },
+-    "Read-only cache evidence": {
++    "No candidate record matches this app.": {
+       "extractionState": "manual",
+       "localizations": {
+         "en": {
+           "stringUnit": {
+             "state": "translated",
+-            "value": "Read-only cache evidence"
++            "value": "No candidate record matches this app."
+           }
+         },
+         "zh-Hans": {
+           "stringUnit": {
+             "state": "translated",
+-            "value": "缓存只读取证"
++            "value": "没有与此应用匹配的候选记录。"
+           }
+         },
+         "zh-Hant": {
+           "stringUnit": {
+             "state": "translated",
+-            "value": "唯讀快取證據"
++            "value": "沒有與此應用程式相符的候選記錄。"
+           }
+         },
+         "zh-Hant-HK": {
+           "stringUnit": {
+             "state": "translated",
+-            "value": "唯讀快取證據"
++            "value": "沒有與此應用程式相符的候選記錄。"
+           }
+         },
+         "zh-Hant-TW": {
+           "stringUnit": {
+             "state": "translated",
+-            "value": "唯讀快取證據"
++            "value": "沒有與此應用程式相符的候選記錄。"
+           }
+         }
+       }
+     },
+-    "Readable icon cache directories": {
++    "No unreadable entries": {
+       "extractionState": "manual",
+       "localizations": {
+         "en": {
+           "stringUnit": {
+             "state": "translated",
+-            "value": "Readable icon cache directories"
++            "value": "No unreadable entries"
+           }
+         },
+         "zh-Hans": {
+           "stringUnit": {
+             "state": "translated",
+-            "value": "可读取的图标缓存目录"
++            "value": "没有无法读取的条目"
+           }
+         },
+         "zh-Hant": {
+           "stringUnit": {
+             "state": "translated",
+-            "value": "可讀取的圖示快取目錄"
++            "value": "沒有無法讀取的條目"
+           }
+         },
+         "zh-Hant-HK": {
+           "stringUnit": {
+             "state": "translated",
+-            "value": "可讀取的圖示快取目錄"
++            "value": "沒有無法讀取的條目"
+           }
+         },
+         "zh-Hant-TW": {
+           "stringUnit": {
+             "state": "translated",
+-            "value": "可讀取的圖示快取目錄"
++            "value": "沒有無法讀取的條目"
+           }
+         }
+       }
+     },
+-    "System icon lookup": {
++    "Only 七猫小说 is in scope for the first write target.": {
+       "extractionState": "manual",
+       "localizations": {
+         "en": {
+           "stringUnit": {
+             "state": "translated",
+-            "value": "System icon lookup"
++            "value": "Only 七猫小说 is in scope for the first write target."
+           }
+         },
+         "zh-Hans": {
+           "stringUnit": {
+             "state": "translated",
+-            "value": "系统返回的应用图标"
++            "value": "首个写入目标仅限七猫小说。"
+           }
+         },
+         "zh-Hant": {
+           "stringUnit": {
+             "state": "translated",
+-            "value": "系統傳回的 App 圖示"
++            "value": "首個寫入目標僅限七貓小說。"
+           }
+         },
+         "zh-Hant-HK": {
+           "stringUnit": {
+             "state": "translated",
+-            "value": "系統傳回的 App 圖示"
++            "value": "首個寫入目標僅限七貓小說。"
+           }
+         },
+         "zh-Hant-TW": {
+           "stringUnit": {
+             "state": "translated",
+-            "value": "系統傳回的 App 圖示"
++            "value": "首個寫入目標僅限七貓小說。"
+           }
+         }
+       }
+     },
+-    "The system icon lookup is separate from the on-disk icon cache. Cache writes are unverified.": {
++    "Read-back did not match the expected bytes. The backup was restored.": {
+       "extractionState": "manual",
+       "localizations": {
+         "en": {
+           "stringUnit": {
+             "state": "translated",
+-            "value": "The system icon lookup is separate from the on-disk icon cache. Cache writes are unverified."
++            "value": "Read-back did not match the expected bytes. The backup was restored."
+           }
+         },
+         "zh-Hans": {
+           "stringUnit": {
+             "state": "translated",
+-            "value": "图标来自系统查询。磁盘图标与名称缓存的写入仍待验证。"
++            "value": "回读结果与预期字节不符，已从备份恢复。"
+           }
+         },
+         "zh-Hant": {
+           "stringUnit": {
+             "state": "translated",
+-            "value": "圖示由系統查詢傳回。磁碟圖示與名稱快取的寫入仍待驗證。"
++            "value": "回讀結果與預期位元組不符，已從備份還原。"
+           }
+         },
+         "zh-Hant-HK": {
+           "stringUnit": {
+             "state": "translated",
+-            "value": "圖示由系統查詢傳回。磁碟圖示與名稱快取的寫入仍待驗證。"
++            "value": "回讀結果與預期位元組不符，已從備份還原。"
+           }
+         },
+         "zh-Hant-TW": {
+           "stringUnit": {
+             "state": "translated",
+-            "value": "圖示由系統查詢傳回。磁碟圖示與名稱快取的寫入仍待驗證。"
++            "value": "回讀結果與預期位元組不符，已從備份還原。"
++          }
++        }
++      }
++    },
++    "Read-back verified": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Read-back verified"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "回读已验证"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "回讀已驗證"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "回讀已驗證"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "回讀已驗證"
++          }
++        }
++      }
++    },
++    "Read-only cache evidence": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Read-only cache evidence"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "缓存只读取证"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "唯讀快取證據"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "唯讀快取證據"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "唯讀快取證據"
++          }
++        }
++      }
++    },
++    "Readable icon cache directories": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Readable icon cache directories"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "可读取的图标缓存目录"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "可讀取的圖示快取目錄"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "可讀取的圖示快取目錄"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "可讀取的圖示快取目錄"
++          }
++        }
++      }
++    },
++    "Ready — candidate record only": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Ready — candidate record only"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "已就绪——仅为候选记录"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "已就緒——僅為候選記錄"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "已就緒——僅為候選記錄"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "已就緒——僅為候選記錄"
++          }
++        }
++      }
++    },
++    "Restore from backup": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Restore from backup"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "从备份恢复"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "從備份還原"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "從備份還原"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "從備份還原"
++          }
++        }
++      }
++    },
++    "Restored from backup": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Restored from backup"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "已从备份恢复"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "已從備份還原"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "已從備份還原"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "已從備份還原"
++          }
++        }
++      }
++    },
++    "System icon lookup": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "System icon lookup"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "系统返回的应用图标"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "系統傳回的 App 圖示"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "系統傳回的 App 圖示"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "系統傳回的 App 圖示"
++          }
++        }
++      }
++    },
++    "The backup could not be restored. The backup has been kept.": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "The backup could not be restored. The backup has been kept."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "无法从备份恢复，备份已保留。"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "無法從備份還原，備份已保留。"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "無法從備份還原，備份已保留。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "無法從備份還原，備份已保留。"
++          }
++        }
++      }
++    },
++    "The backup is missing or does not match.": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "The backup is missing or does not match."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "备份缺失或不匹配。"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "備份遺失或不符。"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "備份遺失或不符。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "備份遺失或不符。"
++          }
++        }
++      }
++    },
++    "The cache file changed since the probe. Read again before writing.": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "The cache file changed since the probe. Read again before writing."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "自探测以来缓存文件已更改，写入前请重新读取。"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "自探測以來快取檔案已變更，寫入前請重新讀取。"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "自探測以來快取檔案已變更，寫入前請重新讀取。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "自探測以來快取檔案已變更，寫入前請重新讀取。"
++          }
++        }
++      }
++    },
++    "The candidate record has no probed content hash.": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "The candidate record has no probed content hash."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "候选记录没有探测到的内容哈希。"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "候選記錄沒有探測到的內容雜湊。"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "候選記錄沒有探測到的內容雜湊。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "候選記錄沒有探測到的內容雜湊。"
++          }
++        }
++      }
++    },
++    "The current display name is unknown.": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "The current display name is unknown."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "当前显示名称未知。"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "目前顯示名稱不明。"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "目前顯示名稱不明。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "目前顯示名稱不明。"
++          }
++        }
++      }
++    },
++    "The current display name was not found in the matched prefix.": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "The current display name was not found in the matched prefix."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "在匹配的前缀中未找到当前显示名称。"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "在相符的前綴中未找到目前顯示名稱。"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "在相符的前綴中未找到目前顯示名稱。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "在相符的前綴中未找到目前顯示名稱。"
++          }
++        }
++      }
++    },
++    "The display name must encode to the same byte length as the current name.": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "The display name must encode to the same byte length as the current name."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "显示名称编码后的字节长度必须与当前名称相同。"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "顯示名稱編碼後的位元組長度必須與目前名稱相同。"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "顯示名稱編碼後的位元組長度必須與目前名稱相同。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "顯示名稱編碼後的位元組長度必須與目前名稱相同。"
++          }
++        }
++      }
++    },
++    "The display name occurs more than once in the matched prefix.": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "The display name occurs more than once in the matched prefix."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "显示名称在匹配的前缀中出现了多次。"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "顯示名稱在相符的前綴中出現多次。"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "顯示名稱在相符的前綴中出現多次。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "顯示名稱在相符的前綴中出現多次。"
++          }
++        }
++      }
++    },
++    "The icon cache could not be opened for writing.": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "The icon cache could not be opened for writing."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "无法打开图标缓存进行写入。"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "無法開啟圖示快取進行寫入。"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "無法開啟圖示快取進行寫入。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "無法開啟圖示快取進行寫入。"
++          }
++        }
++      }
++    },
++    "The new display name is invalid.": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "The new display name is invalid."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "新显示名称无效。"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "新顯示名稱無效。"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "新顯示名稱無效。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "新顯示名稱無效。"
++          }
++        }
++      }
++    },
++    "The system icon lookup is separate from the on-disk icon cache. Cache writes are unverified.": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "The system icon lookup is separate from the on-disk icon cache. Cache writes are unverified."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "图标来自系统查询。磁盘图标与名称缓存的写入仍待验证。"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "圖示由系統查詢傳回。磁碟圖示與名稱快取的寫入仍待驗證。"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "圖示由系統查詢傳回。磁碟圖示與名稱快取的寫入仍待驗證。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "圖示由系統查詢傳回。磁碟圖示與名稱快取的寫入仍待驗證。"
++          }
++        }
++      }
++    },
++    "The write plan is not in the expected state.": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "The write plan is not in the expected state."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "写入计划不在预期的状态。"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "寫入計畫不在預期的狀態。"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "寫入計畫不在預期的狀態。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "寫入計畫不在預期的狀態。"
++          }
++        }
++      }
++    },
++    "Unreadable cache entries": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Unreadable cache entries"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "无法读取的缓存条目"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "無法讀取的快取條目"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "無法讀取的快取條目"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "無法讀取的快取條目"
++          }
++        }
++      }
++    },
++    "Verified-effective after restart": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Verified-effective after restart"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "重启后验证有效"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "重新啟動後驗證有效"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "重新啟動後驗證有效"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "重新啟動後驗證有效"
++          }
++        }
++      }
++    },
++    "Write (experimental)": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Write (experimental)"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "写入（实验性）"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "寫入（實驗性）"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "寫入（實驗性）"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "寫入（實驗性）"
++          }
++        }
++      }
++    },
++    "Write failed": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Write failed"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "写入失败"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "寫入失敗"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "寫入失敗"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "寫入失敗"
++          }
++        }
++      }
++    },
++    "Written — read-back pending": {
++      "extractionState": "manual",
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Written — read-back pending"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "已写入——待回读验证"
++          }
++        },
++        "zh-Hant": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "已寫入——待回讀驗證"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "已寫入——待回讀驗證"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "已寫入——待回讀驗證"
+           }
+         }
+       }
+diff --git a/GestaltX/AppAppearanceInspectionViews.swift b/GestaltX/AppAppearanceInspectionViews.swift
+index ef2a19c..0caaacd 100644
+--- a/GestaltX/AppAppearanceInspectionViews.swift
++++ b/GestaltX/AppAppearanceInspectionViews.swift
+@@ -1,28 +1,142 @@
+ // SPDX-License-Identifier: GPL-3.0-only
+ import SwiftUI
+ 
++struct DiskIconCacheMatch: Sendable, Equatable {
++    let file: String
++    let root: String
++    let bytes: Int
++    let inode: UInt64
++    let filenameMatch: Bool
++    let contentMatch: Bool
++    /// SHA-256 of the probed prefix (at most the first 128 KB). Nil when
++    /// the prefix could not be read even though the name matched.
++    let prefixSHA256: String?
++}
++
++/// One directory entry's diagnostics, recorded for every entry even when
++/// its content read was skipped or failed. `stage` names the failure
++/// ("readdir", "iteratorOpen", "fstatat", "childOpen", "prefixOpen",
++/// "prefixFstat", "prefixRead", "nonRegular"); `errno` is the errno for
++/// that stage. `target` is a symlink's readlink target, never followed.
++struct DiskIconCacheEntryDetail: Sendable, Equatable {
++    let name: String
++    let direntType: Int
++    let mode: String?
++    let size: Int?
++    let uid: Int?
++    let gid: Int?
++    let inode: UInt64?
++    let fileType: String?
++    let stage: String?
++    let errno: Int?
++    let target: String?
++    let statErrno: Int?
++    let prefixSkipped: Bool
++}
++
++struct DiskIconCacheDirectoryStat: Sendable, Equatable {
++    let mode: String
++    let uid: Int
++    let gid: Int
++    let inode: UInt64
++}
++
+ struct DiskIconCacheEvidence: Sendable {
++    let bundleID: String
+     let openedDirectories: Int
+     let matches: Int
++    /// Total unreadable entries, merged across roots. Its meaning is
++    /// unchanged: only actual read failures count (non-regular entries
++    /// do not). See `unreadableStages` for the per-stage breakdown.
++    let unreadable: Int
+     let report: String
++    let matchesDetail: [DiskIconCacheMatch]
++    let entriesDetail: [DiskIconCacheEntryDetail]
++    let directoryStats: [DiskIconCacheDirectoryStat]
++    /// Counts of entries that produced no content, by diagnosis stage,
++    /// merged across roots. "nonRegular" entries are skipped by type,
++    /// not failures, but are included so the breakdown accounts for
++    /// every entry that produced no content.
++    let unreadableStages: [String: Int]
++
++    /// Counts of unreadable entries by diagnosis stage.
++    var unreadableStageCounts: [String: Int] { unreadableStages }
++
++    /// One-line breakdown, e.g. "fstatat ×1 · prefixOpen ×2".
++    var unreadableSummary: String {
++        guard !unreadableStages.isEmpty else { return appearanceDiagnosticText("No unreadable entries") }
++        return unreadableStages.keys.sorted().map { "\($0) ×\(unreadableStages[$0] ?? 0)" }.joined(separator: " · ")
++    }
+ 
+     static func inspect(_ bundleID: String) -> Self {
+-        Self(fields: GXIconCacheProbe.inspect(bundleIdentifier: bundleID))
++        Self(fields: GXIconCacheProbe.inspect(bundleIdentifier: bundleID), bundleID: bundleID)
+     }
+ 
+     static func inspectDirectory(_ descriptor: Int32, bundleID: String) -> Self {
+         let field = GXIconCacheProbe.inspectDirectory(descriptor, bundleIdentifier: bundleID)
+-        guard !field.isEmpty else { return Self(fields: []) }
++        guard !field.isEmpty else { return Self(fields: [], bundleID: bundleID) }
+         var opened = field
+         opened["open"] = true
+-        return Self(fields: [opened])
++        return Self(fields: [opened], bundleID: bundleID)
+     }
+ 
+-    private init(fields: [[String: Any]]) {
++    private init(fields: [[String: Any]], bundleID: String) {
++        self.bundleID = bundleID
+         openedDirectories = fields.filter { $0["open"] as? Bool == true }.count
+         matches = fields.reduce(0) { count, field in
+             count + ((field["matches"] as? [[String: Any]])?.count ?? 0)
+         }
++        unreadable = fields.reduce(0) { count, field in
++            count + ((field["unreadable"] as? NSNumber)?.intValue ?? 0)
++        }
++        matchesDetail = fields.flatMap { field in
++            ((field["matches"] as? [[String: Any]]) ?? []).compactMap { match -> DiskIconCacheMatch? in
++                guard let file = match["file"] as? String else { return nil }
++                return DiskIconCacheMatch(
++                    file: file,
++                    root: match["root"] as? String ?? "",
++                    bytes: (match["bytes"] as? NSNumber)?.intValue ?? 0,
++                    inode: (match["inode"] as? NSNumber)?.uint64Value ?? 0,
++                    filenameMatch: match["filenameMatch"] as? Bool ?? false,
++                    contentMatch: match["contentMatch"] as? Bool ?? false,
++                    prefixSHA256: match["prefixSHA256"] as? String)
++            }
++        }
++        entriesDetail = fields.flatMap { field in
++            ((field["entriesDetail"] as? [[String: Any]]) ?? []).compactMap { entry -> DiskIconCacheEntryDetail? in
++                guard let name = entry["name"] as? String else { return nil }
++                return DiskIconCacheEntryDetail(
++                    name: name,
++                    direntType: (entry["direntType"] as? NSNumber)?.intValue ?? 0,
++                    mode: entry["mode"] as? String,
++                    size: (entry["size"] as? NSNumber)?.intValue,
++                    uid: (entry["uid"] as? NSNumber)?.intValue,
++                    gid: (entry["gid"] as? NSNumber)?.intValue,
++                    inode: (entry["inode"] as? NSNumber)?.uint64Value,
++                    fileType: entry["fileType"] as? String,
++                    stage: entry["stage"] as? String,
++                    errno: (entry["errno"] as? NSNumber)?.intValue,
++                    target: entry["target"] as? String,
++                    statErrno: (entry["statErrno"] as? NSNumber)?.intValue,
++                    prefixSkipped: entry["prefixSkipped"] as? Bool ?? false)
++            }
++        }
++        directoryStats = fields.compactMap { field in
++            guard let stat = field["directoryStat"] as? [String: Any],
++                  let mode = stat["mode"] as? String else { return nil }
++            return DiskIconCacheDirectoryStat(
++                mode: mode,
++                uid: (stat["uid"] as? NSNumber)?.intValue ?? 0,
++                gid: (stat["gid"] as? NSNumber)?.intValue ?? 0,
++                inode: (stat["inode"] as? NSNumber)?.uint64Value ?? 0)
++        }
++        var stages: [String: Int] = [:]
++        for field in fields {
++            for (stage, count) in field["unreadableStages"] as? [String: Any] ?? [:] {
++                stages[stage, default: 0] += (count as? NSNumber)?.intValue ?? 0
++            }
++        }
++        unreadableStages = stages
+         let serialized = try? JSONSerialization.data(withJSONObject: fields, options: [.prettyPrinted, .sortedKeys])
+         report = serialized.flatMap { String(data: $0, encoding: .utf8) } ?? "[]"
+     }
+@@ -112,6 +226,12 @@ private struct AppAppearanceInspectionView: View {
+     @State private var iconPNG: Data?
+     @State private var diskIconCache: DiskIconCacheEvidence?
+     @State private var isReading = false
++    // Gated write path state. The plan is a candidate-only state machine:
++    // it never claims the change is effective before the restart check.
++    @State private var writePlan = IconCacheWritePlan()
++    @State private var writeMessage: String?
++    @State private var newDisplayName = ""
++    @State private var writeBusy = false
+ 
+     private let device = SystemDeviceIdentitySource()
+ 
+@@ -152,6 +272,8 @@ private struct AppAppearanceInspectionView: View {
+                                        value: String(diskIconCache.openedDirectories))
+                         LabeledContent(appearanceDiagnosticText("Candidate records matching Bundle ID"),
+                                        value: String(diskIconCache.matches))
++                        LabeledContent(appearanceDiagnosticText("Unreadable cache entries"),
++                                       value: diskIconCache.unreadableSummary)
+                         Text(appearanceDiagnosticText("Candidate records require confirmation on the Home Screen."))
+                             .font(.caption).foregroundStyle(.secondary)
+                     }
+@@ -162,11 +284,44 @@ private struct AppAppearanceInspectionView: View {
+             } footer: {
+                 Text(appearanceDiagnosticText("The system icon lookup is separate from the on-disk icon cache. Cache writes are unverified."))
+             }
++            if app.id == IconCacheWriteGate.firstWriteTargetBundleID {
++                Section {
++                    LabeledContent(appearanceDiagnosticText("Icon-cache write (experimental)"), value: writeStatusText)
++                    TextField(appearanceDiagnosticText("New display name (experimental)"), text: $newDisplayName)
++                        .textInputAutocapitalization(.never)
++                        .autocorrectionDisabled()
++                        .disabled(writeBusy)
++                    Button(appearanceDiagnosticText("Write (experimental)")) {
++                        Task { await runExperimentalWrite() }
++                    }
++                    .disabled(!writeGateReady || writeBusy
++                              || newDisplayName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
++                              || writePlan.state == .awaitingRestartVerification
++                              || writePlan.state == .verifiedAfterRestart
++                              || writePlan.state == .failed)
++                    Button(appearanceDiagnosticText("Restore from backup"), role: .destructive) {
++                        Task { await runRestore() }
++                    }
++                    .disabled(writeBusy || ![.backedUp, .written, .readBackVerified,
++                                            .awaitingRestartVerification, .failed].contains(writePlan.state))
++                    if let writeMessage {
++                        Text(writeMessage).font(.caption).foregroundStyle(.secondary)
++                    }
++                } header: {
++                    Text(appearanceDiagnosticText("Icon-cache write (experimental)"))
++                } footer: {
++                    Text(appearanceDiagnosticText("Candidate records require confirmation on the Home Screen."))
++                }
++            }
+             AppAppearancePreviewView(app: app)
+         }
+         .navigationTitle(app.name)
+         .navigationBarTitleDisplayMode(.inline)
+-        .task { await inspect() }
++        .task {
++            writePlan = (try? IconCacheWritePlan.load(from: IconCacheWritePlan.backupDirectory(for: app.id)))
++                ?? IconCacheWritePlan()
++            await inspect()
++        }
+     }
+ 
+     private func inspect() async {
+@@ -184,6 +339,162 @@ private struct AppAppearanceInspectionView: View {
+         iconPNG = GXCustomizationAccess.homeScreenIcon(for: bundleID)
+         diskIconCache = result.1
+         names = result.0
++        checkRestartVerification()
++    }
++
++    /// After a fresh probe, check whether a pending write has become
++    /// verified-effective: only a real reboot plus a fresh probe that
++    /// still shows the mutation qualifies.
++    private func checkRestartVerification() {
++        guard writePlan.state == .awaitingRestartVerification,
++              let writtenAt = writePlan.writtenAt,
++              let evidence = diskIconCache else { return }
++        let bootChanged = RestartEvidence.compare(before: writePlan.preWriteBootSession,
++                                                  after: BootSession.current(),
++                                                  referenceDate: writtenAt, readAt: Date(),
++                                                  manual: false) == .verifiedBootChange
++        if writePlan.verifyAfterRestart(newEvidence: evidence, bootChanged: bootChanged) {
++            writeMessage = appearanceDiagnosticText("Verified-effective after restart")
++            try? writePlan.save(to: IconCacheWritePlan.backupDirectory(for: app.id))
++        }
++    }
++
++    private var writeStatusText: String {
++        switch writePlan.state {
++        case .idle:
++            if let evidence = diskIconCache {
++                switch IconCacheWriteGate.evaluate(evidence, bundleID: app.id, probedCacheSHA: names?.sha256) {
++                case .ready:
++                    return appearanceDiagnosticText("Ready — candidate record only")
++                case .blocked(let reason):
++                    return reason
++                }
++            }
++            return L("Unknown")
++        case .backedUp:
++            return appearanceDiagnosticText("Backup saved")
++        case .written:
++            return appearanceDiagnosticText("Written — read-back pending")
++        case .readBackVerified:
++            return appearanceDiagnosticText("Read-back verified")
++        case .awaitingRestartVerification:
++            return appearanceDiagnosticText("Awaiting restart verification")
++        case .verifiedAfterRestart:
++            return appearanceDiagnosticText("Verified-effective after restart")
++        case .restored:
++            return appearanceDiagnosticText("Restored from backup")
++        case .failed:
++            let reason = writePlan.failureReason ?? ""
++            return reason.isEmpty
++                ? appearanceDiagnosticText("Write failed")
++                : appearanceDiagnosticText("Write failed") + ": " + reason
++        }
++    }
++
++    private var writeGateReady: Bool {
++        guard let evidence = diskIconCache,
++              case .ready(let record) = IconCacheWriteGate.evaluate(evidence, bundleID: app.id,
++                                                                    probedCacheSHA: names?.sha256),
++              !record.cacheRoot.isEmpty else { return false }
++        return true
++    }
++
++    /// Runs backup -> write -> read-back, then stops in "awaiting restart
++    /// verification". It does not auto-restore and does not claim the
++    /// change is effective. The cache file is touched only while holding
++    /// the icon-cache group lease, following the CustomizationStore
++    /// acquire/release pattern.
++    private func runExperimentalWrite() async {
++        guard !writeBusy, let evidence = diskIconCache, let names else { return }
++        guard case .ready(let record) = IconCacheWriteGate.evaluate(evidence, bundleID: app.id,
++                                                                    probedCacheSHA: names.sha256) else {
++            writeMessage = writeStatusText
++            return
++        }
++        guard let currentName = names.displayName else {
++            writeMessage = appearanceDiagnosticText("The current display name is unknown.")
++            return
++        }
++        writeBusy = true
++        defer { writeBusy = false }
++        let startingPlan = writePlan
++        let newName = newDisplayName
++        let backupDirectory = IconCacheWritePlan.backupDirectory(for: app.id)
++        let outcome = await Task.detached(priority: .userInitiated) { () -> (IconCacheWritePlan, String?) in
++            var plan = startingPlan
++            let cacheRoot = URL(fileURLWithPath: record.cacheRoot, isDirectory: true)
++            #if os(iOS) && !targetEnvironment(simulator)
++            var lease: Int64 = -1
++            if record.cacheRoot.hasPrefix(IconCacheWriteGate.iconCacheGroupPath) {
++                lease = GXCustomizationAccess.acquirePath(IconCacheWriteGate.iconCacheGroupPath)
++                guard lease >= 0 else { return (plan, IconCacheWriteError.fileUnavailable.localizedDescription) }
++            }
++            defer { if lease >= 0 { worse_query_release(lease) } }
++            #endif
++            do {
++                if plan.state == .idle || plan.state == .restored {
++                    try plan.backup(cacheRoot: cacheRoot, backupDirectory: backupDirectory, record: record)
++                }
++                if plan.state == .backedUp {
++                    try plan.write(cacheRoot: cacheRoot, backupDirectory: backupDirectory, evidence: evidence,
++                                   currentName: currentName, newName: newName,
++                                   bootBefore: BootSession.current())
++                }
++                if plan.state == .written {
++                    try plan.readBack(cacheRoot: cacheRoot, backupDirectory: backupDirectory)
++                }
++                if plan.state == .readBackVerified {
++                    try plan.beginRestartWait()
++                }
++                return (plan, nil)
++            } catch {
++                return (plan, error.localizedDescription)
++            }
++        }.value
++        guard !Task.isCancelled else { return }
++        writePlan = outcome.0
++        try? writePlan.save(to: backupDirectory)
++        if let message = outcome.1 {
++            writeMessage = message
++        } else if writePlan.state == .awaitingRestartVerification {
++            writeMessage = appearanceDiagnosticText("Awaiting restart verification")
++        }
++    }
++
++    /// Restores the backup bytes. Enabled only while a write is pending
++    /// or awaiting restart verification (or failed and holding a backup).
++    private func runRestore() async {
++        guard !writeBusy, let record = writePlan.record, !record.cacheRoot.isEmpty else { return }
++        writeBusy = true
++        defer { writeBusy = false }
++        let startingPlan = writePlan
++        let backupDirectory = IconCacheWritePlan.backupDirectory(for: app.id)
++        let outcome = await Task.detached(priority: .userInitiated) { () -> (IconCacheWritePlan, String?) in
++            var plan = startingPlan
++            let cacheRoot = URL(fileURLWithPath: record.cacheRoot, isDirectory: true)
++            #if os(iOS) && !targetEnvironment(simulator)
++            var lease: Int64 = -1
++            if record.cacheRoot.hasPrefix(IconCacheWriteGate.iconCacheGroupPath) {
++                lease = GXCustomizationAccess.acquirePath(IconCacheWriteGate.iconCacheGroupPath)
++                guard lease >= 0 else { return (plan, IconCacheWriteError.fileUnavailable.localizedDescription) }
++            }
++            defer { if lease >= 0 { worse_query_release(lease) } }
++            #endif
++            do {
++                try plan.restore(cacheRoot: cacheRoot, backupDirectory: backupDirectory)
++                return (plan, nil)
++            } catch {
++                return (plan, error.localizedDescription)
++            }
++        }.value
++        guard !Task.isCancelled else { return }
++        writePlan = outcome.0
++        try? writePlan.save(to: backupDirectory)
++        if let message = outcome.1 {
++            writeMessage = message
++        } else if writePlan.state == .restored {
++            writeMessage = appearanceDiagnosticText("Restored from backup")
++        }
+     }
+ 
+     private func evidenceText(_ names: AppearanceNameEvidence) -> String {
+diff --git a/GestaltX/GXIconCacheProbe.m b/GestaltX/GXIconCacheProbe.m
+index 87a27f6..08f9dc3 100644
+--- a/GestaltX/GXIconCacheProbe.m
++++ b/GestaltX/GXIconCacheProbe.m
+@@ -2,6 +2,7 @@
+ #import "GXIconCacheProbe.h"
+ #import "GXCustomizationAccess.h"
+ #import "worse_query.h"
++#import <CommonCrypto/CommonDigest.h>
+ #import <TargetConditionals.h>
+ #include <dirent.h>
+ #include <errno.h>
+@@ -14,6 +15,12 @@ static const NSUInteger GXIconEntryLimit = 1800;
+ static const NSUInteger GXIconReadBudget = 24 * 1024 * 1024;
+ static const NSUInteger GXIconPrefixLimit = 128 * 1024;
+ static const NSUInteger GXIconMatchLimit = 16;
++static const NSUInteger GXIconEntriesDetailLimit = 32;
++
++@interface GXIconCacheProbe ()
+++ (NSDictionary<NSString *, id> *)inspectDirectory:(int)descriptor bundleIdentifier:(NSString *)identifier
++                                           rootPath:(nullable NSString *)rootPath;
++@end
+ 
+ static BOOL GXIdentifierByte(unsigned char byte) {
+     return (byte >= 'A' && byte <= 'Z') || (byte >= 'a' && byte <= 'z') ||
+@@ -41,15 +48,110 @@ static BOOL GXContainsIdentifier(NSData *data, NSData *identifier, BOOL wide) {
+     return NO;
+ }
+ 
+-static NSData *GXIconPrefix(int directory, const char *name, const struct stat *indexed, NSUInteger limit) {
++static NSString *GXIconOctalMode(mode_t mode) {
++    return [NSString stringWithFormat:@"%o", (unsigned int)mode];
++}
++
++static NSString *GXIconFileType(mode_t mode) {
++    if (S_ISDIR(mode)) return @"directory";
++    if (S_ISREG(mode)) return @"regular";
++    if (S_ISLNK(mode)) return @"symlink";
++    if (S_ISFIFO(mode)) return @"fifo";
++    if (S_ISSOCK(mode)) return @"socket";
++    if (S_ISCHR(mode)) return @"character-device";
++    if (S_ISBLK(mode)) return @"block-device";
++    return @"unknown";
++}
++
++static NSString *GXIconSHA256Hex(NSData *data) {
++    unsigned char digest[CC_SHA256_DIGEST_LENGTH];
++    CC_SHA256(data.bytes, (CC_LONG)data.length, digest);
++    NSMutableString *hex = [NSMutableString stringWithCapacity:CC_SHA256_DIGEST_LENGTH * 2];
++    for (NSUInteger i = 0; i < CC_SHA256_DIGEST_LENGTH; i++) [hex appendFormat:@"%02x", digest[i]];
++    return hex;
++}
++
++typedef struct {
++    NSUInteger entries, bytes, unreadable, budgetSkipped, skippedDirectories;
++    BOOL limited;
++    int readdirErrno;
++} GXIconScan;
++
++// Per-entry diagnostics, capped at GXIconEntriesDetailLimit entries in
++// encounter order. Counts and stage totals are uncapped. These collections
++// are passed as parameters (like `extensions` and `matches`), not stored
++// in GXIconScan, so ARC retains them normally.
++
++// Stage -> count for every entry that produced no content, plus the
++// last errno observed for that stage (only when errno != 0).
++static void GXIconRecordStage(NSMutableDictionary *stages, NSMutableDictionary *stageErrnos,
++                              NSString *stage, int failureErrno) {
++    stages[stage] = @([stages[stage] unsignedIntegerValue] + 1);
++    if (failureErrno != 0) stageErrnos[stage] = @(failureErrno);
++}
++
++static void GXIconAddDetail(NSMutableArray *details, NSDictionary *detail) {
++    if (details.count < GXIconEntriesDetailLimit) [details addObject:detail];
++}
++
++// One diagnostics entry for a directory entry. Metadata is recorded even
++// when the content read was skipped or failed. `stage`/`failureErrno`
++// describe the failure, when there is one; `extra` carries stage-specific
++// facts such as a symlink target or the stat() second opinion.
++static NSDictionary *GXIconEntryDetail(NSString *name, int direntType, const struct stat *metadata,
++                                       NSString * _Nullable stage, int failureErrno,
++                                       NSDictionary * _Nullable extra) {
++    NSMutableDictionary *detail = [NSMutableDictionary dictionary];
++    detail[@"name"] = name;
++    detail[@"direntType"] = @(direntType);
++    if (metadata) {
++        detail[@"mode"] = GXIconOctalMode(metadata->st_mode);
++        detail[@"fileType"] = GXIconFileType(metadata->st_mode);
++        detail[@"size"] = @(metadata->st_size);
++        detail[@"uid"] = @(metadata->st_uid);
++        detail[@"gid"] = @(metadata->st_gid);
++        detail[@"inode"] = @(metadata->st_ino);
++    }
++    if (stage) {
++        detail[@"stage"] = stage;
++        detail[@"errno"] = @(failureErrno);
++    }
++    if (extra) [detail addEntriesFromDictionary:extra];
++    return detail;
++}
++
++// Reads at most `limit` bytes of a regular file for matching. On failure
++// reports the stage and errno through the out parameters. An empty file is
++// not a failure (stage stays nil) because there is no prefix to read.
++// Stages: "prefixOpen" (openat failed), "prefixFstat" (fstat failed or the
++// reopened file is not the same regular file), "prefixRead" (read failed
++// or returned no bytes for a non-empty file).
++static NSData *GXIconPrefix(int directory, const char *name, const struct stat *indexed, NSUInteger limit,
++                            NSString * _Nullable * _Nullable stageOut, int * _Nullable errnoOut) {
++    if (stageOut) *stageOut = nil;
++    if (errnoOut) *errnoOut = 0;
+     int fd = openat(directory, name, O_RDONLY | O_CLOEXEC | O_NOFOLLOW | O_NONBLOCK);
+-    if (fd < 0) return nil;
++    if (fd < 0) {
++        if (stageOut) *stageOut = @"prefixOpen";
++        if (errnoOut) *errnoOut = errno;
++        return nil;
++    }
+     struct stat actual;
+-    if (fstat(fd, &actual) || !S_ISREG(actual.st_mode) || actual.st_ino != indexed->st_ino ||
+-        actual.st_dev != indexed->st_dev || actual.st_size <= 0) {
++    if (fstat(fd, &actual)) {
++        int failure = errno;
++        close(fd);
++        if (stageOut) *stageOut = @"prefixFstat";
++        if (errnoOut) *errnoOut = failure;
++        return nil;
++    }
++    if (!S_ISREG(actual.st_mode) || actual.st_ino != indexed->st_ino ||
++        actual.st_dev != indexed->st_dev) {
+         close(fd);
++        if (stageOut) *stageOut = @"prefixFstat";
++        if (errnoOut) *errnoOut = 0;
+         return nil;
+     }
++    if (actual.st_size <= 0) { close(fd); return nil; }
+ 
+     NSUInteger capacity = MIN(limit, (uint64_t)actual.st_size);
+     NSMutableData *data = [NSMutableData dataWithLength:capacity];
+@@ -57,28 +159,53 @@ static NSData *GXIconPrefix(int directory, const char *name, const struct stat *
+     while (count < capacity) {
+         ssize_t got = read(fd, (char *)data.mutableBytes + count, capacity - count);
+         if (got < 0 && errno == EINTR) continue;
+-        if (got <= 0) break;
++        if (got < 0) {
++            int failure = errno;
++            close(fd);
++            if (stageOut) *stageOut = @"prefixRead";
++            if (errnoOut) *errnoOut = failure;
++            return nil;
++        }
++        if (got == 0) break;
+         count += (size_t)got;
+     }
+     close(fd);
+-    if (!count) return nil;
++    if (!count) {
++        if (stageOut) *stageOut = @"prefixRead";
++        if (errnoOut) *errnoOut = 0;
++        return nil;
++    }
+     data.length = count;
+     return data;
+ }
+ 
+-typedef struct {
+-    NSUInteger entries, bytes, unreadable, budgetSkipped, skippedDirectories;
+-    BOOL limited;
+-} GXIconScan;
++static NSString *GXIconFullPath(NSString *rootPath, NSString *relative, NSString *name) {
++    NSString *path = rootPath;
++    if (relative.length) path = [path stringByAppendingPathComponent:relative];
++    return [path stringByAppendingPathComponent:name];
++}
+ 
+ static void GXInspectIconDirectory(int fd, NSString *relative, NSData *narrow, NSData *wide,
+                                    GXIconScan *scan, NSMutableDictionary *extensions, NSMutableArray *matches,
+-                                   CFAbsoluteTime deadline) {
++                                   NSMutableArray *details, NSMutableDictionary *stages,
++                                   NSMutableDictionary *stageErrnos,
++                                   CFAbsoluteTime deadline, NSString * _Nullable rootPath) {
+     // Open an independent directory stream without changing the caller's descriptor offset.
+     int iterator = openat(fd, ".", O_RDONLY | O_DIRECTORY | O_CLOEXEC);
+-    if (iterator < 0) { scan->unreadable++; return; }
++    if (iterator < 0) {
++        int failure = errno;
++        scan->unreadable++;
++        GXIconRecordStage(stages, stageErrnos, @"iteratorOpen", failure);
++        return;
++    }
+     DIR *directory = fdopendir(iterator);
+-    if (!directory) { close(iterator); scan->unreadable++; return; }
++    if (!directory) {
++        int failure = errno;
++        close(iterator);
++        scan->unreadable++;
++        GXIconRecordStage(stages, stageErrnos, @"iteratorOpen", failure);
++        return;
++    }
+     for (;;) {
+         if (scan->entries >= GXIconEntryLimit || CFAbsoluteTimeGetCurrent() >= deadline) {
+             scan->limited = YES;
+@@ -86,31 +213,94 @@ static void GXInspectIconDirectory(int fd, NSString *relative, NSData *narrow, N
+         }
+         errno = 0;
+         struct dirent *entry = readdir(directory);
+-        if (!entry) { if (errno) scan->unreadable++; break; }
++        if (!entry) {
++            if (errno) {
++                scan->unreadable++;
++                scan->readdirErrno = errno;
++                GXIconRecordStage(stages, stageErrnos, @"readdir", errno);
++            }
++            break;
++        }
+         if (!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, "..")) continue;
+         scan->entries++;
+         @autoreleasepool {
++            // A name that cannot decode as UTF-8 has no name to attach
++            // diagnostics to; it is counted unreadable and skipped.
+             NSString *name = [NSString stringWithUTF8String:entry->d_name];
++            if (!name) { scan->unreadable++; continue; }
+             struct stat metadata;
+-            if (!name || fstatat(fd, entry->d_name, &metadata, AT_SYMLINK_NOFOLLOW)) {
++            if (fstatat(fd, entry->d_name, &metadata, AT_SYMLINK_NOFOLLOW)) {
++                int failure = errno;
+                 scan->unreadable++;
++                GXIconRecordStage(stages, stageErrnos, @"fstatat", failure);
++                NSMutableDictionary *extra = [NSMutableDictionary dictionary];
++                const struct stat *reported = NULL;
++                if (rootPath) {
++                    // Second opinion by full path. stat() follows a final
++                    // symlink, so symlinks (and unknown types, which may
++                    // be symlinks) are checked with lstat() instead; the
++                    // target is never followed outside the scanned root.
++                    NSString *full = GXIconFullPath(rootPath, relative, name);
++                    struct stat second;
++                    int secondResult;
++                    if (entry->d_type == DT_LNK || entry->d_type == DT_UNKNOWN) {
++                        secondResult = lstat(full.fileSystemRepresentation, &second);
++                    } else {
++                        secondResult = stat(full.fileSystemRepresentation, &second);
++                    }
++                    int secondErrno = secondResult == 0 ? 0 : errno;
++                    extra[@"statErrno"] = @(secondErrno);
++                    if (secondResult == 0) {
++                        extra[@"statFallback"] = @(YES);
++                        metadata = second;
++                        reported = &metadata;
++                    }
++                }
++                GXIconAddDetail(details, GXIconEntryDetail(name, entry->d_type, reported, @"fstatat", failure, extra));
+                 continue;
+             }
+             if (S_ISDIR(metadata.st_mode)) {
+                 if (!relative.length && [[NSUUID alloc] initWithUUIDString:name]) {
+                     int child = openat(fd, entry->d_name, O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC);
+                     if (child >= 0) {
+-                        GXInspectIconDirectory(child, name, narrow, wide, scan, extensions, matches, deadline);
++                        GXIconAddDetail(details, GXIconEntryDetail(name, entry->d_type, &metadata, nil, 0, nil));
++                        GXInspectIconDirectory(child, name, narrow, wide, scan, extensions, matches,
++                                               details, stages, stageErrnos, deadline, rootPath);
+                         close(child);
+                     } else {
++                        int failure = errno;
+                         scan->unreadable++;
++                        GXIconRecordStage(stages, stageErrnos, @"childOpen", failure);
++                        GXIconAddDetail(details, GXIconEntryDetail(name, entry->d_type, &metadata, @"childOpen", failure, nil));
+                     }
+                 } else {
+                     scan->skippedDirectories++;
++                    GXIconAddDetail(details, GXIconEntryDetail(name, entry->d_type, &metadata, nil, 0, nil));
+                 }
+                 continue;
+             }
+-            if (!S_ISREG(metadata.st_mode)) continue;
++            if (!S_ISREG(metadata.st_mode)) {
++                // Non-regular entries are never opened or followed. A
++                // symlink's target is recorded, never dereferenced.
++                NSMutableDictionary *extra = [NSMutableDictionary dictionary];
++                if (S_ISLNK(metadata.st_mode)) {
++                    char target[1025];
++                    ssize_t length = readlinkat(fd, entry->d_name, target, sizeof(target) - 1);
++                    if (length >= 0) {
++                        target[length] = '\0';
++                        NSString *targetString = [NSString stringWithUTF8String:target];
++                        if (targetString) {
++                            extra[@"target"] = targetString;
++                            if ((size_t)length == sizeof(target) - 1) extra[@"targetTruncated"] = @(YES);
++                        }
++                    } else {
++                        extra[@"targetErrno"] = @(errno);
++                    }
++                }
++                GXIconRecordStage(stages, stageErrnos, @"nonRegular", 0);
++                GXIconAddDetail(details, GXIconEntryDetail(name, entry->d_type, &metadata, @"nonRegular", 0, extra));
++                continue;
++            }
+             NSString *ext = name.pathExtension.lowercaseString;
+             if (![@[@"isdata", @"isindex", @"plist", @"json", @"png", @"cpbitmap", @"car", @"sqlite", @"db"] containsObject:ext]) {
+                 ext = @"other";
+@@ -119,20 +309,32 @@ static void GXInspectIconDirectory(int fd, NSString *relative, NSData *narrow, N
+             BOOL filenameMatch = GXContainsIdentifier([name.stringByDeletingPathExtension dataUsingEncoding:NSUTF8StringEncoding],
+                                                       narrow, NO);
+             NSData *prefix = nil;
++            NSString *prefixStage = nil;
++            int prefixErrno = 0;
++            BOOL prefixSkipped = NO;
+             if (scan->bytes < GXIconReadBudget) {
+-                prefix = GXIconPrefix(fd, entry->d_name, &metadata, MIN(GXIconPrefixLimit, GXIconReadBudget - scan->bytes));
++                prefix = GXIconPrefix(fd, entry->d_name, &metadata, MIN(GXIconPrefixLimit, GXIconReadBudget - scan->bytes),
++                                      &prefixStage, &prefixErrno);
+                 scan->bytes += prefix.length;
+                 if (!prefix && metadata.st_size > 0) scan->unreadable++;
++                if (prefixStage) GXIconRecordStage(stages, stageErrnos, prefixStage, prefixErrno);
+             } else {
+                 scan->budgetSkipped++;
++                prefixSkipped = YES;
+             }
+             BOOL contentMatch = prefix && (GXContainsIdentifier(prefix, narrow, NO) ||
+                                            GXContainsIdentifier(prefix, wide, YES));
++            NSMutableDictionary *extra = [NSMutableDictionary dictionary];
++            if (prefixSkipped) extra[@"prefixSkipped"] = @(YES);
++            GXIconAddDetail(details, GXIconEntryDetail(name, entry->d_type, &metadata, prefixStage, prefixErrno, extra));
+             if (!(filenameMatch || contentMatch)) continue;
+             if (matches.count >= GXIconMatchLimit) { scan->limited = YES; continue; }
+             NSString *path = relative.length ? [relative stringByAppendingPathComponent:name] : name;
+-            [matches addObject:@{@"file": path, @"bytes": @(metadata.st_size), @"inode": @(metadata.st_ino),
+-                                 @"filenameMatch": @(filenameMatch), @"contentMatch": @(contentMatch)}];
++            NSMutableDictionary *match = [@{@"file": path, @"bytes": @(metadata.st_size), @"inode": @(metadata.st_ino),
++                                            @"filenameMatch": @(filenameMatch), @"contentMatch": @(contentMatch)} mutableCopy];
++            if (rootPath) match[@"root"] = rootPath;
++            if (prefix) match[@"prefixSHA256"] = GXIconSHA256Hex(prefix);
++            [matches addObject:match];
+         }
+     }
+     closedir(directory);
+@@ -140,6 +342,11 @@ static void GXInspectIconDirectory(int fd, NSString *relative, NSData *narrow, N
+ 
+ @implementation GXIconCacheProbe
+ + (NSDictionary<NSString *, id> *)inspectDirectory:(int)descriptor bundleIdentifier:(NSString *)identifier {
++    return [self inspectDirectory:descriptor bundleIdentifier:identifier rootPath:nil];
++}
++
+++ (NSDictionary<NSString *, id> *)inspectDirectory:(int)descriptor bundleIdentifier:(NSString *)identifier
++                                           rootPath:(nullable NSString *)rootPath {
+     NSData *narrow = [identifier dataUsingEncoding:NSUTF8StringEncoding];
+     NSData *wide = [identifier dataUsingEncoding:NSUTF16LittleEndianStringEncoding];
+     if (narrow.length < 3 || narrow.length > 255 || ![identifier containsString:@"."]) return @{};
+@@ -151,12 +358,22 @@ static void GXInspectIconDirectory(int fd, NSString *relative, NSData *narrow, N
+     GXIconScan scan = {0};
+     NSMutableDictionary *extensions = [NSMutableDictionary dictionary];
+     NSMutableArray *matches = [NSMutableArray array];
++    NSMutableArray *details = [NSMutableArray array];
++    NSMutableDictionary *stages = [NSMutableDictionary dictionary];
++    NSMutableDictionary *stageErrnos = [NSMutableDictionary dictionary];
+     GXInspectIconDirectory(descriptor, @"", narrow, wide, &scan, extensions, matches,
+-                           CFAbsoluteTimeGetCurrent() + 4);
+-    return @{@"inode": @(info.st_ino), @"entries": @(scan.entries), @"bytesRead": @(scan.bytes),
++                           details, stages, stageErrnos,
++                           CFAbsoluteTimeGetCurrent() + 4, rootPath);
++    NSMutableDictionary *result = [@{@"inode": @(info.st_ino), @"entries": @(scan.entries), @"bytesRead": @(scan.bytes),
+              @"unreadable": @(scan.unreadable), @"budgetSkipped": @(scan.budgetSkipped),
+              @"skippedDirectories": @(scan.skippedDirectories), @"limited": @(scan.limited),
+-             @"extensions": extensions, @"matches": matches};
++             @"directoryStat": @{@"mode": GXIconOctalMode(info.st_mode), @"uid": @(info.st_uid),
++                                 @"gid": @(info.st_gid), @"inode": @(info.st_ino)},
++             @"entriesDetail": details, @"unreadableStages": stages,
++             @"stageErrnos": stageErrnos,
++             @"extensions": extensions, @"matches": matches} mutableCopy];
++    if (scan.readdirErrno != 0) result[@"readdirErrno"] = @(scan.readdirErrno);
++    return result;
+ }
+ 
+ + (NSArray<NSDictionary<NSString *, id> *> *)inspectBundleIdentifier:(NSString *)identifier {
+@@ -182,7 +399,7 @@ static void GXInspectIconDirectory(int fd, NSString *relative, NSData *narrow, N
+         NSMutableDictionary *result = [@{@"path": root, @"open": @(fd >= 0), @"errno": @(failure),
+                                         @"extensionGranted": @(lease >= 0)} mutableCopy];
+         if (fd >= 0) {
+-            [result addEntriesFromDictionary:[self inspectDirectory:fd bundleIdentifier:identifier]];
++            [result addEntriesFromDictionary:[self inspectDirectory:fd bundleIdentifier:identifier rootPath:root]];
+             close(fd);
+         }
+         if (lease >= 0) worse_query_release(lease);
+diff --git a/docs/APP_APPEARANCE_RESEARCH_ZH.md b/docs/APP_APPEARANCE_RESEARCH_ZH.md
+index e8fcb37..da8af26 100644
+--- a/docs/APP_APPEARANCE_RESEARCH_ZH.md
++++ b/docs/APP_APPEARANCE_RESEARCH_ZH.md
+@@ -61,6 +61,35 @@
+ 
+ Windows 签装版会随摘要附带磁盘图标缓存探针。它以只读方式检查两个历史候选目录，在根目录和一层 UUID 子目录中统计常见记录类型，并抽样匹配所选 Bundle ID 的文件名或 UTF-8 / UTF-16LE 字节。摘要记录打开错误、扫描限制及候选记录大小和 inode。候选仍须验证是否是主屏幕实际采用的图标；零匹配也可能表示条目使用散列索引或超出抽样范围。[Filza 路径记录](https://www.tigisoftware.com/default/?page_id=177) · [Bergamota 对 .isdata 的观察](https://github.com/ry-diffusion/Bergamota/blob/develop/NOTES.md)
+ 
++## 图标缓存探针 v2 与受控写入门禁（3.1，未在真机验证）
++
++### 探针 v2 诊断（`GXIconCacheProbe`，只读）
++上一轮探针无法说明唯一条目为什么不可读（fstatat、openat、fstat 校验、read、readdir 无法区分）。v2 为每个条目记录诊断，不改变扫描上限（1800 条、4 秒、24 MB 读取预算、128 KB 前缀、16 条匹配）：
++- 每个条目：名称、dirent `d_type`、stat mode（八进制）、大小、uid、gid、inode；失败时记录阶段 + errno。阶段：`readdir`、`iteratorOpen`、`fstatat`、`childOpen`、`prefixOpen`、`prefixFstat`、`prefixRead`、`nonRegular`。
++- 元数据枚举：即使内容读取被跳过或失败，也记录条目元数据；每根目录附 `directoryStat`（根目录 mode/uid/gid/inode）；`entriesDetail` 数组上限 32 条，`unreadableStages` 按阶段计数、`stageErrnos` 记录各阶段最近一次 errno。
++- fstatat 失败时，以完整路径再试一次 `stat()` 作为第二意见并记录其 errno；符号链接（及未知类型）改用 `lstat()`，绝不跟随链接到扫描根目录之外；符号链接记录 `readlink` 目标但不跟随。FIFO 等非正规文件记录类型（如 `fifo`）而不打开。
++- 匹配记录新增 `prefixSHA256`：对已匹配文件，取探针实际读取的前缀（至多 128 KB）的 SHA-256。探针不做全文件哈希——写路径的 TOCTOU 与回读校验比较的是同一前缀窗口，而不是探针从未计算过的全文件哈希。
++- 检查页新增一行本地化文案，显示不可读条目的阶段 breakdown（如 `fstatat ×1 · prefixOpen ×2`）；无不可读条目时显示“没有无法读取的条目”。
++
++### 最新真机证据与门禁状态（2026-11-16，iPhone Air iPhone18,4，iOS 27.0.1，Build 24A446）
++- systemgroup 图标缓存目录（`/private/var/containers/Shared/SystemGroup/systemgroup.com.apple.lsd.iconscache/Library/Caches/com.apple.IconsCache`）能打开（open 1，errno 0），但其唯一条目不可读、匹配 0 条、读取 0 字节，未触及扫描上限；另一候选路径（`/private/var/mobile/Library/Caches/com.apple.IconsCache`）不存在（errno 2）。系统图标 PNG 的 SHA-256 未知。LaunchServices 缓存已重建（14,696,448 字节，SHA `3b379675…`）。
++- **门禁状态：未在真机验证。** 该记录未被证实是主屏幕实际使用的记录，因此写路径保持门禁。v2 探针正是为回答“唯一条目为什么不可读”而设——在 v2 给出阶段 + errno 之前，不得假定该条目可写、不得绕过门禁。
++
++### 受控写入设计（仅代码，未在真机运行）
++- `VerifiedIconCacheRecord`（bundleID、缓存根内相对路径、大小、inode、探测时前缀 SHA `sha256AtProbe`、探测时 LaunchServices 缓存 SHA `probedCacheSHA`）：只能从包含至少一条该 bundleID 匹配且带前缀哈希的探针证据构造（`fromEvidence(_:bundleID:)`，否则为 nil）。
++- `IconCacheWriteGate.evaluate`：首个实现仅接受 bundleID `com.yueyou.cyreader`（七猫小说），其他一律 blocked（注释：微信/支付宝待七猫小说验证后跟进）。图标替换明确拒绝（`.blocked`，原因“图标记录格式未确认”），直至探针确认图标字节。
++- `WriteMutation`：显式描述一次字节替换（偏移 + 长度 + 替换字节）。首个构造器仅支持匹配前缀内的显示名称字节替换（UTF-8 与 UTF-16LE 两种形式）：新名称须与当前名称编码后字节长度相同、且在两种形式中合计恰好出现一次，否则拒绝；图标字节永不经此构造器修改。
++- `IconCacheWritePlan` 状态机：`idle -> backedUp -> written -> readBackVerified -> awaitingRestartVerification -> verifiedAfterRestart`，另有 `restored` 与 `failed(reason)`。备份在紫序自己的 Application Support 目录（`GestaltX/AppAppearance/IconCacheBackups/<bundleID>/`，PropertyList + SHA-256，沿用 `AppAppearanceDraft` 式存储），写前写后各算一次 SHA-256 并原子写入，恢复验证通过前不删除备份。写入为单条记录：证据匹配数不等于 1 即拒绝；当前前缀 SHA 与探测 SHA 不符即拒绝（TOCTOU）；无有效备份即拒绝。写入为原地同长替换（inode 与文件大小不变），回读时核对替换字节与预期写后前缀 SHA，不符立即用备份恢复并报告失败。重启复验复用仓库已有的启动证据（`BootSession.current()` + `RestartEvidence.compare`）：仅当确实重启过且新探针仍显示该替换时，才标记为 verified-effective；此前一直停留在“等待重启验证”。
++- “候选记录”与“重启后验证有效”在代码名、界面文案与本文档中严格区分，绝不把候选说成有效，绝不宣称已在真机验证。
++- 界面：仅七猫小说的检查页出现写入口——一行门禁状态、一个新显示名称输入框、“写入（实验性）”按钮（门禁未就绪时禁用）、一个独立的“从备份恢复”按钮（仅在写入待定/等待重启验证/失败持有备份时启用）。写入按钮执行“备份 → 写入 → 回读”后停在“等待重启验证”，不自动恢复、不提供未经重启检查的持久修改。
++
++### 下一步真机操作（按顺序）
++1. 安装含探针 v2 的构建，打开「工具 → 操作 → 应用图标与名称 → 七猫小说」，点“重新读取”，分享证据文本：`entriesDetail` 与 `unreadableStages` 会指明唯一条目的失败阶段与 errno。
++2. 若阶段为 `prefixOpen`/`prefixFstat`/`prefixRead` 且 errno 为 EACCES/EPERM：该条目在当前权限下不可读，门禁继续 blocked，不得尝试写入；记录 errno 并评估是否需要其他只读发现路径。
++3. 若出现匹配记录且门禁显示“已就绪——仅为候选记录”：输入与当前名称编码字节长度相同的新名称（例如同为 4 个汉字），点“写入（实验性）”，确认状态走到“等待重启验证”、回读无报错。
++4. 重启 iPhone，重新打开同一检查页并点“重新读取”：状态变为“重启后验证有效”且主屏幕名称确实改变，才算验证有效；否则状态保持“等待重启验证”，用“从备份恢复”还原，并记录重启前后两次探针的 `prefixSHA256` 与 LaunchServices 缓存 SHA。
++5. 在七猫小说验证有效之前，不对微信、支付宝或任何其他应用开放写入按钮。
++
+ ### UI 原则
+ - 与现有启动图编辑器明确隔离，不把启动快照当应用图标。
+ - 真值状态分为：未读取、不可访问、仅预览、已验证写入、重启后验证、未知。
+diff --git a/tests/IconCacheProbeTests.swift b/tests/IconCacheProbeTests.swift
+index 961250d..8cb62d0 100644
+--- a/tests/IconCacheProbeTests.swift
++++ b/tests/IconCacheProbeTests.swift
+@@ -32,8 +32,380 @@ final class IconCacheProbeTests: XCTestCase {
+         XCTAssertEqual(evidence.matches, 2)
+         XCTAssertTrue(evidence.report.contains(target + ".isdata"))
+         XCTAssertTrue(evidence.report.contains("identifier.isindex"))
+-        XCTAssertFalse(evidence.report.contains("longer.isdata"))
+-        XCTAssertFalse(evidence.report.contains("aliased.isdata"))
++        // "longer.isdata" and the symlink are enumerated as metadata-only
++        // diagnostics but must never appear as matches.
++        XCTAssertFalse(evidence.matchesDetail.contains { $0.file.contains("longer.isdata") })
++        XCTAssertFalse(evidence.matchesDetail.contains { $0.file.contains("aliased.isdata") })
+         XCTAssertEqual(DiskIconCacheEvidence.inspectDirectory(descriptor, bundleID: "../unsupported").matches, 0)
++        // Every entry is enumerated: four in the root plus the one file
++        // inside the UUID subdirectory.
++        XCTAssertEqual(evidence.entriesDetail.count, 5)
++        XCTAssertEqual(evidence.unreadableStageCounts, ["nonRegular": 1])
++        XCTAssertEqual(evidence.unreadable, 0)
++        let aliased = try XCTUnwrap(evidence.entriesDetail.first { $0.name == "aliased.isdata" })
++        XCTAssertEqual(aliased.stage, "nonRegular")
++        XCTAssertEqual(aliased.fileType, "symlink")
++        XCTAssertEqual(aliased.target, outside.path)
++    }
++
++    func testProbeDiagnosticsRecordSymlinkTargetAndNonRegularEntries() throws {
++        let files = FileManager.default
++        let root = files.temporaryDirectory.appendingPathComponent(UUID().uuidString)
++        let cache = root.appendingPathComponent("cache")
++        try files.createDirectory(at: cache, withIntermediateDirectories: true)
++        defer { try? files.removeItem(at: root) }
++
++        let target = "com.yueyou.cyreader"
++        try Data([0]).write(to: cache.appendingPathComponent(target + ".isdata"))
++        let outside = root.appendingPathComponent("outside.isdata")
++        try Data(target.utf8).write(to: outside)
++        try files.createSymbolicLink(at: cache.appendingPathComponent("aliased.isdata"), withDestinationURL: outside)
++        let fifo = cache.appendingPathComponent("pipe.isdata")
++        XCTAssertEqual(mkfifo(fifo.path, 0o644), 0)
++
++        let descriptor = open(cache.path, O_RDONLY | O_DIRECTORY | O_CLOEXEC)
++        guard descriptor >= 0 else { throw POSIXError(.EACCES) }
++        defer { close(descriptor) }
++
++        let evidence = DiskIconCacheEvidence.inspectDirectory(descriptor, bundleID: target)
++        XCTAssertEqual(evidence.matches, 1)
++        XCTAssertFalse(evidence.matchesDetail.contains { $0.file.contains("aliased.isdata") })
++        XCTAssertFalse(evidence.matchesDetail.contains { $0.file.contains("pipe.isdata") })
++
++        let aliased = try XCTUnwrap(evidence.entriesDetail.first { $0.name == "aliased.isdata" })
++        XCTAssertEqual(aliased.stage, "nonRegular")
++        XCTAssertEqual(aliased.fileType, "symlink")
++        XCTAssertEqual(aliased.direntType, 10) // DT_LNK
++        XCTAssertEqual(aliased.target, outside.path)
++
++        let pipe = try XCTUnwrap(evidence.entriesDetail.first { $0.name == "pipe.isdata" })
++        XCTAssertEqual(pipe.stage, "nonRegular")
++        XCTAssertEqual(pipe.fileType, "fifo")
++        XCTAssertEqual(pipe.direntType, 1) // DT_FIFO
++
++        let regular = try XCTUnwrap(evidence.entriesDetail.first { $0.name == target + ".isdata" })
++        XCTAssertNil(regular.stage)
++        XCTAssertEqual(regular.fileType, "regular")
++        XCTAssertEqual(regular.direntType, 8) // DT_REG
++        XCTAssertTrue(regular.mode?.hasPrefix("100") ?? false)
++        XCTAssertEqual(regular.size, 1)
++        XCTAssertNotNil(regular.uid)
++        XCTAssertNotNil(regular.gid)
++        XCTAssertNotNil(regular.inode)
++
++        XCTAssertEqual(evidence.directoryStats.count, 1)
++        XCTAssertTrue(evidence.directoryStats[0].mode.hasPrefix("40"))
++        XCTAssertEqual(evidence.unreadableStageCounts["nonRegular"], 2)
++        XCTAssertEqual(evidence.unreadable, 0)
++    }
++
++    func testProbeDiagnosticsRecordUnreadableRegularFileWithStageAndErrno() throws {
++        // chmod 000 only blocks the open for a non-root runner.
++        guard geteuid() != 0 else { throw XCTSkip("Unreadable-file diagnostics need a non-root runner.") }
++        let files = FileManager.default
++        let root = files.temporaryDirectory.appendingPathComponent(UUID().uuidString)
++        let cache = root.appendingPathComponent("cache")
++        try files.createDirectory(at: cache, withIntermediateDirectories: true)
++        defer { try? files.removeItem(at: root) }
++
++        let target = "com.yueyou.cyreader"
++        let locked = cache.appendingPathComponent("locked.isdata")
++        try Data(target.utf8).write(to: locked)
++        try files.setAttributes([.posixPermissions: 0o000], ofItemAtPath: locked.path)
++        defer { try? files.setAttributes([.posixPermissions: 0o644], ofItemAtPath: locked.path) }
++
++        let descriptor = open(cache.path, O_RDONLY | O_DIRECTORY | O_CLOEXEC)
++        guard descriptor >= 0 else { throw POSIXError(.EACCES) }
++        defer { close(descriptor) }
++
++        let evidence = DiskIconCacheEvidence.inspectDirectory(descriptor, bundleID: target)
++        XCTAssertEqual(evidence.matches, 0)
++        XCTAssertEqual(evidence.unreadable, 1)
++        XCTAssertEqual(evidence.unreadableStageCounts["prefixOpen"], 1)
++        XCTAssertTrue(evidence.unreadableSummary.contains("prefixOpen"))
++        let detail = try XCTUnwrap(evidence.entriesDetail.first { $0.name == "locked.isdata" })
++        XCTAssertEqual(detail.stage, "prefixOpen")
++        XCTAssertEqual(detail.errno, Int(EACCES))
++        XCTAssertEqual(detail.size, target.utf8.count)
++        XCTAssertEqual(detail.fileType, "regular")
++    }
++
++    func testProbeDiagnosticsRecordUnreadableSubdirectoryWithChildOpenStage() throws {
++        guard geteuid() != 0 else { throw XCTSkip("Unreadable-directory diagnostics need a non-root runner.") }
++        let files = FileManager.default
++        let root = files.temporaryDirectory.appendingPathComponent(UUID().uuidString)
++        let cache = root.appendingPathComponent("cache")
++        let child = cache.appendingPathComponent(UUID().uuidString)
++        try files.createDirectory(at: child, withIntermediateDirectories: true)
++        defer { try? files.removeItem(at: root) }
++        try files.setAttributes([.posixPermissions: 0o000], ofItemAtPath: child.path)
++        defer { try? files.setAttributes([.posixPermissions: 0o755], ofItemAtPath: child.path) }
++
++        let descriptor = open(cache.path, O_RDONLY | O_DIRECTORY | O_CLOEXEC)
++        guard descriptor >= 0 else { throw POSIXError(.EACCES) }
++        defer { close(descriptor) }
++
++        let evidence = DiskIconCacheEvidence.inspectDirectory(descriptor, bundleID: "com.yueyou.cyreader")
++        XCTAssertEqual(evidence.unreadable, 1)
++        XCTAssertEqual(evidence.unreadableStageCounts["childOpen"], 1)
++        let detail = try XCTUnwrap(evidence.entriesDetail.first { $0.name == child.lastPathComponent })
++        XCTAssertEqual(detail.stage, "childOpen")
++        XCTAssertEqual(detail.errno, Int(EACCES))
++        XCTAssertEqual(detail.fileType, "directory")
++    }
++
++    func testGateRefusesWithoutMatchAndNonTargetBundleID() throws {
++        let files = FileManager.default
++        let root = files.temporaryDirectory.appendingPathComponent(UUID().uuidString)
++        let cache = root.appendingPathComponent("cache")
++        try files.createDirectory(at: cache, withIntermediateDirectories: true)
++        defer { try? files.removeItem(at: root) }
++
++        let target = "com.yueyou.cyreader"
++        try Data([0]).write(to: cache.appendingPathComponent(target + ".isdata"))
++
++        let descriptor = open(cache.path, O_RDONLY | O_DIRECTORY | O_CLOEXEC)
++        guard descriptor >= 0 else { throw POSIXError(.EACCES) }
++        defer { close(descriptor) }
++
++        let matchEvidence = DiskIconCacheEvidence.inspectDirectory(descriptor, bundleID: target)
++        XCTAssertEqual(matchEvidence.matches, 1)
++
++        // The same directory probed for another bundle ID has no matches.
++        let noMatch = DiskIconCacheEvidence.inspectDirectory(descriptor, bundleID: "com.example.other")
++        XCTAssertEqual(noMatch.matches, 0)
++
++        guard case .blocked(let noMatchReason) = IconCacheWriteGate.evaluate(noMatch, bundleID: target) else {
++            return XCTFail("Gate should block evidence without a match")
++        }
++        XCTAssertEqual(noMatchReason, appearanceDiagnosticText("No candidate record matches this app."))
++
++        guard case .blocked(let scopeReason) = IconCacheWriteGate.evaluate(matchEvidence, bundleID: "com.tencent.xin") else {
++            return XCTFail("Gate should block a non-七猫小说 bundle ID")
++        }
++        XCTAssertEqual(scopeReason, appearanceDiagnosticText("Only 七猫小说 is in scope for the first write target."))
++
++        guard case .ready(let record) = IconCacheWriteGate.evaluate(matchEvidence, bundleID: target) else {
++            return XCTFail("Gate should be ready with a matching record")
++        }
++        XCTAssertEqual(record.bundleID, target)
++        XCTAssertEqual(record.relativePath, target + ".isdata")
++        XCTAssertEqual(record.sha256AtProbe.count, 64)
++
++        guard case .blocked(let iconReason) = IconCacheWriteGate.evaluateIconReplacement() else {
++            return XCTFail("Icon replacement must be refused")
++        }
++        XCTAssertEqual(iconReason, appearanceDiagnosticText("Icon record format not confirmed"))
++    }
++
++    func testMutationBuilderReplacesUTF8AndUTF16LENameBytes() throws {
++        let current = "七猫小说"
++        let replacement = "七猫小説"
++        let currentUTF8 = try XCTUnwrap(current.data(using: .utf8))
++        let currentUTF16 = try XCTUnwrap(current.data(using: .utf16LittleEndian))
++        let replacementUTF8 = try XCTUnwrap(replacement.data(using: .utf8))
++        let replacementUTF16 = try XCTUnwrap(replacement.data(using: .utf16LittleEndian))
++
++        // UTF-8 form: only the name bytes change.
++        let prefix = Data("ab".utf8) + currentUTF8 + Data("cd".utf8)
++        let utf8Mutation = try WriteMutation.displayNameReplacement(prefix: prefix, currentName: current,
++                                                                    newName: replacement).get()
++        XCTAssertEqual(utf8Mutation.offset, 2)
++        XCTAssertEqual(utf8Mutation.length, currentUTF8.count)
++        XCTAssertEqual(utf8Mutation.replacement, replacementUTF8)
++        XCTAssertEqual(try XCTUnwrap(utf8Mutation.applied(to: prefix)),
++                       Data("ab".utf8) + replacementUTF8 + Data("cd".utf8))
++
++        // UTF-16LE form.
++        let widePrefix = Data("ab".utf8) + currentUTF16 + Data("cd".utf8)
++        let wideMutation = try WriteMutation.displayNameReplacement(prefix: widePrefix, currentName: current,
++                                                                    newName: replacement).get()
++        XCTAssertEqual(wideMutation.offset, 2)
++        XCTAssertEqual(wideMutation.length, currentUTF16.count)
++        XCTAssertEqual(wideMutation.replacement, replacementUTF16)
++        XCTAssertEqual(try XCTUnwrap(wideMutation.applied(to: widePrefix)),
++                       Data("ab".utf8) + replacementUTF16 + Data("cd".utf8))
++
++        // Out of range: the mutation cannot apply to a shorter buffer.
++        XCTAssertNil(utf8Mutation.applied(to: Data("ab".utf8)))
++
++        // Absent name.
++        guard case .failure(let missing) = WriteMutation.displayNameReplacement(
++            prefix: Data("nothing here".utf8), currentName: current, newName: replacement) else {
++            return XCTFail("Builder should fail when the name is absent")
++        }
++        XCTAssertEqual(missing, .notFound)
++
++        // Ambiguous: the name occurs twice.
++        let doubled = currentUTF8 + Data("-".utf8) + currentUTF8
++        guard case .failure(let ambiguous) = WriteMutation.displayNameReplacement(
++            prefix: doubled, currentName: current, newName: replacement) else {
++            return XCTFail("Builder should fail when the name occurs twice")
++        }
++        XCTAssertEqual(ambiguous, .ambiguous)
++
++        // Different byte length: the new name cannot replace in place.
++        guard case .failure(let length) = WriteMutation.displayNameReplacement(
++            prefix: prefix, currentName: current, newName: "七猫") else {
++            return XCTFail("Builder should fail when the new name has a different byte length")
++        }
++        XCTAssertEqual(length, .lengthMismatch)
++    }
++
++    func testBackupRestoreRoundTripRestoresExactBytes() throws {
++        let fixture = try makeWriteFixture()
++        defer { try? FileManager.default.removeItem(at: fixture.root) }
++        let backupDirectory = fixture.root.appendingPathComponent("backup")
++        var plan = IconCacheWritePlan()
++        try plan.backup(cacheRoot: fixture.cache, backupDirectory: backupDirectory, record: fixture.record)
++        XCTAssertEqual(plan.state, .backedUp)
++        let original = try Data(contentsOf: fixture.file)
++        try Data("corrupted-contents".utf8).write(to: fixture.file, options: .atomic)
++        XCTAssertNotEqual(try Data(contentsOf: fixture.file), original)
++        try plan.restore(cacheRoot: fixture.cache, backupDirectory: backupDirectory)
++        XCTAssertEqual(plan.state, .restored)
++        XCTAssertEqual(try Data(contentsOf: fixture.file), original)
++        // The backup is kept after a verified restore.
++        XCTAssertTrue(FileManager.default.fileExists(
++            atPath: backupDirectory.appendingPathComponent("backup.bin").path))
++    }
++
++    func testWriteRefusesOnSHAMismatch() throws {
++        let fixture = try makeWriteFixture()
++        defer { try? FileManager.default.removeItem(at: fixture.root) }
++        let backupDirectory = fixture.root.appendingPathComponent("backup")
++        var plan = IconCacheWritePlan()
++        try plan.backup(cacheRoot: fixture.cache, backupDirectory: backupDirectory, record: fixture.record)
++        // Change the live bytes (same size) after the backup.
++        var changed = try Data(contentsOf: fixture.file)
++        changed[0] = changed[0] ^ 0xFF
++        try changed.write(to: fixture.file, options: .atomic)
++        do {
++            try plan.write(cacheRoot: fixture.cache, backupDirectory: backupDirectory,
++                           evidence: fixture.evidence, currentName: "七猫小说",
++                           newName: "七猫小説", bootBefore: nil)
++            XCTFail("Write should refuse a file that changed since the probe")
++        } catch let error as IconCacheWriteError {
++            XCTAssertEqual(error, .shaMismatch)
++        }
++        XCTAssertEqual(plan.state, .backedUp)
++    }
++
++    func testWriteRefusesWhenEvidenceHasMoreThanOneMatch() throws {
++        let files = FileManager.default
++        let root = files.temporaryDirectory.appendingPathComponent(UUID().uuidString)
++        let cache = root.appendingPathComponent("cache")
++        try files.createDirectory(at: cache, withIntermediateDirectories: true)
++        defer { try? files.removeItem(at: root) }
++
++        let target = "com.yueyou.cyreader"
++        try Data(target.utf8).write(to: cache.appendingPathComponent("first.isdata"))
++        try Data(target.utf8).write(to: cache.appendingPathComponent("second.isdata"))
++        let descriptor = open(cache.path, O_RDONLY | O_DIRECTORY | O_CLOEXEC)
++        guard descriptor >= 0 else { throw POSIXError(.EACCES) }
++        defer { close(descriptor) }
++        let evidence = DiskIconCacheEvidence.inspectDirectory(descriptor, bundleID: target)
++        XCTAssertEqual(evidence.matches, 2)
++        let record = try XCTUnwrap(VerifiedIconCacheRecord.fromEvidence(evidence, bundleID: target))
++
++        let backupDirectory = root.appendingPathComponent("backup")
++        var plan = IconCacheWritePlan()
++        try plan.backup(cacheRoot: cache, backupDirectory: backupDirectory, record: record)
++        do {
++            try plan.write(cacheRoot: cache, backupDirectory: backupDirectory, evidence: evidence,
++                           currentName: "七猫小说", newName: "七猫小説", bootBefore: nil)
++            XCTFail("Write should refuse evidence with more than one match")
++        } catch let error as IconCacheWriteError {
++            XCTAssertEqual(error, .unexpectedMatchCount(2))
++        }
++    }
++
++    func testWriteReadBackAndRestartVerificationFlow() throws {
++        let fixture = try makeWriteFixture()
++        defer { try? FileManager.default.removeItem(at: fixture.root) }
++        let backupDirectory = fixture.root.appendingPathComponent("backup")
++        var plan = IconCacheWritePlan()
++        try plan.backup(cacheRoot: fixture.cache, backupDirectory: backupDirectory, record: fixture.record)
++        XCTAssertEqual(plan.state, .backedUp)
++        try plan.write(cacheRoot: fixture.cache, backupDirectory: backupDirectory,
++                       evidence: fixture.evidence, currentName: "七猫小说", newName: "七猫小説",
++                       bootBefore: BootSession(seconds: 1000, microseconds: 0))
++        XCTAssertEqual(plan.state, .written)
++        let written = try Data(contentsOf: fixture.file)
++        XCTAssertNotNil(written.range(of: Data("七猫小説".utf8)))
++        XCTAssertNil(written.range(of: Data("七猫小说".utf8)))
++        XCTAssertEqual(written.count, fixture.record.size)
++        try plan.readBack(cacheRoot: fixture.cache, backupDirectory: backupDirectory)
++        XCTAssertEqual(plan.state, .readBackVerified)
++        try plan.beginRestartWait()
++        XCTAssertEqual(plan.state, .awaitingRestartVerification)
++        // No reboot yet: the state must not advance.
++        XCTAssertFalse(plan.verifyAfterRestart(newEvidence: fixture.evidence, bootChanged: false))
++        XCTAssertEqual(plan.state, .awaitingRestartVerification)
++        // A reboot alone is not enough: stale evidence (pre-write prefix
++        // hash) must not verify.
++        XCTAssertFalse(plan.verifyAfterRestart(newEvidence: fixture.evidence, bootChanged: true))
++        XCTAssertEqual(plan.state, .awaitingRestartVerification)
++        // A fresh probe after the reboot still shows the mutation.
++        let descriptor = open(fixture.cache.path, O_RDONLY | O_DIRECTORY | O_CLOEXEC)
++        guard descriptor >= 0 else { throw POSIXError(.EACCES) }
++        defer { close(descriptor) }
++        let fresh = DiskIconCacheEvidence.inspectDirectory(descriptor, bundleID: "com.yueyou.cyreader")
++        XCTAssertEqual(fresh.matches, 1)
++        XCTAssertTrue(plan.verifyAfterRestart(newEvidence: fresh, bootChanged: true))
++        XCTAssertEqual(plan.state, .verifiedAfterRestart)
++    }
++
++    func testReadBackMismatchRestoresBackupImmediately() throws {
++        let fixture = try makeWriteFixture()
++        defer { try? FileManager.default.removeItem(at: fixture.root) }
++        let backupDirectory = fixture.root.appendingPathComponent("backup")
++        let original = try Data(contentsOf: fixture.file)
++        var plan = IconCacheWritePlan()
++        try plan.backup(cacheRoot: fixture.cache, backupDirectory: backupDirectory, record: fixture.record)
++        try plan.write(cacheRoot: fixture.cache, backupDirectory: backupDirectory,
++                       evidence: fixture.evidence, currentName: "七猫小说", newName: "七猫小説",
++                       bootBefore: nil)
++        XCTAssertEqual(plan.state, .written)
++        // Corrupt the live file after the write (same size, different bytes).
++        var corrupted = try Data(contentsOf: fixture.file)
++        corrupted[0] = corrupted[0] ^ 0xFF
++        try corrupted.write(to: fixture.file, options: .atomic)
++        do {
++            try plan.readBack(cacheRoot: fixture.cache, backupDirectory: backupDirectory)
++            XCTFail("Read-back should refuse corrupted bytes")
++        } catch let error as IconCacheWriteError {
++            XCTAssertEqual(error, .readBackMismatch)
++        }
++        XCTAssertEqual(plan.state, .restored)
++        XCTAssertEqual(try Data(contentsOf: fixture.file), original)
++    }
++
++    /// A synthetic cache file whose prefix contains the bundle ID and the
++    /// current display name in UTF-8, plus the record the probe builds
++    /// for it. Exactly one file matches, so the record is deterministic.
++    private func makeWriteFixture() throws -> (root: URL, cache: URL, file: URL,
++                                              record: VerifiedIconCacheRecord,
++                                              evidence: DiskIconCacheEvidence) {
++        let files = FileManager.default
++        let root = files.temporaryDirectory.appendingPathComponent(UUID().uuidString)
++        let cache = root.appendingPathComponent("cache")
++        try files.createDirectory(at: cache, withIntermediateDirectories: true)
++        let target = "com.yueyou.cyreader"
++        var content = Data()
++        content.append(Data("header-".utf8))
++        content.append(Data(target.utf8))
++        content.append(Data("-".utf8))
++        content.append(Data("七猫小说".utf8))
++        content.append(Data("-tail".utf8))
++        let file = cache.appendingPathComponent("record.isdata")
++        try content.write(to: file)
++        let descriptor = open(cache.path, O_RDONLY | O_DIRECTORY | O_CLOEXEC)
++        guard descriptor >= 0 else { throw POSIXError(.EACCES) }
++        defer { close(descriptor) }
++        let evidence = DiskIconCacheEvidence.inspectDirectory(descriptor, bundleID: target)
++        XCTAssertEqual(evidence.matches, 1)
++        let record = try XCTUnwrap(VerifiedIconCacheRecord.fromEvidence(evidence, bundleID: target))
++        return (root, cache, file, record, evidence)
+     }
+ }
