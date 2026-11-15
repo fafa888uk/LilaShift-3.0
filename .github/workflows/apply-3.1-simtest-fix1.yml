@@ -1,0 +1,68 @@
+name: Apply 3.1 simulator container fix
+
+# One-shot: apply lilashift-3.1-simtest-fix1.patch (create simulator
+# container directories before asserting they exist) to the 3.1 branch.
+# The patch file must already be uploaded to the branch root.
+# Patch SHA-256: d9df0a200e425b1727c73900cb1717f5a1b6a14b6eb9120913d8a43d0848ef62
+# Dispatch with ref = feature/lilashift-3.1-iphone18-2-persistence.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v7
+        with:
+          ref: feature/lilashift-3.1-iphone18-2-persistence
+
+      - name: Verify patch file
+        run: |
+          ls -l lilashift-3.1-simtest-fix1.patch
+          echo "d9df0a200e425b1727c73900cb1717f5a1b6a14b6eb9120913d8a43d0848ef62  lilashift-3.1-simtest-fix1.patch" | sha256sum -c -
+
+      - name: Apply patch
+        run: |
+          git config user.name "fafa920q-hue"
+          git config user.email "fafa920q-hue@users.noreply.github.com"
+          git apply --index lilashift-3.1-simtest-fix1.patch
+
+      - name: Verify staged files
+        run: |
+          echo "=== staged files ==="
+          git diff --cached --name-only
+          echo "=== staged stat ==="
+          git diff --cached --stat
+          # Expect exactly 1 file
+          test "$(git diff --cached --name-only | wc -l)" -eq 1
+          git diff --cached --name-only | grep -qxF "tests/IconCacheSimulatorIntegrationTests.swift"
+          # Expect +6/-0
+          test "$(git diff --cached --numstat | awk '{s+=$1; d+=$2} END {print s}')" -eq 6
+          test "$(git diff --cached --numstat | awk '{s+=$1; d+=$2} END {print d}')" -eq 0
+
+      - name: Commit and push
+        run: |
+          git commit -m "fix(tests): create simulator container directories before asserting they exist
+
+          On a fresh simulator container Library/Application Support does
+          not exist yet: iOS creates it lazily on first use, so
+          testSimulatorContainerPathsResolveInsideAppSandbox failed at
+          the existence and is-a-directory assertions (Tests #289, lines
+          47 and 49). Create each of the three container directories
+          with FileManager.createDirectory before asserting on it. The
+          creation is the OS's deferred step, not a relaxed assertion:
+          existence, is-a-directory and in-sandbox checks all still run
+          against the real path. No production code changes; no other
+          test touched."
+          git push origin feature/lilashift-3.1-iphone18-2-persistence
+
+      - name: Clean up patch file
+        run: |
+          git rm -q lilashift-3.1-simtest-fix1.patch
+          git commit -m "chore: remove applied simulator integration test fix patch file"
+          git push origin feature/lilashift-3.1-iphone18-2-persistence
