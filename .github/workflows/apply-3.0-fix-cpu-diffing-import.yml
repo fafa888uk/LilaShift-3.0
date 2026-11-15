@@ -1,0 +1,60 @@
+name: Apply 3.0 CPU diffing import fix
+
+# One-shot: apply lilashift-3.0-fix-cpu-diffing-import.patch (add
+# missing `import SwiftUI` to tests/CPUImageDiffing.swift) to the
+# 3.0 branch. The patch file must already be uploaded to the branch
+# root. Dispatch with ref = feature/lilashift-3.0-dashboard.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v7
+        with:
+          ref: feature/lilashift-3.0-dashboard
+
+      - name: Verify patch file
+        run: |
+          ls -l lilashift-3.0-fix-cpu-diffing-import.patch
+          sha256sum lilashift-3.0-fix-cpu-diffing-import.patch
+
+      - name: Apply patch
+        run: |
+          git config user.name "fafa920q-hue"
+          git config user.email "fafa920q-hue@users.noreply.github.com"
+          git apply --index lilashift-3.0-fix-cpu-diffing-import.patch
+
+      - name: Verify staged files
+        run: |
+          echo "=== staged files ==="
+          git diff --cached --name-only
+          echo "=== staged stat ==="
+          git diff --cached --stat
+          # Expect exactly 1 file, +1/-0
+          test "$(git diff --cached --name-only | wc -l)" -eq 1
+          git diff --cached --name-only | grep -qxF "tests/CPUImageDiffing.swift"
+          test "$(git diff --cached --numstat | awk '{s+=$1; d+=$2} END {print s}')" -eq 1
+          test "$(git diff --cached --numstat | awk '{s+=$1; d+=$2} END {print d}')" -eq 0
+
+      - name: Commit and push
+        run: |
+          git commit -m "fix(tests): add missing import SwiftUI to CPUImageDiffing
+
+          The file uses SwiftUI.View in its Snapshotting extension but
+          only imported UIKit and SnapshotTesting, so GestaltXTests
+          failed to compile (Tests #225, cannot find type SwiftUI in
+          scope). UIKit does not re-export SwiftUI."
+          git push origin feature/lilashift-3.0-dashboard
+
+      - name: Clean up patch file
+        run: |
+          git rm -q lilashift-3.0-fix-cpu-diffing-import.patch
+          git commit -m "chore: remove applied CPU diffing import patch file"
+          git push origin feature/lilashift-3.0-dashboard
