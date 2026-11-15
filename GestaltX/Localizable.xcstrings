@@ -1601,6 +1601,70 @@
         }
       }
     },
+    "Save to Photos": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save to Photos"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保存到相册"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guardar en Fotos"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ذخیره در عکس‌ها"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "写真に保存"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "사진에 저장"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сохранить в Фото"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lưu vào Ảnh"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "儲存到相片"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "儲存到照片"
+          }
+        }
+      }
+    },
     "No Wallpapers": {
       "localizations": {
         "en": {
@@ -2621,6 +2685,70 @@
           "stringUnit": {
             "state": "translated",
             "value": "已新增桌布，請開啟圖庫選擇。若未出現，請重新啟動裝置。"
+          }
+        }
+      }
+    },
+    "Wallpaper saved to Photos. Set it from Photos (Use as Wallpaper) or with the Shortcuts Set Wallpaper action.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wallpaper saved to Photos. Set it from Photos (Use as Wallpaper) or with the Shortcuts Set Wallpaper action."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "壁纸已保存到相册。请在“照片”中打开它并选择“用作壁纸”，或使用快捷指令的“设定壁纸”操作。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fondo de pantalla guardado en Fotos. Ajústalo desde Fotos (Usar como fondo de pantalla) o con la acción Establecer fondo de pantalla de Atajos."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تصویر پس‌زمینه در عکس‌ها ذخیره شد. آن را از عکس‌ها (استفاده به‌عنوان تصویر پس‌زمینه) یا با اقدام «تنظیم تصویر پس‌زمینه» در میانبرها تنظیم کنید."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "壁紙を写真に保存しました。「写真」から「壁紙に設定」を選ぶか、ショートカットの「壁紙を設定」アクションで設定してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "배경화면이 사진에 저장되었습니다. 사진에서 '배경화면으로 사용'을 선택하거나 단축어의 '배경화면 설정' 동작으로 설정하세요."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Обои сохранены в Фото. Установите их из Фото («Использовать как обои») или с помощью действия «Установить обои» в Командах."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã lưu hình nền vào Ảnh. Đặt từ Ảnh (Dùng làm Hình nền) hoặc bằng tác vụ Đặt Hình nền trong Phím tắt."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "壁紙已儲存到相片。請在「相片」中開啟並選擇「設為壁紙」，或使用捷徑的「設定壁紙」操作。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "桌布已儲存到照片。請在「照片」中開啟並選擇「設為桌布」，或使用捷徑的「設定桌布」操作。"
           }
         }
       }

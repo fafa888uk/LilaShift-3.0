@@ -1153,4 +1153,7 @@
   "LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.": "LilaShift は SpringBoard を自動で再起動しません。変更を適用した後、機能が表示されない場合はデバイスを手動で再起動してください。",
   "Share LilaShift": "LilaShift を共有",
   "Pre-release": "プレリリース"
+,
+  "Save to Photos": "写真に保存",
+  "Wallpaper saved to Photos. Set it from Photos (Use as Wallpaper) or with the Shortcuts Set Wallpaper action.": "壁紙を写真に保存しました。「写真」から「壁紙に設定」を選ぶか、ショートカットの「壁紙を設定」アクションで設定してください。"
 }
