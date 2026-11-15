@@ -242,7 +242,7 @@ struct SafePatchSimulation: Equatable, Sendable {
     /// Feature ids the proposal deliberately left unstaged (copied
     /// from the proposal): on native Apple Intelligence hardware, the
     /// six AI capabilities. Never a staged diff.
-    let skippedFeatureIDs: [String] = []
+    let skippedFeatureIDs: [String]
     /// Keys in the diff that touch hardware-identity fields.
     let hardwareIdentityTouches: [String]
     let canProceed: Bool
@@ -259,6 +259,10 @@ struct SafePatchSimulation: Equatable, Sendable {
     /// in call" at the `finish` call site), so the simulation is
     /// built through this init. `skippedFeatureIDs` defaults to `[]`
     /// so existing call sites that omit it keep compiling.
+    /// NOTE: the property itself must NOT carry a `= []` default —
+    /// a `let` with a default plus an assignment in this init is a
+    /// second initialization (IPA #251: "immutable value may only be
+    /// initialized once"). The default lives on the parameter only.
     init(
         proposal: SafePatchProposal,
         checks: [SafePatchCheck],
