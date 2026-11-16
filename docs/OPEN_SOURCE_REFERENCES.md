@@ -113,7 +113,7 @@
 | LilaShift 对应功能 | Apple Intelligence 体检、安全写入、CacheUUID 发现、监管机型映射、原生 AI 设备清单、音频智能/个人翻译插槽基线 |
 | 对应源码文件 | `GestaltX/AIReadinessCheckup.swift`（设计参考：`AppleIntelligenceCheckupCard` 思路）、`GestaltX/DevicePlistWriter.swift`（设计参考：`writeFileAtomically` 思路——仅名字；本实现为原位 pwrite，不作原子性声明）、`GestaltX/GXMobileGestaltImage.m`（设计参考：`MGImageReader` 的 `__cfstring` 遍历）、`GestaltX/USRegulatoryModelMapping.swift`（复用数据：`usRegulatoryModelNumber` 的 A-number 对照表，逐值转录）、`GestaltX/DeviceAIEligibility.swift`（复用数据：`isAppleIntellHD` 的原生 AI 设备清单 + iPhone 18 Pro Max / iPhone 15 Pro Max iOS 27 真机探针的插槽基线） |
 | 使用关系 | **设计参考 + 复用数据**（未逐字复制代码；六项改进为重新实现：写入加固、运行时动态偏移解析、Diff 预览、双金库备份、地区模式、AI 四要素体检） |
-| 主要修改 | 写入改为原位 pwrite + `F_FULLFSYNC` + 全量回读 + 原位回滚（不作原子性声明）；地区模式收敛为一键解锁只改 9 项（不采用 Erosion-CN 的完整美版模式）；Full US 保留为明确的可选模式（遵循其关于国行双实体卡 + eSIM 硬件冲突的警告） |
+| 主要修改 | 写入改为原位 pwrite + `F_FULLFSYNC` + 全量回读 + 原位回滚（不作原子性声明）；地区模式收敛为一键解锁只改 10 项（不采用 Erosion-CN 的完整美版模式）；Full US 保留为明确的可选模式（遵循其关于国行双实体卡 + eSIM 硬件冲突的警告） |
 | 是否打包进入 IPA | 否（代码未打包；转录的数据表随 App 分发） |
 | 版权与许可证义务 | GPL-3.0（LilaShift 本身即 GPL-3.0，同许可证下复用）；保留 Kianuni 署名与来源说明（文件头 + `THIRD_PARTY_NOTICES.md` §5） |
 | 仍需人工确认 | 否 |

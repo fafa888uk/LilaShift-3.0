@@ -27,10 +27,10 @@
 
 | 方面 | 来源 |
 |---|---|
-| 一键暂存 9 项（eSIM 两开关、地区码 US、6 项 AI 能力） | **LilaShift 新增实现**（P0–P1；9 项的定义为 LilaShift 产品规则） |
+| 一键暂存 10 项（eSIM 两开关、地区码 US、7 项 AI 能力） | **LilaShift 新增实现**（P0–P1；10 项的定义为 LilaShift 产品规则） |
 | 暂存模型、预览、应用流程 | **原始代码**（上游 GestaltX 的暂存/事务模型）+ **LilaShift 新增实现**（一键解锁规则、守卫） |
 | eSIM 缓存布局校验（无法验证则整组停止并说明原因） | **LilaShift 新增实现** |
-| 地区模式选择 | **第三方参考成果**：Erosion-CN 的地区模式思路，**设计参考**；已收敛为"一键解锁只改 9 项"，不采用其完整美版模式 |
+| 地区模式选择 | **第三方参考成果**：Erosion-CN 的地区模式思路，**设计参考**；已收敛为"一键解锁只改 10 项"，不采用其完整美版模式 |
 
 ## 3. Apple Intelligence 检测
 
@@ -44,7 +44,7 @@
 
 | 方面 | 来源 |
 |---|---|
-| eSIM 开关（green-tea / not-green-tea）与地区码 | **LilaShift 新增实现**（一键解锁 9 项的一部分；槽位为运行时动态解析） |
+| eSIM 开关（green-tea / not-green-tea）与地区码 | **LilaShift 新增实现**（一键解锁 10 项的一部分；槽位为运行时动态解析） |
 | 美国监管机型 A-number 对照表 | **第三方参考成果**：Erosion-CN 的 `usRegulatoryModelNumber`，**复用数据**（逐值转录，`GestaltX/USRegulatoryModelMapping.swift`） |
 | 国行双实体卡 + eSIM 硬件冲突警告 | **第三方参考成果**：Erosion-CN 的说明，**设计参考**（Full US 保留为明确的可选模式，`GestaltX/Capabilities.swift`） |
 

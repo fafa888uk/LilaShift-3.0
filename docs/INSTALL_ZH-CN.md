@@ -322,7 +322,7 @@ LiveContainer 方式不需要重签，也就不需要你自己准备 App Group�
    不会凭空显示百分比。
 3. 读取完成后：
    - 首页会显示设备概况（机型、系统版本等）；
-   - 打开 **China Unlock** 可看到 9 项内容的当前状态；
+   - 打开 **China Unlock** 可看到 10 项内容的当前状态；
    - 打开功能目录可按 11 个分类浏览 53 项功能，每项有 8 状态兼容性标识
      （原生支持 / 可改 / 已启用 / 已暂存 / 需重启 / 未验证 / 不支持 / 读取失败）。
 4. 如果读取失败或某项显示“读取失败 / 未验证”，先不要应用任何改动，
@@ -334,15 +334,15 @@ LiveContainer 方式不需要重签，也就不需要你自己准备 App Group�
 > [BACKUP_RESTORE_ZH-CN.md](BACKUP_RESTORE_ZH-CN.md) 与
 > [COMPATIBILITY_ZH-CN.md](COMPATIBILITY_ZH-CN.md)。
 
-1. 打开 **China Unlock**，确认 9 项内容：eSIM 两项开关、地区码 `LL`、
-   6 项 Apple Intelligence 能力。
+1. 打开 **China Unlock**，确认 10 项内容：eSIM 两项开关、地区码 `LL`、
+   7 项 Apple Intelligence 能力。
 2. 点暂存，逐项核对前后对比值（Diff 预览）。eSIM 缓存布局校验不通过时
    整组会停住并显示原因——此时不要强行操作，地区码与 AI 仍可单独设置。
 3. 确认无误后点应用。应用过程会依次做：自动备份 → 写入 → 写回校验 → 完成。
 4. 应用完成后**冷重启**：滑动关机，等黑屏后再开机。只刷新 SpringBoard
    对 eSIM 不够（基带守护进程不会重载缓存）。
 5. 开机后去系统「设置」检查 eSIM 与 Apple Intelligence 是否出现。
-6. 想全部撤销：用一键还原，从备份恢复全部 9 项（含义与限度见备份文档）。
+6. 想全部撤销：用一键还原，从备份恢复全部 10 项（含义与限度见备份文档）。
 
 ## 7. 更新到新版本
 
@@ -373,7 +373,7 @@ LiveContainer 方式不需要重签，也就不需要你自己准备 App Group�
 | 提示“无法验证 App”/ 未受信任的开发者 | 证书未信任 | 设置 → 通用 → VPN 与设备管理 → 信任 |
 | `MobileGestalt access was denied` | App Group 不可用或不一致 | 检查重签是否保留分享扩展、主应用与扩展 App Group 是否相同；LiveContainer 方式下确认系统为 iOS 27.x |
 | 读取失败 / 某项“未验证” | 系统版本不支持或读取异常 | 确认 iOS 27.x；重启 App 再读一次；仍失败见故障排查文档 |
-| eSIM 菜单不出现 | 未冷重启 / 只改了地区码 / 改了机型标识 / 无 eUICC 硬件 | 冷重启；确认 9 项都应用了；绝不要改 `ProductType`；无硬件则无法开通 |
+| eSIM 菜单不出现 | 未冷重启 / 只改了地区码 / 改了机型标识 / 无 eUICC 硬件 | 冷重启；确认 10 项都应用了；绝不要改 `ProductType`；无硬件则无法开通 |
 | AI 菜单不出现 | 模型未下载完 / 代理规则 / 地区设置 | 见 [TROUBLESHOOTING_ZH-CN.md](TROUBLESHOOTING_ZH-CN.md) |
 
 ## 10. 安全红线

@@ -93,7 +93,7 @@ Intelligence 需要硬件 + 系统 + 服务同时满足；灵动岛、AOD 等取
 ### 解锁后「添加 eSIM」消失了怎么办？
 
 见 [TROUBLESHOOTING_ZH-CN.md](TROUBLESHOOTING_ZH-CN.md) 第 4 节：
-先冷重启；确认 9 项都应用了；双实体卡机型先拔卡托；绝不要改 `ProductType`。
+先冷重启；确认 10 项都应用了；双实体卡机型先拔卡托；绝不要改 `ProductType`。
 
 ### 改机型标识能“变成美版”吗？
 
@@ -104,12 +104,16 @@ eSIM 菜单整个消失。
 
 ### 打开开关后 AI 菜单还是不出现？
 
-按顺序查：地区码 `LL`、6 项全开、模型是否下完（Wi-Fi + 充电静置）、
+按顺序查：地区码 `LL`、7 项全开、模型是否下完（Wi-Fi + 充电静置）、
 Siri 域名是否直连、机型本身是否支持。详见故障排查第 5 节。
 
-### AI 显示 1/6 是什么意思？
+### iOS 27.3 上 Siri AI 还是开不了？
 
-6 项 AI 能力里只有 1 项是开着的。点进 Apple 智能页看是哪几项。
+国行硬件（CH/A）设备上，iOS 27.3 新增了直接读取硬件的资格检查（日志：`Eligibility returned no CN region policy on a CH region code device`）。即使地区码已是 LL、AI 开关全开，Siri AI 与部分生成式功能仍可能被拦截，改 MobileGestalt 绕不过去（Erosion-CN FAQ Q6 情况 C）。解决办法是留在或降回 iOS 27.2.x。
+
+### AI 显示 1/7 是什么意思？
+
+7 项 AI 能力里只有 1 项是开着的。点进 Apple 智能页看是哪几项。
 
 ### 照片高质量消除报错，但快速消除正常？
 
