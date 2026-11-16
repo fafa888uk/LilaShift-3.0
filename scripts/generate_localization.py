@@ -405,7 +405,7 @@ China Unlock	国行一键解锁
 One-Tap Restore	一键还原
 One-Tap Unlock	一键解锁
 China AI	国行 AI
-Enable the six Apple Intelligence features on a China-model iPhone.	在国行 iPhone 上启用 6 项 Apple 智能功能。
+Enable the seven Apple Intelligence features on a China-model iPhone.	在国行 iPhone 上启用 7 项 Apple 智能功能。
 Enable China AI	启用国行 AI
 Restore AI	还原 AI
 eSIM & Region	eSIM 与地区
@@ -445,7 +445,7 @@ Charge limit, tap to wake	充电上限、轻点唤醒
 Charging & Buttons	充电与按键
 Charging limits, buttons and alerts.	充电上限、按键与提醒。
 Check which settings this will update.	检查这次操作会更新哪些设置。
-Configure 6 items	将配置 6 项
+Configure 7 items	将配置 7 项
 Confirm Changes	确认更改
 Device identity, internal features and diagnostics.	设备标识、内部功能与诊断。
 Diagnostics	诊断
@@ -540,7 +540,7 @@ Enable or disable the eSIM-related system options.	启用或停用与 eSIM 相�
 Use the WAPI wireless security standard.	使用 WAPI 无线安全标准。
 Add a digital SIM in Settings.	在“设置”中添加数字 SIM。
 eSIM requires eSIM hardware.	需要设备具备 eSIM 硬件。
-Enable six Apple Intelligence features, including translation, Clean Up and always-listening Hey Siri.	启用 6 项 Apple 智能功能，包括翻译、照片消除和常听 Hey Siri。
+Enable seven Apple Intelligence features, including translation, Clean Up and always-listening Hey Siri.	启用 7 项 Apple 智能功能，包括翻译、照片消除和常听 Hey Siri。
 CacheData[0x%X] · slot %d	CacheData[0x%X] · 槽位 %d
 Other CacheData bytes changed	其他 CacheData 字节已更改
 Unrelated cache bytes changed — apply will be refused.	存在无关缓存字节更改，将拒绝应用。
@@ -1102,7 +1102,7 @@ Manage	管理
 Custom Order	自定义顺序
 No features match this search.	没有符合此搜索的功能。
 Show	显示
-No favorites yet. The three preset groups are shown instead.	暂无收藏，改为显示三个预设组合。
+No favorites yet. The four preset groups are shown instead.	暂无收藏，改为显示四个预设组合。
 Natively supported	原生支持
 Modifiable	可修改
 Enabled	已启用
@@ -1162,6 +1162,20 @@ Manual Restart	手动重启
 LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.	紫序不会自行重启 SpringBoard。应用更改后，若某项功能未出现，请手动重启设备。
 Share LilaShift	分享 LilaShift
 Pre-release	预发布
+Siri AI Mode	Siri AI 模式
+Siri AI Mode Only	仅 Siri AI 模式
+Enable Siri AI Mode	启用 Siri AI 模式
+Restore Siri AI Mode	还原 Siri AI 模式
+Switch Siri to AI mode alone — no eSIM, region, or other AI changes.	单独开启 Siri AI 模式，不动 eSIM、地区与其他 AI 能力。
+Apple Intelligence is already enabled natively on this device — Siri AI Mode is experimental and usually unnecessary here.	本设备已原生支持 Apple Intelligence——Siri AI 模式是实验性的，通常不需要。
+Restore Hardware Identity	恢复硬件标识
+A verified original hardware backup matching this device and cache is required.	需要与此设备和缓存匹配的已验证原始硬件备份。
+This device's hardware identity could not be verified.	无法验证此设备的硬件标识。
+Restore only the original product, board, CPU and model number from this backup. AI and region settings are kept. Restart and test Face ID and dictation afterward.	仅从此备份恢复原始产品、主板、CPU 和型号。AI 与地区设置保持不变。之后请重启并测试面容 ID 与听写。
+Clear & Rebuild Cache	清除并重建缓存
+Deletes the system cache so iOS rebuilds it from the hardware on restart. A backup is taken first.	删除系统缓存，以便 iOS 在重启时根据硬件重新生成。会先创建备份。
+Cache rebuilt. Restart the device to finish.	缓存已重建。请重启设备以完成。
+Only a live device cache can be rebuilt. Read the device first.	只能重建实时设备缓存。请先读取设备。
 '''
 entries = {}
 for line in TRANSLATIONS.strip().splitlines():
