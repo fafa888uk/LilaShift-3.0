@@ -85,7 +85,11 @@ GestaltX, and two data tables were transcribed value-for-value:
   writer idea (GestaltX/DevicePlistWriter.swift, adapted from Erosion-CN's
   `writeFileAtomically` — the name only; our writer is an in-place pwrite
   writer with no atomicity claim, see its header); the `__cfstring` walk for CacheUUID discovery
-  (GestaltX/GXMobileGestaltImage.m, adapted from Erosion-CN's MGImageReader).
+  (GestaltX/GXMobileGestaltImage.m, adapted from Erosion-CN's MGImageReader);
+  the clear-and-rebuild-cache mechanism (GestaltX/GestaltDocument.swift
+  `rebuildCache`, adapted from Erosion-CN's `mgExecuteCleanCacheRebuild` —
+  backup first, then delete the live cache so iOS regenerates it from the
+  hardware on restart).
 - Reused data, transcribed: the US regulatory-model A-number pairs in
   GestaltX/USRegulatoryModelMapping.swift (from Erosion-CN's
   `usRegulatoryModelNumber`); the native Apple Intelligence device list in
