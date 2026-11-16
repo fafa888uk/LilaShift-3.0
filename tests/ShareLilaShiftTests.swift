@@ -29,7 +29,7 @@ final class ShareLilaShiftTests: XCTestCase {
 
     func testShareURLsAreValid() {
         XCTAssertEqual(ShareLilaShift.releaseURL.host, "github.com")
-        XCTAssertEqual(ShareLilaShift.releaseURL.path, "/fafa920q-hue/LilaShift-2.0/releases/tag/v3.0.0-rc.1")
+        XCTAssertEqual(ShareLilaShift.releaseURL.path, "/fafa888uk/LilaShift-3.0/releases/tag/v3.0.0-rc.1")
         XCTAssertEqual(ShareLilaShift.telegramURL.host, "t.me")
         XCTAssertEqual(ShareLilaShift.telegramURL.path, "/LilaShiftUpdates")
     }

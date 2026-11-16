@@ -6,7 +6,7 @@ enum GestaltBrand {
     static let developer = "huamidev"
     static let github = URL(string: "https://github.com/huamidev")!
     static let projects = URL(string: "https://github.com/huamidev/GestaltX")!
-    static let lilashift = URL(string: "https://github.com/fafa920q-hue/LilaShift-2.0")!
+    static let lilashift = URL(string: "https://github.com/fafa888uk/LilaShift-3.0")!
     static let buildDate: String = {
         guard let url = Bundle.main.url(forResource: "BuildDate", withExtension: "txt"),
               let date = try? String(contentsOf: url, encoding: .utf8) else { return "2026-11-09" }

@@ -9,7 +9,7 @@ import Foundation
 /// Content for the "Share LilaShift" row in About.
 enum ShareLilaShift {
     /// Public release page for 3.0.0-rc.1.
-    static let releaseURLString = "https://github.com/fafa920q-hue/LilaShift-2.0/releases/tag/v3.0.0-rc.1"
+    static let releaseURLString = "https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v3.0.0-rc.1"
     /// Telegram updates channel.
     static let telegramURLString = "https://t.me/LilaShiftUpdates"
     /// Version label of the shared build.
