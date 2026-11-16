@@ -74266,6 +74266,42 @@
             "state": "translated",
             "value": "Siri AI 模式"
           }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modo IA de Siri"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حالت هوش مصنوعی سیری"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siri AIモード"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siri AI 모드"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Режим Siri AI"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chế độ AI của Siri"
+          }
         }
       }
     },
@@ -74293,6 +74329,42 @@
           "stringUnit": {
             "state": "translated",
             "value": "單獨開啟 Siri AI 模式，不動 eSIM、地區與其他 AI 能力。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cambia Siri al modo IA por sí solo, sin eSIM, región ni otros cambios de IA."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siri را به‌تنهایی به حالت هوش مصنوعی ببرید — بدون eSIM، منطقه یا تغییرات دیگر هوش مصنوعی."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SiriだけをAIモードに切り替えます。eSIM、地域、その他のAI変更はありません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siri만 AI 모드로 전환합니다. eSIM, 지역 또는 기타 AI 변경은 없습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Переключить только Siri в режим ИИ — без eSIM, региона и других изменений ИИ."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chỉ chuyển Siri sang chế độ AI — không thay đổi eSIM, khu vực hay AI khác."
           }
         }
       }
@@ -74322,6 +74394,42 @@
             "state": "translated",
             "value": "本裝置已原生支援 Apple Intelligence——Siri AI 模式是實驗性的，通常不需要。"
           }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence ya está activado de forma nativa en este dispositivo; el modo IA de Siri es experimental y normalmente innecesario aquí."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هوش مصنوعی اپل در این دستگاه به‌صورت بومی فعال است — حالت هوش مصنوعی سیری آزمایشی است و معمولاً در اینجا لازم نیست."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このデバイスではApple Intelligenceがすでにネイティブで有効です。Siri AIモードは実験的であり、通常ここでは不要です。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 기기에서는 Apple Intelligence가 이미 네이티브로 활성화되어 있습니다. Siri AI 모드는 실험적이며 일반적으로 여기서는 필요하지 않습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence уже включён на этом устройстве нативно — режим Siri AI экспериментальный и обычно здесь не нужен."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence đã được bật sẵn trên thiết bị này — Chế độ AI của Siri mang tính thử nghiệm và thường không cần thiết ở đây."
+          }
         }
       }
     },
@@ -74349,6 +74457,42 @@
           "stringUnit": {
             "state": "translated",
             "value": "啟用 Siri AI 模式"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Activar modo IA de Siri"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فعال‌سازی حالت هوش مصنوعی سیری"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siri AIモードを有効にする"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siri AI 모드 활성화"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Включить режим Siri AI"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bật chế độ AI của Siri"
           }
         }
       }
@@ -74378,6 +74522,42 @@
             "state": "translated",
             "value": "還原 Siri AI 模式"
           }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restaurar modo IA de Siri"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بازیابی حالت هوش مصنوعی سیری"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siri AIモードを復元"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siri AI 모드 복원"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Восстановить режим Siri AI"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khôi phục chế độ AI của Siri"
+          }
         }
       }
     },
@@ -74405,6 +74585,554 @@
           "stringUnit": {
             "state": "translated",
             "value": "僅 Siri AI 模式"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solo modo IA de Siri"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فقط حالت هوش مصنوعی سیری"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siri AIモードのみ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siri AI 모드만"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Только режим Siri AI"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chỉ chế độ AI của Siri"
+          }
+        }
+      }
+    },
+    "Restore Hardware Identity": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore Hardware Identity"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "恢复硬件标识"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restaurar identidad de hardware"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بازیابی هویت سخت‌افزار"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ハードウェア識別情報を復元"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "하드웨어 식별 정보 복원"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Восстановить идентификатор оборудования"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khôi phục danh tính phần cứng"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "恢復硬件標識"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "恢復硬體識別"
+          }
+        }
+      }
+    },
+    "A verified original hardware backup matching this device and cache is required.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A verified original hardware backup matching this device and cache is required."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要与此设备和缓存匹配的已验证原始硬件备份。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se requiere un respaldo de hardware original verificado que coincida con este dispositivo y su caché."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "به یک نسخهٔ پشتیبان سخت‌افزار اصلی تأییدشده نیاز است که با این دستگاه و حافظهٔ پنهان آن مطابقت داشته باشد."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このデバイスとキャッシュに一致する、検証済みの元のハードウェアバックアップが必要です。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 기기와 캐시에 일치하는 검증된 원본 하드웨어 백업이 필요합니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Требуется проверенная исходная резервная копия оборудования, соответствующая этому устройству и кэшу."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cần có bản sao lưu phần cứng gốc đã xác minh khớp với thiết bị và bộ nhớ đệm này."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要與此裝置和快取相符的已驗證原始硬件備份。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要與此裝置和快取相符的已驗證原始硬體備份。"
+          }
+        }
+      }
+    },
+    "This device's hardware identity could not be verified.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This device's hardware identity could not be verified."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法验证此设备的硬件标识。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo verificar la identidad de hardware de este dispositivo."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هویت سخت‌افزار این دستگاه تأیید نشد."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このデバイスのハードウェア識別情報を確認できませんでした。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 기기의 하드웨어 식별 정보를 확인할 수 없습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось проверить идентификатор оборудования этого устройства."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể xác minh danh tính phần cứng của thiết bị này."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法驗證此裝置的硬件標識。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法驗證此裝置的硬體識別。"
+          }
+        }
+      }
+    },
+    "Restore only the original product, board, CPU and model number from this backup. AI and region settings are kept. Restart and test Face ID and dictation afterward.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore only the original product, board, CPU and model number from this backup. AI and region settings are kept. Restart and test Face ID and dictation afterward."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "仅从此备份恢复原始产品、主板、CPU 和型号。AI 与地区设置保持不变。之后请重启并测试面容 ID 与听写。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restaura solo el producto, la placa, la CPU y el número de modelo originales desde este respaldo. Los ajustes de IA y región se mantienen. Reinicia y prueba Face ID y el dictado después."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فقط محصول، برد، پردازنده و شمارهٔ مدل اصلی از این نسخهٔ پشتیبان بازیابی می‌شود. تنظیمات هوش مصنوعی و منطقه حفظ می‌شوند. پس از آن دستگاه را راه‌اندازی مجدد کنید و Face ID و دیکته را آزمایش کنید."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このバックアップから元の製品、ボード、CPU、モデル番号のみを復元します。AIと地域の設定は保持されます。その後、再起動してFace IDと音声入力をテストしてください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 백업에서 원본 제품, 보드, CPU 및 모델 번호만 복원합니다. AI 및 지역 설정은 유지됩니다. 이후 기기를 재시동하고 Face ID와 받아쓰기를 테스트하세요."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Восстанавливаются только исходные продукт, плата, процессор и номер модели из этой резервной копии. Настройки ИИ и региона сохраняются. После этого перезагрузите устройство и проверьте Face ID и диктовку."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chỉ khôi phục sản phẩm, bo mạch, CPU và số kiểu máy gốc từ bản sao lưu này. Cài đặt AI và khu vực được giữ nguyên. Sau đó, hãy khởi động lại và kiểm tra Face ID cùng tính năng đọc chính tả."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "僅從此備份恢復原始產品、主板、CPU 和型號。AI 與地區設定保持不變。之後請重新啟動並測試 Face ID 與聽寫。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "僅從此備份恢復原始產品、主板、CPU 和型號。AI 與地區設定保持不變。之後請重新啟動並測試 Face ID 與聽寫。"
+          }
+        }
+      }
+    },
+    "Clear & Rebuild Cache": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear & Rebuild Cache"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "清除并重建缓存"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Limpiar y reconstruir caché"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "پاک‌سازی و بازسازی حافظهٔ پنهان"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "キャッシュを消去して再構築"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "캐시 지우기 및 다시 구축"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Очистить и перестроить кэш"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xóa và xây dựng lại bộ nhớ đệm"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "清除並重建快取"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "清除並重建快取"
+          }
+        }
+      }
+    },
+    "Deletes the system cache so iOS rebuilds it from the hardware on restart. A backup is taken first.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deletes the system cache so iOS rebuilds it from the hardware on restart. A backup is taken first."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "删除系统缓存，以便 iOS 在重启时根据硬件重新生成。会先创建备份。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elimina la caché del sistema para que iOS la reconstruya desde el hardware al reiniciar. Primero se crea un respaldo."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حافظهٔ پنهان سیستم حذف می‌شود تا iOS پس از راه‌اندازی مجدد آن را از روی سخت‌افزار بازسازی کند. ابتدا یک نسخهٔ پشتیبان گرفته می‌شود."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "システムキャッシュを削除し、再起動時にiOSがハードウェアから再構築できるようにします。事前にバックアップを作成します。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "시스템 캐시를 삭제하여 iOS가 재시동 시 하드웨어에서 다시 구축하도록 합니다. 먼저 백업을 만듭니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Системный кэш удаляется, чтобы iOS перестроила его из оборудования при перезагрузке. Сначала создаётся резервная копия."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xóa bộ nhớ đệm hệ thống để iOS xây dựng lại từ phần cứng khi khởi động lại. Một bản sao lưu sẽ được tạo trước."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "刪除系統快取，讓 iOS 在重新啟動時根據硬件重新生成。會先建立備份。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "刪除系統快取，讓 iOS 在重新啟動時根據硬體重新生成。會先建立備份。"
+          }
+        }
+      }
+    },
+    "Cache rebuilt. Restart the device to finish.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cache rebuilt. Restart the device to finish."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "缓存已重建。请重启设备以完成。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Caché reconstruida. Reinicia el dispositivo para terminar."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حافظهٔ پنهان بازسازی شد. برای تکمیل، دستگاه را راه‌اندازی مجدد کنید."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "キャッシュを再構築しました。完了するにはデバイスを再起動してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "캐시를 다시 구축했습니다. 완료하려면 기기를 재시동하세요."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Кэш перестроен. Перезагрузите устройство для завершения."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã xây dựng lại bộ nhớ đệm. Hãy khởi động lại thiết bị để hoàn tất."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "快取已重建。請重新啟動裝置以完成。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "快取已重建。請重新啟動裝置以完成。"
+          }
+        }
+      }
+    },
+    "Only a live device cache can be rebuilt. Read the device first.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only a live device cache can be rebuilt. Read the device first."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "只能重建实时设备缓存。请先读取设备。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solo se puede reconstruir la caché de un dispositivo en vivo. Lee primero el dispositivo."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فقط حافظهٔ پنهان دستگاه زنده قابل بازسازی است. ابتدا دستگاه را بخوانید."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ライブデバイスのキャッシュのみ再構築できます。まずデバイスを読み取ってください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "라이브 기기 캐시만 다시 구축할 수 있습니다. 먼저 기기를 읽으세요."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перестроить можно только кэш подключённого устройства. Сначала прочитайте устройство."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chỉ có thể xây dựng lại bộ nhớ đệm của thiết bị đang hoạt động. Hãy đọc thiết bị trước."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "只能重建實時裝置快取。請先讀取裝置。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "只能重建即時裝置快取。請先讀取裝置。"
           }
         }
       }

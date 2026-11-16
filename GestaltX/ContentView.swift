@@ -2442,6 +2442,8 @@ struct BackupsView: View {
     @EnvironmentObject private var model: GestaltManager
     @State private var restores: BackupRecord?
     @State private var deletes: BackupRecord?
+    @State private var hardwareRestores: BackupRecord?
+    @State private var confirmsRebuild = false
     var body: some View {
         List {
             Section {
@@ -2451,6 +2453,12 @@ struct BackupsView: View {
                 if model.changeCount > 0 {
                     Text(L("Save or discard your current changes before opening another plist."))
                 }
+            }
+            Section {
+                Button(L("Clear & Rebuild Cache"), role: .destructive) { confirmsRebuild = true }
+                    .disabled(!model.hasDocument || !model.sourceIsDevice || model.isBusy || model.changeCount > 0)
+            } footer: {
+                Text(L("Deletes the system cache so iOS rebuilds it from the hardware on restart. A backup is taken first."))
             }
             if model.backups.isEmpty {
                 ContentUnavailableView(L("No Backups"), systemImage: "externaldrive.badge.timemachine", description: Text(L("A backup is created before each write.")))
@@ -2476,6 +2484,16 @@ struct BackupsView: View {
                             Button(L("Restore")) { restores = record }
                                 .disabled(model.changeCount > 0 || !model.hasDocument || (model.sourceIsDevice && record.source != .device))
                         }.font(.subheadline).buttonStyle(.borderless).padding(.top, 6)
+                        // Face ID recovery: restore only the four
+                        // hardware-identity fields from a verified
+                        // same-device backup, keeping AI and region.
+                        // Only a device backup with a recorded digest
+                        // can prove it belongs to this device.
+                        if record.source == .device && record.sha256 != nil {
+                            Button(L("Restore Hardware Identity")) { hardwareRestores = record }
+                                .disabled(model.changeCount > 0 || !model.hasDocument)
+                                .font(.subheadline).buttonStyle(.borderless).padding(.top, 2)
+                        }
                     }.padding(.vertical, 6)
                 }.swipeActions(allowsFullSwipe: false) { Button(L("Delete")) { deletes = record }.tint(.red) }
             }
@@ -2498,6 +2516,20 @@ struct BackupsView: View {
             Button(L("Cancel"), role: .cancel) { deletes = nil }
             Button(L("Delete"), role: .destructive) { if let record = deletes { Task { await model.deleteBackup(record) } }; deletes = nil }
         } message: { Text(L("This removes the local backup permanently. It does not change the device file.")) }
+        .alert(L("Restore Hardware Identity"), isPresented: Binding(get: { hardwareRestores != nil }, set: { if !$0 { hardwareRestores = nil } })) {
+            Button(L("Cancel"), role: .cancel) { hardwareRestores = nil }
+            Button(L("Restore"), role: .destructive) { if let record = hardwareRestores { Task { await model.restoreHardwareIdentity(from: record) } }; hardwareRestores = nil }
+                .disabled(model.isBusy || model.changeCount > 0)
+        } message: {
+            Text(L("Restore only the original product, board, CPU and model number from this backup. AI and region settings are kept. Restart and test Face ID and dictation afterward."))
+        }
+        .alert(L("Clear & Rebuild Cache"), isPresented: $confirmsRebuild) {
+            Button(L("Cancel"), role: .cancel) { }
+            Button(L("Clear & Rebuild Cache"), role: .destructive) { Task { await model.rebuildCache() } }
+                .disabled(model.isBusy || model.changeCount > 0)
+        } message: {
+            Text(L("Deletes the system cache so iOS rebuilds it from the hardware on restart. A backup is taken first."))
+        }
     }
 }
 

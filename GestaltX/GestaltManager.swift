@@ -544,6 +544,65 @@ final class GestaltManager: ObservableObject {
         return staged
     }
 
+    /// Repairs the AI baseline in the staged working document, so a
+    /// one-tap unlock (or AI-only staging) leaves a complete and
+    /// consistent AI baseline instead of a partial one. Called at the
+    /// end of `stageChinaUnlock` and `stageChinaAIOnly` (staging only
+    /// — the repair still goes through review + backup + readback
+    /// like every other change).
+    ///
+    /// - CacheData slots: each AdvAI slot is set to its native
+    ///   baseline (Personal Translator #266 = 1, Audio Intelligence
+    ///   #178 = 0) when a baseline is known for this hardware
+    ///   (`DeviceAIEligibility.nativeAdvAISlotValue`, native hardware
+    ///   only) and the slot resolves and disagrees. Correct values are
+    ///   left untouched; unresolvable slots are left alone (unknown,
+    ///   never guessed). This is the repair Erosion-CN documents for
+    ///   the two slots — but NOT its one-click step that forces every
+    ///   AI slot to 1 on non-native hardware, which contradicts the
+    ///   #178 evidence (forcing #178 to 1 breaks Photos Clean Up).
+    /// - CacheExtra keys: when AI staging is active (the seven AI
+    ///   choices are staged `.enable`), any AI key absent from the
+    ///   working document is filled with its staged value. Present
+    ///   values are left untouched. On native hardware the AI keys are
+    ///   deliberately NOT filled: the #178 decision skips them there,
+    ///   and the slots above are the only baseline repair that applies.
+    /// Returns true when anything was staged.
+    @discardableResult
+    func fixAIBaseline() -> Bool {
+        guard !isBusy, var document = working,
+              let productType = document.extra[GestaltKeys.productType] as? String else { return false }
+        var staged = false
+        // CacheData slots to their native baselines (native only:
+        // `nativeAdvAISlotValue` returns nil where no baseline is
+        // known, so non-native hardware is left alone).
+        for key in [DeviceCacheOptions.personalTranslatorKey, DeviceCacheOptions.audioIntelligenceKey] {
+            guard let baseline = DeviceAIEligibility.nativeAdvAISlotValue(key: key, productType: productType),
+                  let current = DeviceCacheOptions.advAISlotValue(key, in: document),
+                  current != baseline else { continue }
+            do {
+                try document.setAdvAISlot(key, value: baseline)
+                staged = true
+            } catch {
+                // Layout changed under us; leave it unstaged rather
+                // than staging a slot we cannot verify.
+            }
+        }
+        // CacheExtra keys: fill absent AI keys with their staged
+        // values, only where AI staging is active.
+        let aiStaged = ChinaUnlock.aiCapabilityIDs.allSatisfy { (choices[$0] ?? .keep) == .enable }
+        if aiStaged {
+            for capability in ChinaUnlock.aiCapabilities {
+                for key in capability.keys where document.extra[key] == nil {
+                    document.set(capability.values?[key] ?? capability.enabled, for: key)
+                    staged = true
+                }
+            }
+        }
+        if staged { working = document }
+        return staged
+    }
+
     /// One-tap fix for the AI readiness checkup: repairs any slot
     /// conflicts first, then evaluates the staging guard on the China
     /// Unlock proposal before staging it. A `.block` decision holds the
@@ -646,6 +705,10 @@ final class GestaltManager: ObservableObject {
         if !isNativeAppleIntelligence {
             for id in ChinaUnlock.aiCapabilityIDs { choices[id] = .enable }
         }
+        // Complete the AI baseline: repair the two AdvAI CacheData
+        // slots to their native values and fill any absent AI keys
+        // (native hardware: slots only, keys stay skipped).
+        _ = fixAIBaseline()
         return true
     }
 
@@ -699,6 +762,9 @@ final class GestaltManager: ObservableObject {
             return false
         }
         for id in ChinaUnlock.aiCapabilityIDs { choices[id] = .enable }
+        // Complete the AI baseline: repair the two AdvAI CacheData
+        // slots to their native values and fill any absent AI keys.
+        _ = fixAIBaseline()
         return true
     }
 
@@ -1219,6 +1285,85 @@ final class GestaltManager: ObservableObject {
                         ? (changed ? "Backup restored and verified." : "This backup already matches the device. No changes were made.")
                         : "Backup opened as a local document.")
             log(message ?? ""); await reloadBackups()
+        } catch { failed(error); await reloadBackups() }
+    }
+    /// Restores only the four hardware-identity fields (product type,
+    /// hardware board, CPU, model number) from a verified same-device
+    /// backup, keeping every other change. This is the Face ID
+    /// recovery (upstream GestaltX #128/#146): enabling AI by
+    /// spoofing the hardware identity can break Face ID, and this
+    /// puts the real hardware back without losing the unlock. The
+    /// physical product type and board come from the kernel, not the
+    /// cache, so a spoofed cache cannot fake them.
+    func restoreHardwareIdentity(from record: BackupRecord? = nil) async {
+        guard !isBusy, let before = snapshot else { return }
+        guard changeCount == 0 else {
+            message = L("Save or discard your current changes before opening another plist.")
+            return
+        }
+        isBusy = true; defer { isBusy = false }
+        do {
+            let physical = GXCopyPhysicalHardwareIdentity()
+            guard let product = physical["hw.machine"], let board = physical["hw.model"] else {
+                throw GestaltFailure("This device's hardware identity could not be verified.")
+            }
+            let result: DocumentSnapshot
+            let base: GestaltDocument
+            if let record {
+                base = before.document
+                result = try await files.restoreHardwareIdentity(from: record, expected: before,
+                                                                 physicalProduct: product, physicalBoard: board)
+            } else {
+                // No record: restore from the currently loaded verified
+                // import (a local document whose ownership was verified
+                // on this device — the same entry point as
+                // `restoreImportedPlist`). The live device document is
+                // re-read as the restore target.
+                guard before.source == .local, before.ownershipVerified else {
+                    throw GestaltFailure("A verified original hardware backup matching this device and cache is required.")
+                }
+                let live = try await files.loadDevice()
+                base = live.document
+                result = try await files.restoreHardwareIdentity(from: before, expected: live,
+                                                                 physicalProduct: product, physicalBoard: board)
+            }
+            logChanges(from: base, to: result.document, prefix: "[restore-hardware] ")
+            let changed = !result.document.matches(base)
+            accept(result); needsRestart = result.source == .device && (needsRestart || changed)
+            message = L(changed ? "Backup restored and verified." : "This backup already matches the device. No changes were made.")
+            log(message ?? ""); await reloadBackups()
+        } catch { failed(error); await reloadBackups() }
+    }
+    /// Clears and rebuilds the MobileGestalt cache to a clean factory
+    /// baseline (Erosion-CN's "清除并重建缓存", reimplemented for
+    /// LilaShift's backup model). The current device file is backed up
+    /// first, the live cache is deleted so iOS regenerates it from
+    /// the hardware on restart, and the loaded document is cleared:
+    /// the file does not exist again until the restart, so the user
+    /// re-reads after restarting.
+    func rebuildCache() async {
+        guard !isBusy, let before = snapshot else { return }
+        guard changeCount == 0 else {
+            message = L("Save or discard your current changes before opening another plist.")
+            return
+        }
+        guard before.source == .device else {
+            message = L("Only a live device cache can be rebuilt. Read the device first.")
+            return
+        }
+        isBusy = true; defer { isBusy = false }
+        do {
+            let record = try await files.rebuildCache(expected: before)
+            log("[rebuild-cache] \(record.filename) · \(record.byteCount) bytes · reason=\(record.reason)")
+            snapshot = nil; working = nil; choices = [:]
+            regionID = "keep"; regionCodeID = "keep"; modelID = "keep"; changesName = false; subtype = 0
+            userConfirmedUnverifiedAICombination = false
+            cacheOptionChoice = .keep; wapiChoice = .keep
+            modelName = ""
+            needsRestart = true
+            message = L("Cache rebuilt. Restart the device to finish.")
+            log(message ?? "")
+            await reloadBackups()
         } catch { failed(error); await reloadBackups() }
     }
     func openBackup(_ record: BackupRecord) async {

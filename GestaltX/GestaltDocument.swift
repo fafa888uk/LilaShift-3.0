@@ -100,7 +100,16 @@ enum GestaltKeys {
     static let legacyRegionInfo = "yK+xavymRGZ3xWc1tb8XDg"
     static let productType = "h9jDsbgj7xIVeIQ8S3/X3Q"
     static let modelNumber = "97JDvERpVwO+GHtthIh7hA"
+    /// CacheExtra key for the hardware board (`hw.model`).
+    static let hardwareModel = "oYicEKzVTz4/CxxE05pEgQ"
+    /// CacheExtra key for the chip (CPU) identifier.
+    static let cpu = "5pYKlGnYYBzGvAlIU8RjEQ"
     static let siriMode = "a3n5T9sFtlyQ74NEp9ESxg"
+    /// The four hardware-identity fields a hardware spoof can break
+    /// (Face ID, dictation). Restoring them — and only them — from a
+    /// verified same-device backup is the Face ID recovery
+    /// (upstream GestaltX #128/#146, huamidev/GestaltX).
+    static let hardwareIdentity = [productType, hardwareModel, cpu, modelNumber]
 }
 
 struct GestaltDocument: @unchecked Sendable {
@@ -248,7 +257,16 @@ struct GestaltDocument: @unchecked Sendable {
         return true
     }
 
-    func preservesDeviceIdentity(of original: Self) -> Bool {
+    /// True when this document agrees with `original` on the fields
+    /// that identify the device itself. Unlike upstream (GestaltX
+    /// #128), LilaShift's check also covers product type and model
+    /// number — which is exactly what a hardware spoof changes. The
+    /// Face ID recovery therefore passes
+    /// `excludingHardwareIdentity: true` when it verifies that a
+    /// backup belongs to the same device: it checks only the serial /
+    /// chip fields, while the four hardware-identity fields are the
+    /// ones being restored.
+    func preservesDeviceIdentity(of original: Self, excludingHardwareIdentity: Bool = false) -> Bool {
         // Keep each actual field and its plist type unchanged. Normalizing an
         // identifier here would also permit edits that invalidate saved history.
         // The product type and model number are hardware-identity fields too:
@@ -260,6 +278,7 @@ struct GestaltDocument: @unchecked Sendable {
                     "SerialNumber", "VasUgeSzVyHdB27g2XpN0g",
                     "UniqueChipID", "TF31PAB6aO8KAbPyNKSxKA"]
         for key in keys {
+            if excludingHardwareIdentity && (key == GestaltKeys.productType || key == GestaltKeys.modelNumber) { continue }
             switch (original.extra[key], extra[key]) {
             case (nil, nil): continue
             case (let before?, let after?) where Self.valuesEqual(before, after): continue
@@ -932,7 +951,18 @@ actor GestaltFileStore {
         try removeBackupItem(backupDirectory.appendingPathComponent(record.id.uuidString + ".json"))
     }
 
-    private func validateRestoreLayout(_ document: GestaltDocument, against current: GestaltDocument) throws {
+    /// Validates that a document may be restored over the live cache:
+    /// same CacheUUID, same CacheData size, same CacheVersion, and —
+    /// unless `excludingHardwareIdentity` is set — the same product
+    /// type. The product-type check keeps a backup from another device
+    /// out of a whole-document restore. The Face ID recovery passes
+    /// `excludingHardwareIdentity: true`: the live product type is
+    /// the spoofed value being repaired, so it is expected to differ
+    /// from the backup's real one — and same-device is already proven
+    /// there by the kernel physical product/board, the CPU, the
+    /// device-identity keys and the shared CacheData.
+    private func validateRestoreLayout(_ document: GestaltDocument, against current: GestaltDocument,
+                                       excludingHardwareIdentity: Bool = false) throws {
         let failure = GestaltFailure("This plist uses a different system cache layout and cannot be restored.")
         guard let uuid = document.cacheUUID, !uuid.isEmpty,
               current.matchesCacheUUID(uuid),
@@ -948,7 +978,8 @@ actor GestaltFileStore {
         // The factory baseline must belong to this exact hardware model:
         // a backup from another device must never be restored here.
         // Enforced whenever the live document carries a product type.
-        if let liveProduct = current.extra[GestaltKeys.productType] as? String,
+        if !excludingHardwareIdentity,
+           let liveProduct = current.extra[GestaltKeys.productType] as? String,
            document.extra[GestaltKeys.productType] as? String != liveProduct {
             throw failure
         }
@@ -970,15 +1001,150 @@ actor GestaltFileStore {
         return try commit(imported.document, expected: expected, restoring: record)
     }
 
+    /// Restores only the four hardware-identity fields (product type,
+    /// hardware board, CPU, model number) from a verified same-device
+    /// backup, keeping every other change — AI, Siri, region and all
+    /// unrelated settings. This is the Face ID recovery: enabling AI
+    /// by spoofing the hardware identity can break Face ID, and this
+    /// puts the real hardware back without losing the unlock.
+    /// Ported from upstream GestaltX #128/#146 (huamidev/GestaltX),
+    /// with the model table extended to iPhone 16/17/Air (see
+    /// `deviceCPU(for:)`).
+    ///
+    /// The restore is refused unless every check holds: the backup is
+    /// a device backup of this device with a recorded digest; the live
+    /// document is a device document; the backup's product type and
+    /// board match the kernel's physical hardware; its CPU matches the
+    /// expected chip for that product type; all four identity fields
+    /// are present; the backup and the live document agree on the
+    /// device-identity keys (serial / chip); and both share the same
+    /// CacheData / CacheUUID / cache version. Unknown models are
+    /// rejected rather than guessed.
+    func restoreHardwareIdentity(from record: BackupRecord, expected: DocumentSnapshot,
+                                 physicalProduct: String, physicalBoard: String) throws -> DocumentSnapshot {
+        guard record.source == .device, record.deviceID == deviceID, record.sha256 != nil else {
+            throw GestaltFailure("A verified original hardware backup matching this device and cache is required.")
+        }
+        let original = try GestaltDocument(data: backupData(record))
+        return try restoreHardwareIdentity(from: original, expected: expected,
+                                          physicalProduct: physicalProduct, physicalBoard: physicalBoard)
+    }
+
+    func restoreHardwareIdentity(from imported: DocumentSnapshot, expected: DocumentSnapshot,
+                                 physicalProduct: String, physicalBoard: String) throws -> DocumentSnapshot {
+        guard imported.source == .local, imported.ownershipVerified else {
+            throw GestaltFailure("This plist's device proof could not be verified on this device.")
+        }
+        return try restoreHardwareIdentity(from: imported.document, expected: expected,
+                                          physicalProduct: physicalProduct, physicalBoard: physicalBoard)
+    }
+
+    private func restoreHardwareIdentity(from original: GestaltDocument, expected: DocumentSnapshot,
+                                         physicalProduct: String, physicalBoard: String) throws -> DocumentSnapshot {
+        // Kernel identity and an ownership-verified backup are
+        // independent of the spoofed cache. The device-identity check
+        // excludes the hardware fields themselves — those are the
+        // fields being restored, so they are expected to differ.
+        guard expected.source == .device, !physicalProduct.isEmpty, !physicalBoard.isEmpty,
+              original.extra[GestaltKeys.productType] as? String == physicalProduct,
+              (original.extra[GestaltKeys.hardwareModel] as? String)?.lowercased() == physicalBoard.lowercased(),
+              let cpu = Self.deviceCPU(for: physicalProduct),
+              original.extra[GestaltKeys.cpu] as? String == cpu,
+              GestaltKeys.hardwareIdentity.allSatisfy({ (original.extra[$0] as? String)?.isEmpty == false }),
+              original.preservesDeviceIdentity(of: expected.document, excludingHardwareIdentity: true),
+              let originalCache = original.root["CacheData"] as? Data,
+              originalCache == expected.document.root["CacheData"] as? Data else {
+            throw GestaltFailure("A verified original hardware backup matching this device and cache is required.")
+        }
+        try validateRestoreLayout(original, against: expected.document, excludingHardwareIdentity: true)
+        var edited = expected.document
+        for key in GestaltKeys.hardwareIdentity { edited.set(original.extra[key], for: key) }
+        if edited.matches(expected.document) {
+            return try withAccess {
+                _ = try currentData(matching: expected)
+                eventSink("Hardware restore: original hardware identity already matches")
+                return expected
+            }
+        }
+        eventSink("Hardware restore: preserving AI, Siri, region and unrelated settings")
+        return try commit(edited, expected: expected, recordingRestoredHardware: true)
+    }
+
+    /// Expected CPU (chip) for a product type. Internal (not private)
+    /// so the table is directly verifiable by `FaceIDRecoveryTests`:
+    /// every entry and every rejection is a test case. Upstream
+    /// GestaltX #128 covers iPhone 11 through iPhone 15/15 Plus,
+    /// cross-checked with libirecovery; the table is extended here so
+    /// the recovery works on the user's iPhone Air (iPhone18,4,
+    /// A19 = t8150):
+    /// - A17 Pro t8130 (iPhone16,1/16,2; Apple Wiki, CPID T8130)
+    /// - A18 / A18 Pro t8140 Tahiti (iPhone17,1–17,5; MacRumors iOS 18
+    ///   code lists the whole iPhone 16 range as t8140)
+    /// - A19 / A19 Pro t8150 Tilos/Thera (iPhone18,1–18,5; AppleInsider
+    ///   leak, CPID T8150; The Apple Wiki lists the base A19 as T8150)
+    /// iPhone 19,x (A20 Pro) is deliberately absent: its CPID is not
+    /// verifiable from any public source (only the Borneo codenames),
+    /// so those models are rejected rather than guessed. Unknown
+    /// products return nil (fail closed).
+    static func deviceCPU(for product: String) -> String? {
+        switch product {
+        case "iPhone12,1", "iPhone12,3", "iPhone12,5", "iPhone12,8": "t8030"
+        case "iPhone13,1", "iPhone13,2", "iPhone13,3", "iPhone13,4": "t8101"
+        case "iPhone14,2", "iPhone14,3", "iPhone14,4", "iPhone14,5",
+             "iPhone14,6", "iPhone14,7", "iPhone14,8": "t8110"
+        case "iPhone15,2", "iPhone15,3", "iPhone15,4", "iPhone15,5": "t8120"
+        case "iPhone16,1", "iPhone16,2": "t8130"
+        case "iPhone17,1", "iPhone17,2", "iPhone17,3", "iPhone17,4",
+             "iPhone17,5": "t8140"
+        case "iPhone18,1", "iPhone18,2", "iPhone18,3", "iPhone18,4",
+             "iPhone18,5": "t8150"
+        default: nil
+        }
+    }
+
+    /// Clears and rebuilds the MobileGestalt cache to a clean factory
+    /// baseline. The mechanism is Erosion-CN's "清除并重建缓存"
+    /// (Kianuni, https://github.com/Kianuni/Erosion-CN, GPL-3.0),
+    /// reimplemented for LilaShift's backup model and credited in the
+    /// UI and docs: the current device file is backed up first
+    /// ("Before cache rebuild"), then the live cache file is deleted
+    /// so iOS regenerates it from the hardware on the next restart.
+    /// Only a live device document may be rebuilt, and only when the
+    /// file on disk still matches the loaded document. The caller
+    /// clears the loaded document afterwards: the file does not exist
+    /// again until the restart, so the user re-reads after restarting.
+    func rebuildCache(expected: DocumentSnapshot) throws -> BackupRecord {
+        guard expected.source == .device else {
+            throw GestaltFailure("Only a live device cache can be rebuilt. Read the device first.")
+        }
+        return try withAccess {
+            let current = try Data(contentsOf: deviceURL)
+            guard current == expected.data else {
+                throw GestaltFailure("MobileGestalt changed since it was loaded. Refresh before applying your edits.")
+            }
+            let record = try saveBackup(current, source: .device, reason: "Before cache rebuild", provenance: .preModification)
+            try FileManager.default.removeItem(at: deviceURL)
+            eventSink("Cache rebuild: live cache deleted; iOS regenerates it on restart")
+            return record
+        }
+    }
+
     private func currentData(matching expected: DocumentSnapshot) throws -> Data {
         let current = try Data(contentsOf: deviceURL)
         guard current == expected.data else { throw GestaltFailure("MobileGestalt changed since it was loaded. Refresh before applying your edits.") }
         return current
     }
 
+    /// Commits `edited` over `expected`. `recordingRestoredHardware`
+    /// is set only by the Face ID recovery
+    /// (`restoreHardwareIdentity`): the four hardware-identity fields
+    /// are restored from a verified same-device backup, so the commit
+    /// guard must not reject them — and the recorded originals must
+    /// be rewritten to the verified real hardware, so a future
+    /// Revert does not restore a spoofed value.
     func commit(_ edited: GestaltDocument, expected: DocumentSnapshot, restoring record: BackupRecord? = nil,
-                originallyAbsentKeys: Set<String> = []) throws -> DocumentSnapshot {
-        guard expected.source != .device || edited.preservesDeviceIdentity(of: expected.document) else {
+                originallyAbsentKeys: Set<String> = [], recordingRestoredHardware: Bool = false) throws -> DocumentSnapshot {
+        guard expected.source != .device || edited.preservesDeviceIdentity(of: expected.document, excludingHardwareIdentity: recordingRestoredHardware) else {
             throw GestaltFailure("Device identity fields cannot be changed in the system plist. Open a local file to edit these fields.")
         }
         if record == nil { try DeviceCacheOptions.validateEdit(from: expected.document, to: edited) }
@@ -1029,6 +1195,14 @@ actor GestaltFileStore {
             // Explicitly removing a user-confirmed added field also corrects
             // old zero/one residues whose earlier origin was not recorded.
             for key in originallyAbsentKeys { originals.fields[key] = OriginalField(value: nil) }
+            if recordingRestoredHardware {
+                // An external spoof may predate our history. Record the
+                // verified real hardware so a future Revert uses it, not
+                // the spoofed first read.
+                for key in GestaltKeys.hardwareIdentity {
+                    originals.fields[key] = OriginalField(value: edited.extra[key])
+                }
+            }
             // Persist absence as well as typed values before the system write.
             // This record is separate from deletable full-file backups.
             try saveOriginals(originals, for: expected.document)
