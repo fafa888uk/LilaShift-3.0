@@ -100,6 +100,7 @@ enum GestaltKeys {
     static let legacyRegionInfo = "yK+xavymRGZ3xWc1tb8XDg"
     static let productType = "h9jDsbgj7xIVeIQ8S3/X3Q"
     static let modelNumber = "97JDvERpVwO+GHtthIh7hA"
+    static let siriMode = "a3n5T9sFtlyQ74NEp9ESxg"
 }
 
 struct GestaltDocument: @unchecked Sendable {

@@ -311,7 +311,7 @@ enum PresetCatalog {
         all.filter { $0.kind == .group }
     }
 
-    /// Builds the catalog: the 35 `CapabilityEntry` entries (33
+    /// Builds the catalog: the 36 `CapabilityEntry` entries (34
     /// capabilities + eSIM + region code), the WAPI and model-number
     /// virtual entries, and the three preset groups.
     private static func build() -> [PresetEntry] {
@@ -430,7 +430,7 @@ enum PresetCatalog {
                 category: .group,
                 chineseName: "一键解锁（中国）",
                 englishTitle: "China Unlock (One-Tap)",
-                chineseDescription: "为国行 eSIM 设备一键暂存 9 项：2 个 eSIM 缓存标记、地区码 LL、6 个 Apple 智能键。原生支持 Apple Intelligence 的机型跳过 6 个 Apple 智能键，只暂存 3 项。不改监管型号与销售地区。siriOnDevice 刻意保留原值。重启后须重新读取验收；系统可能在重启时还原地区值。",
+                chineseDescription: "为国行 eSIM 设备一键暂存 10 项：2 个 eSIM 缓存标记、地区码 LL、7 个 Apple 智能键。原生支持 Apple Intelligence 的机型跳过 7 个 Apple 智能键，只暂存 3 项。不改监管型号与销售地区。siriOnDevice 刻意保留原值。重启后须重新读取验收；系统可能在重启时还原地区值。",
                 scope: .unknown(reason: "组合包含不同适用范围的项目：eSIM 仅限中国大陆市场设备，AI 功能依赖原生硬件或地区 LL。"),
                 scopeNote: "eSIM 仅限中国大陆市场设备（地区码 CH）；AI 功能依赖原生硬件或地区 LL；地区码暂存不依赖机型。",
                 minSystem: .known("iOS 27"),
@@ -440,12 +440,12 @@ enum PresetCatalog {
                 evidence: [PresetSharedContent.regionRevertedEvidence,
                            PresetSharedContent.audioSlotEvidence,
                            PresetSharedContent.esimSlotsEvidence,
-                           PresetEvidence(text: "GestaltX/Capabilities.swift（9 项定义）", kind: .code)],
+                           PresetEvidence(text: "GestaltX/Capabilities.swift（10 项定义）", kind: .code)],
                 memberIDs: [FeatureEligibilityEvaluator.esimFeatureID,
                             FeatureEligibilityEvaluator.regionCodeFeatureID]
                     + ChinaUnlock.aiCapabilityIDs,
                 keys: [],
-                underlyingKeyOrSlot: "eSIM CacheData slots + region code + 6 AI CacheExtra keys",
+                underlyingKeyOrSlot: "eSIM CacheData slots + region code + 7 AI CacheExtra keys",
                 dependencies: [],
                 conflicts: []),
             PresetEntry(
@@ -454,18 +454,18 @@ enum PresetCatalog {
                 category: .group,
                 chineseName: "仅开启 AI",
                 englishTitle: "AI Only",
-                chineseDescription: "只暂存 6 个 Apple 智能键，不动 eSIM 与地区。注意：AI 功能依赖地区为 LL；单独使用此预设而不改地区时，依赖分析会报告缺少地区前置条件。",
+                chineseDescription: "只暂存 7 个 Apple 智能键，不动 eSIM 与地区。注意：AI 功能依赖地区为 LL；单独使用此预设而不改地区时，依赖分析会报告缺少地区前置条件。",
                 scope: .nativeAIHardware,
                 scopeNote: "原生支持 Apple 智能的机型可直接使用；其他机型须暂存开启，且地区须为 LL。",
                 minSystem: .known("iOS 27"),
                 riskLevel: .medium,
-                riskReason: "仅改 6 个 AI 能力标记；实际可用还取决于机型、地区与 Apple 服务器；单独使用时须先把地区改为 LL。",
+                riskReason: "仅改 7 个 AI 能力标记；实际可用还取决于机型、地区与 Apple 服务器；单独使用时须先把地区改为 LL。",
                 restoreMethod: PresetSharedContent.restoreGroup,
                 evidence: [PresetSharedContent.audioSlotEvidence,
                            PresetEvidence(text: "GestaltX/Capabilities.swift（AI 预设）", kind: .code)],
                 memberIDs: ChinaUnlock.aiCapabilityIDs,
                 keys: [],
-                underlyingKeyOrSlot: "6 AI CacheExtra keys",
+                underlyingKeyOrSlot: "7 AI CacheExtra keys",
                 dependencies: [FeatureEligibilityEvaluator.regionCodeFeatureID],
                 conflicts: ["siriOnDevice"]),
             PresetEntry(

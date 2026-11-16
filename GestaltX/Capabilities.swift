@@ -60,7 +60,7 @@ struct Capability: Identifiable, Equatable {
     var requiresEnableConfirmation: Bool { id == "storage" }
     var effectHint: String {
         switch id {
-        case "ai", "photosCleanUp", "alwaysListeningSiri":
+        case "ai", "siriAIMode", "photosCleanUp", "alwaysListeningSiri":
             "Restart required. Apple Intelligence also depends on device and region."
         case "personalTranslator":
             "Restart required. Apple Intelligence also depends on device and region. This stages the CacheExtra key; the CacheData slot is a separate value."
@@ -166,6 +166,7 @@ struct Capability: Identifiable, Equatable {
         .init(id: "stageManager", category: .ipad, title: "Stage Manager", detail: "Expose Stage Manager support.", keys: ["qeaj75wk3HF4DwQ8qbIi7g"], caution: true),
         .init(id: "ipadApps", category: .ipad, title: "iPad App Compatibility", detail: "Allow iPad app compatibility types on iPhone.", keys: ["9MZ5AdH43csAUajl/dU+IQ"]),
         .init(id: "ai", category: .intelligence, title: "Apple Intelligence Capability", detail: "Enable Apple Intelligence generative models.", keys: ["A62OafQ85EJAiiqKn4agtg"]),
+        .init(id: "siriAIMode", category: .intelligence, title: "Siri AI Mode", detail: "Set SiriMode to 2 without spoofing hardware. Experimental; resource downloads and availability are not guaranteed.", keys: [GestaltKeys.siriMode], caution: true, values: [GestaltKeys.siriMode: NSNumber(value: 2)]),
         .init(id: "siriOnDevice", category: .intelligence, title: "On-Device Siri", detail: "Run Siri processing on the device.", keys: ["K/R1GfGfCkXvEhaPS2Vrng"], caution: true),
         .init(id: "audioIntelligence", category: .intelligence, title: "Audio Intelligence", detail: "Advertise the iOS 27 audio intelligence capability.", keys: ["rb2tKZxlj0Gm2tBmUQSLqQ"], caution: true),
         .init(id: "personalTranslator", category: .intelligence, title: "Personal Translator", detail: "Advertise the personal translator capability.", keys: ["M1n2sAqf33NAOgZRGxQYBA"], caution: true),
@@ -189,7 +190,7 @@ struct Capability: Identifiable, Equatable {
 /// are excluded as well; WAPI can still be disabled on its own.
 enum ChinaUnlock {
     static let regionCodeID = "US"
-    static let aiCapabilityIDs = ["ai", "audioIntelligence", "personalTranslator",
+    static let aiCapabilityIDs = ["ai", "siriAIMode", "audioIntelligence", "personalTranslator",
                                   "photosCleanUp", "handwritingSynthesis", "alwaysListeningSiri"]
     static let aiCapabilities = aiCapabilityIDs.compactMap { id in
         Capability.all.first { $0.id == id }
@@ -246,10 +247,10 @@ enum DeviceModelDecision: Equatable {
 }
 
 /// Region mode for China Unlock. The one-tap unlock always stages exactly
-/// the 9-item definition (eSIM + region code LL + six AI keys) in either
+/// the 10-item definition (eSIM + region code LL + seven AI keys) in either
 /// mode — except on hardware that natively supports Apple Intelligence,
 /// where it stages only the 3 non-AI items (eSIM + region code LL) and
-/// skips the six AI keys. The sales-region suffix and the regulatory
+/// skips the seven AI keys. The sales-region suffix and the regulatory
 /// model number are never staged by the one-tap, because a regulatory
 /// model that does not match the hardware makes the system discard the
 /// whole MobileGestalt cache at boot and rebuild it from factory data,

@@ -561,10 +561,10 @@ final class GestaltManager: ObservableObject {
     }
 
     /// Stages the full China Unlock: eSIM cache flags, region code US and
-    /// the six Apple Intelligence presets — exactly the 9 items, in either
+    /// the seven Apple Intelligence presets — exactly the 10 items, in either
     /// region mode. On hardware that natively supports Apple Intelligence
     /// only the 3 non-AI items are staged (eSIM + region code) and the
-    /// six AI presets are skipped, never staged — staging them would
+    /// seven AI presets are skipped, never staged — staging them would
     /// only record type-change diffs (1 → true) for values that are
     /// already on. Nothing is written here; the user still reviews the
     /// changes and applies them, and a restart is required before they

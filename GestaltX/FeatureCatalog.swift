@@ -3,12 +3,12 @@
 // the home sections, the preset pages and search.
 //
 // The catalog does not duplicate the preset database: every preset
-// item is a view of a `PresetEntry` from `PresetCatalog` (40 entries),
+// item is a view of a `PresetEntry` from `PresetCatalog` (41 entries),
 // mapped onto one of the eleven feature categories below. Page items
 // are the thirteen non-preset destinations (diagnostics pages,
 // backups, modified values, personalization, launch artwork) that
 // have no `PresetEntry` of their own. Together they are the whole
-// browsable surface of the app: 53 items, each with a Simplified
+// browsable surface of the app: 54 items, each with a Simplified
 // Chinese name and description.
 //
 // The eleven categories are the task's list, in the task's order
