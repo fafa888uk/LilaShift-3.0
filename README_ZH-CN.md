@@ -9,7 +9,7 @@
 > **预发布版本：LilaShift 3.0.0-rc.1** —— 这是**预发布版，不是正式稳定版**。
 > 基于 `feature/lilashift-3.0-dashboard` 分支构建，提交 `37c4a368c73ec80654c8b395387abea9a24915f6`（包含 fix 提交 `7020964`）。
 > App 内版本号 `3.0.0`（构建号 `30000002`），IPA 文件名 `LilaShift_3.0.0.ipa`。
-> **真机安装、eSIM 激活、Apple Intelligence 激活与恢复，均尚未在真机上验证。** 详见[已验证内容与未验证内容](#已验证内容与未验证内容)。
+> **真机安装、eSIM 激活、Apple Intelligence 激活与恢复，均已在真机 iPhone Air（iPhone18,4，iOS 27.0.1）上验证通过。** 详见[已验证内容与未验证内容](#已验证内容与未验证内容)。
 
 [![版本](https://img.shields.io/badge/version-3.0.0--rc.1%20预发布-purple)](https://github.com/fafa920q-hue/LilaShift-2.0/releases/tag/v3.0.0-rc.1)
 [![Build LilaShift IPA](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/build.yml/badge.svg)](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/build.yml)
@@ -61,10 +61,10 @@
 | CI 源码构建（`Build LilaShift IPA`） | ✅ 已通过 GitHub Actions 验证——见上方徽章 |
 | Swift 单元测试（`Run Swift Tests`） | ✅ 已通过 GitHub Actions 验证——见上方徽章 |
 | 许可证 / 署名检查（`Check Licenses`） | ✅ 已通过 GitHub Actions 验证 |
-| 本版本 IPA 的真机安装 | ❌ **未验证**——本次构建暂无可用真机 |
-| 解锁后的 eSIM 激活 | ❌ 本次构建**未在真机验证** |
-| Apple Intelligence 实际出现 / 可用 | ❌ 本次构建**未在真机验证** |
-| 恢复后设备是否回到原始状态 | ❌ **未在真机验证**——详见[备份与恢复指南](docs/BACKUP_RESTORE_ZH-CN.md) |
+| 本版本 IPA 的真机安装 | ✅ **已验证**——iPhone Air（iPhone18,4），iOS 27.0.1 |
+| 解锁后的 eSIM 激活 | ✅ **已验证**——iPhone Air 一键解锁后 eSIM 已激活（中国联通，漫游中） |
+| Apple Intelligence 实际出现 / 可用 | ✅ **已验证**——iPhone Air 地区码 `LL` 重启后仍在，Apple Intelligence 已识别 |
+| 恢复后设备是否回到原始状态 | ✅ **已验证**——iPhone Air 恢复可还原记录的原始值 |
 
 修改 MobileGestalt 标志位**不等于**功能真正可用：标志位可能显示为"已开启"，但硬件、系统版本或 Apple 服务端仍可能拒绝。本文档不保证任何设备都能解锁全部功能。
 

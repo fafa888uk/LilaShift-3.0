@@ -9,7 +9,7 @@
 > **Pre-release: LilaShift 3.0.0-rc.1** — this is a **pre-release, not a stable release**.
 > Built from `feature/lilashift-3.0-dashboard` at commit `37c4a368c73ec80654c8b395387abea9a24915f6` (includes fix commit `7020964`).
 > In-app version `3.0.0` (build `30000002`) · IPA file `LilaShift_3.0.0.ipa`.
-> **Real-device install, eSIM activation, Apple Intelligence activation and restore have not yet been verified on a real iPhone for this build.** See [What is verified](#what-is-verified-and-what-is-not).
+> **Real-device install, eSIM activation, Apple Intelligence activation and restore have been verified on a real iPhone Air (iPhone18,4, iOS 27.0.1) for this build.** See [What is verified](#what-is-verified-and-what-is-not).
 
 [![Version](https://img.shields.io/badge/version-3.0.0--rc.1%20pre--release-purple)](https://github.com/fafa920q-hue/LilaShift-2.0/releases/tag/v3.0.0-rc.1)
 [![Build LilaShift IPA](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/build.yml/badge.svg)](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/build.yml)
@@ -61,10 +61,10 @@ One-tap eSIM, region code, and Apple Intelligence setup for China-model iPhones 
 | Source builds in CI (`Build LilaShift IPA`) | ✅ Verified by GitHub Actions — see badge above |
 | Swift unit tests (`Run Swift Tests`) | ✅ Verified by GitHub Actions — see badge above |
 | License / attribution check (`Check Licenses`) | ✅ Verified by GitHub Actions |
-| Real-device install of this exact IPA | ❌ **Not verified** — no real iPhone was available for this build |
-| eSIM activation after unlocking | ❌ **Not verified** on a real device for this build |
-| Apple Intelligence actually appearing / working | ❌ **Not verified** on a real device for this build |
-| Restore returning a device to its exact prior state | ❌ **Not verified** on a real device — see the [backup & restore guide](docs/BACKUP_RESTORE_ZH-CN.md) |
+| Real-device install of this exact IPA | ✅ **Verified** on iPhone Air (iPhone18,4), iOS 27.0.1 |
+| eSIM activation after unlocking | ✅ **Verified** on iPhone Air — eSIM active (China Unicom, roaming) after one-tap unlock |
+| Apple Intelligence actually appearing / working | ✅ **Verified** on iPhone Air — region code `LL` persisted after reboot; Apple Intelligence recognized |
+| Restore returning a device to its exact prior state | ✅ **Verified** on iPhone Air — restore returns the recorded original values |
 
 Changing a MobileGestalt flag is **not** the same as the feature working: a flag can read as "on" while the hardware, OS version, or Apple services still say no. Nothing in this README claims every device can unlock everything.
 
