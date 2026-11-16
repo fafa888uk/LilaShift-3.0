@@ -574,7 +574,7 @@ enum RestoreAction: Equatable, Sendable {
     case capability(Capability)
     /// Restore the eSIM flags (`GestaltManager.restoreCacheOption()`).
     case cacheOption
-    /// Restore the 9-item China Unlock group (`GestaltManager.restoreChinaUnlock()`).
+    /// Restore the 10-item China Unlock group (`GestaltManager.restoreChinaUnlock()`).
     case chinaUnlock
     /// Restore the AI-only group (`GestaltManager.restoreChinaAIOnly()`).
     case aiOnly

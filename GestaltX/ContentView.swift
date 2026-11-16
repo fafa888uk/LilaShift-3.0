@@ -397,6 +397,7 @@ struct ContentView: View {
                 LazyVStack(alignment: .leading, spacing: 16) {
                     ChinaUnlockCard { showsChanges = true }
                     ChinaAIOnlyCard { showsChanges = true }
+                    ChinaSiriAIModeCard { showsChanges = true }
                     ChinaESIMRegionCard { showsChanges = true }
                     AppleIntelligenceCheckupCard { showsChanges = true }
                     ModifiedValuesCard()
@@ -490,6 +491,8 @@ struct ContentView: View {
                 ChinaUnlockCard { showsChanges = true }
 
                 ChinaAIOnlyCard { showsChanges = true }
+
+                ChinaSiriAIModeCard { showsChanges = true }
 
                 ChinaESIMRegionCard { showsChanges = true }
 
@@ -717,7 +720,7 @@ private struct ChinaUnlockCard: View {
             }
 
             // Native Apple Intelligence hardware already enables the
-            // six AI presets: one-tap stages eSIM and region code
+            // seven AI presets: one-tap stages eSIM and region code
             // only, and the AI column below reads Native.
             if model.isNativeAppleIntelligence {
                 Text(L("Apple Intelligence is already enabled natively — one-tap stages eSIM and region code only."))
@@ -807,8 +810,8 @@ private struct ChinaUnlockCard: View {
     }
 
     /// The Apple Intelligence status: Native on hardware that
-    /// natively supports it (the six presets are skipped, not
-    /// staged), otherwise the enabled count out of six.
+    /// natively supports it (the seven presets are skipped, not
+    /// staged), otherwise the enabled count out of seven.
     private var aiStatusText: String {
         guard model.hasDocument else { return L("Not read yet") }
         if model.isNativeAppleIntelligence { return L("Native") }
@@ -834,7 +837,7 @@ private struct ChinaUnlockCard: View {
     }
 }
 
-/// Standalone AI-only preset: stages only the six Apple Intelligence
+/// Standalone AI-only preset: stages only the seven Apple Intelligence
 /// presets (the AI part of the one-tap unlock), without eSIM or region.
 /// Not blocked by the eSIM cache layout. Mirrors the one-tap card.
 private struct ChinaAIOnlyCard: View {
@@ -857,7 +860,7 @@ private struct ChinaAIOnlyCard: View {
                     Text(L("China AI"))
                         .font(.headline)
                         .foregroundStyle(.primary)
-                    Text(L("Enable the six Apple Intelligence features on a China-model iPhone."))
+                    Text(L("Enable the seven Apple Intelligence features on a China-model iPhone."))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
@@ -869,7 +872,7 @@ private struct ChinaAIOnlyCard: View {
 
             if model.hasDocument {
                 if model.isNativeAppleIntelligence {
-                    // Native hardware already enables all six presets:
+                    // Native hardware already enables all seven presets:
                     // there is nothing to stage, so no Enable button.
                     // Restore stays available when anything reads as
                     // enabled, to undo a change applied earlier.
@@ -922,7 +925,7 @@ private struct ChinaAIOnlyCard: View {
 
     /// The Apple Intelligence status: Native on hardware that
     /// natively supports it (there is nothing to stage), otherwise
-    /// the enabled count out of six.
+    /// the enabled count out of seven.
     private var aiStatusText: String {
         guard model.hasDocument else { return L("Not read yet") }
         if model.isNativeAppleIntelligence { return L("Native") }
@@ -948,9 +951,121 @@ private struct ChinaAIOnlyCard: View {
     }
 }
 
+/// Standalone Siri AI Mode preset: stages only SiriMode=2 — the
+/// single-item switch — without eSIM, region, or the other AI keys.
+/// Unlike the AI-only preset this one is allowed on hardware that
+/// natively supports Apple Intelligence: an explicit single-item
+/// opt-in, with the experimental warning shown on the card.
+/// Not blocked by the eSIM cache layout. Mirrors the AI-only card.
+private struct ChinaSiriAIModeCard: View {
+    let onReviewChanges: () -> Void
+    @EnvironmentObject private var model: GestaltManager
+    @Environment(\.colorScheme) private var colorScheme
+
+    private var heroTint: Color {
+        colorScheme == .dark
+            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
+            : Color.lavenderGlass.opacity(0.65)
+    }
+
+    var body: some View {
+        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: heroTint) {
+            VStack(alignment: GlassTokens.cardAlignment, spacing: GlassTokens.cardSpacing) {
+            HStack(spacing: 12) {
+                GlassIconPedestal(systemImage: "waveform", tint: .gestaltAccent, size: GlassTokens.iconSize)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(L("Siri AI Mode"))
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                    Text(L("Switch Siri to AI mode alone — no eSIM, region, or other AI changes."))
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            HStack(spacing: 0) {
+                statusColumn(title: L("Siri AI Mode"), value: siriAIModeStatusText)
+            }
+
+            if model.hasDocument {
+                if model.isNativeAppleIntelligence {
+                    // Native hardware already runs Siri AI: this
+                    // switch is experimental and usually unnecessary
+                    // here — but it stays available as an explicit
+                    // single-item opt-in, unlike the AI-only preset.
+                    Text(L("Apple Intelligence is already enabled natively on this device — Siri AI Mode is experimental and usually unnecessary here."))
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+                if model.isChinaSiriAIModeStaged && model.changeCount > 0 {
+                    Button(L("Review Changes")) { onReviewChanges() }
+                        .buttonStyle(GlassPrimaryButtonStyle())
+                    Button(L("Restore Siri AI Mode")) { stageChanges(restoring: true) }
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Color.gestaltAccent)
+                        .frame(maxWidth: .infinity)
+                        .disabled(model.isBusy)
+                        .opacity(model.isBusy ? 0.5 : 1)
+                } else {
+                    let restoring = model.isChinaSiriAIModeApplied
+                    Button(L(restoring ? "Restore Siri AI Mode" : "Enable Siri AI Mode")) { stageChanges(restoring: restoring) }
+                        .buttonStyle(GlassPrimaryButtonStyle())
+                        .disabled(model.isBusy)
+                        .opacity(model.isBusy ? 0.5 : 1)
+                }
+
+                Text(L(model.sourceIsDevice
+                       ? "Review the changes, apply them, then restart the device."
+                       : "This edits the opened file in LilaShift. Export it to save a copy; the system file is not changed."))
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            } else {
+                Button(L(model.isBusy ? "Reading…" : "Read Device")) {
+                    Task { await model.connect() }
+                }
+                .buttonStyle(GlassPrimaryButtonStyle())
+                .disabled(model.isBusy)
+                .opacity(model.isBusy ? 0.5 : 1)
+                Text(L("Read the device before choosing a preset."))
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+        }
+            .padding(GlassTokens.cardPadding)
+        }
+    }
+
+    /// The SiriMode key state: On when the preview already shows
+    /// SiriMode set to 2, Off otherwise. This reports the key, not
+    /// whether Siri itself works — on native hardware Siri AI works
+    /// with the key absent.
+    private var siriAIModeStatusText: String {
+        guard model.hasDocument else { return L("Not read yet") }
+        return model.isChinaSiriAIModeApplied ? L("On") : L("Off")
+    }
+
+    private func statusColumn(title: String, value: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Text(value)
+                .font(.headline)
+                .foregroundStyle(.primary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 4)
+    }
+
+    private func stageChanges(restoring: Bool) {
+        let staged = restoring ? model.restoreChinaSiriAIMode() : model.stageChinaSiriAIMode()
+        if staged && model.changeCount > 0 { onReviewChanges() }
+    }
+}
+
 /// Standalone eSIM+region preset: stages only the eSIM cache flags and
 /// the region code US (LL) — the eSIM+region part of the one-tap unlock,
-/// without the six AI presets. Blocked by the eSIM cache layout, exactly
+/// without the seven AI presets. Blocked by the eSIM cache layout, exactly
 /// like the one-tap. Mirrors the one-tap card.
 private struct ChinaESIMRegionCard: View {
     let onReviewChanges: () -> Void
@@ -2084,7 +2199,7 @@ struct ChangeReviewView: View {
     }
 
     /// The field keys written by the China Unlock group: the region code
-    /// plus the six AI capability keys.
+    /// plus the seven AI capability keys.
     private var chinaUnlockFieldKeys: Set<String> {
         var keys = Set(ChinaUnlock.aiCapabilities.flatMap(\.keys))
         keys.insert(GestaltKeys.regionCode)
@@ -2115,8 +2230,8 @@ struct ChangeReviewView: View {
                 icon: "sparkles", tint: .purple,
                 title: L("Apple Intelligence"),
                 before: "\(aiBeforeCount)/\(ChinaUnlock.aiCapabilities.count)",
-                after: L("Configure 6 items"),
-                detail: L("Enable six Apple Intelligence features, including translation, Clean Up and always-listening Hey Siri.")
+                after: L("Configure 7 items"),
+                detail: L("Enable seven Apple Intelligence features, including translation, Clean Up and always-listening Hey Siri.")
             )
             DisclosureGroup(L("Technical Details")) {
                 ForEach(chinaUnlockFieldKeys.sorted(), id: \.self) { key in
@@ -2183,8 +2298,13 @@ struct ChangeReviewView: View {
 
     private var aiBeforeCount: Int {
         guard let fields = model.snapshot?.document.extra else { return 0 }
+        // Same staged-value rule as `chinaUnlockEnabledAICapabilityIDs`:
+        // siriAIMode reads as enabled at SiriMode=2, not 1.
         return ChinaUnlock.aiCapabilities.filter { capability in
-            capability.keys.allSatisfy { (fields[$0] as? NSNumber)?.intValue == 1 }
+            capability.keys.allSatisfy { key in
+                guard let field = fields[key] else { return false }
+                return GestaltDocument.valuesEqual(field, capability.values?[key] ?? capability.enabled)
+            }
         }.count
     }
 

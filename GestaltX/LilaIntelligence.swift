@@ -626,7 +626,7 @@ struct CapabilityEntry: Sendable {
     /// verification steps instead of here.
     let dependencies: [String]
     /// Feature ids this entry conflicts with. Only conflicts grounded in
-    /// existing code: `siriOnDevice` is excluded from the 9-item unlock
+    /// existing code: `siriOnDevice` is excluded from the 10-item unlock
     /// because forcing it could revert the Apple Intelligence Siri
     /// interface, so it conflicts with the AI set and vice versa.
     let conflicts: [String]
@@ -1052,7 +1052,7 @@ enum LilaRecommendationBuilder {
     /// `nil` when it did not resolve — the profile's cached layout is
     /// used as a fallback. `regionMode` selects region-code-only (LL,
     /// sales suffix kept) or Full US (LL + LL/A). The model number is
-    /// never staged by this builder: it is outside the 9-item scope
+    /// never staged by this builder: it is outside the 10-item scope
     /// and needs the `DeviceModelSupport` gate, which belongs to the
     /// integration that owns Full US model staging.
     static func build(featureIDs: [String],
@@ -1141,7 +1141,7 @@ enum LilaRecommendationBuilder {
                     verification: L("WAPI flag reads back as disabled — this verifies the staged flag, not network hardware.")))
             case "siriOnDevice":
                 // Deliberately excluded from every auto-plan: Siri uses a
-                // device-specific capability type, and the 9-item unlock
+                // device-specific capability type, and the 10-item unlock
                 // preserves its recorded value. Even an "eligible"
                 // evaluation must not stage it.
                 let reason = Capability.all.first { $0.id == id }?.effectHint
@@ -1325,7 +1325,7 @@ struct LilaDeviceReport: Equatable, Sendable {
     let profile: DeviceProfile
     let evaluations: [LilaFeatureEvaluation]
     /// The recommendation for the China Unlock set (eSIM + region +
-    /// the six AI capabilities), built from the evaluations. Other
+    /// the seven AI capabilities), built from the evaluations. Other
     /// features are evaluated but not recommended here: the caller
     /// builds a recommendation for them with
     /// `LilaRecommendationBuilder.build` when the user asks for one.

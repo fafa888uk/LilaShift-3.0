@@ -31,7 +31,7 @@ struct SafePatchProposal: Hashable, Sendable {
     let regionMode: ChinaUnlockRegionMode
     /// Feature ids the proposal deliberately leaves unstaged — never a
     /// staged diff. On hardware that natively supports Apple
-    /// Intelligence this is the six AI capabilities; empty on
+    /// Intelligence this is the seven AI capabilities; empty on
     /// non-native hardware.
     let skippedFeatureIDs: [String]
 
@@ -42,10 +42,10 @@ struct SafePatchProposal: Hashable, Sendable {
         self.skippedFeatureIDs = skippedFeatureIDs
     }
 
-    /// The 9-item China Unlock on non-native hardware: eSIM + region
-    /// code + six AI keys. On hardware that natively supports Apple
+    /// The 10-item China Unlock on non-native hardware: eSIM + region
+    /// code + seven AI keys. On hardware that natively supports Apple
     /// Intelligence (`nativeAppleIntelligence: true`) only the 3
-    /// non-AI items are staged (2 eSIM + region code) and the six AI
+    /// non-AI items are staged (2 eSIM + region code) and the seven AI
     /// capabilities are recorded as skipped, never staged — not even
     /// as type-change diffs (1 → true) for values that are already on.
     static func oneTap(nativeAppleIntelligence: Bool = false,
@@ -61,9 +61,9 @@ struct SafePatchProposal: Hashable, Sendable {
                             + ChinaUnlock.aiCapabilityIDs, regionMode: regionMode)
     }
 
-    /// The six AI capabilities only (the standalone AI preset). On
+    /// The seven AI capabilities only (the standalone AI preset). On
     /// native Apple Intelligence hardware there is nothing to stage:
-    /// the proposal comes back empty with all six recorded as
+    /// the proposal comes back empty with all seven recorded as
     /// skipped.
     static func aiOnly(nativeAppleIntelligence: Bool = false,
                        regionMode: ChinaUnlockRegionMode = .regionCodeOnly) -> SafePatchProposal {
@@ -82,11 +82,23 @@ struct SafePatchProposal: Hashable, Sendable {
                           regionMode: regionMode)
     }
 
+    /// Siri AI Mode only (the standalone Siri AI Mode preset): a
+    /// single CacheExtra key. Unlike the AI-only preset it is
+    /// allowed on native Apple Intelligence hardware — an explicit
+    /// single-item opt-in — so nativeness never empties it and
+    /// nothing is skipped. The unknown-model refusal is enforced
+    /// at stage time (`GestaltManager.stageChinaSiriAIMode`), not
+    /// by the proposal: the simulation blocks unknown models on its
+    /// own (see `testUnknownModelBlocksSimulation`).
+    static func siriAIMode(regionMode: ChinaUnlockRegionMode = .regionCodeOnly) -> SafePatchProposal {
+        SafePatchProposal(featureIDs: [ChinaUnlock.siriAIModeID], regionMode: regionMode)
+    }
+
     /// Resolves the native-Apple-Intelligence flag from a device
     /// profile, fail closed: a known value wins; otherwise the
     /// product type is looked up in the exact-match list
     /// (`DeviceAIEligibility`); anything unknown reads as non-native,
-    /// so the full 9-item proposal is built (the existing behavior).
+    /// so the full 10-item proposal is built (the existing behavior).
     static func isNativeAppleIntelligence(profile: DeviceProfile?) -> Bool {
         guard let profile else { return false }
         if let known = profile.isNativeAppleIntelligence.value { return known }
@@ -103,6 +115,7 @@ enum SafePatchProposalKind: String, CaseIterable, Hashable, Sendable {
     case oneTap
     case aiOnly
     case esimRegion
+    case siriAIMode
 
     func proposal(nativeAppleIntelligence: Bool,
                   regionMode: ChinaUnlockRegionMode = .regionCodeOnly) -> SafePatchProposal {
@@ -113,6 +126,8 @@ enum SafePatchProposalKind: String, CaseIterable, Hashable, Sendable {
             return .aiOnly(nativeAppleIntelligence: nativeAppleIntelligence, regionMode: regionMode)
         case .esimRegion:
             return .esimRegion(regionMode: regionMode)
+        case .siriAIMode:
+            return .siriAIMode(regionMode: regionMode)
         }
     }
 }
@@ -241,7 +256,7 @@ struct SafePatchSimulation: Equatable, Sendable {
     let warnings: [String]
     /// Feature ids the proposal deliberately left unstaged (copied
     /// from the proposal): on native Apple Intelligence hardware, the
-    /// six AI capabilities. Never a staged diff.
+    /// seven AI capabilities. Never a staged diff.
     let skippedFeatureIDs: [String]
     /// Keys in the diff that touch hardware-identity fields.
     let hardwareIdentityTouches: [String]

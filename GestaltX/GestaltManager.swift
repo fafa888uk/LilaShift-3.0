@@ -223,10 +223,26 @@ final class GestaltManager: ObservableObject {
         return DeviceAIEligibility.isNativeAppleIntelligence(productType: productType)
     }
 
+    /// The fail-closed model decision for this document (see
+    /// `DeviceModelSupport`): known only with a verified mapping
+    /// entry — an exact product-type entry, or a recorded original
+    /// regulatory model that is itself a verified entry. Unknown
+    /// product type or regulatory model reads as unknown with a
+    /// reason; there is no family or prefix inference.
+    private var deviceModelDecision: DeviceModelDecision {
+        guard let document = working ?? snapshot?.document else {
+            return .unknown(reason: L("No US regulatory model known for this device — region code only."))
+        }
+        let productType = document.extra[GestaltKeys.productType] as? String ?? ""
+        let originalRegModel = snapshot?.originalValue(for: GestaltKeys.modelNumber) as? String
+            ?? document.extra[GestaltKeys.modelNumber] as? String
+        return DeviceModelSupport.decision(for: productType, originalRegModel: originalRegModel)
+    }
+
     /// True while the full China Unlock is staged (not yet applied):
-    /// eSIM flags enabled, region code US and all six AI presets
+    /// eSIM flags enabled, region code US and all seven AI presets
     /// enabled — or, on hardware that natively supports Apple
-    /// Intelligence, eSIM and region only, with the six AI presets
+    /// Intelligence, eSIM and region only, with the seven AI presets
     /// skipped by nativeness instead of staged (see
     /// `stageChinaUnlock`).
     var isChinaUnlockStaged: Bool {
@@ -249,8 +265,15 @@ final class GestaltManager: ObservableObject {
 
     var chinaUnlockEnabledAICapabilityIDs: Set<String> {
         guard let fields = preview?.extra else { return [] }
+        // An AI capability reads as enabled when every one of its keys
+        // holds the capability's own staged value — boolean true for
+        // most, but SiriMode=2 for siriAIMode. Comparing against a
+        // hardcoded 1 would never count siriAIMode as enabled.
         return Set(ChinaUnlock.aiCapabilities.filter { capability in
-            capability.keys.allSatisfy { (fields[$0] as? NSNumber)?.intValue == 1 }
+            capability.keys.allSatisfy { key in
+                guard let field = fields[key] else { return false }
+                return GestaltDocument.valuesEqual(field, capability.values?[key] ?? capability.enabled)
+            }
         }.map(\.id))
     }
 
@@ -258,9 +281,9 @@ final class GestaltManager: ObservableObject {
 
     /// True when the preview already shows the full unlock, whether it was
     /// just staged or applied in an earlier session: eSIM enabled, region
-    /// code LL and all six AI presets enabled — or, on hardware that
+    /// code LL and all seven AI presets enabled — or, on hardware that
     /// natively supports Apple Intelligence, eSIM enabled and region
-    /// code LL with the six AI presets skipped by nativeness. The
+    /// code LL with the seven AI presets skipped by nativeness. The
     /// sales-region suffix and the regulatory model number are never
     /// part of the unlock, so they are not required here.
     var isChinaUnlockedInPreview: Bool {
@@ -269,25 +292,45 @@ final class GestaltManager: ObservableObject {
                 || chinaUnlockAIEnabledCount == ChinaUnlock.aiCapabilityIDs.count)
     }
 
-    /// True while the AI-only preset is staged: all six AI presets
+    /// True while the AI-only preset is staged: all seven AI presets
     /// enabled. This is the AI part of the one-tap unlock, staged on its
     /// own; eSIM and region are untouched. It is not blocked by the eSIM
-    /// cache layout, because the six AI keys are CacheExtra values and do
+    /// cache layout, because the seven AI keys are CacheExtra values and do
     /// not need the layout to resolve.
     var isChinaAIOnlyStaged: Bool {
         guard hasDocument else { return false }
         return ChinaUnlock.aiCapabilityIDs.allSatisfy { (choices[$0] ?? .keep) == .enable }
     }
 
-    /// True when the preview already shows all six AI presets enabled,
+    /// True when the preview already shows all seven AI presets enabled,
     /// whether staged now or applied in an earlier session.
     var isChinaAIOnlyApplied: Bool {
         chinaUnlockAIEnabledCount == ChinaUnlock.aiCapabilityIDs.count
     }
 
+    /// True while the standalone Siri AI Mode preset is staged:
+    /// only the SiriMode key. Unlike the AI-only preset this one is
+    /// allowed on native hardware (an explicit single-item opt-in),
+    /// so nativeness never clears it; the unknown-model refusal
+    /// lives in `stageChinaSiriAIMode`, not here.
+    var isChinaSiriAIModeStaged: Bool {
+        guard hasDocument else { return false }
+        return (choices[ChinaUnlock.siriAIModeID] ?? .keep) == .enable
+    }
+
+    /// True when the preview already shows SiriMode set to 2,
+    /// whether staged now or applied in an earlier session. This
+    /// checks the SiriMode key directly for the value 2: the shared
+    /// AI-enabled count only recognizes a value of 1, so it can
+    /// never report SiriMode as enabled.
+    var isChinaSiriAIModeApplied: Bool {
+        guard let fields = preview?.extra else { return false }
+        return (fields[GestaltKeys.siriMode] as? NSNumber)?.intValue == 2
+    }
+
     /// True while the eSIM+region preset is staged: eSIM flags enabled
     /// and region code US. This is the eSIM+region part of the one-tap
-    /// unlock, staged on its own; the six AI presets are untouched.
+    /// unlock, staged on its own; the seven AI presets are untouched.
     var isChinaESIMRegionStaged: Bool {
         guard hasDocument else { return false }
         return cacheOptionChoice == .enable && regionCodeID == ChinaUnlock.regionCodeID
@@ -422,7 +465,7 @@ final class GestaltManager: ObservableObject {
                                     proposedUnlock: false)
     }
 
-    /// The guard decision for the China Unlock proposal (all six AI keys
+    /// The guard decision for the China Unlock proposal (all seven AI keys
     /// staged as 1), evaluated on the current preview, or `nil` when the
     /// slots are unobservable. Fix evaluates this before staging: it
     /// answers whether the combination Fix is about to stage is blocked,
@@ -596,7 +639,7 @@ final class GestaltManager: ObservableObject {
         guard stageCacheOption(.enable) else { return false }
         regionCodeID = ChinaUnlock.regionCodeID
         regionID = "keep"
-        // Native Apple Intelligence hardware already supports the six
+        // Native Apple Intelligence hardware already supports the seven
         // AI presets: staging them would claim a change that is not
         // one. Skip them; the staged flag reads the skip as satisfied
         // (see `isChinaUnlockStaged`).
@@ -608,7 +651,7 @@ final class GestaltManager: ObservableObject {
 
     /// Stages a restore of the full China Unlock: eSIM flags back to the
     /// recorded originals, region code back to its recorded original and
-    /// the six AI presets back to their recorded originals (`.disable`
+    /// the seven AI presets back to their recorded originals (`.disable`
     /// removes keys that were originally absent). `siriOnDevice` and WAPI
     /// are left untouched. The sales-region suffixes and the model number
     /// are also restored when the stored mode is Full US, so an unlock
@@ -636,7 +679,7 @@ final class GestaltManager: ObservableObject {
         return true
     }
 
-    /// Stages only the six Apple Intelligence presets — the AI part of the
+    /// Stages only the seven Apple Intelligence presets — the AI part of the
     /// one-tap unlock, without eSIM or region. Deliberately not gated by
     /// the eSIM cache layout (see `chinaUnlockESIMLayoutError`): the AI
     /// keys are CacheExtra values and do not need the layout. Like the
@@ -659,7 +702,7 @@ final class GestaltManager: ObservableObject {
         return true
     }
 
-    /// Stages a restore of the AI-only preset: the six AI presets back to
+    /// Stages a restore of the AI-only preset: the seven AI presets back to
     /// their recorded originals (`.disable` removes keys that were
     /// originally absent). eSIM and region are left untouched.
     @discardableResult
@@ -669,8 +712,44 @@ final class GestaltManager: ObservableObject {
         return true
     }
 
+    /// Stages only Siri AI Mode (SiriMode=2) — the standalone
+    /// single-item preset, without eSIM, region, or the other AI
+    /// keys. Deliberately not gated by the eSIM cache layout: the
+    /// SiriMode key is a CacheExtra value and does not need the
+    /// layout. Unlike the AI-only preset this one is ALLOWED on
+    /// hardware that natively supports Apple Intelligence — that is
+    /// the point: an explicit single-item opt-in on a device whose
+    /// Siri AI already works, with the experimental warning shown
+    /// by the card. It IS gated by the fail-closed model decision
+    /// (`deviceModelDecision`): an unknown model refuses with the
+    /// reason shown (`message`), so a guessed device never gets a
+    /// staged SiriMode value.
+    @discardableResult
+    func stageChinaSiriAIMode() -> Bool {
+        guard !isBusy else { return false }
+        if case .unknown(let reason) = deviceModelDecision {
+            message = reason
+            log(reason)
+            return false
+        }
+        choices[ChinaUnlock.siriAIModeID] = .enable
+        return true
+    }
+
+    /// Stages a restore of the Siri AI Mode preset: SiriMode back to
+    /// its recorded original (`.disable` removes the key when it was
+    /// originally absent). eSIM, region, and the other AI presets
+    /// are left untouched. Restoring is never gated by the model
+    /// decision — returning to the original is always safe.
+    @discardableResult
+    func restoreChinaSiriAIMode() -> Bool {
+        guard !isBusy else { return false }
+        choices[ChinaUnlock.siriAIModeID] = .disable
+        return true
+    }
+
     /// Stages only the eSIM cache flags and the region code US (LL) — the
-    /// eSIM+region part of the one-tap unlock, without the six AI presets.
+    /// eSIM+region part of the one-tap unlock, without the seven AI presets.
     /// Guarded by the eSIM cache layout exactly like `stageChinaUnlock`:
     /// if the layout cannot be verified, the preset is stopped and the
     /// reason is shown (`message`).
@@ -690,7 +769,7 @@ final class GestaltManager: ObservableObject {
 
     /// Stages a restore of the eSIM+region preset: eSIM flags back to the
     /// recorded originals and region code back to its recorded original.
-    /// The six AI presets are left untouched.
+    /// The seven AI presets are left untouched.
     @discardableResult
     func restoreChinaESIMRegion() -> Bool {
         guard stageCacheOption(.restoreOriginal) else { return false }

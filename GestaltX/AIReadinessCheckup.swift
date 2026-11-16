@@ -13,14 +13,14 @@
 // natively FALSE on iPhone/iPad, and forcing the *slot* to 1 breaks Photos
 // high-quality Clean Up. Erosion-CN therefore treats any presence of the
 // CacheExtra key as a conflict and strips it on native-AI hardware.
-// The 9-item unlock used to set CacheExtra `audioIntelligence` = 1 on
+// The 10-item unlock used to set CacheExtra `audioIntelligence` = 1 on
 // every device, including native-AI iPhones. The CacheData slot and the
 // CacheExtra key are two different layers, and neither codebase establishes
 // from source alone whether setting the *CacheExtra key* to 1 on a
 // native-AI iPhone is harmless, redundant, or harmful — that question is
 // still open for a device already carrying the key from an earlier
 // session. The user decided on 2026-11-15 that native-AI hardware skips
-// all six AI keys instead of staging them (the one-tap stages only eSIM
+// all seven AI keys instead of staging them (the one-tap stages only eSIM
 // + region code there), so the unlock no longer stages the key on native
 // hardware. The guards in this file stay SLOT-ONLY: they repair a slot
 // that reads 1, and they never flag, strip, or change a CacheExtra key.
@@ -358,7 +358,7 @@ struct AIReadinessCheckup: Equatable {
             isLiveActive: nil)
 
         // `aiEnabledCount` counts staged CacheExtra keys (how many of the
-        // six AI presets are staged as 1), not CacheData slot values and
+        // seven AI presets are staged as 1), not CacheData slot values and
         // not live AI state. Live state is `isLiveActive` only; a staged
         // CacheExtra key saying "enabled" is never presented as proof the
         // device's AI is actually on.

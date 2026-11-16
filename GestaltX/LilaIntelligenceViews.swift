@@ -3,7 +3,7 @@
 //
 // Shows the device profile and the per-feature eligibility the local
 // rule engine derives from REAL readings of the current device,
-// plus the China Unlock recommendation (eSIM + region + the six AI
+// plus the China Unlock recommendation (eSIM + region + the seven AI
 // capabilities). Nothing here writes to the device, stages a change,
 // or sends anything anywhere: the engine is local-only, and every
 // reading that could not be made is shown as unknown, never

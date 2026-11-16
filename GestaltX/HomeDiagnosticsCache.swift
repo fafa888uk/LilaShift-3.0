@@ -265,7 +265,7 @@ final class HomeDiagnosticsCache: ObservableObject {
         // built with the native-Apple-Intelligence flag from the
         // report's profile (step 2), so a native device simulates —
         // and stages — only the 3 non-AI items of the one-tap, with
-        // the six AI capabilities recorded as skipped.
+        // the seven AI capabilities recorded as skipped.
         let isNative = deviceReport.map { SafePatchProposal.isNativeAppleIntelligence(profile: $0.profile) } ?? false
         let proposals = [
             SafePatchProposal.oneTap(nativeAppleIntelligence: isNative),

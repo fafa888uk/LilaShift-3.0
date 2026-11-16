@@ -182,7 +182,7 @@ struct Capability: Identifiable, Equatable {
 
 /// One-tap "China Unlock" (full unlock) for China-mainland devices with
 /// eSIM hardware: the eSIM cache flags, region code US (`LL`, sales region
-/// untouched) and the six Apple Intelligence presets below.
+/// untouched) and the seven Apple Intelligence presets below.
 /// `siriOnDevice` is deliberately excluded: `Capability.availableChoices`
 /// for it is only `[.keep, .disable, .removeAdded]`, and 1.0.6 (#102)
 /// preserves its device-specific value, so forcing a generic value could
@@ -190,6 +190,10 @@ struct Capability: Identifiable, Equatable {
 /// are excluded as well; WAPI can still be disabled on its own.
 enum ChinaUnlock {
     static let regionCodeID = "US"
+    /// The single Siri AI Mode capability id, used by the standalone
+    /// Siri AI Mode preset (one item only — see `GestaltManager`
+    /// `stageChinaSiriAIMode`).
+    static let siriAIModeID = "siriAIMode"
     static let aiCapabilityIDs = ["ai", "siriAIMode", "audioIntelligence", "personalTranslator",
                                   "photosCleanUp", "handwritingSynthesis", "alwaysListeningSiri"]
     static let aiCapabilities = aiCapabilityIDs.compactMap { id in

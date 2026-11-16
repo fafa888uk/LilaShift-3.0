@@ -119,7 +119,7 @@ struct DependencyAnalyzerCard: View {
                         }
                         // Features the proposal deliberately leaves
                         // unstaged: on native Apple Intelligence
-                        // hardware, the six AI capabilities.
+                        // hardware, the seven AI capabilities.
                         if !selectedProposal.skippedFeatureIDs.isEmpty {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(L("Skipped"))

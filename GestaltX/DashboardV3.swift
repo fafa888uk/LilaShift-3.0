@@ -62,7 +62,7 @@ enum DashboardV3Destination: String, CaseIterable, Identifiable, Hashable {
 ///
 /// 1. Device overview — the read / re-read card (inline, unchanged).
 /// 2. Common features — the user's favorites from the unified
-///    catalog (at most three), or the three preset groups when there
+///    catalog (at most three), or the four preset groups when there
 ///    are no favorites yet. Each tile opens its destination page.
 /// 3. China one-tap unlock — eSIM / region / AI summary, opens the
 ///    unlock page.
@@ -107,7 +107,7 @@ struct DashboardV3Home<DestinationView: View>: View {
     /// The common-features tiles: the user's favorites, ordered by
     /// the single catalog rule (favorites first, then custom order,
     /// then recent use, then category order), at most three — or the
-    /// three preset groups when there are no favorites yet.
+    /// four preset groups when there are no favorites yet.
     private var commonItems: [FeatureCatalogItem] {
         guard !favoriteIDs.isEmpty else {
             return FeatureCatalog.presetItems.filter { item in
@@ -245,7 +245,7 @@ struct DashboardV3Home<DestinationView: View>: View {
                 }
             }
             if favoriteIDs.isEmpty {
-                Text(L("No favorites yet. The three preset groups are shown instead."))
+                Text(L("No favorites yet. The four preset groups are shown instead."))
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }

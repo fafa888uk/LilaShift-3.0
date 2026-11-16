@@ -3,12 +3,12 @@
 // the home sections, the preset pages and search.
 //
 // The catalog does not duplicate the preset database: every preset
-// item is a view of a `PresetEntry` from `PresetCatalog` (41 entries),
+// item is a view of a `PresetEntry` from `PresetCatalog` (42 entries),
 // mapped onto one of the eleven feature categories below. Page items
 // are the thirteen non-preset destinations (diagnostics pages,
 // backups, modified values, personalization, launch artwork) that
 // have no `PresetEntry` of their own. Together they are the whole
-// browsable surface of the app: 54 items, each with a Simplified
+// browsable surface of the app: 55 items, each with a Simplified
 // Chinese name and description.
 //
 // The eleven categories are the task's list, in the task's order
@@ -161,7 +161,7 @@ struct FeatureCatalogItem: Equatable, Sendable, Identifiable {
 
 // MARK: - Catalog
 
-/// The unified catalog: 40 preset items + 13 page items = 53.
+/// The unified catalog: 42 preset items + 13 page items = 55.
 /// Built from `PresetCatalog.all` plus the explicit page table, so
 /// a preset added to the catalog appears here with no extra edit,
 /// and a preset dropped there disappears here (the count test fails
@@ -181,7 +181,7 @@ enum FeatureCatalog {
     /// The category of one preset entry. Feature id wins over the
     /// entry's `PresetCategory`: eSIM, region code and WAPI are
     /// eSIM & region even though the catalog files them under
-    /// device/intelligence, the three groups map to their own
+    /// device/intelligence, the four groups map to their own
     /// categories, and the model-number virtual entry is an
     /// advanced tool, not an intelligence feature.
     static func category(for entry: PresetEntry) -> FeatureCatalogCategory {
@@ -189,6 +189,7 @@ enum FeatureCatalog {
             switch entry.featureID {
             case "preset.oneTap": return .smartUnlock
             case "preset.aiOnly": return .appleIntelligence
+            case "preset.siriAIMode": return .appleIntelligence
             case "preset.esimRegion": return .esimRegion
             default: return .smartUnlock
             }

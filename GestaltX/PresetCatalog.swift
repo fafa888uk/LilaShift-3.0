@@ -43,7 +43,7 @@ import Foundation
 /// Preset categories for search and filtering. The five
 /// `CapabilityCategory` cases are kept; `esim` and `region` cover
 /// the virtual entries, and `group` covers the preset groups
-/// (one-tap, AI-only, eSIM+region).
+/// (one-tap, AI-only, Siri AI Mode, eSIM+region).
 enum PresetCategory: String, CaseIterable, Equatable, Sendable, Identifiable {
     case esim
     case region
@@ -284,6 +284,10 @@ enum PresetSharedContent {
     static let siriKeepUpstreamEvidence = PresetEvidence(
         text: "上游 GestaltX #102：保留设备专属的 Siri 值。",
         kind: .upstream)
+    /// Evidence: upstream GestaltX ships siriAIMode (SiriMode=2).
+    static let siriModeUpstreamEvidence = PresetEvidence(
+        text: "上游 GestaltX：siriAIMode（SiriMode=2，不伪装硬件；实验性）。",
+        kind: .upstream)
 }
 
 // MARK: - Catalog
@@ -306,14 +310,14 @@ enum PresetCatalog {
         all.first { $0.featureID == id }
     }
 
-    /// The three preset groups, in display order.
+    /// The four preset groups, in display order.
     static var groups: [PresetEntry] {
         all.filter { $0.kind == .group }
     }
 
-    /// Builds the catalog: the 36 `CapabilityEntry` entries (34
+    /// Builds the catalog: the 37 `CapabilityEntry` entries (35
     /// capabilities + eSIM + region code), the WAPI and model-number
-    /// virtual entries, and the three preset groups.
+    /// virtual entries, and the four preset groups.
     private static func build() -> [PresetEntry] {
         var entries: [PresetEntry] = []
         for capabilityEntry in CapabilityEntry.all {
@@ -419,7 +423,7 @@ enum PresetCatalog {
             conflicts: [])
     }
 
-    /// The three preset groups. A group is a named set of members;
+    /// The four preset groups. A group is a named set of members;
     /// it stages nothing by itself — the existing stage paths own
     /// staging, and a group entry only describes the set.
     private static var groupEntries: [PresetEntry] {
@@ -466,6 +470,26 @@ enum PresetCatalog {
                 memberIDs: ChinaUnlock.aiCapabilityIDs,
                 keys: [],
                 underlyingKeyOrSlot: "7 AI CacheExtra keys",
+                dependencies: [FeatureEligibilityEvaluator.regionCodeFeatureID],
+                conflicts: ["siriOnDevice"]),
+            PresetEntry(
+                featureID: "preset.siriAIMode",
+                kind: .group,
+                category: .group,
+                chineseName: "仅 Siri AI 模式",
+                englishTitle: "Siri AI Mode Only",
+                chineseDescription: "只暂存 Siri AI 模式（SiriMode=2），不动 eSIM、地区与其他 AI 能力。原生 Apple Intelligence 机型也可显式开启（实验性；原生机型上 Siri AI 已可用，通常不需要）。未知机型拒绝暂存。",
+                scope: .nativeAIHardware,
+                scopeNote: "原生机型可显式开启（实验性）；其他已知机型须暂存开启，且地区须为 LL；未知机型拒绝暂存。",
+                minSystem: .known("iOS 27"),
+                riskLevel: .high,
+                riskReason: "实验性单项：只改 SiriMode 一个标记；资源下载与可用性不保证。原生机型上 Siri AI 已可用，通常不需要；未知机型拒绝暂存。",
+                restoreMethod: PresetSharedContent.restoreGroup,
+                evidence: [PresetSharedContent.siriModeUpstreamEvidence,
+                           PresetEvidence(text: "GestaltX/Capabilities.swift（Siri AI 模式单项预设）", kind: .code)],
+                memberIDs: [ChinaUnlock.siriAIModeID],
+                keys: [],
+                underlyingKeyOrSlot: "SiriMode CacheExtra key (a3n5T9sFtlyQ74NEp9ESxg = 2)",
                 dependencies: [FeatureEligibilityEvaluator.regionCodeFeatureID],
                 conflicts: ["siriOnDevice"]),
             PresetEntry(
@@ -546,6 +570,15 @@ extension PresetCatalog {
             minSystem: .known("iOS 27"),
             riskReason: "仅改 Apple 智能能力标记；实际可用还取决于机型、地区（须为 LL）与 Apple 服务器，标记本身不保证功能可用。",
             evidence: [PresetSharedContent.keyMappingEvidence]),
+        "siriAIMode": PresetContent(
+            chineseName: "Siri AI 模式",
+            chineseDescription: "将 Siri 模式设为 2（SiriMode=2），让 Siri 本身切到新版 AI 模式，不伪装硬件。实验性：资源下载与可用性不保证。只改 SiriMode 一个标记，不动其他 AI 能力；原生 AI 机型上 Siri AI 已可用，此项通常不需要。",
+            scope: .nativeAIHardware,
+            scopeNote: "原生支持 Apple 智能的机型上 Siri AI 已可用，此项通常不需要；作为单项开关可在原生机型上显式开启（实验性）。其他机型须暂存开启，且地区须为 LL。",
+            minSystem: .known("iOS 27"),
+            riskReason: "实验性：只改 SiriMode 一个标记；资源下载与可用性不保证，实际可用还取决于机型、地区与 Apple 服务器。原生机型上通常不需要。",
+            evidence: [PresetSharedContent.siriModeUpstreamEvidence,
+                       PresetSharedContent.keyMappingEvidence]),
         "siriOnDevice": PresetContent(
             chineseName: "设备端 Siri",
             chineseDescription: "在设备上运行 Siri 处理。此项使用设备专属的能力类型；改动可能影响 Apple 智能 Siri 界面，请保留当前值或恢复记录的原始值。一键解锁刻意保留此项，不参与暂存。",

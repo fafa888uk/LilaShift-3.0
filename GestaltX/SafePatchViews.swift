@@ -89,6 +89,7 @@ struct SafePatchCard: View {
                         Text(L("One-Tap Unlock")).tag(SafePatchProposalKind.oneTap)
                         Text(L("AI Only")).tag(SafePatchProposalKind.aiOnly)
                         Text(L("eSIM & Region")).tag(SafePatchProposalKind.esimRegion)
+                        Text(L("Siri AI Mode Only")).tag(SafePatchProposalKind.siriAIMode)
                     }
                     .pickerStyle(.segmented)
 
@@ -193,7 +194,7 @@ struct SafePatchCard: View {
     }
 
     /// The features this proposal deliberately leaves unstaged: on
-    /// native Apple Intelligence hardware, the six AI capabilities.
+    /// native Apple Intelligence hardware, the seven AI capabilities.
     /// They are shown as skipped with the reason, never as changes.
     @ViewBuilder
     private func skippedList(_ simulation: SafePatchSimulation) -> some View {
