@@ -16,10 +16,10 @@ final class PresetCatalogTests: XCTestCase {
 
     /// The catalog covers every preset the app offers: the 36
     /// `CapabilityEntry` entries (34 capabilities + eSIM + region
-    /// code), WAPI, the model number, and the three preset groups.
+    /// code), WAPI, the model number, and the four preset groups.
     func testCatalogEntryCount() {
-        XCTAssertEqual(PresetCatalog.all.count, 41,
-                       "Catalog must have 41 entries, got \(PresetCatalog.all.count)")
+        XCTAssertEqual(PresetCatalog.all.count, 42,
+                       "Catalog must have 42 entries, got \(PresetCatalog.all.count)")
     }
 
     /// Every `CapabilityEntry` id is covered by the catalog.
@@ -60,14 +60,16 @@ final class PresetCatalogTests: XCTestCase {
         }
     }
 
-    /// The three groups contain exactly the members the stage paths
+    /// The four groups contain exactly the members the stage paths
     /// use: one-tap stages 10 fields (2 eSIM flags + region + 7 AI)
     /// as 9 member feature IDs — the eSIM virtual feature bundles
     /// the two CacheData flags under one id — AI-only is the 7 AI
-    /// keys, eSIM+region is the 2 virtual features (3 fields).
+    /// keys, Siri AI Mode is the single SiriMode key, eSIM+region
+    /// is the 2 virtual features (3 fields).
     func testGroupMembers() {
         guard let oneTap = PresetCatalog.entry(for: "preset.oneTap"),
               let aiOnly = PresetCatalog.entry(for: "preset.aiOnly"),
+              let siriAIMode = PresetCatalog.entry(for: "preset.siriAIMode"),
               let esimRegion = PresetCatalog.entry(for: "preset.esimRegion") else {
             XCTFail("Preset groups are missing from the catalog")
             return
@@ -80,6 +82,9 @@ final class PresetCatalogTests: XCTestCase {
                        "10 staged fields map to 9 member feature IDs: the eSIM virtual feature bundles the two CacheData flags (green-tea + not-green-tea) under one id")
         XCTAssertEqual(aiOnly.memberIDs, ChinaUnlock.aiCapabilityIDs)
         XCTAssertEqual(aiOnly.memberIDs.count, 7)
+        XCTAssertEqual(siriAIMode.memberIDs, [ChinaUnlock.siriAIModeID])
+        XCTAssertEqual(siriAIMode.memberIDs.count, 1,
+                       "Siri AI Mode is a single-item preset: only the SiriMode key")
         XCTAssertEqual(esimRegion.memberIDs,
                        [FeatureEligibilityEvaluator.esimFeatureID,
                         FeatureEligibilityEvaluator.regionCodeFeatureID])
@@ -169,22 +174,23 @@ final class PresetCatalogTests: XCTestCase {
 
     /// Category filter counts: intelligence 10 (8 AI-family + region
     /// + model number), display 11, device 10 (8 + eSIM + WAPI),
-    /// iPad 3, advanced 4, group 3.
+    /// iPad 3, advanced 4, group 4.
     func testFilterByCategory() {
         XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, category: .intelligence).count, 10)
         XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, category: .display).count, 11)
         XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, category: .device).count, 10)
         XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, category: .ipad).count, 3)
         XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, category: .advanced).count, 4)
-        XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, category: .group).count, 3)
+        XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, category: .group).count, 4)
     }
 
-    /// Risk filter counts: high 18 (16 `caution: true`
-    /// capabilities + modelNumber + one-tap), medium 6 (the
-    /// non-caution intelligence capability "ai" + eSIM + region
-    /// code + WAPI + the two medium groups), low 17.
+    /// Risk filter counts: high 19 (16 `caution: true`
+    /// capabilities + modelNumber + one-tap + the Siri AI Mode
+    /// group), medium 6 (the non-caution intelligence capability
+    /// "ai" + eSIM + region code + WAPI + the two medium groups),
+    /// low 17.
     func testFilterByRisk() {
-        XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, riskLevel: .high).count, 18)
+        XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, riskLevel: .high).count, 19)
         XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, riskLevel: .medium).count, 6)
         XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, riskLevel: .low).count, 17)
     }

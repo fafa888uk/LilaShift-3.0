@@ -38,10 +38,20 @@ final class SafePatchTests: XCTestCase {
         XCTAssertEqual(regionDiff?.original, .string("CH"))
         XCTAssertEqual(regionDiff?.target, .string("LL"))
         XCTAssertEqual(regionDiff?.originalSource, .firstRecordedValue)
-        for key in ChinaUnlock.aiCapabilityIDs.compactMap({ id in Capability.all.first { $0.id == id }?.keys.first }) {
+        for id in ChinaUnlock.aiCapabilityIDs {
+            guard let capability = Capability.all.first(where: { $0.id == id }),
+                  let key = capability.keys.first else {
+                XCTFail("AI capability \(id) is missing from the catalog")
+                continue
+            }
             let diff = simulation.diffs.first { $0.key == key }
             XCTAssertEqual(diff?.original, .absent, "AI key \(key) was absent before staging")
-            XCTAssertEqual(diff?.target, .bool(true))
+            // The staged target is the capability's own value:
+            // SiriMode=2 for siriAIMode, boolean true for the rest.
+            let expectedTarget = capability.values?[key]
+                .flatMap(ChangeValue.fromPlistValue) ?? .bool(true)
+            XCTAssertEqual(diff?.target, expectedTarget,
+                           "AI key \(key) stages its capability value")
         }
         let greenTea = simulation.diffs.first { $0.key == DeviceCacheOptions.greenTeaKey }
         XCTAssertEqual(greenTea?.original, .bool(true))
@@ -222,6 +232,71 @@ final class SafePatchTests: XCTestCase {
         XCTAssertEqual(simulation.check(.diff)?.isBlocker, false,
                        "Changing nothing is a warning, not a blocker")
         XCTAssertTrue(simulation.canProceed, "An empty AI-only proposal must not block")
+    }
+
+    /// The Siri AI Mode preset on a known non-native CH device: the
+    /// proposal stages exactly the SiriMode key to 2 — one diff,
+    /// original absent, target `.int(2)` (an integer, not a bool) —
+    /// and nothing else, and the simulation proceeds.
+    func testSiriAIModeProposalDiff() throws {
+        let document = try CoreModuleFixtures.document()
+        let snapshot = CoreModuleFixtures.snapshot(
+            document: document,
+            cachedOptions: try CachedOptionsOriginal(document: document),
+            wapi: try WAPIOriginal(document: document))
+        let profile = CoreModuleFixtures.profile(productType: "iPhone14,7", isNativeAI: false)
+        let proposal = SafePatchProposal.siriAIMode()
+        XCTAssertEqual(proposal.featureIDs, [ChinaUnlock.siriAIModeID],
+                       "Siri AI Mode stages exactly one feature id")
+        XCTAssertTrue(proposal.skippedFeatureIDs.isEmpty,
+                      "Siri AI Mode skips nothing")
+        let simulation = SafePatch.simulate(proposal: proposal, snapshot: snapshot, profile: profile)
+        XCTAssertTrue(simulation.canProceed, "Siri AI Mode must proceed on a known non-native CH device; blockers: \(simulation.blockers)")
+        XCTAssertTrue(simulation.serializationOK, "The simulated document must encode and decode back to itself")
+        XCTAssertEqual(simulation.diffs.count, 1,
+                       "Siri AI Mode changes exactly 1 field, got: \(simulation.diffs.map(\.key))")
+        let siriModeDiff = simulation.diffs.first { $0.key == GestaltKeys.siriMode }
+        XCTAssertNotNil(siriModeDiff, "Siri AI Mode stages the SiriMode key")
+        XCTAssertEqual(siriModeDiff?.original, .absent, "SiriMode was absent before staging")
+        XCTAssertEqual(siriModeDiff?.target, .int(2),
+                       "SiriMode stages to the integer 2, not a bool")
+        for key in ChinaUnlock.aiCapabilityIDs.compactMap({ id in Capability.all.first { $0.id == id }?.keys.first })
+            where key != GestaltKeys.siriMode {
+            XCTAssertNil(simulation.diffs.first { $0.key == key },
+                         "AI key \(key) must not be staged by the Siri AI Mode preset")
+        }
+        XCTAssertNil(simulation.diffs.first { $0.key == GestaltKeys.regionCode },
+                     "Siri AI Mode must not stage the region code")
+        XCTAssertNil(simulation.diffs.first { $0.key == DeviceCacheOptions.greenTeaKey },
+                     "Siri AI Mode must not stage the eSIM flags")
+        XCTAssertTrue(simulation.hardwareIdentityTouches.isEmpty,
+                      "Siri AI Mode must not touch any hardware-identity field")
+    }
+
+    /// The Siri AI Mode preset on native hardware: unlike AI-only,
+    /// it is NOT emptied — an explicit single-item opt-in — so the
+    /// proposal still stages the SiriMode key and the simulation
+    /// proceeds with exactly one diff.
+    func testSiriAIModeProposalNative() throws {
+        let document = try CoreModuleFixtures.document(extra: [GestaltKeys.productType: "iPhone18,4"])
+        let snapshot = CoreModuleFixtures.snapshot(
+            document: document,
+            cachedOptions: try CachedOptionsOriginal(document: document),
+            wapi: try WAPIOriginal(document: document))
+        let profile = CoreModuleFixtures.profile(productType: "iPhone18,4", isNativeAI: true)
+        let proposal = SafePatchProposal.siriAIMode()
+        XCTAssertEqual(proposal.featureIDs, [ChinaUnlock.siriAIModeID],
+                       "Siri AI Mode on native hardware still stages the single feature id")
+        XCTAssertTrue(proposal.skippedFeatureIDs.isEmpty,
+                      "Siri AI Mode on native hardware skips nothing")
+        let simulation = SafePatch.simulate(proposal: proposal, snapshot: snapshot, profile: profile)
+        XCTAssertTrue(simulation.canProceed, "Siri AI Mode must proceed on native hardware; blockers: \(simulation.blockers)")
+        XCTAssertEqual(simulation.diffs.count, 1,
+                       "Siri AI Mode on native hardware changes exactly 1 field, got: \(simulation.diffs.map(\.key))")
+        let siriModeDiff = simulation.diffs.first { $0.key == GestaltKeys.siriMode }
+        XCTAssertEqual(siriModeDiff?.original, .absent, "SiriMode was absent before staging")
+        XCTAssertEqual(siriModeDiff?.target, .int(2),
+                       "SiriMode stages to the integer 2 on native hardware")
     }
 
     /// The native flag resolves from a known profile value first,

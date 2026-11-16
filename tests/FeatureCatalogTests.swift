@@ -60,10 +60,10 @@ final class FeatureCatalogTests: XCTestCase {
     // MARK: - Contents and mapping
 
     func testCatalogCounts() {
-        XCTAssertEqual(PresetCatalog.all.count, 41)
-        XCTAssertEqual(FeatureCatalog.presetItems.count, 41)
+        XCTAssertEqual(PresetCatalog.all.count, 42)
+        XCTAssertEqual(FeatureCatalog.presetItems.count, 42)
         XCTAssertEqual(FeatureCatalog.pageItems.count, 13)
-        XCTAssertEqual(FeatureCatalog.allItems.count, 54)
+        XCTAssertEqual(FeatureCatalog.allItems.count, 55)
     }
 
     func testCatalogHasNoDuplicateIDsAndCoversEveryPreset() {
@@ -77,7 +77,7 @@ final class FeatureCatalogTests: XCTestCase {
         let counts = Dictionary(grouping: FeatureCatalog.allItems, by: \.category)
             .mapValues(\.count)
         XCTAssertEqual(counts[.smartUnlock], 1)
-        XCTAssertEqual(counts[.appleIntelligence], 8)
+        XCTAssertEqual(counts[.appleIntelligence], 10)
         XCTAssertEqual(counts[.esimRegion], 4)
         XCTAssertEqual(counts[.screenLock], 11)
         XCTAssertEqual(counts[.systemSettings], 11)
@@ -104,8 +104,10 @@ final class FeatureCatalogTests: XCTestCase {
         XCTAssertEqual(category(of: "modelNumber"), .advancedTools)
         XCTAssertEqual(category(of: "preset.oneTap"), .smartUnlock)
         XCTAssertEqual(category(of: "preset.aiOnly"), .appleIntelligence)
+        XCTAssertEqual(category(of: "preset.siriAIMode"), .appleIntelligence)
         XCTAssertEqual(category(of: "preset.esimRegion"), .esimRegion)
         XCTAssertEqual(category(of: "ai"), .appleIntelligence)
+        XCTAssertEqual(category(of: "siriAIMode"), .appleIntelligence)
         XCTAssertEqual(category(of: "dynamicIsland"), .screenLock)
         XCTAssertEqual(category(of: "storage"), .advancedTools)
         XCTAssertEqual(category(of: "pencil"), .systemSettings)
