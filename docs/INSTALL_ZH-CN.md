@@ -9,7 +9,7 @@
 > 公开说明整理。**本版 IPA（3.0.0-rc.1）尚未在真机上安装验证**——没有可用的真机。
 > 下面每种方法都标了验证状态：标“待验证”的步骤，表示尚未用本版 IPA 在真机上
 > 走通过，照做时请先备份、一步一步核对，遇到与教程不符的情况以屏幕实际提示为准，
-> 并到 [GitHub Issues](https://github.com/fafa920q-hue/LilaShift-2.0/issues) 反馈。
+> 并到 [GitHub Issues](https://github.com/fafa888uk/LilaShift-3.0/issues) 反馈。
 
 ## 目录
 
@@ -80,9 +80,9 @@ LiveContainer 方式不需要重签，也就不需要你自己准备 App Group�
 ## 2. 第 1 步：打开 GitHub，找到发布页
 
 1. 在手机或电脑浏览器打开
-   [LilaShift 3.0.0-rc.1 发布页](https://github.com/fafa920q-hue/LilaShift-2.0/releases/tag/v3.0.0-rc.1)。
+   [LilaShift 3.0.0-rc.1 发布页](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v3.0.0-rc.1)。
    - 如果链接打不开（预发布尚未发布），打开
-     [全部 Releases 列表](https://github.com/fafa920q-hue/LilaShift-2.0/releases)，
+     [全部 Releases 列表](https://github.com/fafa888uk/LilaShift-3.0/releases)，
      找标题含 `3.0.0-rc.1`、标着 **Pre-release** 的那一条。
 2. 确认页面信息：
    - 标题：`LilaShift 3.0.0-rc.1`（或 `v3.0.0-rc.1`），并标有 **Pre-release**。

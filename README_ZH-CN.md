@@ -11,23 +11,23 @@
 > App 内版本号 `3.0.0`（构建号 `30000002`），IPA 文件名 `LilaShift_3.0.0.ipa`。
 > **真机安装、eSIM 激活、Apple Intelligence 激活与恢复，均已在真机 iPhone Air（iPhone18,4，iOS 27.0.1）上验证通过。** 详见[已验证内容与未验证内容](#已验证内容与未验证内容)。
 
-[![版本](https://img.shields.io/badge/version-3.0.0--rc.1%20预发布-purple)](https://github.com/fafa920q-hue/LilaShift-2.0/releases/tag/v3.0.0-rc.1)
-[![Build LilaShift IPA](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/build.yml/badge.svg)](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/build.yml)
-[![Run Swift Tests](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/run-swift-tests.yml/badge.svg)](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/run-swift-tests.yml)
-[![Check Licenses](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/check-licenses.yml/badge.svg)](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/check-licenses.yml)
-[![SwiftLint](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/swiftlint.yml/badge.svg)](https://github.com/fafa920q-hue/LilaShift-2.0/actions/workflows/swiftlint.yml)
+[![版本](https://img.shields.io/badge/version-3.0.0--rc.1%20预发布-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v3.0.0-rc.1)
+[![Build LilaShift IPA](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml)
+[![Run Swift Tests](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml)
+[![Check Licenses](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml)
+[![SwiftLint](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/swiftlint.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/swiftlint.yml)
 [![平台](https://img.shields.io/badge/iOS-27.x-black?logo=apple)](#兼容性)
 [![协议](https://img.shields.io/badge/license-GPLv3-blue)](LICENSE)
 
-> **关于仓库名称：** 本仓库目前仍使用旧路径 `LilaShift-2.0`（沿用自早期版本），而项目本身已经是 **3.0**。建议将仓库改名为 `LilaShift-3.0`——GitHub 会自动把旧链接重定向，不会破坏已有的引用。
+> **关于仓库名称：** 本仓库已于 2026-11-17 从 `LilaShift-2.0` 改名为 `LilaShift-3.0`（账号也从 `fafa920q-hue` 改为 `fafa888uk`），旧链接会自动跳转到新地址，不会破坏已有的引用。
 
 ### 快速链接
 
-- **下载：** [3.0.0-rc.1 发布页](https://github.com/fafa920q-hue/LilaShift-2.0/releases/tag/v3.0.0-rc.1) · [全部发布](https://github.com/fafa920q-hue/LilaShift-2.0/releases)
+- **下载：** [3.0.0-rc.1 发布页](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v3.0.0-rc.1) · [全部发布](https://github.com/fafa888uk/LilaShift-3.0/releases)
 - **安装教程：** [docs/INSTALL_ZH-CN.md](docs/INSTALL_ZH-CN.md)
 - **使用指南：** [docs/USER_GUIDE_ZH-CN.md](docs/USER_GUIDE_ZH-CN.md) · **兼容性：** [docs/COMPATIBILITY_ZH-CN.md](docs/COMPATIBILITY_ZH-CN.md) · **备份与恢复：** [docs/BACKUP_RESTORE_ZH-CN.md](docs/BACKUP_RESTORE_ZH-CN.md) · **故障排查：** [docs/TROUBLESHOOTING_ZH-CN.md](docs/TROUBLESHOOTING_ZH-CN.md) · **常见问题：** [docs/FAQ_ZH-CN.md](docs/FAQ_ZH-CN.md)
 - **官方公告频道：** [Telegram 频道](https://t.me/LilaShiftUpdates)（仅发布公告：更新说明、测试通知、兼容性与已知问题。这是**频道，不是讨论群**，源码、下载和反馈都在 GitHub 上进行）
-- **反馈 / 问题报告：** [GitHub Issues](https://github.com/fafa920q-hue/LilaShift-2.0/issues)（参见 [COMMUNITY.md](COMMUNITY.md)）。**请勿在 Issue 中发布序列号、UDID、账号密钥或其他个人数据。**
+- **反馈 / 问题报告：** [GitHub Issues](https://github.com/fafa888uk/LilaShift-3.0/issues)（参见 [COMMUNITY.md](COMMUNITY.md)）。**请勿在 Issue 中发布序列号、UDID、账号密钥或其他个人数据。**
 
 面向国行 iPhone 的一键 eSIM、区域代码与 Apple Intelligence 设置方案——基于上游 [GestaltX](https://github.com/huamidev/GestaltX) v1.0.7 的全量源码项目 LilaShift 3.0。
 
@@ -73,7 +73,7 @@
 本仓库是 LilaShift 3.0（紫序）的**完整源码项目**，是 GestaltX 的国行解锁增强版本。完整的修改源码都在本仓库中——没有单独的补丁步骤，CI 直接基于这份源码构建 IPA。
 
 - 基于上游 [huamidev/GestaltX](https://github.com/huamidev/GestaltX) `v1.0.7`（提交 `dfd4a7e`，构建号 `11130112`），并合并了上游壁纸删除修复 PR #126（提交 `c60519c`）。
-- 旧的基于补丁的构建仓库（[fafa920q-hue/LilaShift](https://github.com/fafa920q-hue/LilaShift)）保持原样，不再积极维护。
+- 旧的基于补丁的构建仓库（[fafa888uk/LilaShift](https://github.com/fafa888uk/LilaShift)）保持原样，不再积极维护。
 - 紫序增强功能维护者：**`@steam8871`**。上游 GestaltX 工作归功于 huamidev。
 
 ## 3.0.0-rc.1 新增内容
@@ -128,7 +128,7 @@
 
 ## 下载
 
-从 [3.0.0-rc.1 发布页](https://github.com/fafa920q-hue/LilaShift-2.0/releases/tag/v3.0.0-rc.1) 下载 IPA——`LilaShift_3.0.0.ipa`（Bundle ID `com.huami.gestultx`，版本 `3.0.0`，构建号 `30000002`，最低要求 iOS `26.0`）。IPA 文件名由构建脚本（`.github/scripts/build-ipa.sh`）生成，格式为 `LilaShift_<版本号>.ipa`。
+从 [3.0.0-rc.1 发布页](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v3.0.0-rc.1) 下载 IPA——`LilaShift_3.0.0.ipa`（Bundle ID `com.huami.gestultx`，版本 `3.0.0`，构建号 `30000002`，最低要求 iOS `26.0`）。IPA 文件名由构建脚本（`.github/scripts/build-ipa.sh`）生成，格式为 `LilaShift_<版本号>.ipa`。
 
 > 部分用户反馈在 iOS 27 的 Safari 中下载不完整。如果文件显示损坏或无法解压，请重新下载，可能需要多次尝试；若问题持续，请换一个浏览器试试。目前尚未确认具体原因。
 

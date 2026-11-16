@@ -7,7 +7,7 @@
 > 兼容性模型、备份恢复视图）与既有 README。**本版未在真机上验证**：个别
 > 按钮文字、页面位置可能与实际构建有出入；凡涉及“改完一定生效”的说法，
 > 均以“取决于设备与系统”为准。遇到与指南不符处，请以 App 内实际界面为准，
-> 并到 [GitHub Issues](https://github.com/fafa920q-hue/LilaShift-2.0/issues) 反馈。
+> 并到 [GitHub Issues](https://github.com/fafa888uk/LilaShift-3.0/issues) 反馈。
 
 ## 目录
 
