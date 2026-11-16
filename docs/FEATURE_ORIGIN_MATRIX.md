@@ -95,7 +95,7 @@
 
 | 方面 | 来源 |
 |---|---|
-| 预设目录（40 项：35 个能力项 + WAPI + 机型编号 + 3 个组合） | **LilaShift 新增实现**（P3；每项含中文名、说明、适用范围、最低系统、风险等级与具体机制、恢复方式、可追溯证据） |
+| 预设目录（42 项：36 个能力项 + WAPI + 机型编号 + 4 个组合） | **LilaShift 新增实现**（P3；每项含中文名、说明、适用范围、最低系统、风险等级与具体机制、恢复方式、可追溯证据） |
 | 智能计划（仅作计划，不连接应用） | **LilaShift 新增实现**（P3；组合为计划，应用路径 deliberately 未连接） |
 | 自定义预设（创建/编辑/删除） | **LilaShift 新增实现**（P4；同样仅作计划） |
 | 键映射对照 | **第三方参考成果**：MGKeys / Nugget / mond，**研究参考**（仅对照，未复制代码或数据） |
@@ -149,7 +149,7 @@
 | 模块 | 来源 | 说明 |
 |---|---|---|
 | `GestaltX/DashboardV3.swift` | **LilaShift 新增实现** | 轻量可配置首页 + 稳定快捷排序（3.0 分支提交 `493d71c`） |
-| `GestaltX/FeatureCatalog.swift`、`FeatureCatalogViews.swift` | **LilaShift 新增实现** | 53 项、11 分类的功能目录；单一排序规则；版本化 JSON + SHA-256 sidecar |
+| `GestaltX/FeatureCatalog.swift`、`FeatureCatalogViews.swift` | **LilaShift 新增实现** | 55 项、11 分类的功能目录；单一排序规则；版本化 JSON + SHA-256 sidecar |
 | `GestaltX/CompatibilityStatus.swift` | **LilaShift 新增实现** | 8 状态兼容性模型；`isOffered()` 仅对 `.modifiable` 返回真 |
 | `GestaltX/HistoryRestoreSummary.swift` | **LilaShift 新增实现** | 统一历史与恢复视图；恢复预览清单；二次确认 |
 | `GestaltX/HomeDiagnosticsCache.swift`、`HomeDiagnosticsSection.swift` | **LilaShift 新增实现** | 诊断计算缓存（后台算一次、只发变化值）+ 11 张诊断卡的二级页 |

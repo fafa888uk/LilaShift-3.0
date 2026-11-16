@@ -107,6 +107,10 @@ eSIM 菜单整个消失。
 按顺序查：地区码 `LL`、7 项全开、模型是否下完（Wi-Fi + 充电静置）、
 Siri 域名是否直连、机型本身是否支持。详见故障排查第 5 节。
 
+### 代理怎么设？（Siri 域名直连、PCC 走美区节点）
+
+Siri 核心域名必须直连真实 IP，不能走代理或 Fake-IP：`guzzoni.apple.com`、`*.siri.apple.com`、`dejavu.apple.com`、`sequoia.apple.com`、`*.smoot.apple.com`（Surge 里再把 `guzzoni.apple.com`、`*.guzzoni.apple.com`、`*.siri.apple.com` 加入 skip-proxy 与 always-real-ip）。AI 准入与私有云计算域名走干净的美区节点（须支持 UDP/QUIC）：`gspe1-ssl.ls.apple.com`、`*.issuer.apple.com`、`ropes.apple.com`、`mask-api.icloud.com`、`mask.icloud.com`、`mask-h2.icloud.com`、`*.app.apple.com`、`apple-relay.*`。不要对 `gspe1-ssl.ls.apple.com` 或 `*.smoot.apple.com` 开 MitM 解密。生成式功能报网络错误（如 Code=32033、Code=1009）时先查这几条。现成规则集：AppleFlow（github.com/Kianuni/AppleFlow）。来源：Erosion-CN FAQ Q3/Q6。
+
 ### iOS 27.3 上 Siri AI 还是开不了？
 
 国行硬件（CH/A）设备上，iOS 27.3 新增了直接读取硬件的资格检查（日志：`Eligibility returned no CN region policy on a CH region code device`）。即使地区码已是 LL、AI 开关全开，Siri AI 与部分生成式功能仍可能被拦截，改 MobileGestalt 绕不过去（Erosion-CN FAQ Q6 情况 C）。解决办法是留在或降回 iOS 27.2.x。
