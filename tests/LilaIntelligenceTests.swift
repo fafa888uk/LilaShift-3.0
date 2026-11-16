@@ -287,7 +287,7 @@ final class LilaIntelligenceTests: XCTestCase {
         let aiEvaluations = report.evaluations.filter { ChinaUnlock.aiCapabilityIDs.contains($0.featureID) }
         XCTAssertEqual(aiEvaluations.count, ChinaUnlock.aiCapabilityIDs.count)
         XCTAssertTrue(aiEvaluations.allSatisfy { $0.eligibility == .nativeSupported },
-                      "All six AI capabilities must be native-supported on this device")
+                      "All seven AI capabilities must be native-supported on this device")
         let aiSteps = report.chinaUnlockRecommendation.steps.filter {
             ChinaUnlock.aiCapabilityIDs.contains($0.featureID)
         }

@@ -60,10 +60,10 @@ final class FeatureCatalogTests: XCTestCase {
     // MARK: - Contents and mapping
 
     func testCatalogCounts() {
-        XCTAssertEqual(PresetCatalog.all.count, 40)
-        XCTAssertEqual(FeatureCatalog.presetItems.count, 40)
+        XCTAssertEqual(PresetCatalog.all.count, 41)
+        XCTAssertEqual(FeatureCatalog.presetItems.count, 41)
         XCTAssertEqual(FeatureCatalog.pageItems.count, 13)
-        XCTAssertEqual(FeatureCatalog.allItems.count, 53)
+        XCTAssertEqual(FeatureCatalog.allItems.count, 54)
     }
 
     func testCatalogHasNoDuplicateIDsAndCoversEveryPreset() {

@@ -40,7 +40,7 @@ final class DashboardV3NavigationTests: XCTestCase {
     }
 
     func testEveryCatalogItemIsReachable() {
-        XCTAssertEqual(FeatureCatalog.allItems.count, 53)
+        XCTAssertEqual(FeatureCatalog.allItems.count, 54)
         for item in FeatureCatalog.allItems {
             XCTAssertFalse(item.id.isEmpty, "Catalog item has an empty id")
             XCTAssertFalse(item.chineseName.isEmpty, "Missing name for \(item.id)")

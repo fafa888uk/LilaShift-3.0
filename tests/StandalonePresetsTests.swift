@@ -2,20 +2,21 @@ import Foundation
 import XCTest
 @testable import GestaltX
 
-/// Offline tests for the two standalone presets: the AI-only preset (six
+/// Offline tests for the two standalone presets: the AI-only preset (seven
 /// Apple Intelligence keys, no eSIM or region) and the eSIM+region preset
 /// (two eSIM CacheData slots + RegionCode LL, no AI keys). Both are pure
-/// subsets of the 9-item one-tap unlock; the full one-tap is unchanged.
+/// subsets of the 10-item one-tap unlock; the full one-tap is unchanged.
 /// No device or signing is needed.
 final class StandalonePresetsTests: XCTestCase {
     struct Failure: Error { let message: String }
 
-    /// The six Apple Intelligence keys, in the same order as
-    /// `ChinaUnlock.aiCapabilityIDs`: ai, audioIntelligence,
+    /// The seven Apple Intelligence keys, in the same order as
+    /// `ChinaUnlock.aiCapabilityIDs`: ai, siriAIMode, audioIntelligence,
     /// personalTranslator, photosCleanUp, handwritingSynthesis,
     /// alwaysListeningSiri.
     static let aiKeys = [
         "A62OafQ85EJAiiqKn4agtg",
+        "a3n5T9sFtlyQ74NEp9ESxg",
         "rb2tKZxlj0Gm2tBmUQSLqQ",
         "M1n2sAqf33NAOgZRGxQYBA",
         "XNCjqOupLM/S8fNyxRNQTA",
@@ -107,13 +108,13 @@ final class StandalonePresetsTests: XCTestCase {
         XCTAssert(!manager.isChinaAIOnlyStaged && !manager.isChinaAIOnlyApplied,
                    "Fixture starts with AI absent")
 
-        // Staging the AI-only preset changes exactly the six AI keys.
+        // Staging the AI-only preset changes exactly the seven AI keys.
         XCTAssert(manager.stageChinaAIOnly(), "AI-only staging succeeds")
         XCTAssert(manager.isChinaAIOnlyStaged, "AI-only staged flag is set")
-        XCTAssert(manager.isChinaAIOnlyApplied, "Preview shows all six AI presets enabled")
+        XCTAssert(manager.isChinaAIOnlyApplied, "Preview shows all seven AI presets enabled")
         XCTAssert(!manager.isChinaUnlockStaged,
                    "AI-only staging is not the full one-tap: eSIM and region are not staged")
-        XCTAssert(manager.changeCount == 6, "AI-only staging changes exactly 6 items, got \(manager.changeCount)")
+        XCTAssert(manager.changeCount == 7, "AI-only staging changes exactly 7 items, got \(manager.changeCount)")
         guard let preview = manager.preview else { throw Failure(message: "Preview exists after AI-only staging") }
         for key in Self.aiKeys {
             XCTAssert((preview.extra[key] as? NSNumber)?.intValue == 1,
@@ -128,13 +129,13 @@ final class StandalonePresetsTests: XCTestCase {
                    "AI-only staging leaves the eSIM flags restricted")
         XCTAssert((preview.extra[Self.siriKey] as? NSNumber)?.intValue == 2,
                    "AI-only staging keeps the device-specific Siri value")
-        XCTAssert(manager.chinaUnlockAIEnabledCount == 6, "All six AI presets read as enabled")
+        XCTAssert(manager.chinaUnlockAIEnabledCount == 7, "All seven AI presets read as enabled")
         XCTAssert(!manager.isChinaESIMRegionStaged && !manager.isChinaESIMRegionApplied,
                    "AI-only staging does not stage the eSIM+region preset")
 
         // Staging twice is idempotent.
         manager.stageChinaAIOnly()
-        XCTAssert(manager.changeCount == 6, "Staging AI-only twice does not duplicate changes")
+        XCTAssert(manager.changeCount == 7, "Staging AI-only twice does not duplicate changes")
 
         // Restoring the AI-only preset returns the AI keys to their originals.
         XCTAssert(manager.restoreChinaAIOnly(), "AI-only restore succeeds")
@@ -153,7 +154,7 @@ final class StandalonePresetsTests: XCTestCase {
 
         // The AI-only preset can be staged again after a restore.
         manager.stageChinaAIOnly()
-        XCTAssert(manager.isChinaAIOnlyStaged && manager.changeCount == 6,
+        XCTAssert(manager.isChinaAIOnlyStaged && manager.changeCount == 7,
                    "AI-only stages again after a restore")
     }
 
@@ -238,12 +239,12 @@ final class StandalonePresetsTests: XCTestCase {
                    "Unsupported layout: the eSIM layout error names the reason")
         XCTAssert(manager.previewESIMFlags == nil, "Unknown cache layout has no reliable eSIM status")
 
-        // The AI-only preset is NOT blocked by the eSIM layout: the six AI
+        // The AI-only preset is NOT blocked by the eSIM layout: the seven AI
         // keys are CacheExtra values and do not need the layout to resolve.
         XCTAssert(manager.stageChinaAIOnly(),
                    "AI-only staging succeeds even when the eSIM layout cannot be verified")
-        XCTAssert(manager.changeCount == 6,
-                   "AI-only staging on an unsupported layout changes exactly the 6 AI keys, got \(manager.changeCount)")
+        XCTAssert(manager.changeCount == 7,
+                   "AI-only staging on an unsupported layout changes exactly the 7 AI keys, got \(manager.changeCount)")
         XCTAssert(manager.isChinaAIOnlyStaged, "AI-only staged flag is set on an unsupported layout")
         guard let preview = manager.preview else { throw Failure(message: "Preview exists after AI-only staging") }
         for key in Self.aiKeys {
@@ -269,8 +270,8 @@ final class StandalonePresetsTests: XCTestCase {
 
     @MainActor
     func testStandalonePresetsComposeIntoOneTap() throws {
-        // The two subsets compose into the full 9-item one-tap: staging
-        // AI-only and then eSIM+region stages exactly the 9 items, and
+        // The two subsets compose into the full 10-item one-tap: staging
+        // AI-only and then eSIM+region stages exactly the 10 items, and
         // the one-tap staged flag reads true. Non-native fixture: on
         // native hardware the AI-only preset is refused, so the two
         // subsets compose into the 3-item one-tap instead (see
@@ -280,8 +281,8 @@ final class StandalonePresetsTests: XCTestCase {
         let manager = try manager(for: original)
         manager.stageChinaAIOnly()
         manager.stageChinaESIMRegion()
-        XCTAssert(manager.changeCount == 9,
-                   "Both subsets staged together change exactly 9 items, got \(manager.changeCount)")
+        XCTAssert(manager.changeCount == 10,
+                   "Both subsets staged together change exactly 10 items, got \(manager.changeCount)")
         XCTAssert(manager.isChinaUnlockStaged,
                    "Both subsets staged together read as the full one-tap staged")
         XCTAssert(manager.isChinaUnlockedInPreview,

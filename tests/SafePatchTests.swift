@@ -13,9 +13,9 @@ import XCTest
 @testable import GestaltX
 
 final class SafePatchTests: XCTestCase {
-    /// The 9-item one-tap unlock on a known non-native CH device:
-    /// the simulation proceeds, the diff is exactly the 9 fields
-    /// (region + 6 AI keys + the eSIM pair), the serialization
+    /// The 10-item one-tap unlock on a known non-native CH device:
+    /// the simulation proceeds, the diff is exactly the 10 fields
+    /// (region + 7 AI keys + the eSIM pair), the serialization
     /// round-trips, and the effect states show only "staged" as
     /// projected — the other three are confirmed only by real events.
     func testOneTapSimulationHappyPath() throws {
@@ -32,8 +32,8 @@ final class SafePatchTests: XCTestCase {
         XCTAssertNotNil(simulation.simulatedByteCount)
         XCTAssertTrue(simulation.hardwareIdentityTouches.isEmpty,
                       "One-tap must not touch any hardware-identity field")
-        XCTAssertEqual(simulation.diffs.count, 9,
-                       "One-tap changes exactly 9 fields, got: \(simulation.diffs.map(\.key))")
+        XCTAssertEqual(simulation.diffs.count, 10,
+                       "One-tap changes exactly 10 fields, got: \(simulation.diffs.map(\.key))")
         let regionDiff = simulation.diffs.first { $0.key == GestaltKeys.regionCode }
         XCTAssertEqual(regionDiff?.original, .string("CH"))
         XCTAssertEqual(regionDiff?.target, .string("LL"))
@@ -158,7 +158,7 @@ final class SafePatchTests: XCTestCase {
 
     /// The native one-tap (iPhone Air, iPhone18,4): the proposal
     /// stages exactly the 3 non-AI fields (region + the eSIM pair),
-    /// the six AI keys are absent from the diff and recorded as
+    /// the seven AI keys are absent from the diff and recorded as
     /// skipped, and the simulation proceeds.
     func testOneTapSimulationNativeSkipsAI() throws {
         let document = try CoreModuleFixtures.document(extra: [GestaltKeys.productType: "iPhone18,4"])
@@ -173,14 +173,14 @@ final class SafePatchTests: XCTestCase {
                         FeatureEligibilityEvaluator.regionCodeFeatureID],
                        "Native one-tap stages only eSIM and region code")
         XCTAssertEqual(proposal.skippedFeatureIDs, ChinaUnlock.aiCapabilityIDs,
-                       "Native one-tap records all six AI capabilities as skipped")
+                       "Native one-tap records all seven AI capabilities as skipped")
         let simulation = SafePatch.simulate(proposal: proposal, snapshot: snapshot, profile: profile)
         XCTAssertTrue(simulation.canProceed, "Native one-tap must proceed; blockers: \(simulation.blockers)")
         XCTAssertTrue(simulation.serializationOK, "The simulated document must encode and decode back to itself")
         XCTAssertEqual(simulation.diffs.count, 3,
                        "Native one-tap changes exactly 3 fields, got: \(simulation.diffs.map(\.key))")
         XCTAssertEqual(simulation.skippedFeatureIDs, ChinaUnlock.aiCapabilityIDs,
-                       "Native one-tap simulation records all six AI capabilities as skipped")
+                       "Native one-tap simulation records all seven AI capabilities as skipped")
         let aiKeys = ChinaUnlock.aiCapabilityIDs.flatMap { id in
             Capability.all.first { $0.id == id }?.keys ?? []
         }
@@ -200,9 +200,9 @@ final class SafePatchTests: XCTestCase {
     }
 
     /// The AI-only preset on native hardware: the proposal comes back
-    /// empty with all six recorded as skipped, the simulation changes
+    /// empty with all seven recorded as skipped, the simulation changes
     /// nothing (a warning, not a blocker) and still proceeds.
-    func testAIOnlyNativeSkipsAllSix() throws {
+    func testAIOnlyNativeSkipsAllSeven() throws {
         let document = try CoreModuleFixtures.document(extra: [GestaltKeys.productType: "iPhone18,4"])
         let snapshot = CoreModuleFixtures.snapshot(
             document: document,
@@ -213,11 +213,11 @@ final class SafePatchTests: XCTestCase {
         XCTAssertTrue(proposal.featureIDs.isEmpty,
                       "Native AI-only stages nothing")
         XCTAssertEqual(proposal.skippedFeatureIDs, ChinaUnlock.aiCapabilityIDs,
-                       "Native AI-only records all six AI capabilities as skipped")
+                       "Native AI-only records all seven AI capabilities as skipped")
         let simulation = SafePatch.simulate(proposal: proposal, snapshot: snapshot, profile: profile)
         XCTAssertTrue(simulation.diffs.isEmpty, "Native AI-only changes nothing")
         XCTAssertEqual(simulation.skippedFeatureIDs, ChinaUnlock.aiCapabilityIDs,
-                       "Native AI-only simulation records all six AI capabilities as skipped")
+                       "Native AI-only simulation records all seven AI capabilities as skipped")
         XCTAssertEqual(simulation.check(.diff)?.passed, false)
         XCTAssertEqual(simulation.check(.diff)?.isBlocker, false,
                        "Changing nothing is a warning, not a blocker")
@@ -253,11 +253,11 @@ final class SafePatchTests: XCTestCase {
         XCTAssertFalse(SafePatchProposal.isNativeAppleIntelligence(profile: unknownProfile),
                        "Unknown product type reads as non-native")
         let proposal = SafePatchProposal.oneTap(nativeAppleIntelligence: false)
-        // 8 feature IDs, not 9: the fail-closed one-tap stages 9
-        // FIELDS (2 eSIM keys + region + 6 AI keys), but eSIM is a
-        // single feature ID covering both keys, so featureIDs has 8.
-        XCTAssertEqual(proposal.featureIDs.count, 8,
-                       "Fail-closed one-tap still carries all 8 feature IDs (9 staged fields)")
+        // 9 feature IDs, not 10: the fail-closed one-tap stages 10
+        // FIELDS (2 eSIM keys + region + 7 AI keys), but eSIM is a
+        // single feature ID covering both keys, so featureIDs has 9.
+        XCTAssertEqual(proposal.featureIDs.count, 9,
+                       "Fail-closed one-tap still carries all 9 feature IDs (10 staged fields)")
         XCTAssertTrue(proposal.skippedFeatureIDs.isEmpty,
                       "Fail-closed one-tap skips nothing")
     }

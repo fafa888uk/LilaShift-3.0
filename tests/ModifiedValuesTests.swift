@@ -54,7 +54,7 @@ final class ModifiedValuesTests: XCTestCase {
     }
 
     /// Recorded originals for the "before" state: region CH, sales
-    /// region CH/A, regulatory model A3518, and the six AI keys absent
+    /// region CH/A, regulatory model A3518, and the seven AI keys absent
     /// (never set before).
     private static func originals() -> [String: OriginalField] {
         var dict: [String: OriginalField] = [
@@ -100,8 +100,8 @@ final class ModifiedValuesTests: XCTestCase {
         guard case .compared(let rows) = report else {
             return XCTFail("expected .compared, got \(report)")
         }
-        // Region code, the 6 AI keys, and the 2 eSIM slots = 9 rows.
-        XCTAssertEqual(rows.count, 9)
+        // Region code, the 7 AI keys, and the 2 eSIM slots = 10 rows.
+        XCTAssertEqual(rows.count, 10)
         let byKey = Dictionary(uniqueKeysWithValues: rows.map { ($0.key, $0) })
         let regionRow = try XCTUnwrap(byKey[GestaltKeys.regionCode])
         XCTAssertEqual(regionRow.originalText, "CH")
@@ -131,7 +131,7 @@ final class ModifiedValuesTests: XCTestCase {
         guard case .compared(let rows) = report else {
             return XCTFail("expected .compared, got \(report)")
         }
-        XCTAssertEqual(rows.count, 7) // region code + 6 AI keys
+        XCTAssertEqual(rows.count, 8) // region code + 7 AI keys
         let keys = Set(rows.map(\.key))
         XCTAssertFalse(keys.contains(GestaltKeys.regionInfo))
         XCTAssertFalse(keys.contains(GestaltKeys.legacyRegionInfo))

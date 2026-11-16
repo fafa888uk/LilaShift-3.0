@@ -14,12 +14,12 @@ import XCTest
 final class PresetCatalogTests: XCTestCase {
     // MARK: - Catalog completeness
 
-    /// The catalog covers every preset the app offers: the 35
-    /// `CapabilityEntry` entries (33 capabilities + eSIM + region
+    /// The catalog covers every preset the app offers: the 36
+    /// `CapabilityEntry` entries (34 capabilities + eSIM + region
     /// code), WAPI, the model number, and the three preset groups.
     func testCatalogEntryCount() {
-        XCTAssertEqual(PresetCatalog.all.count, 40,
-                       "Catalog must have 40 entries, got \(PresetCatalog.all.count)")
+        XCTAssertEqual(PresetCatalog.all.count, 41,
+                       "Catalog must have 41 entries, got \(PresetCatalog.all.count)")
     }
 
     /// Every `CapabilityEntry` id is covered by the catalog.
@@ -61,9 +61,9 @@ final class PresetCatalogTests: XCTestCase {
     }
 
     /// The three groups contain exactly the members the stage paths
-    /// use: one-tap stages 9 fields (2 eSIM flags + region + 6 AI)
-    /// as 8 member feature IDs — the eSIM virtual feature bundles
-    /// the two CacheData flags under one id — AI-only is the 6 AI
+    /// use: one-tap stages 10 fields (2 eSIM flags + region + 7 AI)
+    /// as 9 member feature IDs — the eSIM virtual feature bundles
+    /// the two CacheData flags under one id — AI-only is the 7 AI
     /// keys, eSIM+region is the 2 virtual features (3 fields).
     func testGroupMembers() {
         guard let oneTap = PresetCatalog.entry(for: "preset.oneTap"),
@@ -76,10 +76,10 @@ final class PresetCatalogTests: XCTestCase {
                        [FeatureEligibilityEvaluator.esimFeatureID,
                         FeatureEligibilityEvaluator.regionCodeFeatureID]
                         + ChinaUnlock.aiCapabilityIDs)
-        XCTAssertEqual(oneTap.memberIDs.count, 8,
-                       "9 staged fields map to 8 member feature IDs: the eSIM virtual feature bundles the two CacheData flags (green-tea + not-green-tea) under one id")
+        XCTAssertEqual(oneTap.memberIDs.count, 9,
+                       "10 staged fields map to 9 member feature IDs: the eSIM virtual feature bundles the two CacheData flags (green-tea + not-green-tea) under one id")
         XCTAssertEqual(aiOnly.memberIDs, ChinaUnlock.aiCapabilityIDs)
-        XCTAssertEqual(aiOnly.memberIDs.count, 6)
+        XCTAssertEqual(aiOnly.memberIDs.count, 7)
         XCTAssertEqual(esimRegion.memberIDs,
                        [FeatureEligibilityEvaluator.esimFeatureID,
                         FeatureEligibilityEvaluator.regionCodeFeatureID])
@@ -167,11 +167,11 @@ final class PresetCatalogTests: XCTestCase {
 
     // MARK: - Filters
 
-    /// Category filter counts: intelligence 9 (7 AI-family + region
+    /// Category filter counts: intelligence 10 (8 AI-family + region
     /// + model number), display 11, device 10 (8 + eSIM + WAPI),
     /// iPad 3, advanced 4, group 3.
     func testFilterByCategory() {
-        XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, category: .intelligence).count, 9)
+        XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, category: .intelligence).count, 10)
         XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, category: .display).count, 11)
         XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, category: .device).count, 10)
         XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, category: .ipad).count, 3)
@@ -179,12 +179,12 @@ final class PresetCatalogTests: XCTestCase {
         XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, category: .group).count, 3)
     }
 
-    /// Risk filter counts: high 17 (15 `caution: true`
+    /// Risk filter counts: high 18 (16 `caution: true`
     /// capabilities + modelNumber + one-tap), medium 6 (the
     /// non-caution intelligence capability "ai" + eSIM + region
     /// code + WAPI + the two medium groups), low 17.
     func testFilterByRisk() {
-        XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, riskLevel: .high).count, 17)
+        XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, riskLevel: .high).count, 18)
         XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, riskLevel: .medium).count, 6)
         XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, riskLevel: .low).count, 17)
     }
@@ -385,7 +385,7 @@ final class PresetCatalogTests: XCTestCase {
         return (snapshot, profile)
     }
 
-    /// The 9-item one-tap as a custom combination checks out: the
+    /// The 10-item one-tap as a custom combination checks out: the
     /// dependency analysis is safe and the simulation can proceed.
     func testCombinationCheckOneTapSafe() throws {
         let (snapshot, profile) = try happyPathFixture()
