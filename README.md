@@ -79,9 +79,9 @@ This is the **full-source project** for LilaShift 3.0 (紫序), the China Unlock
 ## What's new in 3.0.0-rc.1
 
 - **LilaShift 3.0 dashboard** — a lightweight home screen with real device read and staged-change status, a 53-item feature catalog across 11 categories (40 preset items + 13 page items), a unified 8-state compatibility model, a history/restore view with confirmation steps, and diagnostic caching that moves file reads and SHA-256 hashing off the render path. See [CHANGELOG.md](CHANGELOG.md).
-- **One-tap China Unlock (9 items; 3 on native Apple Intelligence models)** — eSIM switches (`green-tea` off, `not-green-tea` on), region code set to US (`LL`, sales region untouched), and six Apple Intelligence capabilities, all staged in one tap and reviewed before applying.
+- **One-tap China Unlock (10 items; 3 on native Apple Intelligence models)** — eSIM switches (`green-tea` off, `not-green-tea` on), region code set to US (`LL`, sales region untouched), and seven Apple Intelligence capabilities, all staged in one tap and reviewed before applying.
   - The eSIM cache layout is verified before staging; if it cannot be verified, the whole eSIM group stops and shows the reason. Region and AI flags can still be set individually.
-  - On models with native Apple Intelligence (e.g. iPhone Air), the six AI items are skipped — the device already has them — so one-tap stages only the 2 eSIM switches + region code.
+  - On models with native Apple Intelligence (e.g. iPhone Air), the seven AI items are skipped — the device already has them — so one-tap stages only the 2 eSIM switches + region code.
   - Every apply is automatically backed up and read-back verified. One-tap restore reverts all staged items from the recorded originals.
 - **Light-lavender Liquid Glass redesign** — page background `#F6F3FF`, primary purple `#8652DC`; no large dark backgrounds.
 - **Purpose description under every feature** — all presets show a one-line Simplified Chinese purpose description; device requirements and effect details live in the detail view.
@@ -95,7 +95,7 @@ This is the **full-source project** for LilaShift 3.0 (紫序), the China Unlock
 
 | Category | Presets and tools |
 |---|---|
-| China Unlock | One-tap staging of 9 items (3 on native Apple Intelligence models, where the 6 AI items are skipped): eSIM switches, region code US (`LL`), and six Apple Intelligence capabilities — reviewed before applying, with eSIM cache-layout verification, automatic backup, read-back verification, and one-tap restore |
+| China Unlock | One-tap staging of 10 items (3 on native Apple Intelligence models, where the 7 AI items are skipped): eSIM switches, region code US (`LL`), and seven Apple Intelligence capabilities — reviewed before applying, with eSIM cache-layout verification, automatic backup, read-back verification, and one-tap restore |
 | Display | Dynamic Island capability and layout, Always-On Display, AOD Vibrancy, high-luminance AOD, AOD flipbook, HDR photo display, wallpaper parallax, Liquid Glass low-power rendering, experimental PWM and DisplayPort flags |
 | Device | Model name, boot/shutdown chime, charge limit, tap to wake, Camera Control settings, Action Button settings, Collision SOS, Audio Mix, Spatial FaceTime audio |
 | iPad | Apple Pencil settings, Stage Manager capability, iPad app compatibility |
@@ -156,7 +156,7 @@ Full step-by-step tutorial (Chinese): [docs/INSTALL_ZH-CN.md](docs/INSTALL_ZH-CN
 
 ## Screenshots
 
-No screenshots are included in this pre-release yet. Real screenshots will be added from the actual 3.0.0-rc.1 build on a real device once available — none are fabricated here, and earlier simulator screenshots (showing a "Not read yet" state, not the 9-item China Unlock summary) are not presented as this release.
+No screenshots are included in this pre-release yet. Real screenshots will be added from the actual 3.0.0-rc.1 build on a real device once available — none are fabricated here, and earlier simulator screenshots (showing a "Not read yet" state, not the 10-item China Unlock summary) are not presented as this release.
 
 ## Frequently asked questions
 
@@ -173,9 +173,9 @@ No screenshots are included in this pre-release yet. Real screenshots will be ad
 
 MG Control shows the live `CacheExtra` values; the preset page shows the last read. Tap **Re-read** on the home page first. If they still disagree, the values were written directly (bypassing the preset) — apply the one-tap unlock once to normalize them.
 
-### AI shows 1/6 (or fewer than 6)
+### AI shows 1/7 (or fewer than 7)
 
-Only that many of the 6 AI capability flags are currently on. Open the Apple Intelligence page to see which ones. A change made by an older version persists in the cache until reverted; if it was made before this app's first backup, the backup already contains it.
+Only that many of the 7 AI capability flags are currently on. Open the Apple Intelligence page to see which ones. A change made by an older version persists in the cache until reverted; if it was made before this app's first backup, the backup already contains it.
 
 ### I want to restore the original state, but there is no backup
 
@@ -187,7 +187,9 @@ Restore can only return values the app recorded. Check the Backups page for any 
 
 ### The AI menu doesn't appear, or Siri says "something went wrong"
 
-Check that the region code is `LL`, the 6 AI flags are on, and the device has finished downloading the AI models (Wi-Fi + charging, idle for a while). Proxy rules matter: Siri domains (`guzzoni.apple.com`, `*.siri.apple.com`, `dejavu.apple.com`, `sequoia.apple.com`) must go **DIRECT** with a real IP, not through a proxy; AI / Private Cloud Compute domains go through a clean US node. Do not set the system region to United States if you want to keep China Mandarin call screening — set it to Taiwan instead.
+Check that the region code is `LL`, the 7 AI flags are on, and the device has finished downloading the AI models (Wi-Fi + charging, idle for a while). Proxy rules matter: Siri domains (`guzzoni.apple.com`, `*.siri.apple.com`, `dejavu.apple.com`, `sequoia.apple.com`) must go **DIRECT** with a real IP, not through a proxy; AI / Private Cloud Compute domains go through a clean US node. Do not set the system region to United States if you want to keep China Mandarin call screening — set it to Taiwan instead.
+
+iOS 27.3 limitation: on China-hardware devices (CH/A), iOS 27.3 added an eligibility check that reads the hardware directly (log: `Eligibility returned no CN region policy on a CH region code device`). Even with the region code at LL and all AI flags on, Siri AI and some generative features can be blocked on 27.3; changing MobileGestalt cannot bypass it (Erosion-CN FAQ Q6, situation C). The workaround is to stay on or downgrade to iOS 27.2.x.
 
 ### Photos Clean Up works, but high-quality cleanup / extend / reimagine fails
 
@@ -237,7 +239,7 @@ This project is distributed under the **GNU General Public License v3.0** — se
 
 - Upstream project: [huamidev/GestaltX](https://github.com/huamidev/GestaltX) (`v1.0.7`, commit `dfd4a7e`, plus PR #126, commit `c60519c`)
 - Enhanced version maintainer: `@steam8871`
-- Modifications in this build: the China Unlock preset (9 items; 3 on native Apple Intelligence models) and its safety checks, the light-lavender Liquid Glass redesign, one-line purpose descriptions, the author badge and progress cards, the in-app source-repository link, the open-source compliance section, the Erosion-CN-inspired hardening (write path, dynamic layout resolution, diff preview, dual-vault backup, region mode, AI checkup), the LilaShift rebrand, and the cat app icon.
+- Modifications in this build: the China Unlock preset (10 items; 3 on native Apple Intelligence models) and its safety checks, the light-lavender Liquid Glass redesign, one-line purpose descriptions, the author badge and progress cards, the in-app source-repository link, the open-source compliance section, the Erosion-CN-inspired hardening (write path, dynamic layout resolution, diff preview, dual-vault backup, region mode, AI checkup), the LilaShift rebrand, and the cat app icon.
 - LilaShift 3.0 additions: the lightweight dashboard, the 53-item feature catalog, the unified compatibility model, the history/restore view, diagnostic caching, and the open-source contributor center (About page) with the per-project source record in `docs/OPEN_SOURCE_REFERENCES.md`.
 - The complete corresponding source is in this repository (full source, no patch step).
 
