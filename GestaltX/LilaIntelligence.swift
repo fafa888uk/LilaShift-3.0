@@ -1005,7 +1005,12 @@ enum DependencyResolver {
         }
 
         let aiRequested = ChinaUnlock.aiCapabilityIDs.filter { requested.contains($0) }
-        if !aiRequested.isEmpty, !requested.contains(FeatureEligibilityEvaluator.regionCodeFeatureID),
+        // The standalone Siri AI Mode preset stages only siriAIMode as
+        // an explicit single-item opt-in; it bypasses the missing-region
+        // guard (its own gating — native-allowed, unknown fail-closed —
+        // already applies, and the user deliberately chose just this key).
+        let isStandaloneSiriAIMode = aiRequested == [ChinaUnlock.siriAIModeID]
+        if !aiRequested.isEmpty, !isStandaloneSiriAIMode, !requested.contains(FeatureEligibilityEvaluator.regionCodeFeatureID),
            // The stored region code is "LL" (`ChinaUnlock.regionCodeID`
            // is "US", the preset id — not the stored code).
            document.extra[GestaltKeys.regionCode] as? String != "LL" {
