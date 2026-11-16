@@ -148,7 +148,7 @@ Full step-by-step tutorial (Chinese): [docs/INSTALL_ZH-CN.md](docs/INSTALL_ZH-CN
 
 - **eSIM hardware is required.** The unlock only flips capability flags; it does not add eSIM hardware to a device that has none.
 - **Apple Intelligence depends on hardware and Apple's servers.** Turning the flags on does not guarantee the features appear or work.
-- **Carrier and location rules still apply.** A foreign eSIM cannot be installed while inside mainland China (Apple rule); installing one abroad generally needs Location Services on. A Chinese carrier eSIM must be activated at a carrier store in China.
+- **Carrier and location rules still apply to a stock phone.** Without the unlock, a foreign eSIM cannot be installed while inside mainland China (Apple rule). After the unlock, a user in mainland China can add a foreign eSIM directly — no need to leave the country. Installing one abroad generally needs Location Services on. A Chinese carrier eSIM must be activated at a carrier store in China.
 - **System updates may revert the changes.** Re-apply after updating iOS if needed.
 - **Do not update iOS blindly.** GestaltX relies on an unpatched iOS sandbox-escape vulnerability (`worse_query`); Apple may close it in a future update. Confirm compatibility before updating if you rely on this tool.
 - **Back up before applying.** The app backs up automatically, but a separate device backup is still good practice.
@@ -166,7 +166,7 @@ No screenshots are included in this pre-release yet. Real screenshots will be ad
 - **A SpringBoard refresh is not enough for eSIM.** The baseband daemons (`CommCenter`, `ctkd`) do not reload the cache on a SpringBoard refresh. After applying, power the device fully off and back on.
 - **Both switches must be on.** The region change and the eSIM change must both be applied; changing only the region code leaves the eSIM hardware lock in place.
 - **Never change the model identifier (`ProductType`).** Forcing a China board (e.g. `iPhone19,7`) to a US model breaks baseband checks and hides the eSIM menu entirely.
-- **Adding a foreign eSIM inside mainland China is blocked by Apple.** Scan the code with airplane mode on and Wi-Fi connected through an overseas proxy.
+- **Adding a foreign eSIM inside mainland China is blocked by Apple on a stock phone.** After the unlock, it can be added directly in mainland China — no need to leave the country. (Airplane mode + Wi-Fi through an overseas proxy is only a workaround for the pre-unlock case.)
 - **Hardware limits.** Only models with a physical eUICC chip (iPhone Air, iPhone 18 series, etc.) can add eSIMs. Older dual-nano-SIM-only models have no eUICC chip, so the switch only unlocks FaceTime audio and AI region access.
 
 ### The preset page and MG Control don't agree
