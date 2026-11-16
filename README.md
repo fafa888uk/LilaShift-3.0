@@ -78,11 +78,12 @@ This is the **full-source project** for LilaShift 3.0 (紫序), the China Unlock
 
 ## What's new in 3.0.0-rc.1
 
-- **LilaShift 3.0 dashboard** — a lightweight home screen with real device read and staged-change status, a 53-item feature catalog across 11 categories (40 preset items + 13 page items), a unified 8-state compatibility model, a history/restore view with confirmation steps, and diagnostic caching that moves file reads and SHA-256 hashing off the render path. See [CHANGELOG.md](CHANGELOG.md).
+- **LilaShift 3.0 dashboard** — a lightweight home screen with real device read and staged-change status, a 55-item feature catalog across 11 categories (42 preset items + 13 page items), a unified 8-state compatibility model, a history/restore view with confirmation steps, and diagnostic caching that moves file reads and SHA-256 hashing off the render path. See [CHANGELOG.md](CHANGELOG.md).
 - **One-tap China Unlock (10 items; 3 on native Apple Intelligence models)** — eSIM switches (`green-tea` off, `not-green-tea` on), region code set to US (`LL`, sales region untouched), and seven Apple Intelligence capabilities, all staged in one tap and reviewed before applying.
   - The eSIM cache layout is verified before staging; if it cannot be verified, the whole eSIM group stops and shows the reason. Region and AI flags can still be set individually.
   - On models with native Apple Intelligence (e.g. iPhone Air), the seven AI items are skipped — the device already has them — so one-tap stages only the 2 eSIM switches + region code.
   - Every apply is automatically backed up and read-back verified. One-tap restore reverts all staged items from the recorded originals.
+- **Standalone Siri AI Mode preset** — a single-item toggle that stages only SiriMode = 2, with its own card next to the China AI and eSIM + region presets. Unlike the China AI preset, it is available on native Apple Intelligence models too (an explicit opt-in); it is experimental and usually unnecessary there, since Siri AI already works natively. Unknown models are refused (fail-closed).
 - **Light-lavender Liquid Glass redesign** — page background `#F6F3FF`, primary purple `#8652DC`; no large dark backgrounds.
 - **Purpose description under every feature** — all presets show a one-line Simplified Chinese purpose description; device requirements and effect details live in the detail view.
 - **Author badge and live progress cards** — maintainer `@steam8871` credited in the header and About page; reading/applying show real progress (backup / write / verify / done) driven by the actual operation, never simulated.
@@ -99,7 +100,7 @@ This is the **full-source project** for LilaShift 3.0 (紫序), the China Unlock
 | Display | Dynamic Island capability and layout, Always-On Display, AOD Vibrancy, high-luminance AOD, AOD flipbook, HDR photo display, wallpaper parallax, Liquid Glass low-power rendering, experimental PWM and DisplayPort flags |
 | Device | Model name, boot/shutdown chime, charge limit, tap to wake, Camera Control settings, Action Button settings, Collision SOS, Audio Mix, Spatial FaceTime audio |
 | iPad | Apple Pencil settings, Stage Manager capability, iPad app compatibility |
-| Intelligence | Independent region-code options, Apple Intelligence capability flag, on-device Siri, Audio Intelligence, Personal Translator, Photos Clean Up, Handwriting Synthesis, always-listening Hey Siri, sales-region options for activation attempts on China-mainland devices |
+| Intelligence | Independent region-code options, Apple Intelligence capability flag, on-device Siri, Audio Intelligence, Personal Translator, Photos Clean Up, Handwriting Synthesis, always-listening Hey Siri, Siri AI Mode (standalone single-item toggle, also on native Apple Intelligence models), sales-region options for activation attempts on China-mainland devices |
 | Advanced | Apple internal feature flags, system-wide InternalBuild flag with explicit confirmation, internal settings bundle, Security Research Device flag |
 | Field editor | Read, search, add, edit, and remove `CacheExtra` fields; local plist import/export; String, Integer, Real, Boolean, Data, Date, Array, and Dictionary values |
 | Changes | Automatic reading and manual re-read, staged before/after review, verified writes, per-preset restore |
@@ -189,6 +190,8 @@ Restore can only return values the app recorded. Check the Backups page for any 
 
 Check that the region code is `LL`, the 7 AI flags are on, and the device has finished downloading the AI models (Wi-Fi + charging, idle for a while). Proxy rules matter: Siri domains (`guzzoni.apple.com`, `*.siri.apple.com`, `dejavu.apple.com`, `sequoia.apple.com`) must go **DIRECT** with a real IP, not through a proxy; AI / Private Cloud Compute domains go through a clean US node. Do not set the system region to United States if you want to keep China Mandarin call screening — set it to Taiwan instead.
 
+If you use a proxy: Siri's core domains must go DIRECT with a real IP, never through a proxy or Fake-IP — `guzzoni.apple.com`, `*.siri.apple.com`, `dejavu.apple.com`, `sequoia.apple.com`, `*.smoot.apple.com` (in Surge, also add `guzzoni.apple.com`, `*.guzzoni.apple.com` and `*.siri.apple.com` to skip-proxy and always-real-ip). AI admission and Private Cloud Compute domains go through a clean US node that supports UDP/QUIC — `gspe1-ssl.ls.apple.com`, `*.issuer.apple.com`, `ropes.apple.com`, `mask-api.icloud.com`, `mask.icloud.com`, `mask-h2.icloud.com`, `*.app.apple.com`, `apple-relay.*`. Do not enable MitM decryption for `gspe1-ssl.ls.apple.com` or `*.smoot.apple.com`. If a generative feature fails with a network error (e.g. Code=32033 or Code=1009), check these rules first. Ready-made rule sets: AppleFlow (github.com/Kianuni/AppleFlow). Source: Erosion-CN FAQ Q3/Q6.
+
 iOS 27.3 limitation: on China-hardware devices (CH/A), iOS 27.3 added an eligibility check that reads the hardware directly (log: `Eligibility returned no CN region policy on a CH region code device`). Even with the region code at LL and all AI flags on, Siri AI and some generative features can be blocked on 27.3; changing MobileGestalt cannot bypass it (Erosion-CN FAQ Q6, situation C). The workaround is to stay on or downgrade to iOS 27.2.x.
 
 ### Photos Clean Up works, but high-quality cleanup / extend / reimagine fails
@@ -240,7 +243,7 @@ This project is distributed under the **GNU General Public License v3.0** — se
 - Upstream project: [huamidev/GestaltX](https://github.com/huamidev/GestaltX) (`v1.0.7`, commit `dfd4a7e`, plus PR #126, commit `c60519c`)
 - Enhanced version maintainer: `@steam8871`
 - Modifications in this build: the China Unlock preset (10 items; 3 on native Apple Intelligence models) and its safety checks, the light-lavender Liquid Glass redesign, one-line purpose descriptions, the author badge and progress cards, the in-app source-repository link, the open-source compliance section, the Erosion-CN-inspired hardening (write path, dynamic layout resolution, diff preview, dual-vault backup, region mode, AI checkup), the LilaShift rebrand, and the cat app icon.
-- LilaShift 3.0 additions: the lightweight dashboard, the 53-item feature catalog, the unified compatibility model, the history/restore view, diagnostic caching, and the open-source contributor center (About page) with the per-project source record in `docs/OPEN_SOURCE_REFERENCES.md`.
+- LilaShift 3.0 additions: the lightweight dashboard, the 55-item feature catalog, the unified compatibility model, the history/restore view, diagnostic caching, and the open-source contributor center (About page) with the per-project source record in `docs/OPEN_SOURCE_REFERENCES.md`.
 - The complete corresponding source is in this repository (full source, no patch step).
 
 ## Credits

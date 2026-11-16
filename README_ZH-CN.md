@@ -78,11 +78,12 @@
 
 ## 3.0.0-rc.1 新增内容
 
-- **紫序 3.0 仪表盘**——轻量首页展示真实设备读取与待处理更改状态；53 项功能目录分为 11 个分类（40 项预设 + 13 项页面功能，统一排序规则：版本化 JSON + SHA-256 校验文件）；统一的 8 状态兼容性模型；带二次确认的历史/恢复视图；诊断缓存将文件读取与 SHA-256 计算移出渲染路径。详见 [CHANGELOG_ZH-CN.md](CHANGELOG_ZH-CN.md)。
+- **紫序 3.0 仪表盘**——轻量首页展示真实设备读取与待处理更改状态；55 项功能目录分为 11 个分类（42 项预设 + 13 项页面功能，统一排序规则：版本化 JSON + SHA-256 校验文件）；统一的 8 状态兼容性模型；带二次确认的历史/恢复视图；诊断缓存将文件读取与 SHA-256 计算移出渲染路径。详见 [CHANGELOG_ZH-CN.md](CHANGELOG_ZH-CN.md)。
 - **一键国行解锁（10 项；原生 Apple Intelligence 机型 3 项）**——eSIM 开关（green-tea 关闭、not-green-tea 开启）、区域代码设为美国（`LL`，销售地区保持不变）、七项 Apple Intelligence 能力，全部一键暂存后再统一审核应用。
   - 应用前会先验证 eSIM 缓存布局；若无法验证，整个 eSIM 分组会停止并显示原因，区域与 AI 开关仍可单独设置。
   - 原生 Apple Intelligence 机型（如 iPhone Air）上 7 项 AI 会跳过——机器本身已有这些能力——一键只暂存 eSIM 两项 + 地区码。
   - 每次应用都会自动备份并回读校验。一键恢复可将全部已暂存项从记录的原始值还原。
+- **独立 Siri AI 模式预设**——单独暂存 SiriMode = 2 的单项开关，与国行 AI、eSIM + 地区预设并列显示。与国行 AI 预设不同，它在原生 Apple Intelligence 机型上也可以使用（明确的单项选择）；但它是实验性的，在原生机型上通常不需要，因为 Siri AI 本来就能用。未知机型拒绝应用（fail-closed）。
 - **浅紫色 Liquid Glass 全新设计**——页面背景 `#F6F3FF`，主色紫 `#8652DC`，无大面积深色背景。
 - **每项功能下方的一句话用途说明**——所有预设都配有一行简体中文用途说明；设备要求与生效方式写在详情页中。
 - **作者徽章与实时进度卡片**——维护者 `@steam8871` 在顶部和"关于"页中署名；读取与应用操作展示真实进度（备份 / 写入 / 校验 / 完成），均由实际操作驱动，绝不伪造。
@@ -99,7 +100,7 @@
 | 显示 | 灵动岛能力与布局、常亮显示、AOD 鲜艳度、高亮度 AOD、AOD 翻页动画、HDR 照片显示、壁纸视差、Liquid Glass 低功耗渲染、实验性 PWM 与 DisplayPort 标志位 |
 | 设备 | 型号名称、开关机提示音、充电限制、轻触唤醒、相机控制设置、操作按钮设置、碰撞检测 SOS、音频混合、空间 FaceTime 音频 |
 | iPad | Apple Pencil 设置、台前调度能力、iPad 应用兼容性 |
-| 智能 | 独立区域代码选项、Apple Intelligence 能力标志位、设备端 Siri、音频智能、个人翻译、照片清理、手写合成、常听 Hey Siri、面向国行设备的销售地区选项（用于尝试激活） |
+| 智能 | 独立区域代码选项、Apple Intelligence 能力标志位、设备端 Siri、音频智能、个人翻译、照片清理、手写合成、常听 Hey Siri、Siri AI 模式（独立单项开关，原生 Apple Intelligence 机型也能用）、面向国行设备的销售地区选项（用于尝试激活） |
 | 高级 | Apple 内部功能标志位、带显式确认的全局 InternalBuild 标志位、内部设置包、安全研究设备标志位 |
 | 字段编辑器 | 读取、搜索、新增、编辑、删除 `CacheExtra` 字段；本地 plist 导入/导出；支持 String、Integer、Real、Boolean、Data、Date、Array、Dictionary 类型 |
 | 更改记录 | 自动读取与手动重新读取、应用前后状态对比、写入校验、按预设单独恢复 |
@@ -189,6 +190,8 @@ MG Control 显示的是 `CacheExtra` 的实时值，预设页面显示的是上�
 
 请检查区域代码是否为 `LL`、7 项 AI 标志位是否都已开启，以及设备是否已完成 AI 模型下载（需要 Wi-Fi + 充电，并静置一段时间）。代理规则也很关键：Siri 相关域名（`guzzoni.apple.com`、`*.siri.apple.com`、`dejavu.apple.com`、`sequoia.apple.com`）必须走**直连**，使用真实 IP，不能走代理；AI / Private Cloud Compute 相关域名需走干净的美国节点。如果你想保留国行的普通话来电防骚扰功能，请不要把系统地区设为美国——改设为台湾即可。
 
+如果你用代理：Siri 核心域名必须直连真实 IP，不能走代理或 Fake-IP——`guzzoni.apple.com`、`*.siri.apple.com`、`dejavu.apple.com`、`sequoia.apple.com`、`*.smoot.apple.com`（Surge 里再把 `guzzoni.apple.com`、`*.guzzoni.apple.com`、`*.siri.apple.com` 加入 skip-proxy 与 always-real-ip）。AI 准入与私有云计算域名走干净的美区节点（须支持 UDP/QUIC）——`gspe1-ssl.ls.apple.com`、`*.issuer.apple.com`、`ropes.apple.com`、`mask-api.icloud.com`、`mask.icloud.com`、`mask-h2.icloud.com`、`*.app.apple.com`、`apple-relay.*`。不要对 `gspe1-ssl.ls.apple.com` 或 `*.smoot.apple.com` 开 MitM 解密。生成式功能报网络错误（如 Code=32033、Code=1009）时先查这几条。现成规则集：AppleFlow（github.com/Kianuni/AppleFlow）。来源：Erosion-CN FAQ Q3/Q6。
+
 iOS 27.3 限制：国行硬件（CH/A）设备上，iOS 27.3 新增了直接读取硬件的资格检查（日志：`Eligibility returned no CN region policy on a CH region code device`）。即使地区码已是 LL、AI 开关全开，Siri AI 与部分生成式功能仍可能被拦截，改 MobileGestalt 绕不过去（Erosion-CN FAQ Q6 情况 C）。解决办法是留在或降回 iOS 27.2.x。
 
 ### 照片清理可用，但高质量清理 / 扩展 / 重新想象失败
@@ -240,7 +243,7 @@ GestaltX 跟随你的 iOS 语言设置，默认语言与回退语言为英语。
 - 上游项目：[huamidev/GestaltX](https://github.com/huamidev/GestaltX)（`v1.0.7`，提交 `dfd4a7e`，加上 PR #126，提交 `c60519c`）
 - 增强版维护者：`@steam8871`
 - 本版本中的修改内容：国行解锁预设（10 项；原生 Apple Intelligence 机型 3 项）及其安全检查、浅紫色 Liquid Glass 重新设计、每项功能的一句话用途说明、作者徽章与进度卡片、App 内源码仓库链接、开源合规页面、参考 Erosion-CN 思路做的加固（写入路径、动态布局解析、差异预览、双保险库备份、区域模式、AI 体检）、紫序品牌重塑，以及猫咪应用图标。
-- LilaShift 3.0 新增内容：轻量仪表盘、53 项功能目录、统一兼容性模型、历史/恢复视图、诊断缓存，以及带每个项目来源记录的开源贡献者中心（"关于"页），详细记录见 `docs/OPEN_SOURCE_REFERENCES.md`。
+- LilaShift 3.0 新增内容：轻量仪表盘、55 项功能目录、统一兼容性模型、历史/恢复视图、诊断缓存，以及带每个项目来源记录的开源贡献者中心（"关于"页），详细记录见 `docs/OPEN_SOURCE_REFERENCES.md`。
 - 完整的对应源码均在本仓库中（全量源码，无单独补丁步骤）。
 
 ## 致谢
