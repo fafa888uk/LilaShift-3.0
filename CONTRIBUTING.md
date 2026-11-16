@@ -92,4 +92,4 @@ system behavior on real devices and carries strict open-source obligations.
 ## Questions
 
 Open a GitHub Issue (not Telegram — the channel is announcements only):
-https://github.com/fafa920q-hue/LilaShift-2.0/issues
+https://github.com/fafa888uk/LilaShift-3.0/issues

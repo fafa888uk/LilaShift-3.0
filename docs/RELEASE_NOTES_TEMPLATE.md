@@ -79,7 +79,7 @@
 
 ## Feedback / 反馈
 
-- Bug 与功能建议：[GitHub Issues](https://github.com/fafa920q-hue/LilaShift-2.0/issues)
+- Bug 与功能建议：[GitHub Issues](https://github.com/fafa888uk/LilaShift-3.0/issues)
 - 更新通知：Telegram 更新频道 [LilaShift 紫序 · 更新公告](https://t.me/LilaShiftUpdates)
   （频道，只发公告，不是讨论群）
 - 反馈时不要贴序列号、UDID、IMEI、Apple ID、账号密钥或含个人标识的完整日志。

@@ -26,7 +26,7 @@
 LilaShift（紫序）是 GestaltX 的国行增强版：一个 iOS 应用，用来查看与修改
 本机 MobileGestalt 能力标记（如 eSIM 开关、地区码、Apple Intelligence
 能力等），带备份与还原。完整源码在
-[fafa920q-hue/LilaShift-2.0](https://github.com/fafa920q-hue/LilaShift-2.0)，
+[fafa888uk/LilaShift-3.0](https://github.com/fafa888uk/LilaShift-3.0)，
 基于上游 huamidev/GestaltX v1.0.7，遵循 GPL v3.0。
 
 ### 3.0.0-rc.1 是稳定版吗？
@@ -52,7 +52,7 @@ Intelligence 需要硬件 + 系统 + 服务同时满足；灵动岛、AOD 等取
 ### 在哪里下载？
 
 只从本仓库 Releases 页下载：
-[LilaShift 3.0.0-rc.1 发布页](https://github.com/fafa920q-hue/LilaShift-2.0/releases/tag/v3.0.0-rc.1)，
+[LilaShift 3.0.0-rc.1 发布页](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v3.0.0-rc.1)，
 文件 `LilaShift_3.0.0.ipa`。不要从不明渠道下载。
 
 ### 没有电脑能装吗？
@@ -179,7 +179,7 @@ App 自动备份），只改你明白的项，只在自己持有或已获授权�
 ### 在哪里反馈问题？
 
 GitHub Issues：
-[https://github.com/fafa920q-hue/LilaShift-2.0/issues](https://github.com/fafa920q-hue/LilaShift-2.0/issues)。
+[https://github.com/fafa888uk/LilaShift-3.0/issues](https://github.com/fafa888uk/LilaShift-3.0/issues)。
 不要在 Telegram 频道反馈——频道只发公告，不受理反馈。
 
 ### 在哪里看更新通知？

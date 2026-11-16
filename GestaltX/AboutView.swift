@@ -129,7 +129,7 @@ struct AboutView: View {
                 .padding(.vertical, 4)
                 VStack(alignment: .leading, spacing: 3) {
                     Text(L("Enhanced Source URL")).font(.caption).foregroundStyle(.secondary)
-                    Link("https://github.com/fafa920q-hue/LilaShift-2.0", destination: GestaltBrand.lilashift)
+                    Link("https://github.com/fafa888uk/LilaShift-3.0", destination: GestaltBrand.lilashift)
                         .font(.subheadline)
                 }
                 .padding(.vertical, 4)

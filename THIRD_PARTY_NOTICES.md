@@ -4,7 +4,7 @@ Copyright (C) 2026 huamidev
 https://github.com/huamidev
 
 LilaShift is the enhanced version of GestaltX, maintained by @steam8871
-(https://github.com/fafa920q-hue/LilaShift-2.0). The maintainer role covers
+(https://github.com/fafa888uk/LilaShift-3.0). The maintainer role covers
 the LilaShift enhancements only: all upstream GestaltX work remains
 attributed to its author, huamidev, below.
 

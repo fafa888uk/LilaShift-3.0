@@ -144,10 +144,10 @@ class ThirdPartyNoticesTests(unittest.TestCase):
     def test_about_shows_current_repo_url(self):
         text = ABOUT_VIEW.read_text(encoding="utf-8")
         self.assertTrue("GestaltBrand.lilashift" in text
-                        or "fafa920q-hue/LilaShift-2.0" in text,
+                        or "fafa888uk/LilaShift-3.0" in text,
                         "AboutView does not show the current repository URL")
         self.assertIsNone(
-            re.search(r"fafa920q-hue/LilaShift(?!-2\.0)", text),
+            re.search(r"fafa888uk/LilaShift(?!-3\.0)", text),
             "AboutView still links the old patch-based repository")
 
     def test_about_relationship_keys_exist_in_localization(self):

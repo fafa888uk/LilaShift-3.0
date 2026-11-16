@@ -17,7 +17,7 @@ problems — and where *not* to.
 
 ## Feedback and bug reports (GitHub Issues)
 
-- **Issues:** https://github.com/fafa920q-hue/LilaShift-2.0/issues
+- **Issues:** https://github.com/fafa888uk/LilaShift-3.0/issues
 - Use the issue templates:
   - **Bug report** — what happened, what you expected, steps to reproduce,
     LilaShift version (e.g. 3.0.0-rc.1, build 30000002), iOS version, device

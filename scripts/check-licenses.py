@@ -226,13 +226,13 @@ def check_about_view():
         if not path.is_file():
             fail(f"AboutView licenseFile {name!r} is missing from "
                  f"GestaltX/Licenses/ ({name}.txt)")
-    if re.search(r"fafa920q-hue/LilaShift(?!-2\.0)", text):
+    if re.search(r"fafa888uk/LilaShift(?!-3\.0)", text):
         fail("AboutView links the old patch-based repository "
-             "(fafa920q-hue/LilaShift); it must link LilaShift-2.0")
+             "(fafa888uk/LilaShift); it must link LilaShift-3.0")
     if "GestaltBrand.lilashift" not in text and \
-            "fafa920q-hue/LilaShift-2.0" not in text:
+            "fafa888uk/LilaShift-3.0" not in text:
         fail("AboutView does not show the current repository URL "
-             "(GestaltBrand.lilashift / fafa920q-hue/LilaShift-2.0)")
+             "(GestaltBrand.lilashift / fafa888uk/LilaShift-3.0)")
     ok("AboutView lists all 16 projects with URLs and bundled license files")
 
 

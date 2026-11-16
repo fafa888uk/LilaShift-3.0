@@ -197,7 +197,7 @@
 
 1. 先确认：系统版本、机型、安装方式、LilaShift 版本（3.0.0-rc.1，
    build 30000002）、操作步骤、期望结果、实际结果。
-2. 到 [GitHub Issues](https://github.com/fafa920q-hue/LilaShift-2.0/issues)
+2. 到 [GitHub Issues](https://github.com/fafa888uk/LilaShift-3.0/issues)
    新开 Issue，选 Bug 反馈模板（见 [COMMUNITY.md](../COMMUNITY.md)）。
 3. 可附脱敏后的日志片段；**不要贴序列号、UDID、IMEI、Apple ID、账号密钥
    或完整日志里的个人标识。**
