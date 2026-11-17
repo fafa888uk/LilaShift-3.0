@@ -1,0 +1,537 @@
+diff --git a/GestaltX.xcodeproj/project.pbxproj b/GestaltX.xcodeproj/project.pbxproj
+index 3f53ec0..a38f615 100644
+--- a/GestaltX.xcodeproj/project.pbxproj
++++ b/GestaltX.xcodeproj/project.pbxproj
+@@ -85,6 +85,7 @@
+ 		F412F296D4FF2A1C61ADF81B /* HomeDiagnosticsCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC7FB59F120F6B63EAAA34D /* HomeDiagnosticsCacheTests.swift */; };
+ 		DB12434CDC500609761216B1 /* HomeDiagnosticsCacheConcurrencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 007542ED35DFB2E93B7F0F41 /* HomeDiagnosticsCacheConcurrencyTests.swift */; };
+ 		BE026BD50295ABE265201260 /* DashboardV3SnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3624FBBE3C977DC36106724 /* DashboardV3SnapshotTests.swift */; };
++		22D3507955DABE5AE767272F /* DashboardV3Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAF5CBBEE41185FD281BF8D3 /* DashboardV3Tests.swift */; };
+ 		7DED2B4236ED38CA1B96C42F /* CPUImageDiffing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B54C7F4463E10A786731690A /* CPUImageDiffing.swift */; };
+ 		C5463A77EE63DF48864201E8 /* ShareLilaShiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E50F80F2FADE84F33D5410C /* ShareLilaShiftTests.swift */; };
+ 		09F2D22304F64048B9E6369A /* WallpaperSaveToPhotosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A80799FA4AA04135A981E681 /* WallpaperSaveToPhotosTests.swift */; };
+@@ -226,6 +227,7 @@
+ 		4CC7FB59F120F6B63EAAA34D /* HomeDiagnosticsCacheTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HomeDiagnosticsCacheTests.swift; sourceTree = "<group>"; };
+ 		007542ED35DFB2E93B7F0F41 /* HomeDiagnosticsCacheConcurrencyTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HomeDiagnosticsCacheConcurrencyTests.swift; sourceTree = "<group>"; };
+ 		A3624FBBE3C977DC36106724 /* DashboardV3SnapshotTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DashboardV3SnapshotTests.swift; sourceTree = "<group>"; };
++		BAF5CBBEE41185FD281BF8D3 /* DashboardV3Tests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DashboardV3Tests.swift; sourceTree = "<group>"; };
+ 		B54C7F4463E10A786731690A /* CPUImageDiffing.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CPUImageDiffing.swift; sourceTree = "<group>"; };
+ 		3E50F80F2FADE84F33D5410C /* ShareLilaShiftTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareLilaShiftTests.swift; sourceTree = "<group>"; };
+ 		A80799FA4AA04135A981E681 /* WallpaperSaveToPhotosTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WallpaperSaveToPhotosTests.swift; sourceTree = "<group>"; };
+@@ -456,6 +458,7 @@
+ 				4CC7FB59F120F6B63EAAA34D /* HomeDiagnosticsCacheTests.swift */,
+ 				007542ED35DFB2E93B7F0F41 /* HomeDiagnosticsCacheConcurrencyTests.swift */,
+ 				A3624FBBE3C977DC36106724 /* DashboardV3SnapshotTests.swift */,
++				BAF5CBBEE41185FD281BF8D3 /* DashboardV3Tests.swift */,
+ 				B54C7F4463E10A786731690A /* CPUImageDiffing.swift */,
+ 				3E50F80F2FADE84F33D5410C /* ShareLilaShiftTests.swift */,
+ 				A80799FA4AA04135A981E681 /* WallpaperSaveToPhotosTests.swift */,
+@@ -705,6 +708,7 @@
+ 				F412F296D4FF2A1C61ADF81B /* HomeDiagnosticsCacheTests.swift in Sources */,
+ 				DB12434CDC500609761216B1 /* HomeDiagnosticsCacheConcurrencyTests.swift in Sources */,
+ 				BE026BD50295ABE265201260 /* DashboardV3SnapshotTests.swift in Sources */,
++				22D3507955DABE5AE767272F /* DashboardV3Tests.swift in Sources */,
+ 				7DED2B4236ED38CA1B96C42F /* CPUImageDiffing.swift in Sources */,
+ 				C5463A77EE63DF48864201E8 /* ShareLilaShiftTests.swift in Sources */,
+ 				09F2D22304F64048B9E6369A /* WallpaperSaveToPhotosTests.swift in Sources */,
+diff --git a/GestaltX.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved b/GestaltX.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+index e314e45..e44744a 100644
+--- a/GestaltX.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
++++ b/GestaltX.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+@@ -1,6 +1,15 @@
+ {
+   "originHash" : "b26c070fd1f0b029780331f3cefa3909a6d58ea6b3ae242bffe49d6011fe06fe",
+   "pins" : [
++    {
++      "identity" : "swift-snapshot-testing",
++      "kind" : "remoteSourceControl",
++      "location" : "https://github.com/pointfreeco/swift-snapshot-testing.git",
++      "state" : {
++        "revision" : "1488390b0735e726564b948bf08b384398bdab5c",
++        "version" : "1.19.7"
++      }
++    },
+     {
+       "identity" : "zipfoundation",
+       "kind" : "remoteSourceControl",
+diff --git a/GestaltX/AboutView.swift b/GestaltX/AboutView.swift
+index b127f97..2a8dc7a 100644
+--- a/GestaltX/AboutView.swift
++++ b/GestaltX/AboutView.swift
+@@ -38,6 +38,7 @@ let openSourceProjects: [OpenSourceProject] = [
+     OpenSourceProject(name: "Nugget", author: "leminlimez", relationshipKey: "Research reference", tech: "Key mappings · Feature grouping", license: "AGPL-3.0", licenseFile: nil, url: "https://github.com/leminlimez/Nugget", shippedInIPA: false),
+     OpenSourceProject(name: "mond", author: "rooootdev", relationshipKey: "Research reference", tech: "Key mappings", license: "AGPL-3.0", licenseFile: nil, url: "https://github.com/rooootdev/mond", shippedInIPA: false),
+     OpenSourceProject(name: "GestaltEdit", author: "frs0n", relationshipKey: "Research reference", tech: "Workflow reference", license: "GPL-3.0-or-later", licenseFile: nil, url: "https://github.com/frs0n/GestaltEdit", shippedInIPA: false),
++    OpenSourceProject(name: "WQFiles", author: "kolbicz", relationshipKey: "Research reference", tech: "LaunchServices discovery", license: "GPL-3.0", licenseFile: "GestaltX-GPL-3.0", url: "https://github.com/kolbicz/WQFiles", shippedInIPA: false),
+     OpenSourceProject(name: "SnapshotTesting", author: "Point-Free, Inc.", relationshipKey: "Test tool", tech: "Snapshot tests", license: "MIT", licenseFile: nil, url: "https://github.com/pointfreeco/swift-snapshot-testing", shippedInIPA: false),
+     OpenSourceProject(name: "SwiftLint", author: "Realm Inc.", relationshipKey: "Build tool", tech: "Code style checks", license: "MIT", licenseFile: nil, url: "https://github.com/realm/SwiftLint", shippedInIPA: false),
+ ]
+diff --git a/GestaltX/Licenses/ThirdPartyNotices.txt b/GestaltX/Licenses/ThirdPartyNotices.txt
+index 42fdff6..c896ada 100644
+--- a/GestaltX/Licenses/ThirdPartyNotices.txt
++++ b/GestaltX/Licenses/ThirdPartyNotices.txt
+@@ -78,7 +78,7 @@ Author: Kianuni — https://github.com/Kianuni/Erosion-CN
+ License: GNU GPL v3; full text: Erosion-GPL-3.0.txt (standard GPL v3 text,
+ identical to LICENSE). Erosion-CN is a Simplified-Chinese fork of Erosion.
+ No Erosion-CN code is copied verbatim. Its ideas were reimplemented for
+-GestaltX, and two data tables were transcribed value-for-value:
++GestaltX, and three data tables were transcribed value-for-value:
+ - Design reference, reimplemented: the Apple Intelligence readiness
+   checkup idea (GestaltX/AIReadinessCheckup.swift, adapted from
+   Erosion-CN's AppleIntelligenceCheckupCard); the in-place device-plist
+@@ -97,7 +97,10 @@ GestaltX, and two data tables were transcribed value-for-value:
+   the native Audio Intelligence / Personal Translator slot baselines in
+   GestaltX/DeviceAIEligibility.swift, taken from Erosion-CN's live device
+   probes (iPhone 18 Pro Max iPhone19,7 and iPhone 15 Pro Max iPhone16,2,
+-  iOS 27). Erosion-CN's own note warning that a full-US mapping can
++  iOS 27); the 56 MobileGestalt keys in GestaltX/MGKeysTable.swift (from
++  Erosion-CN's `MGCacheLayout.swift`, transcribed value-for-value with the
++  upstream line number on each key — the data comes from Erosion-CN, not
++  from MGKeys, despite the file name). Erosion-CN's own note warning that a full-US mapping can
+   conflict on CN dual-physical-SIM + eSIM hardware is followed in
+   GestaltX/Capabilities.swift (Full US stays an explicit opt-in).
+ - Design reference, reimplemented (LilaShift 3.0 MEDIUM port): the
+@@ -118,6 +121,17 @@ GestaltX, and two data tables were transcribed value-for-value:
+   inferred from a name). The shared container-access and snapshot helpers
+   (GestaltX/ContainerAccess.swift, GestaltX/SQLiteSnapshotHelper.swift)
+   follow Erosion-CN's WorseQuery.grantAccess and SQLiteSnapshotHelper.
++- Design reference, reimplemented (LilaShift 3.0 LOW port): the
++  lock-screen asset tag (GestaltX/AssetTag.swift, from Erosion-CN's
++  `ConfigView`); the Phone dialer keypad skin (GestaltX/DialerSkin.swift,
++  from Erosion-CN's `KeypadManager`/`KeypadView`); the on-device AI model
++  cache probe (GestaltX/ModelCacheProbe.swift, from Erosion-CN's
++  `VoiceMemosAIView.probeAIModelCaches`); the lossless Voice Memos audio
++  export (GestaltX/VoiceMemoExport.swift, from Erosion-CN's
++  `VoiceMemosAIView`); the four-microphone phone list for spatial audio
++  recording (GestaltX/LilaIntelligence.swift, from Erosion-CN's
++  `GestaltHelpers.fourMicPhones`) and the MGCacheLayout key references in
++  the same file's capability sources (from Erosion-CN's `MGCacheLayout.swift`).
+ Because LilaShift is itself GPL-3.0, this reuse stays under the same
+ license; the attribution above records where the data came from.
+ 
+@@ -179,6 +193,11 @@ ported: porting it would impose AGPL terms on this app.
+   1.0.0 (2026-08-20), then GPL v3 (2026-11-09, commit ed8192e, when the
+   project adopted GPL-licensed worse_query). The earlier PolyForm
+   statement in this file was outdated and is corrected here.
++- kolbicz/WQFiles (GPL-3.0): https://github.com/kolbicz/WQFiles
++  LaunchServices database discovery lookup researched
++  (GestaltX/GXLaunchServicesDatabase.m); independently implemented,
++  no code copied. License: GNU GPL v3; full text: GestaltX-GPL-3.0.txt.
++  Not shipped in the IPA.
+ 
+ 
+ 11. Test and build tools (not shipped in the app)
+diff --git a/GestaltX/LiquidGlass.swift b/GestaltX/LiquidGlass.swift
+index 3734efa..7a7ce07 100644
+--- a/GestaltX/LiquidGlass.swift
++++ b/GestaltX/LiquidGlass.swift
+@@ -1,5 +1,7 @@
+ // SPDX-License-Identifier: GPL-3.0-only
+-// Copyright (C) 2026 huamidev
++// Copyright (C) 2026 LilaShift
++// LilaShift original: light-lavender Liquid Glass design system.
++// Maintainer: @steam8871. Not derived from upstream GestaltX code.
+ import SwiftUI
+ 
+ /// Liquid Glass design system for the Tools home, preset groups and change
+diff --git a/GestaltX/WelcomeView.swift b/GestaltX/WelcomeView.swift
+index 9b4213d..f4ecad1 100644
+--- a/GestaltX/WelcomeView.swift
++++ b/GestaltX/WelcomeView.swift
+@@ -1,5 +1,7 @@
+ // SPDX-License-Identifier: GPL-3.0-only
+ // Copyright (C) 2026 huamidev
++// LilaShift modification: rebranded "Welcome to GestaltX" to LilaShift; iOS compatibility range updated.
++// Maintainer: @steam8871. Upstream GestaltX code remains huamidev's.
+ import SwiftUI
+ 
+ struct WelcomeView: View {
+diff --git a/README.md b/README.md
+index e74539a..e858bb7 100644
+--- a/README.md
++++ b/README.md
+@@ -9,7 +9,7 @@
+ > **Pre-release: LilaShift 3.0.0-rc.1** — this is a **pre-release, not a stable release**.
+ > Built from `feature/lilashift-3.0-dashboard` at commit `37c4a368c73ec80654c8b395387abea9a24915f6` (includes fix commit `7020964`).
+ > In-app version `3.0.0` (build `30000002`) · IPA file `LilaShift_3.0.0.ipa`.
+-> **Real-device install, eSIM activation, Apple Intelligence activation and restore have been verified on a real iPhone Air (iPhone18,4, iOS 27.0.1) for this build.** See [What is verified](#what-is-verified-and-what-is-not).
++> **Real-device install, eSIM activation, Apple Intelligence activation and restore have NOT been verified for this build: no real-device evidence for this HEAD is in this repository.** See [What is verified](#what-is-verified-and-what-is-not) and `CHANGELOG.md` (Known gaps).
+ 
+ [![Version](https://img.shields.io/badge/version-3.0.0--rc.1%20pre--release-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v3.0.0-rc.1)
+ [![Build LilaShift IPA](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml)
+@@ -61,10 +61,10 @@ One-tap eSIM, region code, and Apple Intelligence setup for China-model iPhones
+ | Source builds in CI (`Build LilaShift IPA`) | ✅ Verified by GitHub Actions — see badge above |
+ | Swift unit tests (`Run Swift Tests`) | ✅ Verified by GitHub Actions — see badge above |
+ | License / attribution check (`Check Licenses`) | ✅ Verified by GitHub Actions |
+-| Real-device install of this exact IPA | ✅ **Verified** on iPhone Air (iPhone18,4), iOS 27.0.1 |
+-| eSIM activation after unlocking | ✅ **Verified** on iPhone Air — eSIM active (China Unicom, roaming) after one-tap unlock |
+-| Apple Intelligence actually appearing / working | ✅ **Verified** on iPhone Air — region code `LL` persisted after reboot; Apple Intelligence recognized |
+-| Restore returning a device to its exact prior state | ✅ **Verified** on iPhone Air — restore returns the recorded original values |
++| Real-device install of this exact IPA | ⚠️ **Not verified for this build** — no real-device evidence for this HEAD in this repository (see `CHANGELOG.md`, Known gaps) |
++| eSIM activation after unlocking | ⚠️ **Not verified for this build** — no real-device evidence for this HEAD in this repository |
++| Apple Intelligence actually appearing / working | ⚠️ **Not verified for this build** — no real-device evidence for this HEAD in this repository |
++| Restore returning a device to its exact prior state | ⚠️ **Not verified for this build** — no real-device evidence for this HEAD in this repository |
+ 
+ Changing a MobileGestalt flag is **not** the same as the feature working: a flag can read as "on" while the hardware, OS version, or Apple services still say no. Nothing in this README claims every device can unlock everything.
+ 
+@@ -78,7 +78,7 @@ This is the **full-source project** for LilaShift 3.0 (紫序), the China Unlock
+ 
+ ## What's new in 3.0.0-rc.1
+ 
+-- **LilaShift 3.0 dashboard** — a lightweight home screen with real device read and staged-change status, a 55-item feature catalog across 11 categories (42 preset items + 13 page items), a unified 8-state compatibility model, a history/restore view with confirmation steps, and diagnostic caching that moves file reads and SHA-256 hashing off the render path. See [CHANGELOG.md](CHANGELOG.md).
++- **LilaShift 3.0 dashboard** — a lightweight home screen with real device read and staged-change status, a 58-item feature catalog across 11 categories (45 preset items + 13 page items), a unified 8-state compatibility model, a history/restore view with confirmation steps, and diagnostic caching that moves file reads and SHA-256 hashing off the render path. See [CHANGELOG.md](CHANGELOG.md).
+ - **One-tap China Unlock (10 items; 3 on native Apple Intelligence models)** — eSIM switches (`green-tea` off, `not-green-tea` on), region code set to US (`LL`, sales region untouched), and seven Apple Intelligence capabilities, all staged in one tap and reviewed before applying.
+   - The eSIM cache layout is verified before staging; if it cannot be verified, the whole eSIM group stops and shows the reason. Region and AI flags can still be set individually.
+   - On models with native Apple Intelligence (e.g. iPhone Air), the seven AI items are skipped — the device already has them — so one-tap stages only the 2 eSIM switches + region code.
+@@ -243,7 +243,7 @@ This project is distributed under the **GNU General Public License v3.0** — se
+ - Upstream project: [huamidev/GestaltX](https://github.com/huamidev/GestaltX) (`v1.0.7`, commit `dfd4a7e`, plus PR #126, commit `c60519c`)
+ - Enhanced version maintainer: `@steam8871`
+ - Modifications in this build: the China Unlock preset (10 items; 3 on native Apple Intelligence models) and its safety checks, the light-lavender Liquid Glass redesign, one-line purpose descriptions, the author badge and progress cards, the in-app source-repository link, the open-source compliance section, the Erosion-CN-inspired hardening (write path, dynamic layout resolution, diff preview, dual-vault backup, region mode, AI checkup), the LilaShift rebrand, and the cat app icon.
+-- LilaShift 3.0 additions: the lightweight dashboard, the 55-item feature catalog, the unified compatibility model, the history/restore view, diagnostic caching, and the open-source contributor center (About page) with the per-project source record in `docs/OPEN_SOURCE_REFERENCES.md`. Also: Face ID recovery (restore only the four hardware-identity fields from a verified same-device backup, upstream GestaltX #128/#146, extended to iPhone 16/17/Air), clear-and-rebuild MobileGestalt cache (Erosion-CN mechanism, reimplemented; backup taken first), and a one-click AI baseline fix in the one-tap flow (Personal Translator slot #266 = 1, Audio Intelligence slot #178 = 0, absent AI keys filled).
++- LilaShift 3.0 additions: the lightweight dashboard, the 58-item feature catalog, the unified compatibility model, the history/restore view, diagnostic caching, and the open-source contributor center (About page) with the per-project source record in `docs/OPEN_SOURCE_REFERENCES.md`. Also: Face ID recovery (restore only the four hardware-identity fields from a verified same-device backup, upstream GestaltX #128/#146, extended to iPhone 16/17/Air), clear-and-rebuild MobileGestalt cache (Erosion-CN mechanism, reimplemented; backup taken first), and a one-click AI baseline fix in the one-tap flow (Personal Translator slot #266 = 1, Audio Intelligence slot #178 = 0, absent AI keys filled).
+ - The complete corresponding source is in this repository (full source, no patch step).
+ 
+ ## Credits
+diff --git a/README_ZH-CN.md b/README_ZH-CN.md
+index e2b618e..94fbc33 100644
+--- a/README_ZH-CN.md
++++ b/README_ZH-CN.md
+@@ -9,7 +9,7 @@
+ > **预发布版本：LilaShift 3.0.0-rc.1** —— 这是**预发布版，不是正式稳定版**。
+ > 基于 `feature/lilashift-3.0-dashboard` 分支构建，提交 `37c4a368c73ec80654c8b395387abea9a24915f6`（包含 fix 提交 `7020964`）。
+ > App 内版本号 `3.0.0`（构建号 `30000002`），IPA 文件名 `LilaShift_3.0.0.ipa`。
+-> **真机安装、eSIM 激活、Apple Intelligence 激活与恢复，均已在真机 iPhone Air（iPhone18,4，iOS 27.0.1）上验证通过。** 详见[已验证内容与未验证内容](#已验证内容与未验证内容)。
++> **真机安装、eSIM 激活、Apple Intelligence 激活与恢复，本版本均未验证：仓库中没有针对此 HEAD 的真机证据。** 详见[已验证内容与未验证内容](#已验证内容与未验证内容)与 `CHANGELOG_ZH-CN.md`（本 HEAD 已知缺口）。
+ 
+ [![版本](https://img.shields.io/badge/version-3.0.0--rc.1%20预发布-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v3.0.0-rc.1)
+ [![Build LilaShift IPA](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml)
+@@ -61,10 +61,10 @@
+ | CI 源码构建（`Build LilaShift IPA`） | ✅ 已通过 GitHub Actions 验证——见上方徽章 |
+ | Swift 单元测试（`Run Swift Tests`） | ✅ 已通过 GitHub Actions 验证——见上方徽章 |
+ | 许可证 / 署名检查（`Check Licenses`） | ✅ 已通过 GitHub Actions 验证 |
+-| 本版本 IPA 的真机安装 | ✅ **已验证**——iPhone Air（iPhone18,4），iOS 27.0.1 |
+-| 解锁后的 eSIM 激活 | ✅ **已验证**——iPhone Air 一键解锁后 eSIM 已激活（中国联通，漫游中） |
+-| Apple Intelligence 实际出现 / 可用 | ✅ **已验证**——iPhone Air 地区码 `LL` 重启后仍在，Apple Intelligence 已识别 |
+-| 恢复后设备是否回到原始状态 | ✅ **已验证**——iPhone Air 恢复可还原记录的原始值 |
++| 本版本 IPA 的真机安装 | ⚠️ **本版本未验证**——仓库中没有针对此 HEAD 的真机证据（见 `CHANGELOG_ZH-CN.md`，本 HEAD 已知缺口） |
++| 解锁后的 eSIM 激活 | ⚠️ **本版本未验证**——仓库中没有针对此 HEAD 的真机证据 |
++| Apple Intelligence 实际出现 / 可用 | ⚠️ **本版本未验证**——仓库中没有针对此 HEAD 的真机证据 |
++| 恢复后设备是否回到原始状态 | ⚠️ **本版本未验证**——仓库中没有针对此 HEAD 的真机证据 |
+ 
+ 修改 MobileGestalt 标志位**不等于**功能真正可用：标志位可能显示为"已开启"，但硬件、系统版本或 Apple 服务端仍可能拒绝。本文档不保证任何设备都能解锁全部功能。
+ 
+@@ -78,7 +78,7 @@
+ 
+ ## 3.0.0-rc.1 新增内容
+ 
+-- **紫序 3.0 仪表盘**——轻量首页展示真实设备读取与待处理更改状态；55 项功能目录分为 11 个分类（42 项预设 + 13 项页面功能，统一排序规则：版本化 JSON + SHA-256 校验文件）；统一的 8 状态兼容性模型；带二次确认的历史/恢复视图；诊断缓存将文件读取与 SHA-256 计算移出渲染路径。详见 [CHANGELOG_ZH-CN.md](CHANGELOG_ZH-CN.md)。
++- **紫序 3.0 仪表盘**——轻量首页展示真实设备读取与待处理更改状态；58 项功能目录分为 11 个分类（45 项预设 + 13 项页面功能，统一排序规则：版本化 JSON + SHA-256 校验文件）；统一的 8 状态兼容性模型；带二次确认的历史/恢复视图；诊断缓存将文件读取与 SHA-256 计算移出渲染路径。详见 [CHANGELOG_ZH-CN.md](CHANGELOG_ZH-CN.md)。
+ - **一键国行解锁（10 项；原生 Apple Intelligence 机型 3 项）**——eSIM 开关（green-tea 关闭、not-green-tea 开启）、区域代码设为美国（`LL`，销售地区保持不变）、七项 Apple Intelligence 能力，全部一键暂存后再统一审核应用。
+   - 应用前会先验证 eSIM 缓存布局；若无法验证，整个 eSIM 分组会停止并显示原因，区域与 AI 开关仍可单独设置。
+   - 原生 Apple Intelligence 机型（如 iPhone Air）上 7 项 AI 会跳过——机器本身已有这些能力——一键只暂存 eSIM 两项 + 地区码。
+@@ -243,7 +243,7 @@ GestaltX 跟随你的 iOS 语言设置，默认语言与回退语言为英语。
+ - 上游项目：[huamidev/GestaltX](https://github.com/huamidev/GestaltX)（`v1.0.7`，提交 `dfd4a7e`，加上 PR #126，提交 `c60519c`）
+ - 增强版维护者：`@steam8871`
+ - 本版本中的修改内容：国行解锁预设（10 项；原生 Apple Intelligence 机型 3 项）及其安全检查、浅紫色 Liquid Glass 重新设计、每项功能的一句话用途说明、作者徽章与进度卡片、App 内源码仓库链接、开源合规页面、参考 Erosion-CN 思路做的加固（写入路径、动态布局解析、差异预览、双保险库备份、区域模式、AI 体检）、紫序品牌重塑，以及猫咪应用图标。
+-- LilaShift 3.0 新增内容：轻量仪表盘、55 项功能目录、统一兼容性模型、历史/恢复视图、诊断缓存，以及带每个项目来源记录的开源贡献者中心（"关于"页），详细记录见 `docs/OPEN_SOURCE_REFERENCES.md`。
++- LilaShift 3.0 新增内容：轻量仪表盘、58 项功能目录、统一兼容性模型、历史/恢复视图、诊断缓存，以及带每个项目来源记录的开源贡献者中心（"关于"页），详细记录见 `docs/OPEN_SOURCE_REFERENCES.md`。
+ - 完整的对应源码均在本仓库中（全量源码，无单独补丁步骤）。
+ 
+ ## 致谢
+diff --git a/THIRD_PARTY_NOTICES.md b/THIRD_PARTY_NOTICES.md
+index eaf02df..c896ada 100644
+--- a/THIRD_PARTY_NOTICES.md
++++ b/THIRD_PARTY_NOTICES.md
+@@ -78,14 +78,18 @@ Author: Kianuni — https://github.com/Kianuni/Erosion-CN
+ License: GNU GPL v3; full text: Erosion-GPL-3.0.txt (standard GPL v3 text,
+ identical to LICENSE). Erosion-CN is a Simplified-Chinese fork of Erosion.
+ No Erosion-CN code is copied verbatim. Its ideas were reimplemented for
+-GestaltX, and two data tables were transcribed value-for-value:
++GestaltX, and three data tables were transcribed value-for-value:
+ - Design reference, reimplemented: the Apple Intelligence readiness
+   checkup idea (GestaltX/AIReadinessCheckup.swift, adapted from
+   Erosion-CN's AppleIntelligenceCheckupCard); the in-place device-plist
+   writer idea (GestaltX/DevicePlistWriter.swift, adapted from Erosion-CN's
+   `writeFileAtomically` — the name only; our writer is an in-place pwrite
+   writer with no atomicity claim, see its header); the `__cfstring` walk for CacheUUID discovery
+-  (GestaltX/GXMobileGestaltImage.m, adapted from Erosion-CN's MGImageReader).
++  (GestaltX/GXMobileGestaltImage.m, adapted from Erosion-CN's MGImageReader);
++  the clear-and-rebuild-cache mechanism (GestaltX/GestaltDocument.swift
++  `rebuildCache`, adapted from Erosion-CN's `mgExecuteCleanCacheRebuild` —
++  backup first, then delete the live cache so iOS regenerates it from the
++  hardware on restart).
+ - Reused data, transcribed: the US regulatory-model A-number pairs in
+   GestaltX/USRegulatoryModelMapping.swift (from Erosion-CN's
+   `usRegulatoryModelNumber`); the native Apple Intelligence device list in
+@@ -93,9 +97,41 @@ GestaltX, and two data tables were transcribed value-for-value:
+   the native Audio Intelligence / Personal Translator slot baselines in
+   GestaltX/DeviceAIEligibility.swift, taken from Erosion-CN's live device
+   probes (iPhone 18 Pro Max iPhone19,7 and iPhone 15 Pro Max iPhone16,2,
+-  iOS 27). Erosion-CN's own note warning that a full-US mapping can
++  iOS 27); the 56 MobileGestalt keys in GestaltX/MGKeysTable.swift (from
++  Erosion-CN's `MGCacheLayout.swift`, transcribed value-for-value with the
++  upstream line number on each key — the data comes from Erosion-CN, not
++  from MGKeys, despite the file name). Erosion-CN's own note warning that a full-US mapping can
+   conflict on CN dual-physical-SIM + eSIM hardware is followed in
+   GestaltX/Capabilities.swift (Full US stays an explicit opt-in).
++- Design reference, reimplemented (LilaShift 3.0 MEDIUM port): the
++  fake-supervision residue audit and cleanup (GestaltX/SupervisionAudit.swift,
++  from Erosion-CN's ConfigView — deletes only a residue file, never a
++  genuine MDM profile); the read-only battery-health and thermal telemetry
++  reader (GestaltX/PowerTelemetry.swift, from Erosion-CN's PowerTelemetryView
++  — APFS clonefile snapshot of CurrentPowerlog.PLSQL, never written); the
++  read-only crash-diagnostics reader (GestaltX/CrashDiagnostics.swift, from
++  Erosion-CN's CrashDiagnosticsView — parses .ips reports, never edits a
++  system log); the .sgmodule / Stash rule generator and Surge injector
++  (GestaltX/ProxyRuleGenerator.swift, GestaltX/ProxyRuleInjector.swift, from
++  Erosion-CN's AppGroupHubView — writes one module file into a detected
++  proxy client's own AppGroup container only); the AppGroup discovery and
++  read-only container browser plus Safari bookmark export
++  (GestaltX/AppGroupBrowser.swift, from Erosion-CN's AppGroupHubView —
++  group identity read from the container xattr or metadata plist, never
++  inferred from a name). The shared container-access and snapshot helpers
++  (GestaltX/ContainerAccess.swift, GestaltX/SQLiteSnapshotHelper.swift)
++  follow Erosion-CN's WorseQuery.grantAccess and SQLiteSnapshotHelper.
++- Design reference, reimplemented (LilaShift 3.0 LOW port): the
++  lock-screen asset tag (GestaltX/AssetTag.swift, from Erosion-CN's
++  `ConfigView`); the Phone dialer keypad skin (GestaltX/DialerSkin.swift,
++  from Erosion-CN's `KeypadManager`/`KeypadView`); the on-device AI model
++  cache probe (GestaltX/ModelCacheProbe.swift, from Erosion-CN's
++  `VoiceMemosAIView.probeAIModelCaches`); the lossless Voice Memos audio
++  export (GestaltX/VoiceMemoExport.swift, from Erosion-CN's
++  `VoiceMemosAIView`); the four-microphone phone list for spatial audio
++  recording (GestaltX/LilaIntelligence.swift, from Erosion-CN's
++  `GestaltHelpers.fourMicPhones`) and the MGCacheLayout key references in
++  the same file's capability sources (from Erosion-CN's `MGCacheLayout.swift`).
+ Because LilaShift is itself GPL-3.0, this reuse stays under the same
+ license; the attribution above records where the data came from.
+ 
+@@ -157,6 +193,11 @@ ported: porting it would impose AGPL terms on this app.
+   1.0.0 (2026-08-20), then GPL v3 (2026-11-09, commit ed8192e, when the
+   project adopted GPL-licensed worse_query). The earlier PolyForm
+   statement in this file was outdated and is corrected here.
++- kolbicz/WQFiles (GPL-3.0): https://github.com/kolbicz/WQFiles
++  LaunchServices database discovery lookup researched
++  (GestaltX/GXLaunchServicesDatabase.m); independently implemented,
++  no code copied. License: GNU GPL v3; full text: GestaltX-GPL-3.0.txt.
++  Not shipped in the IPA.
+ 
+ 
+ 11. Test and build tools (not shipped in the app)
+diff --git a/docs/FEATURE_ORIGIN_MATRIX.md b/docs/FEATURE_ORIGIN_MATRIX.md
+index b12617e..87d7d72 100644
+--- a/docs/FEATURE_ORIGIN_MATRIX.md
++++ b/docs/FEATURE_ORIGIN_MATRIX.md
+@@ -149,7 +149,7 @@
+ | 模块 | 来源 | 说明 |
+ |---|---|---|
+ | `GestaltX/DashboardV3.swift` | **LilaShift 新增实现** | 轻量可配置首页 + 稳定快捷排序（3.0 分支提交 `493d71c`） |
+-| `GestaltX/FeatureCatalog.swift`、`FeatureCatalogViews.swift` | **LilaShift 新增实现** | 55 项、11 分类的功能目录；单一排序规则；版本化 JSON + SHA-256 sidecar |
++| `GestaltX/FeatureCatalog.swift`、`FeatureCatalogViews.swift` | **LilaShift 新增实现** | 58 项、11 分类的功能目录；单一排序规则；版本化 JSON + SHA-256 sidecar |
+ | `GestaltX/CompatibilityStatus.swift` | **LilaShift 新增实现** | 8 状态兼容性模型；`isOffered()` 仅对 `.modifiable` 返回真 |
+ | `GestaltX/HistoryRestoreSummary.swift` | **LilaShift 新增实现** | 统一历史与恢复视图；恢复预览清单；二次确认 |
+ | `GestaltX/HomeDiagnosticsCache.swift`、`HomeDiagnosticsSection.swift` | **LilaShift 新增实现** | 诊断计算缓存（后台算一次、只发变化值）+ 11 张诊断卡的二级页 |
+@@ -163,10 +163,10 @@
+ 
+ | 功能 | 状态 | 来源/备注 |
+ |---|---|---|
+-| MGKeys 键名表与版本覆盖表（Swift 表） | 未实现（Tier 1） | MGKeys，MIT，需署名；只纳入已用键子集 |
++| MGKeys 键名表与版本覆盖表（Swift 表） | 部分实现：键名表已实现，版本覆盖表未实现 | MGKeys，MIT，需署名；键名表 `GestaltX/MGKeysTable.swift`（A22；56 个 Erosion-CN 键 + 能力/身份行，测试 `tests/MGKeysTableTests.swift`）；版本覆盖表仍无实现 |
+ | 完整兼容性矩阵（逐机型/逐版本） | 未实现（Tier 1） | Erosion-CN FAQ，设计参考 |
+-| 清除并重建缓存（纯净原厂基线） | 未实现（Tier 1） | Erosion-CN，GPL-3.0，需先有可信原厂备份 |
+-| 电池与崩溃诊断（真实读数） | 未实现（Tier 2） | Erosion-CN，GPL-3.0 |
++| 清除并重建缓存（纯净原厂基线） | 已实现（Erosion-CN 机制，重新实现；先备份再删缓存，重启后由系统重建） | Erosion-CN，GPL-3.0；`GestaltX/GestaltDocument.swift:1116` `rebuildCache(expected:)` + `GestaltX/GestaltManager.swift:1345` 包装，测试 `tests/CacheRebuildTests.swift` |
++| 电池与崩溃诊断（真实读数） | 已实现（MEDIUM 轮 A7/A8，重新实现；真实读数，无法访问时报 unavailable 而非编造） | Erosion-CN，GPL-3.0；电池/温度 `GestaltX/PowerTelemetry.swift`，崩溃报告 `GestaltX/CrashDiagnostics.swift` |
+ | 应用存档备份、跨容器写操作 | 未实现（Tier 2，须单独评估权限与风险） | Erosion-CN，GPL-3.0 |
+ | 铃声管理、设备配对、桌面助手 | 未实现（Tier 2，依赖 1.0.8 rebase） | 上游 GestaltX 1.0.8 + idevice（MIT）/ libimobiledevice（LGPL-2.1） |
+ | iOS 27.2 逃逸（Gester class 7 symlink） | 研究中，未实现 | Gester，MIT；须先真机验证；class-2 无 App Group 回退保持默认关闭 |
+diff --git a/docs/INSTALL_ZH-CN.md b/docs/INSTALL_ZH-CN.md
+index 9236158..723d50a 100644
+--- a/docs/INSTALL_ZH-CN.md
++++ b/docs/INSTALL_ZH-CN.md
+@@ -323,7 +323,7 @@ LiveContainer 方式不需要重签，也就不需要你自己准备 App Group
+ 3. 读取完成后：
+    - 首页会显示设备概况（机型、系统版本等）；
+    - 打开 **China Unlock** 可看到 10 项内容的当前状态；
+-   - 打开功能目录可按 11 个分类浏览 55 项功能，每项有 8 状态兼容性标识
++   - 打开功能目录可按 11 个分类浏览 58 项功能，每项有 8 状态兼容性标识
+      （原生支持 / 可改 / 已启用 / 已暂存 / 需重启 / 未验证 / 不支持 / 读取失败）。
+ 4. 如果读取失败或某项显示“读取失败 / 未验证”，先不要应用任何改动，
+    见 [TROUBLESHOOTING_ZH-CN.md](TROUBLESHOOTING_ZH-CN.md)。
+diff --git a/docs/OPEN_SOURCE_REFERENCES.md b/docs/OPEN_SOURCE_REFERENCES.md
+index a71843f..c59a4fb 100644
+--- a/docs/OPEN_SOURCE_REFERENCES.md
++++ b/docs/OPEN_SOURCE_REFERENCES.md
+@@ -269,7 +269,7 @@
+ | 主要修改 | 无。快照参考图须在与 CI 相同的模拟器/Xcode 上录制；UI 改动须有意更新参考图 |
+ | 是否打包进入 IPA | 否 |
+ | 版权与许可证义务 | MIT（保留版权声明即可）；测试工具不随 App 分发，许可证文本不打包进 App（上游链接见上） |
+-| 仍需人工确认 | **是——构建清单问题（非许可证问题）**：已提交的 `Package.resolved` 仅固定了 ZIPFoundation 0.9.20，**未列出 SnapshotTesting**，而 `project.pbxproj` 要求其精确版本 1.19.7。须在有 Xcode 的环境运行 `xcodebuild -resolvePackageDependencies` 重新生成并提交；在此之前 `scripts/check-licenses.py` 会报出该差异作为警告 |
++| 仍需人工确认 | 否——构建清单问题已在 Stage 0（P0 LICENSE SYNC）修复：`Package.resolved` 现固定 SnapshotTesting **1.19.7**（revision `1488390b0735e726564b948bf08b384398bdab5c`，`git ls-remote` 核实上游 tag `1.19.7`，轻量 tag、无 `^{}` 解引用，2026-11-17）。`originHash` 未随手改重算，下次 Xcode 解析依赖时会重新生成；仍建议在有 Xcode 的环境跑一次 `xcodebuild -resolvePackageDependencies` 复核 |
+ 
+ ## 16. SwiftLint — 构建工具（不随 IPA 分发）
+ 
+@@ -290,6 +290,25 @@
+ 
+ ---
+ 
++## 17. WQFiles — 研究参考
++
++| 项目 | 内容 |
++|---|---|
++| 作者 / 组织 | kolbicz |
++| GitHub | https://github.com/kolbicz/WQFiles |
++| 使用的版本 / 提交 | 未记录（NOT RECORDED）：仓库内此前除 URL 外无任何版本/commit 记录；Stage 1 如需对照须补记 |
++| 许可证 | **GPL-3.0**（2026-11-17 核实：GitHub 仓库页标注 "GNU General Public License v3.0 (GPL-3.0)"，仓库含 `LICENSE` 文件；此前 `docs/APP_APPEARANCE_RESEARCH_ZH.md` 的 GPL-3.0 说法经此次核实确认） |
++| 证据来源 | https://github.com/kolbicz/WQFiles（仓库页许可证标注与 `LICENSE` 文件） |
++| LilaShift 对应功能 | LaunchServices 数据库发现：通过 LaunchServices 数据库定位已安装 App 的容器（App 数据、App Group、扩展数据） |
++| 对应源码文件 | `GestaltX/GXLaunchServicesDatabase.m:3`（头注释引用；独立实现） |
++| 使用关系 | **研究参考**（reference only; independently implemented）：仅研究了其数据库发现思路，**未复制任何代码** |
++| 主要修改 | 无（无代码引入） |
++| 是否打包进入 IPA | 否 |
++| 版权与许可证义务 | GPL-3.0；仅作研究参考且无代码再分发，无分发义务；署名与来源已记入 `THIRD_PARTY_NOTICES.md` §10 与 About 页 |
++| 仍需人工确认 | 否（许可证已核实；版本/commit 补记属 Stage 1 研究任务） |
++
++---
++
+ ## 已调研、未集成（仅作记录，防止未来误认）
+ 
+ | 项目 | 许可证 | 状态 |
+@@ -307,6 +326,6 @@
+ ## 已知问题（需人工跟进）
+ 
+ 1. **NeoSpring 无许可证**（见 §4）：**已决定并处理（2026-11-14，用户选方案 c：移除/替换）**。改编的法律依据不足，`GestaltX/NeoSpringView.swift` 已删除，Respring 操作改为手动重启提示，不再随 IPA 分发。重新集成须先获得有效授权并经独立审计与测试。决定前不得新增对该技术的依赖。
+-2. **`Package.resolved` 缺少 SnapshotTesting 的固定版本**（见 §15）：须在 Xcode 环境重新生成。
++2. **`Package.resolved` 缺少 SnapshotTesting 的固定版本**（见 §15）：**已修复（Stage 0，2026-11-17）**——现固定 1.19.7（revision `1488390b…`，`git ls-remote` 核实）；`originHash` 仍待下次 Xcode 解析时重算复核。
+ 3. **worse_query 与 Ketamine 的引入提交尚未核实**（见 §2、§3）：低优先级，不影响许可证结论（文件自带完整声明）。
+ 4. **fa 语言的 32 个新增本地化键未经母语审校**（3.0 集成遗留）；本次新增的 21 个关于页键的 8 语种翻译同样未经母语审校，测试只校验格式与脚本，不校验翻译质量。
+diff --git a/docs/USER_GUIDE_ZH-CN.md b/docs/USER_GUIDE_ZH-CN.md
+index 27cbb89..2fddb39 100644
+--- a/docs/USER_GUIDE_ZH-CN.md
++++ b/docs/USER_GUIDE_ZH-CN.md
+@@ -15,7 +15,7 @@
+ 2. [第 1 步：读取设备](#2-第-1-步读取设备)
+ 3. [第 2 步：看懂 8 状态兼容性标识](#3-第-2-步看懂-8-状态兼容性标识)
+ 4. [一键解锁：10 项暂存 → 确认 → 应用](#4-一键解锁10-项暂存--确认--应用)
+-5. [功能目录：55 项，11 个分类](#5-功能目录55-项11-个分类)
++5. [功能目录：58 项，11 个分类](#5-功能目录58-项11-个分类)
+ 6. [单个预设：改、停用、还原](#6-单个预设改停用还原)
+ 7. [MG 控制：直接改字段](#7-mg-控制直接改字段)
+ 8. [备份与还原](#8-备份与还原)
+@@ -116,10 +116,10 @@ flag），功能最终能不能跑，还要看硬件、系统版本与苹果服
+ - **eSIM + 地区**：只暂存 eSIM 两项开关 + 地区码。
+ - **仅 Siri AI 模式**：只暂存 SiriMode = 2 的单项开关。与国行 AI 不同，它在原生 Apple Intelligence 机型上也可以使用（明确的单项选择）；但它是实验性的，在原生机型上通常不需要，因为 Siri AI 本来就能用。未知机型拒绝应用。
+ 
+-## 5. 功能目录：55 项，11 个分类
++## 5. 功能目录：58 项，11 个分类
+ 
+-功能目录（`FeatureCatalog`，源码 `GestaltX/FeatureCatalog.swift`）共 55 项：
+-42 个预设项 + 13 个页面项，分 11 类：
++功能目录（`FeatureCatalog`，源码 `GestaltX/FeatureCatalog.swift`）共 58 项：
++45 个预设项 + 13 个页面项，分 11 类：
+ 
+ 1. 智能解锁（smartUnlock）
+ 2. Apple 智能（appleIntelligence）
+diff --git a/scripts/check-licenses.py b/scripts/check-licenses.py
+index 6a2c2dc..2011ea7 100644
+--- a/scripts/check-licenses.py
++++ b/scripts/check-licenses.py
+@@ -15,7 +15,7 @@ Verifies, with specific diagnostics:
+      entry (name, url, license file where bundled) and shows the current
+      repository URL, not the old patch-based repository.
+   6. docs/OPEN_SOURCE_REFERENCES.md and docs/FEATURE_ORIGIN_MATRIX.md
+-     exist and cover all 16 projects / 16 feature areas.
++     exist and cover all 17 projects / 16 feature areas.
+   7. No stale "pristine v1.0.7 source plus the modification patch"
+      distribution statement survives in any user-facing file.
+   8. Version and changelog are consistent: MARKETING_VERSION in the
+@@ -58,7 +58,7 @@ PBXPROJ = ROOT / "GestaltX.xcodeproj" / "project.pbxproj"
+ CHANGELOG = ROOT / "CHANGELOG.md"
+ README = ROOT / "README.md"
+ 
+-# The 16 projects the audit covers (see docs/OPEN_SOURCE_REFERENCES.md).
++# The 17 projects the audit covers (see docs/OPEN_SOURCE_REFERENCES.md).
+ PROJECTS = (
+     "GestaltX",
+     "worse_query",
+@@ -74,6 +74,7 @@ PROJECTS = (
+     "Nugget",
+     "mond",
+     "GestaltEdit",
++    "WQFiles",
+     "SnapshotTesting",
+     "SwiftLint",
+ )
+@@ -94,6 +95,7 @@ PROJECT_URLS = (
+     "https://github.com/leminlimez/Nugget",
+     "https://github.com/rooootdev/mond",
+     "https://github.com/frs0n/GestaltEdit",
++    "https://github.com/kolbicz/WQFiles",
+     "https://github.com/pointfreeco/swift-snapshot-testing",
+     "https://github.com/realm/SwiftLint",
+ )
+@@ -202,7 +204,7 @@ def check_notices_carry_sources():
+     for url in PROJECT_URLS:
+         if url not in text:
+             fail(f"THIRD_PARTY_NOTICES.md does not link {url}")
+-    ok("notices name all 16 projects with their source URLs")
++    ok("notices name all 17 projects with their source URLs")
+ 
+ 
+ def check_about_view():
+@@ -211,12 +213,12 @@ def check_about_view():
+         return
+     text = ABOUT_VIEW.read_text(encoding="utf-8")
+     entries = re.findall(r"OpenSourceProject\(", text)
+-    if len(entries) != 16:
++    if len(entries) != 17:
+         fail(f"AboutView lists {len(entries)} open-source projects, "
+-             f"expected 16 (one entry per project)")
++             f"expected 17 (one entry per project)")
+     urls = re.findall(r'url: "(https?://[^"]+)"', text)
+-    if len(urls) != 16:
+-        fail(f"AboutView has {len(urls)} project URLs, expected 16")
++    if len(urls) != 17:
++        fail(f"AboutView has {len(urls)} project URLs, expected 17")
+     for name in PROJECTS:
+         if name not in text:
+             fail(f"AboutView does not list {name}")
+@@ -233,7 +235,7 @@ def check_about_view():
+             "fafa888uk/LilaShift-3.0" not in text:
+         fail("AboutView does not show the current repository URL "
+              "(GestaltBrand.lilashift / fafa888uk/LilaShift-3.0)")
+-    ok("AboutView lists all 16 projects with URLs and bundled license files")
++    ok("AboutView lists all 17 projects with URLs and bundled license files")
+ 
+ 
+ def check_reference_docs():
+@@ -250,7 +252,7 @@ def check_reference_docs():
+                 and "无许可证声明" not in text:
+             fail("docs/OPEN_SOURCE_REFERENCES.md must record that "
+                  "NeoSpring states no license (known issue)")
+-        ok("docs/OPEN_SOURCE_REFERENCES.md covers all 16 projects")
++        ok("docs/OPEN_SOURCE_REFERENCES.md covers all 17 projects")
+     if MATRIX.is_file():
+         text = MATRIX.read_text(encoding="utf-8")
+         # The matrix is written in Chinese; accept either language.
+diff --git a/tests/ThirdPartyNoticesTests.py b/tests/ThirdPartyNoticesTests.py
+index b089e6e..6cf897a 100644
+--- a/tests/ThirdPartyNoticesTests.py
++++ b/tests/ThirdPartyNoticesTests.py
+@@ -11,7 +11,7 @@ REFERENCES = ROOT / "docs" / "OPEN_SOURCE_REFERENCES.md"
+ MATRIX = ROOT / "docs" / "FEATURE_ORIGIN_MATRIX.md"
+ GENERATE_LOCALIZATION = ROOT / "scripts" / "generate_localization.py"
+ 
+-# The 16 projects the audit covers (see docs/OPEN_SOURCE_REFERENCES.md).
++# The 17 projects the audit covers (see docs/OPEN_SOURCE_REFERENCES.md).
+ AUDIT_PROJECTS = (
+     "GestaltX",
+     "worse_query",
+@@ -27,6 +27,7 @@ AUDIT_PROJECTS = (
+     "Nugget",
+     "mond",
+     "GestaltEdit",
++    "WQFiles",
+     "SnapshotTesting",
+     "SwiftLint",
+ )
