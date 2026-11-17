@@ -275,6 +275,40 @@ struct AssetTagView: View {
 
 // MARK: - A18 Dialer skin
 
+/// One keypad button cell: the staged replacement image if there is
+/// one, else the current artwork, else a numbered placeholder.
+/// A separate view (rather than inline in `DialerSkinView.body`) so
+/// the compiler type-checks the grid cell on its own — the combined
+/// expression timed out in Release builds.
+private struct DialerKeypadButton: View {
+    let key: DialerSkin.KeypadID
+    let data: Data?
+    let circle: Bool
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            VStack(spacing: 4) {
+                if let data, let image = UIImage(data: data) {
+                    Image(uiImage: image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 64, height: 64)
+                        .clipShape(circle ? AnyShape(Circle()) : AnyShape(RoundedRectangle(cornerRadius: 12)))
+                } else {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 12).fill(Color.secondary.opacity(0.15))
+                        Text(key.keyNumber).font(.title2)
+                    }
+                    .frame(width: 64, height: 64)
+                }
+                Text(key.keyNumber).font(.caption).foregroundStyle(.secondary)
+            }
+        }
+        .buttonStyle(.plain)
+    }
+}
+
 struct DialerSkinView: View {
     @Environment(\.colorScheme) private var colorScheme
     @State private var container: URL?
@@ -300,26 +334,11 @@ struct DialerSkinView: View {
                     Toggle(L("Circular buttons"), isOn: $circle)
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: 88), spacing: 12)], spacing: 12) {
                         ForEach(DialerSkin.KeypadID.allCases, id: \.self) { key in
-                            Button { pickingKey = key } label: {
-                                VStack(spacing: 4) {
-                                    let data = replacements[key] ?? current[key]
-                                    if let data, let image = UIImage(data: data) {
-                                        Image(uiImage: image)
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fit)
-                                            .frame(width: 64, height: 64)
-                                            .clipShape(circle ? Circle() : RoundedRectangle(cornerRadius: 12))
-                                    } else {
-                                        ZStack {
-                                            RoundedRectangle(cornerRadius: 12).fill(Color.secondary.opacity(0.15))
-                                            Text(key.keyNumber).font(.title2)
-                                        }
-                                        .frame(width: 64, height: 64)
-                                    }
-                                    Text(key.keyNumber).font(.caption).foregroundStyle(.secondary)
-                                }
-                            }
-                            .buttonStyle(.plain)
+                            DialerKeypadButton(
+                                key: key,
+                                data: replacements[key] ?? current[key],
+                                circle: circle
+                            ) { pickingKey = key }
                         }
                     }
                     HStack {
