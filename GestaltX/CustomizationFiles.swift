@@ -15,6 +15,41 @@ struct CustomizationFailure: LocalizedError {
 enum CustomizationFiles {
     static let maximumFile = 256 * 1024 * 1024
     static let maximumTotal = 768 * 1024 * 1024
+
+    /// Stages a document-picker file into a private temp directory
+    /// and returns the staged copy. The picker grants security-scoped
+    /// access for the copy; the caller owns the staged file and its
+    /// directory (see `discardStagedDirectory`). Throws when the
+    /// file is not a regular file or exceeds `maximumFile`.
+    static func stagePickedFile(_ source: URL) throws -> URL {
+        let scoped = source.startAccessingSecurityScopedResource()
+        defer { if scoped { source.stopAccessingSecurityScopedResource() } }
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("GX-Import-\(UUID().uuidString)")
+        do {
+            let size = try source.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey])
+            guard size.isRegularFile == true, (size.fileSize ?? Int.max) <= maximumFile else {
+                throw CustomizationFailure("The archive is invalid or exceeds the size limit.")
+            }
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: false)
+            let target = directory.appendingPathComponent(source.lastPathComponent)
+            try FileManager.default.copyItem(at: source, to: target)
+            return target
+        } catch {
+            try? FileManager.default.removeItem(at: directory)
+            throw error
+        }
+    }
+
+    /// Removes a staging directory created by `stagePickedFile` (the
+    /// GX-Import-<uuid> directory containing the staged file). Best
+    /// effort: a failure leaves the temp directory for the OS to
+    /// clean. Refuses any directory that is not a staging directory,
+    /// so a wrong URL can never delete user data.
+    static func discardStagedDirectory(containing file: URL) {
+        let directory = file.deletingLastPathComponent()
+        guard directory.lastPathComponent.hasPrefix("GX-Import-") else { return }
+        try? FileManager.default.removeItem(at: directory)
+    }
     static func digest(_ data: Data) -> String { SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined() }
     static func relative(_ path: String) throws -> String {
         let parts = path.split(separator: "/", omittingEmptySubsequences: false)

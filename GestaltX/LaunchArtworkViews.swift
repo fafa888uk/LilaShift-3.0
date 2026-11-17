@@ -14,13 +14,11 @@ final class LaunchArtworkCatalogModel: ObservableObject {
     private var pending = false
     private var pendingForce = false
     init() {
-        catalog = LaunchArtworkCatalogStore(storage: FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("GestaltX/LaunchImages/Catalog", isDirectory: true), device: UIDevice.current.identifierForVendor?.uuidString ?? "")
+        catalog = LaunchArtworkCatalogStore(storage: AppDirectories.launchImagesCatalogStorage, device: UIDevice.current.identifierForVendor?.uuidString ?? "")
     }
     func refreshIfLoaded() { if loaded { refresh() } }
     func migrateBackups() async {
-        let store = LaunchArtworkStore(storage: FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("GestaltX/LaunchImages"), device: UIDevice.current.identifierForVendor?.uuidString ?? "")
+        let store = LaunchArtworkStore(storage: AppDirectories.launchImagesStorage, device: UIDevice.current.identifierForVendor?.uuidString ?? "")
         await store.migrateLegacyBackups()
     }
     func refresh(force: Bool = false) {
@@ -51,8 +49,7 @@ final class LaunchArtworkModel: ObservableObject {
     @Published var message: String?
     private let store: LaunchArtworkStore
     init() {
-        store = LaunchArtworkStore(storage: FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("GestaltX/LaunchImages", isDirectory: true), device: UIDevice.current.identifierForVendor?.uuidString ?? "")
+        store = LaunchArtworkStore(storage: AppDirectories.launchImagesStorage, device: UIDevice.current.identifierForVendor?.uuidString ?? "")
     }
     func load(_ app: LaunchArtworkApp) async {
         guard !busy else { return }
@@ -125,11 +122,11 @@ struct LaunchArtworkApplicationsView: View {
     }
     var body: some View {
         List {
-            if catalog.scanning { HStack(spacing: 12) { ProgressView(); Text(L("Reading…")) }.foregroundStyle(.secondary) }
+            if catalog.scanning { HStack(spacing: GlassTokens.rowSpacing) { ProgressView(); Text(L("Reading…")) }.foregroundStyle(.secondary) }
             else if apps.isEmpty { ContentUnavailableView(L("No Launch Images"), systemImage: "app.badge") }
             ForEach(apps) { app in
                 NavigationLink { LaunchArtworkEditor(app: app, customizations: customizations) } label: {
-                    HStack(spacing: 12) {
+                    HStack(spacing: GlassTokens.rowSpacing) {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(app.name).lineLimit(1)
                             Text(app.id).font(.caption).foregroundStyle(.secondary).lineLimit(1)

@@ -67,4 +67,16 @@ final class MGKeysTableTests: XCTestCase {
             XCTAssertFalse(entry.meaning.isEmpty, "Entry \(entry.key) has no meaning")
         }
     }
+
+    func testAllIsStableAcrossAccesses() {
+        // `all` is a cached static let (Stage 3): repeated access
+        // returns the same rows in the same order. The cache also
+        // guards against a future change making the order
+        // nondeterministic (for example, a dictionary iteration).
+        let first = MGKeysTable.all
+        let second = MGKeysTable.all
+        XCTAssertEqual(first.count, second.count)
+        XCTAssertTrue(zip(first, second).allSatisfy { $0.key == $1.key && $0.name == $1.name },
+                      "Repeated access returns the same rows in the same order")
+    }
 }

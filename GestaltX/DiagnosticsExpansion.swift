@@ -149,6 +149,22 @@ struct AppContainerCacheReport: Equatable, Sendable {
 /// measure a temporary directory; the production caller passes the
 /// real container URLs from FileManager.
 enum AppContainerCacheMeasurer {
+    /// Measures the app's own container directories (Application
+    /// Support, Caches, tmp). Read-only: nothing is created, moved
+    /// or deleted. The directories are resolved here, in the engine,
+    /// so no view builds them.
+    static func measureContainer() -> AppContainerCacheReport {
+        measure(
+            applicationSupport: AppDirectories.applicationSupport,
+            caches: FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0],
+            temporary: FileManager.default.temporaryDirectory)
+    }
+
+    /// Clears the app's OWN Caches directory; see `clearCaches(at:)`.
+    static func clearContainerCaches() throws -> Int64 {
+        try clearCaches(at: FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0])
+    }
+
     /// Measures the three container directories. Read-only: nothing
     /// is created, moved or deleted.
     static func measure(

@@ -17,10 +17,6 @@ struct SystemHealthScoreCard: View {
     @State private var historyError: String?
     @State private var showingDetails = false
 
-    private var heroTint: Color {
-        Color.lavenderGlass.opacity(0.65)
-    }
-
     /// The report for the current snapshot, or `nil` when the device
     /// has not been read yet. Prefers the shared diagnostics cache
     /// (computed once per input change on a background task, including
@@ -68,10 +64,10 @@ struct SystemHealthScoreCard: View {
     }
 
     var body: some View {
-        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: heroTint) {
-            VStack(alignment: .leading, spacing: 14) {
-                HStack(spacing: 12) {
-                    GlassIconPedestal(systemImage: "heart.text.square", tint: .gestaltAccent, size: 44)
+        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: GlassTokens.heroTint) {
+            VStack(alignment: .leading, spacing: GlassTokens.cardSpacing) {
+                HStack(spacing: GlassTokens.rowSpacing) {
+                    GlassIconPedestal(systemImage: "heart.text.square", tint: .gestaltAccent, size: GlassTokens.iconSize)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(L("System Health Score"))
                             .font(.headline)

@@ -112,14 +112,8 @@ final class GestaltManager: ObservableObject {
     deinit { if let exploitLogObserver { NotificationCenter.default.removeObserver(exploitLogObserver) } }
 
     var changeKeys: [String] {
-        guard let before = snapshot?.document.extra, let after = preview?.extra else { return [] }
-        return Set(before.keys).union(after.keys).filter { key in
-            switch (before[key], after[key]) {
-            case (nil, nil): return false
-            case (nil, _), (_, nil): return true
-            case (let a?, let b?): return !GestaltDocument.valuesEqual(a, b)
-            }
-        }.sorted()
+        guard let before = snapshot?.document, let after = preview else { return [] }
+        return Self.changeKeys(before: before, after: after)
     }
     var cacheDataChanges: [CachedBooleanChange] {
         guard let original = snapshot?.document, let edited = preview else { return [] }
@@ -144,7 +138,30 @@ final class GestaltManager: ObservableObject {
             return error.localizedDescription
         }
     }
-    var changeCount: Int { changeKeys.count + cacheDataChanges.count }
+    /// One preview build per access: `changeKeys` and
+    /// `cacheDataChanges` each build the preview on their own, so
+    /// counting both here used to build it twice per body
+    /// evaluation — and `changeCount` is read on many body paths
+    /// (home, cards, review sheet). The count is identical; only
+    /// the rebuild is removed.
+    var changeCount: Int {
+        guard let before = snapshot?.document, let after = preview else { return 0 }
+        return Self.changeKeys(before: before, after: after).count
+            + DeviceCacheOptions.changes(from: before, to: after).count
+    }
+
+    /// CacheExtra keys whose value differs between two documents.
+    private static func changeKeys(before: GestaltDocument, after: GestaltDocument) -> [String] {
+        let beforeExtra = before.extra
+        let afterExtra = after.extra
+        return Set(beforeExtra.keys).union(afterExtra.keys).filter { key in
+            switch (beforeExtra[key], afterExtra[key]) {
+            case (nil, nil): return false
+            case (nil, _), (_, nil): return true
+            case (let a?, let b?): return !GestaltDocument.valuesEqual(a, b)
+            }
+        }.sorted()
+    }
     var hasDocument: Bool { snapshot != nil }
     var sourceIsDevice: Bool { snapshot?.source == .device }
     var artworkEditingError: GestaltFailure? {
@@ -214,8 +231,14 @@ final class GestaltManager: ObservableObject {
     /// list in `DeviceAIEligibility`). The document's product type is
     /// the source here — it is the device the file belongs to — and
     /// on a live read it agrees with the profiler's live product
-    /// type. Unknown or absent product type reads as non-native
-    /// (fail closed: stage all 9).
+    /// type. Unknown or absent product type reads as non-native, so
+    /// the full 10-item proposal is built (2 eSIM + region code + 7 AI).
+    /// This is a deliberate availability default, not a fail-closed
+    /// gate: unlisted hardware (including future models not yet in the
+    /// list) stays unlockable — see the #178 decision (2026-11-15).
+    /// The fail-closed gate for model-dependent writes is
+    /// `deviceModelDecision`, which already refuses SiriMode on
+    /// unknown models.
     var isNativeAppleIntelligence: Bool {
         guard let productType = (working ?? snapshot?.document)?.extra[GestaltKeys.productType] as? String else {
             return false
@@ -360,13 +383,21 @@ final class GestaltManager: ObservableObject {
     @Published var liveAIEnabled: Bool?
 
     /// Refreshes the live probe answers. Read-only; safe to call from the
-    /// checkup card's `onAppear`.
-    func refreshLiveProbe() {
-        liveRegionCode = LiveGestaltProbe.queryString(GestaltKeys.regionCode)
-        liveRegModel = LiveGestaltProbe.queryString(GestaltKeys.modelNumber)
-        liveAIEnabled = Capability.all.first { $0.id == "ai" }.flatMap { capability in
-            capability.keys.first.flatMap { LiveGestaltProbe.queryBool($0) }
-        }
+    /// checkup card's `onAppear`. The three MGCopyAnswer queries run off
+    /// the main thread (the live query can be slow) and the results are
+    /// published back on the main actor.
+    func refreshLiveProbe() async {
+        let (region, regModel, aiEnabled) = await Task.detached(priority: .userInitiated) {
+            let region = LiveGestaltProbe.queryString(GestaltKeys.regionCode)
+            let regModel = LiveGestaltProbe.queryString(GestaltKeys.modelNumber)
+            let aiEnabled = Capability.all.first { $0.id == "ai" }.flatMap { capability in
+                capability.keys.first.flatMap { LiveGestaltProbe.queryBool($0) }
+            }
+            return (region, regModel, aiEnabled)
+        }.value
+        liveRegionCode = region
+        liveRegModel = regModel
+        liveAIEnabled = aiEnabled
     }
 
     /// Slot and key conflicts on native-AI hardware, computed from the staged
@@ -558,10 +589,14 @@ final class GestaltManager: ObservableObject {
     ///   (`DeviceAIEligibility.nativeAdvAISlotValue`, native hardware
     ///   only) and the slot resolves and disagrees. Correct values are
     ///   left untouched; unresolvable slots are left alone (unknown,
-    ///   never guessed). This is the repair Erosion-CN documents for
-    ///   the two slots — but NOT its one-click step that forces every
-    ///   AI slot to 1 on non-native hardware, which contradicts the
-    ///   #178 evidence (forcing #178 to 1 breaks Photos Clean Up).
+    ///   never guessed). This matches Erosion-CN's one-click fix as of
+    ///   main `1d5608dd` (v1.0.3, `applyAppleIntelligenceOneClickFix`,
+    ///   `GestaltStore.swift:903`): it repairs #178/#266 back to their
+    ///   native values and only forces the 3 main AI keys
+    ///   (`appIntellAllKeys`) to 1 on non-native hardware — the two
+    ///   slots are not in that step's key list. (Whether an older
+    ///   Erosion-CN version forced all AI slots to 1 was not verified;
+    ///   see Stage 1 U4.)
     /// - CacheExtra keys: when AI staging is active (the seven AI
     ///   choices are staged `.enable`), any AI key absent from the
     ///   working document is filled with its staged value. Present
@@ -1080,7 +1115,8 @@ final class GestaltManager: ObservableObject {
         do {
             let values = try url.resourceValues(forKeys: [.fileSizeKey])
             guard (values.fileSize ?? 0) <= 16 * 1024 * 1024 else { throw GestaltFailure("Choose a plist smaller than 16 MB.") }
-            let result = try await files.loadLocal(data: Data(contentsOf: url), name: url.lastPathComponent)
+            let data = try await Task.detached(priority: .userInitiated) { try Data(contentsOf: url) }.value
+            let result = try await files.loadLocal(data: data, name: url.lastPathComponent)
             accept(result); status = "Local file opened"; needsRestart = false
             lastReadAt = Date()
             log("[open] \(url.lastPathComponent): \(result.data.count) bytes")

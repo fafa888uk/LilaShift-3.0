@@ -90,8 +90,9 @@ enum SupervisionAudit {
         return .fakeResidue(organization: organization)
     }
 
-    /// Deletes a fake-supervision CloudConfigurationDetails.plist and
-    /// its local backup, and only when the audit proves it is fake.
+    /// Deletes a fake-supervision CloudConfigurationDetails.plist,
+    /// and only when the audit proves it is fake. No local backup
+    /// is involved: the code removes only this residue file.
     /// Genuine MDM configurations are refused. The lock screen
     /// footnote and asset tag live in SharedDeviceConfiguration.plist
     /// and are untouched. Returns `true` when a fake file was removed.

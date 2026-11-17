@@ -92,6 +92,19 @@ struct DashboardV3Home<DestinationView: View>: View {
     @State private var showingReorder = false
     @State private var favoriteIDs: [String] = []
     @State private var catalogSettings = FeatureCatalogSettings.defaults
+    /// The cached common-features tiles: the user's favorites,
+    /// ordered by the single catalog rule (favorites first, then
+    /// custom order, then recent use, then category order), at most
+    /// three — or the four preset groups when there are no favorites
+    /// yet. The pipeline behind them (58-item filter + sort) is
+    /// deterministic in `favoriteIDs` and `catalogSettings`, so it
+    /// is computed only when those inputs are reloaded — not on
+    /// every body evaluation, which used to rerun it on any
+    /// `@Published` change. Seeded with the no-favorites tiles so
+    /// the first frame already shows them.
+    @State private var commonItems: [FeatureCatalogItem] = FeatureCatalog.presetItems.filter { item in
+        PresetCatalog.entry(for: item.id)?.kind == .group
+    }
     let destination: (DashboardV3Destination) -> DestinationView
 
     /// The eight sections in display order.
@@ -104,21 +117,23 @@ struct DashboardV3Home<DestinationView: View>: View {
         orderedSections.filter { $0.destination != nil }
     }
 
-    /// The common-features tiles: the user's favorites, ordered by
-    /// the single catalog rule (favorites first, then custom order,
-    /// then recent use, then category order), at most three — or the
-    /// four preset groups when there are no favorites yet.
-    private var commonItems: [FeatureCatalogItem] {
+    /// Recomputes the cached common-features tiles from the current
+    /// favorites and catalog settings. Called only when those inputs
+    /// are reloaded (see `reloadFavorites` / `reloadCatalogSettings`).
+    /// The computation is the same one the old computed property
+    /// ran on every body evaluation; only the timing changed.
+    private func reloadCommonItems() {
         guard !favoriteIDs.isEmpty else {
-            return FeatureCatalog.presetItems.filter { item in
+            commonItems = FeatureCatalog.presetItems.filter { item in
                 PresetCatalog.entry(for: item.id)?.kind == .group
             }
+            return
         }
         let ordered = FeatureCatalog.apply(
             FeatureCatalog.allItems, query: "", category: nil, riskLevel: nil,
             settings: catalogSettings, catalogSort: .byCategory,
             favoritesFirst: true, favoriteIDs: Set(favoriteIDs))
-        return Array(ordered.filter { $0.kind == .preset }.prefix(3))
+        commonItems = Array(ordered.filter { $0.kind == .preset }.prefix(3))
     }
 
     private var columns: [GridItem] {
@@ -352,20 +367,24 @@ struct DashboardV3Home<DestinationView: View>: View {
     private func reloadFavorites() {
         guard let deviceID = RestoreIntelligence.installationDeviceID else {
             favoriteIDs = []
+            reloadCommonItems()
             return
         }
         let store = PresetFavoritesStore(
             directory: RestoreIntelligence.historyDirectory, deviceID: deviceID)
         favoriteIDs = store.load().ids
+        reloadCommonItems()
     }
 
     private func reloadCatalogSettings() {
         guard let deviceID = RestoreIntelligence.installationDeviceID else {
             catalogSettings = .defaults
+            reloadCommonItems()
             return
         }
         let store = FeatureCatalogSettingsStore(
             directory: RestoreIntelligence.historyDirectory, deviceID: deviceID)
         catalogSettings = store.load().settings
+        reloadCommonItems()
     }
 }

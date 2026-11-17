@@ -30,6 +30,16 @@ enum GlassTokens {
     static let cardRadius: CGFloat = 22
     /// The vertical spacing between sections inside a card.
     static let cardSpacing: CGFloat = 14
+    /// The spacing between items in a horizontal row, and between
+    /// blocks in a vertical stack that is not a card section (card
+    /// sections use `cardSpacing`). One source of truth so row
+    /// spacing does not drift per card.
+    static let rowSpacing: CGFloat = 12
+    /// Light-purple glass tint for hero cards (#EAE1FF at 65%
+    /// opacity). The app is light-only: there is no dark mode, so
+    /// this tint never changes. Every hero card uses this, not a
+    /// per-card copy.
+    static let heroTint: Color = Color.lavenderGlass.opacity(0.65)
     /// The inner padding of a card's content (the inset from the
     /// glass edge to the text). The cards apply this to their outer
     /// stack; the glass itself adds no padding, so the value lives
@@ -273,7 +283,7 @@ struct GlassCategoryTile: View {
     let tint: Color
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: GlassTokens.rowSpacing) {
             GlassIconPedestal(systemImage: symbol, tint: tint)
             VStack(alignment: .leading, spacing: 3) {
                 Text(title)
@@ -337,7 +347,7 @@ struct GlassFeatureRow: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: GlassTokens.rowSpacing) {
             GlassIconPedestal(systemImage: symbol, tint: tint, size: GlassTokens.iconSizeSmall)
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 6) {
@@ -395,7 +405,7 @@ struct GlassReadProgressCard: View {
 
     var body: some View {
         GlassCard(cornerRadius: GlassTokens.smallRadius) {
-            HStack(spacing: 12) {
+            HStack(spacing: GlassTokens.rowSpacing) {
                 GlassIconPedestal(systemImage: "clock.arrow.circlepath", tint: .gestaltAccent, size: GlassTokens.iconSizeSmall)
                 VStack(alignment: .leading, spacing: 6) {
                     Text(title)

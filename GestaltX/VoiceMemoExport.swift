@@ -17,8 +17,8 @@ import ZIPFoundation
 /// nothing is ever written into the Voice Memos container.
 ///
 /// Privacy boundary: this reads the user's OWN voice memos — the
-/// recordings they made themselves. It does not touch other apps'
-/// private data, and it never modifies or deletes a recording.
+/// recordings they made themselves. It does not read other people's
+/// data, and it never modifies or deletes a recording.
 enum VoiceMemoExport {
     struct Recording: Identifiable, Equatable, Codable {
         let id: String
@@ -240,5 +240,20 @@ enum VoiceMemoExport {
         try? fm.removeItem(at: zipURL)
         try fm.zipItem(at: staging, to: zipURL, shouldKeepParent: false)
         return zipURL
+    }
+
+    /// Zips the recordings and stages the zip as a shareable export.
+    /// The intermediate zip is removed after the export is staged,
+    /// and also on failure, so no temp file is left behind either way.
+    static func stagedExport(for recordings: [Recording]) throws -> TemporaryExport {
+        let zipURL = try zipRecordings(recordings)
+        do {
+            let made = try TemporaryExport(copying: zipURL, name: zipURL.lastPathComponent)
+            try? FileManager.default.removeItem(at: zipURL)
+            return made
+        } catch {
+            try? FileManager.default.removeItem(at: zipURL)
+            throw error
+        }
     }
 }

@@ -37,10 +37,6 @@ struct DeviceFingerprintCard: View {
     @State private var saveMessage: String?
     @State private var showingDetails = false
 
-    private var heroTint: Color {
-        Color.lavenderGlass.opacity(0.65)
-    }
-
     /// The current fingerprint from the latest read, or `nil` when
     /// the device has not been read yet. The capture time is the
     /// live clock unless a snapshot test freezes it through
@@ -60,10 +56,10 @@ struct DeviceFingerprintCard: View {
     }
 
     var body: some View {
-        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: heroTint) {
-            VStack(alignment: .leading, spacing: 14) {
-                HStack(spacing: 12) {
-                    GlassIconPedestal(systemImage: "fingerprint", tint: .gestaltAccent, size: 44)
+        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: GlassTokens.heroTint) {
+            VStack(alignment: .leading, spacing: GlassTokens.cardSpacing) {
+                HStack(spacing: GlassTokens.rowSpacing) {
+                    GlassIconPedestal(systemImage: "fingerprint", tint: .gestaltAccent, size: GlassTokens.iconSize)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(L("Device Capability Fingerprint"))
                             .font(.headline)

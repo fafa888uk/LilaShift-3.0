@@ -88,7 +88,7 @@
 - **每项功能下方的一句话用途说明**——所有预设都配有一行简体中文用途说明；设备要求与生效方式写在详情页中。
 - **作者徽章与实时进度卡片**——维护者 `@steam8871` 在顶部和"关于"页中署名；读取与应用操作展示真实进度（备份 / 写入 / 校验 / 完成），均由实际操作驱动，绝不伪造。
 - **开源合规**——"关于"页是一个开源贡献者中心，列出所有使用或参考过的项目及其作者、关系、关键技术、许可证和源码链接；完整 GPL v3.0 协议文本已内置于 App 中。详见 [docs/OPEN_SOURCE_REFERENCES.md](docs/OPEN_SOURCE_REFERENCES.md) 与 [docs/FEATURE_ORIGIN_MATRIX.md](docs/FEATURE_ORIGIN_MATRIX.md)。
-- **写入过程加固**（设计思路参考 Erosion-CN，未复制任何代码）——原地写入（绝不预先截断、使用 `F_FULLFSYNC`、完整回读校验、失败时原地回滚）、运行时动态解析 eSIM 缓存布局、应用前差异预览、双保险库备份（含一个可在卸载/重装后存活的出厂保险库）、区域模式选择（仅区域代码，或完整美区 `LL` + `LL/A`）、带冲突检测的 4 因子 Apple Intelligence 体检。
+- **MobileGestalt 写入过程加固**（设计思路参考 Erosion-CN，未复制任何代码）——原地写入（绝不预先截断、使用 `F_FULLFSYNC`、完整回读校验、失败时原地回滚）、运行时动态解析 eSIM 缓存布局、应用前差异预览、双保险库备份（含一个可在卸载/重装后存活的出厂保险库）、区域模式选择（仅区域代码，或完整美区 `LL` + `LL/A`）、带冲突检测的 4 因子 Apple Intelligence 体检。
 - **因许可证原因移除 Respring**——NeoSpring/Ketamine 的 respring 实现已于 2026-11-14 移除（NeoSpring 未在任何地方声明许可证）。本版本中不含任何 respring 代码，改为显示手动重启设备的提示。详见 `docs/OPEN_SOURCE_REFERENCES.md` §3–§4。
 - **紫序身份标识**——App 更名为**紫序 LilaShift**，以一张猫咪照片作为应用图标。
 

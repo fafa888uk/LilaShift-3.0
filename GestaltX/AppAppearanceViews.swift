@@ -44,8 +44,7 @@ final class AppAppearancePreviewModel: ObservableObject {
     var effectiveCornerRadius: CGFloat { editingRadius ?? state.cornerRadius }
 
     private var draftsDirectory: URL {
-        FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("GestaltX/AppAppearance/Drafts", isDirectory: true)
+        AppDirectories.appAppearanceDraftsStorage
     }
 
     func hasDraft(for bundleID: String) -> Bool {
@@ -256,7 +255,7 @@ struct AppAppearancePreviewView: View {
                     .font(.caption).foregroundStyle(.secondary)
                     .frame(width: 24, alignment: .trailing)
             }
-            HStack(spacing: 12) {
+            HStack(spacing: GlassTokens.rowSpacing) {
                 Group {
                     if let icon = model.displayImage {
                         Image(uiImage: icon).resizable().scaledToFill()

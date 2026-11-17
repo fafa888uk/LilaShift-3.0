@@ -229,9 +229,14 @@ enum ChinaUnlock {
 /// model-independent writes such as the region code, and it does not
 /// gate an explicit per-capability choice the user makes tap by tap in
 /// `Capability.apply` — that path has no model judgement to fail closed.
-/// Auto-staging paths (one-tap unlock, Fix) must consult this decision
-/// before staging anything model-dependent; see the cross-file note in
-/// the P0-4 report for the `GestaltManager` wiring.
+/// Auto-staging paths consult this decision only for writes that
+/// require a verified model entry (the Full US regulatory model
+/// number and SiriMode). The one-tap unlock's seven AI keys are
+/// outside this gate by the explicit #178 decision (2026-11-15):
+/// unlisted hardware defaults to non-native and stages the full
+/// proposal, because the AI keys do not assume any particular
+/// model — they assume non-nativeness, which is the availability
+/// default (see ADR-2-01).
 enum DeviceModelSupport {
     static func decision(for productType: String, originalRegModel: String?) -> DeviceModelDecision {
         if USRegulatoryModelMapping.usRegulatoryModel(originalRegModel: originalRegModel,

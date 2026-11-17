@@ -24,10 +24,6 @@ struct DiagnosticsExpansionCard: View {
     @State private var recordedEvents: [OperationEvent] = []
     @State private var records: [RecordedChange] = []
 
-    private var heroTint: Color {
-        Color.lavenderGlass.opacity(0.65)
-    }
-
     /// The per-device report (profile + eligibility evaluations), or
     /// `nil` when the device has not been read yet.
     private var deviceReport: LilaDeviceReport? {
@@ -56,10 +52,10 @@ struct DiagnosticsExpansionCard: View {
     }
 
     var body: some View {
-        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: heroTint) {
-            VStack(alignment: .leading, spacing: 14) {
-                HStack(spacing: 12) {
-                    GlassIconPedestal(systemImage: "heart.text.square", tint: .gestaltAccent, size: 44)
+        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: GlassTokens.heroTint) {
+            VStack(alignment: .leading, spacing: GlassTokens.cardSpacing) {
+                HStack(spacing: GlassTokens.rowSpacing) {
+                    GlassIconPedestal(systemImage: "heart.text.square", tint: .gestaltAccent, size: GlassTokens.iconSize)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(L("Diagnostics Expansion"))
                             .font(.headline)
@@ -201,19 +197,12 @@ struct DiagnosticsExpansionCard: View {
     }
 
     private func measureCache() {
-        let fileManager = FileManager.default
-        let applicationSupport = fileManager.urls(
-            for: .applicationSupportDirectory, in: .userDomainMask)[0]
-        let caches = fileManager.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-        cacheReport = AppContainerCacheMeasurer.measure(
-            applicationSupport: applicationSupport, caches: caches,
-            temporary: fileManager.temporaryDirectory)
+        cacheReport = AppContainerCacheMeasurer.measureContainer()
     }
 
     private func clearAppCache() {
-        let caches = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
         do {
-            let freed = try AppContainerCacheMeasurer.clearCaches(at: caches)
+            let freed = try AppContainerCacheMeasurer.clearContainerCaches()
             cacheMessage = L("App cache cleared.") + " " + formatBytes(freed)
             cacheError = nil
             measureCache()

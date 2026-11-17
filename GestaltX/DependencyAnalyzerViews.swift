@@ -33,10 +33,6 @@ struct DependencyAnalyzerCard: View {
         selectedKind.proposal(nativeAppleIntelligence: isNativeAppleIntelligence)
     }
 
-    private var heroTint: Color {
-        Color.lavenderGlass.opacity(0.65)
-    }
-
     /// The analysis for the selected proposal, or `nil` when the
     /// device has not been read yet.
     private var analysis: DependencyAnalysis? {
@@ -50,10 +46,10 @@ struct DependencyAnalyzerCard: View {
     }
 
     var body: some View {
-        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: heroTint) {
-            VStack(alignment: .leading, spacing: 14) {
-                HStack(spacing: 12) {
-                    GlassIconPedestal(systemImage: "point.3.connected.trianglepath.dotted", tint: .gestaltAccent, size: 44)
+        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: GlassTokens.heroTint) {
+            VStack(alignment: .leading, spacing: GlassTokens.cardSpacing) {
+                HStack(spacing: GlassTokens.rowSpacing) {
+                    GlassIconPedestal(systemImage: "point.3.connected.trianglepath.dotted", tint: .gestaltAccent, size: GlassTokens.iconSize)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(L("Dependency Analyzer"))
                             .font(.headline)

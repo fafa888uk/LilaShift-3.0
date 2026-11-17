@@ -21,7 +21,7 @@ struct PresetLabView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: GlassTokens.rowSpacing) {
             Text(L("Try presets here before applying them. Staging a preset only marks it for the next apply; nothing is written until you tap Apply, which runs the same review, backup and readback as the main preset page. Groups and virtual entries are not listed here — they have their own apply paths."))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)

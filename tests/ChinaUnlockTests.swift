@@ -260,4 +260,28 @@ final class ChinaUnlockTests: XCTestCase {
         XCTAssert(manager.isChinaUnlockStaged && manager.changeCount == 10,
                    "Unlock stages again after a restore")
     }
+
+    @MainActor
+    func testChangeCountMatchesItsParts() throws {
+        // The region mode is a persisted user setting; pin the default
+        // here so this test never inherits another run's opt-in Full US mode.
+        ChinaUnlockRegionMode.stored = .regionCodeOnly
+        let manager = GestaltManager()
+        XCTAssertEqual(manager.changeCount, 0, "No document: nothing is staged")
+        let original = try Self.fixture(productType: "iPhone14,7")
+        let snapshot = DocumentSnapshot(data: try original.encoded(), document: original, source: .local, name: "changeCount fixture")
+        manager.loadSnapshotForTests(snapshot)
+        XCTAssertEqual(manager.changeCount, 0, "Loaded, nothing staged: the count is 0")
+        XCTAssert(manager.stageChinaUnlock(), "Staging the full unlock succeeds")
+        // changeCount builds the preview once now (Stage 3), but the
+        // value is still exactly the staged CacheExtra keys plus the
+        // staged CacheData changes — the two parts it used to sum from
+        // two separate preview builds.
+        XCTAssertEqual(manager.changeCount, manager.changeKeys.count + manager.cacheDataChanges.count,
+                       "changeCount equals staged keys plus staged cache changes")
+        XCTAssertGreaterThan(manager.changeCount, 0, "Staging the unlock changes something")
+        XCTAssertEqual(manager.changeCount, 10, "The full unlock stages exactly 10 items")
+        XCTAssertEqual(manager.changeKeys.count, 8, "Eight CacheExtra keys change (region + seven AI keys)")
+        XCTAssertEqual(manager.cacheDataChanges.count, 2, "Two CacheData bytes change (the eSIM flags)")
+    }
 }

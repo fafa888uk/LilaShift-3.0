@@ -95,10 +95,14 @@ struct SafePatchProposal: Hashable, Sendable {
     }
 
     /// Resolves the native-Apple-Intelligence flag from a device
-    /// profile, fail closed: a known value wins; otherwise the
-    /// product type is looked up in the exact-match list
-    /// (`DeviceAIEligibility`); anything unknown reads as non-native,
-    /// so the full 10-item proposal is built (the existing behavior).
+    /// profile: a known value wins; otherwise the product type is
+    /// looked up in the exact-match list (`DeviceAIEligibility`);
+    /// anything unknown reads as non-native, so the full 10-item
+    /// proposal is built (the existing behavior, per the #178 decision
+    /// of 2026-11-15). This default is availability-first, not
+    /// fail-closed: the fail-closed gate for model-dependent writes
+    /// lives in `deviceModelDecision` (`GestaltManager`), which
+    /// refuses SiriMode on unknown models.
     static func isNativeAppleIntelligence(profile: DeviceProfile?) -> Bool {
         guard let profile else { return false }
         if let known = profile.isNativeAppleIntelligence.value { return known }

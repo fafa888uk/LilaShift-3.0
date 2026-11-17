@@ -99,9 +99,7 @@ struct VoiceMemoExportView: View {
         guard !chosen.isEmpty else { return }
         Task.detached(priority: .userInitiated) {
             do {
-                let zipURL = try VoiceMemoExport.zipRecordings(chosen)
-                let made = try TemporaryExport(copying: zipURL, name: zipURL.lastPathComponent)
-                try? FileManager.default.removeItem(at: zipURL)
+                let made = try VoiceMemoExport.stagedExport(for: chosen)
                 await MainActor.run { export = made }
             } catch {
                 await MainActor.run { message = error.localizedDescription }
@@ -344,7 +342,7 @@ struct DialerSkinView: View {
                     }
                     .pickerStyle(.segmented)
                     .onChange(of: showDarkKeypads) { _, _ in load() }
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 88), spacing: 12)], spacing: 12) {
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 88), spacing: GlassTokens.gridSpacing)], spacing: GlassTokens.gridSpacing) {
                         ForEach(DialerSkin.KeypadID.allCases, id: \.self) { key in
                             DialerKeypadButton(
                                 key: key,
@@ -522,7 +520,7 @@ struct MGKeysTableView: View {
     @State private var query = ""
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: GlassTokens.rowSpacing) {
             Text(L("Every MobileGestalt key the app knows about, with its meaning and the open-source source it was verified against. Nothing here is guessed."))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)

@@ -18,9 +18,7 @@ final class CustomizationModel: ObservableObject {
     @Published var message: String?
     private let store: CustomizationStore
     init() {
-        let storage = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("GestaltX/Customization", isDirectory: true)
-        store = CustomizationStore(storage: storage, device: UIDevice.current.identifierForVendor?.uuidString ?? "local")
+        store = CustomizationStore(storage: AppDirectories.customizationStorage, device: UIDevice.current.identifierForVendor?.uuidString ?? "local")
     }
     private func run(_ operation: () async throws -> Void) async {
         guard !busy else { return }
@@ -35,7 +33,7 @@ final class CustomizationModel: ObservableObject {
     }
     @discardableResult
     func importWallpaper(_ url: URL, id: UUID = UUID()) async -> Bool {
-        defer { try? FileManager.default.removeItem(at: url.deletingLastPathComponent()) }
+        defer { CustomizationFiles.discardStagedDirectory(containing: url) }
         guard !busy else { return false }
         busy = true; defer { busy = false }
         do { packs = try await store.importWallpaper(url, id: id); await loadPreviews(); return true }
@@ -106,20 +104,8 @@ struct CustomizationFilePicker: UIViewControllerRepresentable {
         func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
             guard let source = urls.first else { return }
             Task {
-                let result = await Task.detached(priority: .userInitiated) { () -> Result<URL, Error> in
-                    let scoped = source.startAccessingSecurityScopedResource()
-                    defer { if scoped { source.stopAccessingSecurityScopedResource() } }
-                    let directory = FileManager.default.temporaryDirectory.appendingPathComponent("GX-Import-\(UUID().uuidString)")
-                    do {
-                        let size = try source.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey])
-                        guard size.isRegularFile == true, (size.fileSize ?? Int.max) <= CustomizationFiles.maximumFile else {
-                            throw CustomizationFailure("The archive is invalid or exceeds the size limit.")
-                        }
-                        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: false)
-                        let target = directory.appendingPathComponent(source.lastPathComponent)
-                        try FileManager.default.copyItem(at: source, to: target)
-                        return .success(target)
-                    } catch { try? FileManager.default.removeItem(at: directory); return .failure(error) }
+                let result: Result<URL, Error> = await Task.detached(priority: .userInitiated) {
+                    Result { try CustomizationFiles.stagePickedFile(source) }
                 }.value
                 complete(result)
             }

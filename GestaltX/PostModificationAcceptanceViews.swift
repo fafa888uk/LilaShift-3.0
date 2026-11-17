@@ -23,10 +23,6 @@ struct PostModificationAcceptanceCard: View {
     @State private var saveMessage: String?
     @State private var showingDetails = false
 
-    private var heroTint: Color {
-        Color.lavenderGlass.opacity(0.65)
-    }
-
     /// The acceptance report for the recorded changes against the
     /// re-read document. `model.working` is the document read after
     /// the restart; when it is `nil` every item is not re-read.
@@ -41,10 +37,10 @@ struct PostModificationAcceptanceCard: View {
     }
 
     var body: some View {
-        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: heroTint) {
-            VStack(alignment: .leading, spacing: 14) {
-                HStack(spacing: 12) {
-                    GlassIconPedestal(systemImage: "checkmark.seal", tint: .gestaltAccent, size: 44)
+        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: GlassTokens.heroTint) {
+            VStack(alignment: .leading, spacing: GlassTokens.cardSpacing) {
+                HStack(spacing: GlassTokens.rowSpacing) {
+                    GlassIconPedestal(systemImage: "checkmark.seal", tint: .gestaltAccent, size: GlassTokens.iconSize)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(L("Post-Modification Acceptance"))
                             .font(.headline)
@@ -67,7 +63,7 @@ struct PostModificationAcceptanceCard: View {
                     Text(report.summary)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
-                    HStack(spacing: 12) {
+                    HStack(spacing: GlassTokens.rowSpacing) {
                         Text(String(format: L("%d accepted"), report.acceptedCount))
                             .font(.caption)
                             .foregroundStyle(.green)

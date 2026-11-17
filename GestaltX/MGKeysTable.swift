@@ -98,7 +98,11 @@ enum MGKeysTable {
 
     /// All rows, deduplicated by key and sorted by name.
     /// Capability rows win over Erosion-CN rows for the same key.
-    static var all: [MGKeyEntry] {
+    /// Built once: every input is a static table, so the result
+    /// never changes. Previously this rebuilt (dedup + sort) on
+    /// every access — including every keystroke of a search, since
+    /// `matching` reads `all` first.
+    static let all: [MGKeyEntry] = {
         var byKey: [String: MGKeyEntry] = [:]
         for (name, key, question, line) in erosionCNKeys {
             byKey[key] = MGKeyEntry(
@@ -118,7 +122,7 @@ enum MGKeysTable {
             }
         }
         return byKey.values.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
-    }
+    }()
 
     /// Rows matching a search string (name, key, or meaning).
     /// Whitespace is ignored on both sides, so typing a camelCase

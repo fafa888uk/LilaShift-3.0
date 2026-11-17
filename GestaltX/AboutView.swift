@@ -48,7 +48,7 @@ struct AboutView: View {
     var body: some View {
         List {
             Section {
-                HStack(spacing: 12) {
+                HStack(spacing: GlassTokens.rowSpacing) {
                     BrandMark(size: 44)
                     VStack(alignment: .leading, spacing: 3) {
                         Text(L("LilaShift")).font(.headline)
@@ -225,10 +225,18 @@ struct LicenseTextView: View {
     let name: String
     let title: String
     var source: URL? = nil
-    private var paragraphs: [String] {
+    /// The license paragraphs, loaded once in `.task`. The old
+    /// computed property re-read the bundle file on every body
+    /// evaluation; the file is small and local, but there is no
+    /// reason to read it more than once.
+    @State private var paragraphs: [String] = []
+    /// Reads and reflows a bundled license text for a phone screen.
+    /// GPL's source text is wrapped at fixed columns, so paragraphs
+    /// are rejoined on whitespace. Returns a fallback paragraph when
+    /// the file cannot be loaded.
+    private static func loadParagraphs(name: String) -> [String] {
         guard let url = Bundle.main.url(forResource: name, withExtension: "txt"),
               let text = try? String(contentsOf: url, encoding: .utf8) else { return [L("License text could not be loaded.")] }
-        // GPL's source text is wrapped at fixed columns. Reflow paragraphs for a phone screen.
         return text.components(separatedBy: "\n\n").map { paragraph in
             paragraph.split(whereSeparator: { $0.isWhitespace }).joined(separator: " ")
         }.filter { !$0.isEmpty }
@@ -254,6 +262,7 @@ struct LicenseTextView: View {
             .padding(20).frame(maxWidth: 720).frame(maxWidth: .infinity)
         }
         .navigationTitle(title).navigationBarTitleDisplayMode(.inline)
+        .task { paragraphs = Self.loadParagraphs(name: name) }
         .toolbar {
             if let source {
                 ToolbarItem(placement: .topBarTrailing) {

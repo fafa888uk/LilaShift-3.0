@@ -337,7 +337,7 @@ struct ProxyRulesView: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 GlassCard(cornerRadius: GlassTokens.cardRadius) {
-                    VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: GlassTokens.rowSpacing) {
                         Text(L("Format"))
                             .font(.headline)
                         Picker(L("Format"), selection: $format) {
@@ -363,7 +363,7 @@ struct ProxyRulesView: View {
                             .textSelection(.enabled)
                     }
                 }
-                HStack(spacing: 12) {
+                HStack(spacing: GlassTokens.rowSpacing) {
                     Button(L("Copy")) {
                         UIPasteboard.general.string = content
                         message = L("Copied to the clipboard.")
@@ -373,7 +373,7 @@ struct ProxyRulesView: View {
                         .buttonStyle(GlassPrimaryButtonStyle())
                 }
                 GlassCard(cornerRadius: GlassTokens.cardRadius) {
-                    VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: GlassTokens.rowSpacing) {
                         Text(L("Inject into Proxy Client"))
                             .font(.headline)
                         if isScanning {
@@ -617,9 +617,10 @@ struct AppGroupBrowserView: View {
             var loadedBookmarks: [SafariBookmarkRecord] = []
             if let safari {
                 let dbPath = safari.url.appendingPathComponent("Library/Safari/Bookmarks.db").path
-                if FileManager.default.isReadableFile(atPath: dbPath) {
-                    loadedBookmarks = SafariBookmarks.read(at: dbPath)
-                }
+                // read(at:) already returns [] when the database
+                // cannot be opened, so no readability check is needed
+                // here — and none belongs in the view.
+                loadedBookmarks = SafariBookmarks.read(at: dbPath)
             }
             await MainActor.run {
                 groups = found
