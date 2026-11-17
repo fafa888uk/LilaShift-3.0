@@ -1360,5 +1360,8 @@
   "Size": "Tamaño",
   "Remove": "Eliminar",
   "Search keys": "Buscar claves",
-  "Search presets": "Buscar ajustes"
+  "Search presets": "Buscar ajustes",
+  "Light": "Claro",
+  "Dark": "Oscuro",
+  "Keypad appearance": "Apariencia del teclado"
 }

@@ -1360,5 +1360,8 @@
   "Size": "크기",
   "Remove": "제거",
   "Search keys": "키 검색",
-  "Search presets": "프리셋 검색"
+  "Search presets": "프리셋 검색",
+  "Light": "라이트",
+  "Dark": "다크",
+  "Keypad appearance": "키패드 모양"
 }

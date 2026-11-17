@@ -1360,5 +1360,8 @@
   "Size": "サイズ",
   "Remove": "削除",
   "Search keys": "キーを検索",
-  "Search presets": "プリセットを検索"
+  "Search presets": "プリセットを検索",
+  "Light": "ライト",
+  "Dark": "ダーク",
+  "Keypad appearance": "キーパッドの外観"
 }

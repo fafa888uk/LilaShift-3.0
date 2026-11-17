@@ -1360,5 +1360,8 @@
   "Size": "Размер",
   "Remove": "Удалить",
   "Search keys": "Поиск ключей",
-  "Search presets": "Поиск пресетов"
+  "Search presets": "Поиск пресетов",
+  "Light": "Светлое",
+  "Dark": "Тёмное",
+  "Keypad appearance": "Оформление клавиатуры"
 }

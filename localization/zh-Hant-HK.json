@@ -1360,5 +1360,8 @@
   "Size": "大小",
   "Remove": "移除",
   "Search keys": "搜尋鍵名",
-  "Search presets": "搜尋預設"
+  "Search presets": "搜尋預設",
+  "Light": "淺色",
+  "Dark": "深色",
+  "Keypad appearance": "撥號盤外觀"
 }
