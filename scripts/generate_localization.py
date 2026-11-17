@@ -1296,6 +1296,74 @@ Unknown process	未知进程
 Up	上一级
 The app replaced this file. Its existing backup was kept.	该 App 替换了此文件，已保留其现有备份。
 The original backup is invalid or belongs to another file. It was kept unchanged.	原始备份无效或属于其他文件，已保持原样。
+Asset Tag	资产标签
+Asset tag	资产标签
+Asset tag applied. Restart the device to see it on the Lock Screen.	资产标签已应用。重新启动设备后即可在锁定屏幕上看到。
+Asset tag removed. Restart the device to see the change.	资产标签已移除。重新启动设备后即可看到变化。
+Choice	选择
+Circular buttons	圆形按钮
+Conditional	有条件
+Containers with caches	含有缓存的容器
+Current Asset Tag	当前资产标签
+Custom images for the Phone app keypad buttons, staged the same way as launch images: every replaced file is backed up beside itself and can be restored. This is not a system-wide dialer theme — iOS has no public API for that — it replaces the cached button artwork the Phone app reads. After applying, toggle the appearance or restart the device; never force-quit the Phone app.	为电话 App 拨号盘按钮设置自定义图片，暂存方式与启动图相同：每个被替换的文件都会在旁边备份，之后可以还原。这不是系统级拨号盘主题——iOS 没有提供相关公开 API——它替换的是电话 App 自身读取的缓存按钮图片。应用后请切换外观或重新启动设备；切勿强制退出电话 App。
+DeviceSupportsSiriHub is the on-device Siri Hub intent-routing slot. When SiriHub routing is on, enabling Siri AI can hang at “Adding Siri support”, so the staging guard blocks AI staging until it is off. The status below is the live system answer, read-only.	DeviceSupportsSiriHub 是设备端 Siri Hub 意图路由槽位。SiriHub 路由开启时，启用 Siri AI 可能卡在“正在添加 Siri 支持内容”，因此暂存守卫会在关闭它之前阻止 AI 暂存。下方状态是实时系统答案，只读。
+Dialer Skin	拨号盘皮肤
+Dialer skin applied with some invalid images skipped.	拨号盘皮肤已应用，部分无效图片已跳过。
+Dialer skin applied. Toggle the appearance or restart the device to see it.	拨号盘皮肤已应用。请切换外观或重新启动设备查看。
+Enable storage preset?	启用存储预设？
+Enabling the storage preset can hide apps from the Home Screen. Only continue if you understand this.	启用存储预设可能会从主屏幕隐藏应用。只有理解这一点时才继续。
+Every MobileGestalt key the app knows about, with its meaning and the open-source source it was verified against. Nothing here is guessed.	本 App 已知的所有 MobileGestalt 键，附含义与核实过的开源来源。这里没有任何猜测内容。
+Export All	全部导出
+Export Bookmarks	导出书签
+Export Selected	导出所选
+Import Theme	导入主题
+Installation	安装方式
+Key: waGD2UTpntjbDXD1r3oALQ (Erosion-CN MGCacheLayout). Not present in upstream GestaltX 1.1.1.	键：waGD2UTpntjbDXD1r3oALQ（Erosion-CN MGCacheLayout）。上游 GestaltX 1.1.1 中没有。
+MobileGestalt Keys	MobileGestalt 键
+Model Cache Probe	模型缓存探测
+No Voice Memos recordings were found.	未找到语音备忘录录音。
+No backed-up keypad originals were found.	未找到已备份的拨号盘原始图片。
+No model caches found here.	此处未找到模型缓存。
+Only the readable system translation, voice-memo transcription and visual-analysis container caches are counted. The Apple Intelligence core model weights live in the MobileAsset read-only volume managed by protected daemons, so this probe does not and cannot report them.	仅统计可读的系统翻译、语音备忘录转录与视觉分析容器缓存。Apple Intelligence 核心模型权重位于受保护守护进程管理的 MobileAsset 只读卷中，因此本探测无法报告它们。
+Original keypad images restored. Toggle the appearance or restart the device to see them.	已还原原始拨号盘图片。请切换外观或重新启动设备查看。
+Preset Lab	预设实验室
+Probe Again	再次探测
+Probing model caches…	正在探测模型缓存…
+Restore Originals	还原原始图片
+Scanning recordings…	正在扫描录音…
+SiriHub Guard	SiriHub 守卫
+SiriHub Routing	SiriHub 路由
+SiriHub routing is off. Siri AI staging is not blocked by this guard.	SiriHub 路由已关闭。此守卫不会阻止 Siri AI 暂存。
+SiriHub routing is on. Enabling Siri AI while SiriHub is on can hang at “Adding Siri support”. Turn SiriHub off first, then try again.	SiriHub 路由已开启。SiriHub 开启时启用 Siri AI 可能卡在“正在添加 Siri 支持内容”。请先关闭 SiriHub，然后重试。
+Staged changes	已暂存的更改
+System Version	系统版本
+The Phone app container could not be opened on this device.	无法在此设备上打开电话 App 容器。
+The Voice Memos container could not be opened on this device.	无法在此设备上打开语音备忘录容器。
+The asset tag could not be applied on this device.	无法在此设备上应用资产标签。
+The asset tag could not be removed on this device.	无法在此设备上移除资产标签。
+The asset tag is the text shown at the bottom of the Lock Screen (for example an owner or organization label). It is stored in the device-configuration plist and can be removed again at any time.	资产标签是显示在锁定屏幕底部的文字（例如所有者或组织标识）。它保存在设备配置 plist 中，随时可以移除。
+The live SiriHub probe could not answer on this device, so SiriHub routing is unverified. Staging is not blocked on an unverified probe.	实时 SiriHub 探测无法在此设备上作答，因此 SiriHub 路由未验证。未验证的探测不会阻止暂存。
+Theme imported. Review the images, then tap Apply.	主题已导入。请检查图片，然后点击“应用”。
+Total files	文件总数
+Total size	总大小
+Try presets here before applying them. Staging a preset only marks it for the next apply; nothing is written until you tap Apply, which runs the same review, backup and readback as the main preset page. Groups and virtual entries are not listed here — they have their own apply paths.	先在这里试用预设，再应用。暂存预设只是为下一次应用做标记；在点击“应用”之前不会写入任何内容，应用时会执行与主预设页相同的检查、备份与回读。分组与虚拟条目不在此处列出——它们有各自的应用路径。
+Unknown duration	未知时长
+Voice Memo Export	语音备忘录导出
+Which Apple Intelligence model caches are actually present on this device, read-only. The probe reports only what it finds — it never guesses a model is present.	此设备上实际存在哪些 Apple Intelligence 模型缓存，只读。探测仅报告实际找到的内容——绝不会猜测某个模型存在。
+Your own Voice Memos recordings, read-only. Only the recordings the app can legitimately reach through the Voice Memos container are listed; nothing is deleted or modified. Export writes a ZIP of the selected recordings so you can share or back them up.	你自己的语音备忘录录音，只读。仅列出本 App 通过语音备忘录容器合法访问的录音；不会删除或修改任何内容。导出会将所选录音打包为 ZIP，方便分享或备份。
+This build was not verified device-by-device on real hardware. The matrix below states the designed support range from the repository source and documentation, not a per-device test result. Anything marked “unverified” has not been confirmed on a real device with this build.	本版未在真机上逐机型验证。下表是根据仓库源码与文档得出的设计支持范围，不是逐机型测试结果。标为“未验证”的项表示尚未用本版在真机上确认。
+Spatial Audio Recording	空间音频录制
+Enable spatial audio recording in Voice Memos.	在语音备忘录中启用空间音频录制。
+Responsive Shutter	灵敏快门
+Lower the camera shutter-to-imaging latency for instant capture.	降低相机快门到成像的延迟，实现即时拍摄。
+Hypertension Notifications	高血压通知
+Enable hypertension trend evaluation and notifications in the Health app.	在健康 App 中启用高血压趋势评估与通知。
+Could not read any recording audio file.	无法读取任何录音音频文件。
+Files	文件
+Size	大小
+Remove	移除
+Search keys	搜索键名
+Search presets	搜索预设
 '''
 entries = {}
 for line in TRANSLATIONS.strip().splitlines():
