@@ -1364,6 +1364,9 @@ Size	大小
 Remove	移除
 Search keys	搜索键名
 Search presets	搜索预设
+Light	浅色
+Dark	深色
+Keypad appearance	拨号盘外观
 '''
 entries = {}
 for line in TRANSLATIONS.strip().splitlines():
