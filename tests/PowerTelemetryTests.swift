@@ -69,8 +69,8 @@ final class PowerTelemetryTests: XCTestCase {
         // The second row stores 2850 (hundredths of a degree); it
         // must read as 28.5 °C, not 2850 °C.
         let samples = PowerTelemetry.queryBatterySamples(db: try XCTUnwrap(db))
-        XCTAssertEqual(samples[0].temperatureCelsius, 28.5, accuracy: 0.001)
-        XCTAssertEqual(samples[1].temperatureCelsius, 28.5, accuracy: 0.001)
+        XCTAssertEqual(samples[0].temperatureCelsius ?? 0, 28.5, accuracy: 0.001)
+        XCTAssertEqual(samples[1].temperatureCelsius ?? 0, 28.5, accuracy: 0.001)
     }
 
     func testTrueHealthPercent() throws {
