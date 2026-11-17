@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import Foundation
+import SQLite3
 
 /// A shared AppGroup container detected on the device (A11).
 struct AppGroupContainer: Identifiable, Equatable, Codable {
