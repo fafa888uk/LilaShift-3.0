@@ -100,6 +100,24 @@ GestaltX, and two data tables were transcribed value-for-value:
   iOS 27). Erosion-CN's own note warning that a full-US mapping can
   conflict on CN dual-physical-SIM + eSIM hardware is followed in
   GestaltX/Capabilities.swift (Full US stays an explicit opt-in).
+- Design reference, reimplemented (LilaShift 3.0 MEDIUM port): the
+  fake-supervision residue audit and cleanup (GestaltX/SupervisionAudit.swift,
+  from Erosion-CN's ConfigView — deletes only a residue file, never a
+  genuine MDM profile); the read-only battery-health and thermal telemetry
+  reader (GestaltX/PowerTelemetry.swift, from Erosion-CN's PowerTelemetryView
+  — APFS clonefile snapshot of CurrentPowerlog.PLSQL, never written); the
+  read-only crash-diagnostics reader (GestaltX/CrashDiagnostics.swift, from
+  Erosion-CN's CrashDiagnosticsView — parses .ips reports, never edits a
+  system log); the .sgmodule / Stash rule generator and Surge injector
+  (GestaltX/ProxyRuleGenerator.swift, GestaltX/ProxyRuleInjector.swift, from
+  Erosion-CN's AppGroupHubView — writes one module file into a detected
+  proxy client's own AppGroup container only); the AppGroup discovery and
+  read-only container browser plus Safari bookmark export
+  (GestaltX/AppGroupBrowser.swift, from Erosion-CN's AppGroupHubView —
+  group identity read from the container xattr or metadata plist, never
+  inferred from a name). The shared container-access and snapshot helpers
+  (GestaltX/ContainerAccess.swift, GestaltX/SQLiteSnapshotHelper.swift)
+  follow Erosion-CN's WorseQuery.grantAccess and SQLiteSnapshotHelper.
 Because LilaShift is itself GPL-3.0, this reuse stays under the same
 license; the attribution above records where the data came from.
 
