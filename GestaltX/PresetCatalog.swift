@@ -288,6 +288,15 @@ enum PresetSharedContent {
     static let siriModeUpstreamEvidence = PresetEvidence(
         text: "上游 GestaltX：siriAIMode（SiriMode=2，不伪装硬件；实验性）。",
         kind: .upstream)
+    /// Evidence: media/camera/health CacheData slot keys come from
+    /// Erosion-CN's MGCacheLayout (Kianuni, GPL-3.0).
+    static let erosionMGCacheEvidence = PresetEvidence(
+        text: "键映射来自 Erosion-CN MGCacheLayout.swift（Kianuni，GPL-3.0）。",
+        kind: .code)
+    /// Evidence: spatial audio recording needs four microphones.
+    static let spatialAudioFourMicEvidence = PresetEvidence(
+        text: "四麦克风机型表来自 Erosion-CN GestaltHelpers.fourMicPhones（iPhone17,1–5、iPhone18,1/2/3/5）；iPhone Air（iPhone18,4）不在其中，强开可能破坏语音备忘录录音室模式。",
+        kind: .code)
 }
 
 // MARK: - Catalog
@@ -716,6 +725,23 @@ extension PresetCatalog {
             chineseName: "空间化 FaceTime 音频",
             chineseDescription: "为 FaceTime 启用空间音频播放。可能需要重新启动设备才能生效。",
             riskReason: "只改空间音频能力标记；实际播放取决于音频硬件与系统支持。"),
+        "spatialAudioRecording": PresetContent(
+            chineseName: "空间音频录制",
+            chineseDescription: "在语音备忘录中启用空间音频录制。需要四麦克风硬件（iPhone 16 系列及更新机型）；在三麦克风机型（含 iPhone Air）上强开可能破坏语音备忘录录音室模式。可能需要重新启动设备才能生效。",
+            scope: FeatureEligibilityEvaluator.spatialAudioScope,
+            scopeNote: "仅四麦克风机型（iPhone17,1–5、iPhone18,1/2/3/5）；iPhone Air（iPhone18,4）不在其中。",
+            riskReason: "只改空间音频录制能力标记；在三麦克风机型上强开可能破坏语音备忘录录音室模式，关掉并应用、重启即可恢复。",
+            evidence: [PresetSharedContent.erosionMGCacheEvidence, PresetSharedContent.spatialAudioFourMicEvidence]),
+        "responsiveShutter": PresetContent(
+            chineseName: "灵敏快门",
+            chineseDescription: "降低相机快门到成像的延迟，实现即时拍摄。可能需要重新启动设备才能生效。",
+            riskReason: "只改快门响应能力标记；实际拍摄延迟取决于相机硬件与系统支持。",
+            evidence: [PresetSharedContent.erosionMGCacheEvidence]),
+        "hypertensionNotifications": PresetContent(
+            chineseName: "高血压通知",
+            chineseDescription: "在健康 App 中启用高血压趋势评估与通知。可能需要重新启动设备才能生效。",
+            riskReason: "只改高血压通知能力标记；健康数据的评估取决于系统与健康 App 支持。",
+            evidence: [PresetSharedContent.erosionMGCacheEvidence]),
         // MARK: iPad
         "pencil": PresetContent(
             chineseName: "Apple Pencil",

@@ -1603,6 +1603,94 @@ struct ToolGroupView: View {
                                 }
                             }
                             .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { VoiceMemoExportView() } label: {
+                                HStack {
+                                    Label(L("Voice Memo Export"), systemImage: "mic")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { ModelCacheProbeView() } label: {
+                                HStack {
+                                    Label(L("Model Cache Probe"), systemImage: "cpu")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { AssetTagView() } label: {
+                                HStack {
+                                    Label(L("Asset Tag"), systemImage: "tag")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { DialerSkinView() } label: {
+                                HStack {
+                                    Label(L("Dialer Skin"), systemImage: "phone")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { SiriHubGuardView() } label: {
+                                HStack {
+                                    Label(L("SiriHub Guard"), systemImage: "shield.lefthalf.filled")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { MGKeysTableView() } label: {
+                                HStack {
+                                    Label(L("MobileGestalt Keys"), systemImage: "key")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { CompatibilityMatrixView() } label: {
+                                HStack {
+                                    Label(L("Compatibility"), systemImage: "checklist")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { PresetLabView() } label: {
+                                HStack {
+                                    Label(L("Preset Lab"), systemImage: "flask")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
                 }

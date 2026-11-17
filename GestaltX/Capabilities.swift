@@ -68,6 +68,12 @@ struct Capability: Identifiable, Equatable {
             "Restart required. Siri uses a device-specific capability type; changing it may affect the Apple Intelligence Siri interface. Keep the current value or restore the recorded original."
         case "audioIntelligence":
             "Restart required. Apple Intelligence also depends on device and region. The exact entry point depends on the device and OS version. This stages the CacheExtra key; the CacheData slot is a separate value."
+        case "spatialAudioRecording":
+            "Restart required. Requires the four-microphone array (iPhone 16 series and later). On older models enabling it can break the Voice Memos Studio recording mode. This stages the CacheExtra key; the CacheData slot is a separate value."
+        case "responsiveShutter":
+            "Restart required. Lowers the camera shutter-to-imaging latency for instant capture. This stages the CacheExtra key; the CacheData slot is a separate value."
+        case "hypertensionNotifications":
+            "Restart required. Enables hypertension trend evaluation and notifications in the Health app. This stages the CacheExtra key; the CacheData slot is a separate value."
         case "handwritingSynthesis":
             "Restart required. Apple Intelligence also depends on device and region. Results depend on the app and system support."
         case "pencil": "Restart the device, then reopen Settings. Pencil hardware support is still required."
@@ -162,6 +168,9 @@ struct Capability: Identifiable, Equatable {
         .init(id: "collisionSOS", category: .device, title: "Collision SOS", detail: "Show collision detection in Emergency SOS settings.", keys: ["HCzWusHQwZDea6nNhaKndw"]),
         .init(id: "audioMix", category: .device, title: "Audio Mix", detail: "Enable the audio mix capability for supported media.", keys: ["aVL5GE3tx0LSCI/ErfrJGA"]),
         .init(id: "spatialFaceTimeAudio", category: .device, title: "Spatial FaceTime Audio", detail: "Enable spatial audio playback for FaceTime.", keys: ["/EVOCjM/Nmb2roP5ebtEFA"]),
+        .init(id: "spatialAudioRecording", category: .device, title: "Spatial Audio Recording", detail: "Enable spatial audio recording in Voice Memos.", keys: ["X6NGcYcvHmbqlR8hLXASJA"], caution: true),
+        .init(id: "responsiveShutter", category: .device, title: "Responsive Shutter", detail: "Lower the camera shutter-to-imaging latency for instant capture.", keys: ["gQDt76Te0SPw7N8oTLrBFw"], caution: true),
+        .init(id: "hypertensionNotifications", category: .device, title: "Hypertension Notifications", detail: "Enable hypertension trend evaluation and notifications in the Health app.", keys: ["4fh9efw4o1yaFqkXNCXoeA"]),
         .init(id: "pencil", category: .ipad, title: "Apple Pencil", detail: "Expose Apple Pencil settings.", keys: ["yhHcB0iH0d1XzPO/CFd3ow"]),
         .init(id: "stageManager", category: .ipad, title: "Stage Manager", detail: "Expose Stage Manager support.", keys: ["qeaj75wk3HF4DwQ8qbIi7g"], caution: true),
         .init(id: "ipadApps", category: .ipad, title: "iPad App Compatibility", detail: "Allow iPad app compatibility types on iPhone.", keys: ["9MZ5AdH43csAUajl/dU+IQ"]),

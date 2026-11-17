@@ -475,6 +475,7 @@ struct AppGroupBrowserView: View {
     @State private var entries: [AppGroupBrowser.Entry] = []
     @State private var relativePath = ""
     @State private var bookmarks: [SafariBookmarkRecord] = []
+    @State private var export: TemporaryExport?
     @State private var isScanning = false
     @State private var message: String?
 
@@ -566,6 +567,8 @@ struct AppGroupBrowserView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             Text(L("Safari Bookmarks"))
                                 .font(.headline)
+                            Button(L("Export Bookmarks")) { exportBookmarks() }
+                                .buttonStyle(GlassPrimaryButtonStyle())
                             ForEach(bookmarks.prefix(50)) { bookmark in
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(bookmark.title.isEmpty ? bookmark.url : bookmark.title).font(.subheadline)
@@ -588,7 +591,21 @@ struct AppGroupBrowserView: View {
         .background(GlassBackground())
         .navigationTitle(L("AppGroup Browser"))
         .navigationBarTitleDisplayMode(.large)
+        .sheet(item: $export) { ShareSheet(export: $0) }
         .task { scan() }
+    }
+
+    /// Exports the read-only bookmark list as a Netscape bookmark
+    /// HTML file (A17) and presents the share sheet. The source
+    /// database is never written.
+    private func exportBookmarks() {
+        guard !bookmarks.isEmpty else { return }
+        do {
+            let html = SafariBookmarksExport.html(bookmarks)
+            export = try TemporaryExport(data: Data(html.utf8), name: SafariBookmarksExport.fileName)
+        } catch {
+            message = error.localizedDescription
+        }
     }
 
     private func scan() {

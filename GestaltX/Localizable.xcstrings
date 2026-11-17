@@ -82816,6 +82816,4358 @@
           }
         }
       }
+    },
+    "Asset Tag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Asset Tag"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "资产标签"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Etiqueta de activo"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "برچسب دارایی"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "資産タグ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "자산 태그"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Тег актива"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thẻ tài sản"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "資產標籤"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "資產標籤"
+          }
+        }
+      }
+    },
+    "Asset tag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Asset tag"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "资产标签"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Etiqueta de activo"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "برچسب دارایی"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "資産タグ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "자산 태그"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Тег актива"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thẻ tài sản"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "資產標籤"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "資產標籤"
+          }
+        }
+      }
+    },
+    "Asset tag applied. Restart the device to see it on the Lock Screen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Asset tag applied. Restart the device to see it on the Lock Screen."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "资产标签已应用。重新启动设备后即可在锁定屏幕上看到。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Etiqueta de activo aplicada. Reinicia el dispositivo para verla en la pantalla de bloqueo."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "برچسب دارایی اعمال شد. برای مشاهده آن در صفحه قفل، دستگاه را راه‌اندازی مجدد کنید."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "資産タグを適用しました。ロック画面で確認するには、デバイスを再起動してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "자산 태그가 적용되었습니다. 잠금 화면에서 확인하려면 기기를 재시동하세요."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Тег актива применён. Перезапустите устройство, чтобы увидеть его на экране блокировки."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã áp dụng thẻ tài sản. Khởi động lại thiết bị để xem trên Màn hình khóa."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已套用資產標籤。重新啟動設備後，即可在鎖定屏幕上看到。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已套用資產標籤。重新啟動裝置後，即可在鎖定畫面上看到。"
+          }
+        }
+      }
+    },
+    "Asset tag removed. Restart the device to see the change.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Asset tag removed. Restart the device to see the change."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "资产标签已移除。重新启动设备后即可看到变化。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Etiqueta de activo eliminada. Reinicia el dispositivo para ver el cambio."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "برچسب دارایی حذف شد. برای مشاهده تغییر، دستگاه را راه‌اندازی مجدد کنید."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "資産タグを削除しました。変更を確認するには、デバイスを再起動してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "자산 태그가 제거되었습니다. 변경 사항을 확인하려면 기기를 재시동하세요."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Тег актива удалён. Перезапустите устройство, чтобы увидеть изменение."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã xóa thẻ tài sản. Khởi động lại thiết bị để xem thay đổi."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已移除資產標籤。重新啟動設備後，即可看到變更。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已移除資產標籤。重新啟動裝置後，即可看到變更。"
+          }
+        }
+      }
+    },
+    "Choice": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choice"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opción"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انتخاب"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "選択"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "선택"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выбор"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lựa chọn"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "選擇"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "選擇"
+          }
+        }
+      }
+    },
+    "Circular buttons": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Circular buttons"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "圆形按钮"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Botones circulares"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دکمه‌های دایره‌ای"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "円形ボタン"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "원형 버튼"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Круглые кнопки"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nút tròn"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "圓形按鈕"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "圓形按鈕"
+          }
+        }
+      }
+    },
+    "Conditional": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conditional"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "有条件"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Condicional"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مشروط"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "条件付き"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "조건부"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Условно"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Có điều kiện"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "有條件"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "有條件"
+          }
+        }
+      }
+    },
+    "Containers with caches": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Containers with caches"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "含有缓存的容器"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contenedores con caché"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ظرف‌های دارای حافظه پنهان"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "キャッシュのあるコンテナ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "캐시가 있는 컨테이너"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Контейнеры с кэшем"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vùng chứa có bộ nhớ đệm"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "含有快取的容器"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "含有快取的容器"
+          }
+        }
+      }
+    },
+    "Current Asset Tag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Current Asset Tag"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "当前资产标签"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Etiqueta de activo actual"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "برچسب دارایی کنونی"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在の資産タグ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "현재 자산 태그"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Текущий тег актива"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thẻ tài sản hiện tại"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "目前的資產標籤"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "目前的資產標籤"
+          }
+        }
+      }
+    },
+    "Custom images for the Phone app keypad buttons, staged the same way as launch images: every replaced file is backed up beside itself and can be restored. This is not a system-wide dialer theme — iOS has no public API for that — it replaces the cached button artwork the Phone app reads. After applying, toggle the appearance or restart the device; never force-quit the Phone app.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Custom images for the Phone app keypad buttons, staged the same way as launch images: every replaced file is backed up beside itself and can be restored. This is not a system-wide dialer theme — iOS has no public API for that — it replaces the cached button artwork the Phone app reads. After applying, toggle the appearance or restart the device; never force-quit the Phone app."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "为电话 App 拨号盘按钮设置自定义图片，暂存方式与启动图相同：每个被替换的文件都会在旁边备份，之后可以还原。这不是系统级拨号盘主题——iOS 没有提供相关公开 API——它替换的是电话 App 自身读取的缓存按钮图片。应用后请切换外观或重新启动设备；切勿强制退出电话 App。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Imágenes personalizadas para los botones del teclado de la app Teléfono, preparadas igual que las imágenes de inicio: cada archivo reemplazado se respalda junto al original y se puede restaurar. Esto no es un tema del marcador a nivel de sistema — iOS no ofrece una API pública para ello —, sino que reemplaza las imágenes en caché que lee la propia app Teléfono. Después de aplicar, cambia la apariencia o reinicia el dispositivo; nunca fuerces el cierre de la app Teléfono."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تصاویر سفارشی برای دکمه‌های صفحه‌کلید برنامه تلفن، که مانند تصاویر راه‌اندازی آماده می‌شوند: هر فایل جایگزین‌شده در کنار خود پشتیبان‌گیری می‌شود و قابل بازیابی است. این یک تم سیستمی برای صفحه‌کلید نیست — iOS هیچ API عمومی برای آن ندارد — بلکه تصاویر دکمه‌های ذخیره‌شده‌ای را جایگزین می‌کند که خود برنامه تلفن می‌خواند. پس از اعمال، ظاهر را تغییر دهید یا دستگاه را راه‌اندازی مجدد کنید؛ هرگز برنامه تلفن را به‌زور نبندید."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "電話アプリのダイヤルボタン用のカスタム画像を、起動画像と同じ方法でステージングします。置き換えたファイルはすべて横にバックアップされ、復元できます。これはシステム全体のダイヤルテーマではありません。iOSにはそのための公開APIはなく、電話アプリ自身が読み取るキャッシュされたボタン画像を置き換えるものです。適用後は外観を切り替えるかデバイスを再起動してください。電話アプリを強制終了しないでください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "전화 앱 다이얼 버튼용 사용자 지정 이미지를 실행 이미지와 같은 방식으로 스테이징합니다. 교체된 모든 파일은 옆에 백업되며 복원할 수 있습니다. 이것은 시스템 전체 다이얼 테마가 아닙니다. iOS에는 이를 위한 공개 API가 없으며, 전화 앱 자체가 읽는 캐시된 버튼 이미지를 교체하는 것입니다. 적용한 후 외관을 전환하거나 기기를 재시동하세요. 전화 앱을 강제 종료하지 마세요."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пользовательские изображения для кнопок номеронабирателя приложения «Телефон», подготавливаемые так же, как изображения запуска: каждый заменённый файл резервируется рядом с собой и может быть восстановлен. Это не системная тема номеронабирателя — в iOS нет публичного API для этого, — заменяются кэшированные изображения кнопок, которые читает само приложение «Телефон». После применения переключите оформление или перезапустите устройство; никогда не завершайте приложение «Телефон» принудительно."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hình ảnh tùy chỉnh cho các nút bàn phím của ứng dụng Điện thoại, được chuẩn bị giống như hình ảnh khởi chạy: mọi tệp bị thay thế đều được sao lưu bên cạnh và có thể khôi phục. Đây không phải là giao diện bàn phím toàn hệ thống — iOS không có API công khai cho việc đó — mà là thay thế hình ảnh nút đã lưu trong bộ nhớ đệm mà chính ứng dụng Điện thoại đọc. Sau khi áp dụng, hãy chuyển đổi giao diện hoặc khởi động lại thiết bị; không bao giờ buộc thoát ứng dụng Điện thoại."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "為電話 App 撥號盤按鈕設定自訂圖片，暫存方式與啟動圖相同：每個被取代的檔案都會在旁邊備份，之後可以還原。這不是系統級撥號盤主題——iOS 沒有提供相關公開 API——它取代的是電話 App 自身讀取的快取按鈕圖片。套用後請切換外觀或重新啟動設備；切勿強制結束電話 App。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "為電話 App 撥號盤按鈕設定自訂圖片，暫存方式與啟動圖相同：每個被取代的檔案都會在旁邊備份，之後可以還原。這不是系統級撥號盤主題——iOS 沒有提供相關公開 API——它取代的是電話 App 自身讀取的快取按鈕圖片。套用後請切換外觀或重新啟動裝置；切勿強制結束電話 App。"
+          }
+        }
+      }
+    },
+    "DeviceSupportsSiriHub is the on-device Siri Hub intent-routing slot. When SiriHub routing is on, enabling Siri AI can hang at “Adding Siri support”, so the staging guard blocks AI staging until it is off. The status below is the live system answer, read-only.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DeviceSupportsSiriHub is the on-device Siri Hub intent-routing slot. When SiriHub routing is on, enabling Siri AI can hang at “Adding Siri support”, so the staging guard blocks AI staging until it is off. The status below is the live system answer, read-only."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DeviceSupportsSiriHub 是设备端 Siri Hub 意图路由槽位。SiriHub 路由开启时，启用 Siri AI 可能卡在“正在添加 Siri 支持内容”，因此暂存守卫会在关闭它之前阻止 AI 暂存。下方状态是实时系统答案，只读。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DeviceSupportsSiriHub es la ranura de enrutamiento de intenciones de Siri Hub en el dispositivo. Cuando el enrutamiento de SiriHub está activado, habilitar Siri AI puede quedarse atascado en «Añadiendo compatibilidad con Siri», por lo que la protección de preparación bloquea la preparación de IA hasta que se desactive. El estado siguiente es la respuesta en vivo del sistema, de solo lectura."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DeviceSupportsSiriHub شکاف مسیریابی قصد Siri Hub در دستگاه است. وقتی مسیریابی SiriHub روشن است، فعال‌کردن Siri AI ممکن است در «در حال افزودن پشتیبانی Siri» گیر کند، بنابراین نگهبان آماده‌سازی تا خاموش‌شدن آن، آماده‌سازی AI را مسدود می‌کند. وضعیت زیر پاسخ زنده سیستم است و فقط خواندنی است."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DeviceSupportsSiriHubは、デバイス上のSiri Hubインテントルーティングスロットです。SiriHubルーティングがオンの場合、Siri AIを有効にすると「Siriサポートを追加中」で止まることがあるため、ステージングガードはオフになるまでAIのステージングをブロックします。以下のステータスはライブのシステム回答であり、読み取り専用です。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DeviceSupportsSiriHub는 기기 내 Siri Hub 인텐트 라우팅 슬롯입니다. SiriHub 라우팅이 켜져 있으면 Siri AI를 활성화할 때 “Siri 지원 추가 중”에서 멈출 수 있으므로, 스테이징 가드는 꺼질 때까지 AI 스테이징을 차단합니다. 아래 상태는 라이브 시스템 응답이며 읽기 전용입니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DeviceSupportsSiriHub — это слот маршрутизации намерений Siri Hub на устройстве. Когда маршрутизация SiriHub включена, включение Siri AI может зависнуть на «Добавление поддержки Siri», поэтому защита подготовки блокирует подготовку ИИ, пока она не будет отключена. Статус ниже — это живой ответ системы, только для чтения."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DeviceSupportsSiriHub là khe định tuyến ý định Siri Hub trên thiết bị. Khi định tuyến SiriHub đang bật, việc bật Siri AI có thể bị kẹt ở “Đang thêm hỗ trợ Siri”, vì vậy bộ bảo vệ chuẩn bị sẽ chặn việc chuẩn bị AI cho đến khi tắt nó. Trạng thái bên dưới là câu trả lời trực tiếp của hệ thống, chỉ đọc."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DeviceSupportsSiriHub 是設備端 Siri Hub 意圖路由槽位。SiriHub 路由開啟時，啟用 Siri AI 可能卡在「正在加入 Siri 支援」，因此暫存守衛會在關閉它之前阻止 AI 暫存。下方狀態是即時系統答案，唯讀。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DeviceSupportsSiriHub 是裝置端 Siri Hub 意圖路由槽位。SiriHub 路由開啟時，啟用 Siri AI 可能卡在「正在加入 Siri 支援」，因此暫存守衛會在關閉它之前阻止 AI 暫存。下方狀態是即時系統答案，唯讀。"
+          }
+        }
+      }
+    },
+    "Dialer Skin": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dialer Skin"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "拨号盘皮肤"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tema del marcador"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "پوسته صفحه‌کلید"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ダイヤルスキン"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "다이얼 스킨"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Оформление номеронабирателя"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giao diện bàn phím"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "撥號盤外觀"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "撥號盤外觀"
+          }
+        }
+      }
+    },
+    "Dialer skin applied with some invalid images skipped.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dialer skin applied with some invalid images skipped."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "拨号盘皮肤已应用，部分无效图片已跳过。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tema del marcador aplicado; se omitieron algunas imágenes no válidas."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "پوسته صفحه‌کلید اعمال شد؛ برخی تصاویر نامعتبر نادیده گرفته شدند."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ダイヤルスキンを適用しました。一部の無効な画像はスキップされました。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "다이얼 스킨이 적용되었습니다. 일부 잘못된 이미지는 건너뛰었습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Оформление номеронабирателя применено; некоторые недопустимые изображения пропущены."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã áp dụng giao diện bàn phím; một số hình ảnh không hợp lệ đã bị bỏ qua."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "撥號盤外觀已套用，部分無效圖片已略過。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "撥號盤外觀已套用，部分無效圖片已略過。"
+          }
+        }
+      }
+    },
+    "Dialer skin applied. Toggle the appearance or restart the device to see it.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dialer skin applied. Toggle the appearance or restart the device to see it."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "拨号盘皮肤已应用。请切换外观或重新启动设备查看。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tema del marcador aplicado. Cambia la apariencia o reinicia el dispositivo para verlo."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "پوسته صفحه‌کلید اعمال شد. برای مشاهده آن، ظاهر را تغییر دهید یا دستگاه را راه‌اندازی مجدد کنید."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ダイヤルスキンを適用しました。確認するには外観を切り替えるかデバイスを再起動してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "다이얼 스킨이 적용되었습니다. 확인하려면 외관을 전환하거나 기기를 재시동하세요."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Оформление номеронабирателя применено. Переключите оформление или перезапустите устройство, чтобы увидеть его."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã áp dụng giao diện bàn phím. Chuyển đổi giao diện hoặc khởi động lại thiết bị để xem."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "撥號盤外觀已套用。請切換外觀或重新啟動設備查看。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "撥號盤外觀已套用。請切換外觀或重新啟動裝置查看。"
+          }
+        }
+      }
+    },
+    "Enable storage preset?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enable storage preset?"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "启用存储预设？"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¿Habilitar el ajuste de almacenamiento?"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "پیش‌تنظیم حافظه فعال شود؟"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ストレージプリセットを有効にしますか？"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "스토리지 프리셋을 활성화할까요?"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Включить пресет хранилища?"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bật cài đặt trước bộ nhớ?"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "要啟用儲存預設嗎？"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "要啟用儲存預設嗎？"
+          }
+        }
+      }
+    },
+    "Enabling the storage preset can hide apps from the Home Screen. Only continue if you understand this.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enabling the storage preset can hide apps from the Home Screen. Only continue if you understand this."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "启用存储预设可能会从主屏幕隐藏应用。只有理解这一点时才继续。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Habilitar el ajuste de almacenamiento puede ocultar apps de la pantalla de inicio. Continúa solo si lo entiendes."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فعال‌کردن پیش‌تنظیم حافظه ممکن است برنامه‌ها را از صفحه اصلی پنهان کند. فقط در صورتی ادامه دهید که این را درک می‌کنید."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ストレージプリセットを有効にすると、ホーム画面からアプリが非表示になる場合があります。理解したうえでのみ続けてください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "스토리지 프리셋을 활성화하면 홈 화면에서 앱이 숨겨질 수 있습니다. 이해한 경우에만 계속하세요."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Включение пресета хранилища может скрыть приложения с главного экрана. Продолжайте, только если понимаете это."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bật cài đặt trước bộ nhớ có thể ẩn ứng dụng khỏi Màn hình chính. Chỉ tiếp tục nếu bạn hiểu điều này."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "啟用儲存預設可能會從主屏幕隱藏 App。只有理解這一點時才繼續。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "啟用儲存預設可能會從主畫面隱藏 App。只有理解這一點時才繼續。"
+          }
+        }
+      }
+    },
+    "Every MobileGestalt key the app knows about, with its meaning and the open-source source it was verified against. Nothing here is guessed.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Every MobileGestalt key the app knows about, with its meaning and the open-source source it was verified against. Nothing here is guessed."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本 App 已知的所有 MobileGestalt 键，附含义与核实过的开源来源。这里没有任何猜测内容。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Todas las claves de MobileGestalt que conoce la app, con su significado y la fuente de código abierto con la que se verificaron. Nada aquí es una suposición."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "همه کلیدهای MobileGestalt که برنامه می‌شناسد، همراه با معنی و منبع متن‌باز تأییدشده آن‌ها. هیچ‌چیز در اینجا حدس نیست."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アプリが認識するすべてのMobileGestaltキーと、その意味および検証済みのオープンソース出典です。推測はありません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "앱이 알고 있는 모든 MobileGestalt 키와 그 의미 및 검증된 오픈소스 출처입니다. 추측한 내용은 없습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Все ключи MobileGestalt, известные приложению, с их значениями и проверенными источниками с открытым кодом. Здесь ничего не угадано."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mọi khóa MobileGestalt mà ứng dụng biết, kèm theo ý nghĩa và nguồn mã nguồn mở đã được xác minh. Không có gì ở đây là phỏng đoán."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本 App 已知的所有 MobileGestalt 鍵，附含義與核實過的開源來源。這裡沒有任何猜測內容。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本 App 已知的所有 MobileGestalt 鍵，附含義與核實過的開源來源。這裡沒有任何猜測內容。"
+          }
+        }
+      }
+    },
+    "Export All": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export All"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "全部导出"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exportar todo"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صدور همه"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "すべて書き出す"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "모두 내보내기"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Экспортировать всё"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xuất tất cả"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "全部匯出"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "全部匯出"
+          }
+        }
+      }
+    },
+    "Export Bookmarks": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export Bookmarks"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "导出书签"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exportar marcadores"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صدور نشانک‌ها"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ブックマークを書き出す"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "책갈피 내보내기"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Экспортировать закладки"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xuất dấu trang"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "匯出書籤"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "匯出書籤"
+          }
+        }
+      }
+    },
+    "Export Selected": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export Selected"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "导出所选"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exportar selección"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صدور موارد انتخاب‌شده"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "選択項目を書き出す"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "선택 항목 내보내기"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Экспортировать выбранное"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xuất mục đã chọn"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "匯出所選項目"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "匯出所選項目"
+          }
+        }
+      }
+    },
+    "Import Theme": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import Theme"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "导入主题"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importar tema"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "واردکردن تم"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "テーマを読み込む"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "테마 가져오기"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Импортировать тему"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhập giao diện"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "匯入主題"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "匯入主題"
+          }
+        }
+      }
+    },
+    "Installation": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installation"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安装方式"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instalación"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نصب"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "インストール方法"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "설치 방법"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Установка"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cài đặt"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安裝方式"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安裝方式"
+          }
+        }
+      }
+    },
+    "Key: waGD2UTpntjbDXD1r3oALQ (Erosion-CN MGCacheLayout). Not present in upstream GestaltX 1.1.1.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Key: waGD2UTpntjbDXD1r3oALQ (Erosion-CN MGCacheLayout). Not present in upstream GestaltX 1.1.1."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "键：waGD2UTpntjbDXD1r3oALQ（Erosion-CN MGCacheLayout）。上游 GestaltX 1.1.1 中没有。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clave: waGD2UTpntjbDXD1r3oALQ (Erosion-CN MGCacheLayout). No está presente en GestaltX 1.1.1 original."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "کلید: waGD2UTpntjbDXD1r3oALQ (Erosion-CN MGCacheLayout). در GestaltX بالادستی 1.1.1 وجود ندارد."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "キー: waGD2UTpntjbDXD1r3oALQ（Erosion-CN MGCacheLayout）。上流のGestaltX 1.1.1には存在しません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "키: waGD2UTpntjbDXD1r3oALQ(Erosion-CN MGCacheLayout). 업스트림 GestaltX 1.1.1에는 없습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ключ: waGD2UTpntjbDXD1r3oALQ (Erosion-CN MGCacheLayout). Отсутствует в upstream GestaltX 1.1.1."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khóa: waGD2UTpntjbDXD1r3oALQ (Erosion-CN MGCacheLayout). Không có trong GestaltX 1.1.1 gốc."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "鍵：waGD2UTpntjbDXD1r3oALQ（Erosion-CN MGCacheLayout）。上游 GestaltX 1.1.1 中沒有。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "鍵：waGD2UTpntjbDXD1r3oALQ（Erosion-CN MGCacheLayout）。上游 GestaltX 1.1.1 中沒有。"
+          }
+        }
+      }
+    },
+    "MobileGestalt Keys": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MobileGestalt Keys"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MobileGestalt 键"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claves de MobileGestalt"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "کلیدهای MobileGestalt"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MobileGestaltキー"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MobileGestalt 키"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ключи MobileGestalt"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khóa MobileGestalt"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MobileGestalt 鍵"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MobileGestalt 鍵"
+          }
+        }
+      }
+    },
+    "Model Cache Probe": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Model Cache Probe"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模型缓存探测"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sonda de caché de modelos"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "کاوش حافظه پنهان مدل"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "モデルキャッシュの調査"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "모델 캐시 프로브"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Проверка кэша моделей"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dò bộ nhớ đệm mô hình"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模型快取探測"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模型快取探測"
+          }
+        }
+      }
+    },
+    "No Voice Memos recordings were found.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Voice Memos recordings were found."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未找到语音备忘录录音。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se encontraron grabaciones de Notas de voz."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هیچ ضبطی از یادداشت‌های صوتی یافت نشد."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ボイスメモの録音が見つかりませんでした。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "음성 메모 녹음을 찾을 수 없습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Записи диктофона не найдены."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không tìm thấy bản ghi âm Ghi âm nào."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未找到語音備忘錄錄音。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未找到語音備忘錄錄音。"
+          }
+        }
+      }
+    },
+    "No backed-up keypad originals were found.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No backed-up keypad originals were found."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未找到已备份的拨号盘原始图片。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se encontraron originales del teclado respaldados."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هیچ نسخه پشتیبان اصلی از صفحه‌کلید یافت نشد."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "バックアップされたキーパッドの元の画像が見つかりませんでした。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "백업된 키패드 원본 이미지를 찾을 수 없습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Резервные копии исходных изображений клавиатуры не найдены."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không tìm thấy hình ảnh gốc của bàn phím đã sao lưu."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未找到已備份的撥號盤原始圖片。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未找到已備份的撥號盤原始圖片。"
+          }
+        }
+      }
+    },
+    "No model caches found here.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No model caches found here."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此处未找到模型缓存。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se encontró caché de modelos aquí."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هیچ حافظه پنهان مدلی در اینجا یافت نشد."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ここにモデルキャッシュは見つかりませんでした。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "여기에 모델 캐시가 없습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Здесь кэш моделей не найден."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không tìm thấy bộ nhớ đệm mô hình ở đây."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此處未找到模型快取。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此處未找到模型快取。"
+          }
+        }
+      }
+    },
+    "Only the readable system translation, voice-memo transcription and visual-analysis container caches are counted. The Apple Intelligence core model weights live in the MobileAsset read-only volume managed by protected daemons, so this probe does not and cannot report them.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only the readable system translation, voice-memo transcription and visual-analysis container caches are counted. The Apple Intelligence core model weights live in the MobileAsset read-only volume managed by protected daemons, so this probe does not and cannot report them."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "仅统计可读的系统翻译、语音备忘录转录与视觉分析容器缓存。Apple Intelligence 核心模型权重位于受保护守护进程管理的 MobileAsset 只读卷中，因此本探测无法报告它们。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solo se cuentan las cachés legibles de traducción del sistema, transcripción de notas de voz y análisis visual. Los pesos del modelo principal de Apple Intelligence viven en el volumen de solo lectura de MobileAsset, gestionado por demonios protegidos, por lo que esta sonda no puede informarlos."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فقط حافظه‌های پنهان خواندنی ترجمه سیستم، رونویسی یادداشت‌های صوتی و تحلیل تصویری شمارش می‌شوند. وزن‌های مدل اصلی Apple Intelligence در جلد فقط‌خواندنی MobileAsset قرار دارند که توسط دیمون‌های محافظت‌شده مدیریت می‌شود، بنابراین این کاوش نمی‌تواند آن‌ها را گزارش کند."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "読み取り可能なシステム翻訳、ボイスメモ文字起こし、視覚分析のコンテナキャッシュのみを数えます。Apple Intelligenceのコアモデル重みは、保護されたデーモンが管理するMobileAssetの読み取り専用ボリュームにあるため、この調査では報告できません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "읽을 수 있는 시스템 번역, 음성 메모 전사 및 시각 분석 컨테이너 캐시만 셉니다. Apple Intelligence 핵심 모델 가중치는 보호된 데몬이 관리하는 MobileAsset 읽기 전용 볼륨에 있으므로 이 프로브는 이를 보고할 수 없습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Подсчитываются только читаемые кэши системного перевода, транскрипции диктофона и визуального анализа. Веса основной модели Apple Intelligence находятся в томе MobileAsset только для чтения, управляемом защищёнными демонами, поэтому эта проверка не может о них сообщить."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chỉ đếm các bộ nhớ đệm có thể đọc được của bản dịch hệ thống, phiên âm ghi âm và phân tích hình ảnh. Trọng số mô hình cốt lõi của Apple Intelligence nằm trong ổ đĩa chỉ đọc MobileAsset do các daemon được bảo vệ quản lý, vì vậy công cụ dò này không thể báo cáo chúng."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "僅統計可讀取的系統翻譯、語音備忘錄轉錄與視覺分析容器快取。Apple Intelligence 核心模型權重位於受保護守護行程管理的 MobileAsset 唯讀卷宗中，因此本探測無法報告它們。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "僅統計可讀取的系統翻譯、語音備忘錄轉錄與視覺分析容器快取。Apple Intelligence 核心模型權重位於受保護守護行程管理的 MobileAsset 唯讀卷宗中，因此本探測無法報告它們。"
+          }
+        }
+      }
+    },
+    "Original keypad images restored. Toggle the appearance or restart the device to see them.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Original keypad images restored. Toggle the appearance or restart the device to see them."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已还原原始拨号盘图片。请切换外观或重新启动设备查看。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Imágenes originales del teclado restauradas. Cambia la apariencia o reinicia el dispositivo para verlas."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تصاویر اصلی صفحه‌کلید بازیابی شدند. برای مشاهده آن‌ها، ظاهر را تغییر دهید یا دستگاه را راه‌اندازی مجدد کنید."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "キーパッドの元の画像を復元しました。確認するには外観を切り替えるかデバイスを再起動してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "키패드 원본 이미지가 복원되었습니다. 확인하려면 외관을 전환하거나 기기를 재시동하세요."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Исходные изображения клавиатуры восстановлены. Переключите оформление или перезапустите устройство, чтобы увидеть их."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã khôi phục hình ảnh gốc của bàn phím. Chuyển đổi giao diện hoặc khởi động lại thiết bị để xem."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已還原原始撥號盤圖片。請切換外觀或重新啟動設備查看。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已還原原始撥號盤圖片。請切換外觀或重新啟動裝置查看。"
+          }
+        }
+      }
+    },
+    "Preset Lab": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preset Lab"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "预设实验室"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Laboratorio de ajustes"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "آزمایشگاه پیش‌تنظیم"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プリセットラボ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "프리셋 랩"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Лаборатория пресетов"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phòng thí nghiệm cài đặt trước"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "預設實驗室"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "預設實驗室"
+          }
+        }
+      }
+    },
+    "Probe Again": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Probe Again"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "再次探测"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Volver a sondear"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "کاوش دوباره"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "再調査"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "다시 프로브"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Проверить снова"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dò lại"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "再次探測"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "再次探測"
+          }
+        }
+      }
+    },
+    "Probing model caches…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Probing model caches…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在探测模型缓存…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sondeando cachés de modelos…"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "در حال کاوش حافظه پنهان مدل…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "モデルキャッシュを調査中…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "모델 캐시를 프로브하는 중…"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Проверка кэша моделей…"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang dò bộ nhớ đệm mô hình…"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在探測模型快取…"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在探測模型快取…"
+          }
+        }
+      }
+    },
+    "Restore Originals": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore Originals"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "还原原始图片"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restaurar originales"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بازیابی نسخه‌های اصلی"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "元の画像を復元"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "원본 복원"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Восстановить оригиналы"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khôi phục bản gốc"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "還原原始圖片"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "還原原始圖片"
+          }
+        }
+      }
+    },
+    "Scanning recordings…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scanning recordings…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在扫描录音…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buscando grabaciones…"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "در حال اسکن ضبط‌ها…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "録音をスキャン中…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "녹음을 스캔하는 중…"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сканирование записей…"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang quét bản ghi âm…"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在掃描錄音…"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在掃描錄音…"
+          }
+        }
+      }
+    },
+    "SiriHub Guard": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SiriHub Guard"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SiriHub 守卫"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Protección de SiriHub"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نگهبان SiriHub"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SiriHubガード"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SiriHub 가드"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Защита SiriHub"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bộ bảo vệ SiriHub"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SiriHub 守衛"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SiriHub 守衛"
+          }
+        }
+      }
+    },
+    "SiriHub Routing": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SiriHub Routing"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SiriHub 路由"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enrutamiento de SiriHub"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مسیریابی SiriHub"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SiriHubルーティング"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SiriHub 라우팅"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Маршрутизация SiriHub"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Định tuyến SiriHub"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SiriHub 路由"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SiriHub 路由"
+          }
+        }
+      }
+    },
+    "SiriHub routing is off. Siri AI staging is not blocked by this guard.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SiriHub routing is off. Siri AI staging is not blocked by this guard."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SiriHub 路由已关闭。此守卫不会阻止 Siri AI 暂存。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El enrutamiento de SiriHub está desactivado. Esta protección no bloquea la preparación de Siri AI."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مسیریابی SiriHub خاموش است. این نگهبان آماده‌سازی Siri AI را مسدود نمی‌کند."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SiriHubルーティングはオフです。このガードはSiri AIのステージングをブロックしません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SiriHub 라우팅이 꺼져 있습니다. 이 가드는 Siri AI 스테이징을 차단하지 않습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Маршрутизация SiriHub отключена. Эта защита не блокирует подготовку Siri AI."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Định tuyến SiriHub đang tắt. Bộ bảo vệ này không chặn việc chuẩn bị Siri AI."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SiriHub 路由已關閉。此守衛不會阻止 Siri AI 暫存。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SiriHub 路由已關閉。此守衛不會阻止 Siri AI 暫存。"
+          }
+        }
+      }
+    },
+    "SiriHub routing is on. Enabling Siri AI while SiriHub is on can hang at “Adding Siri support”. Turn SiriHub off first, then try again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SiriHub routing is on. Enabling Siri AI while SiriHub is on can hang at “Adding Siri support”. Turn SiriHub off first, then try again."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SiriHub 路由已开启。SiriHub 开启时启用 Siri AI 可能卡在“正在添加 Siri 支持内容”。请先关闭 SiriHub，然后重试。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El enrutamiento de SiriHub está activado. Habilitar Siri AI con SiriHub activado puede quedarse atascado en «Añadiendo compatibilidad con Siri». Desactiva SiriHub primero y vuelve a intentarlo."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مسیریابی SiriHub روشن است. فعال‌کردن Siri AI در حالی که SiriHub روشن است ممکن است در «در حال افزودن پشتیبانی Siri» گیر کند. ابتدا SiriHub را خاموش کنید، سپس دوباره تلاش کنید."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SiriHubルーティングがオンです。SiriHubがオンの状態でSiri AIを有効にすると、「Siriサポートを追加中」で止まることがあります。まずSiriHubをオフにしてから、もう一度お試しください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SiriHub 라우팅이 켜져 있습니다. SiriHub이 켜진 상태에서 Siri AI를 활성화하면 “Siri 지원 추가 중”에서 멈출 수 있습니다. 먼저 SiriHub을 끈 다음 다시 시도하세요."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Маршрутизация SiriHub включена. Включение Siri AI при включённом SiriHub может зависнуть на «Добавление поддержки Siri». Сначала отключите SiriHub, затем попробуйте снова."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Định tuyến SiriHub đang bật. Bật Siri AI khi SiriHub đang bật có thể bị kẹt ở “Đang thêm hỗ trợ Siri”. Hãy tắt SiriHub trước, rồi thử lại."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SiriHub 路由已開啟。SiriHub 開啟時啟用 Siri AI 可能卡在「正在加入 Siri 支援」。請先關閉 SiriHub，然後再試一次。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SiriHub 路由已開啟。SiriHub 開啟時啟用 Siri AI 可能卡在「正在加入 Siri 支援」。請先關閉 SiriHub，然後再試一次。"
+          }
+        }
+      }
+    },
+    "Staged changes": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Staged changes"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已暂存的更改"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cambios preparados"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تغییرات آماده‌شده"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ステージング済みの変更"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "스테이징된 변경 사항"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Подготовленные изменения"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thay đổi đã chuẩn bị"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已暫存的變更"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已暫存的變更"
+          }
+        }
+      }
+    },
+    "System Version": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System Version"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "系统版本"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Versión del sistema"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نسخه سیستم"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "システムバージョン"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "시스템 버전"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Версия системы"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phiên bản hệ thống"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "系統版本"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "系統版本"
+          }
+        }
+      }
+    },
+    "The Phone app container could not be opened on this device.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Phone app container could not be opened on this device."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法在此设备上打开电话 App 容器。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo abrir el contenedor de la app Teléfono en este dispositivo."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ظرف برنامه تلفن در این دستگاه باز نشد."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このデバイスで電話アプリのコンテナを開けませんでした。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 기기에서 전화 앱 컨테이너를 열 수 없습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось открыть контейнер приложения «Телефон» на этом устройстве."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể mở vùng chứa của ứng dụng Điện thoại trên thiết bị này."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法在此設備上開啟電話 App 容器。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法在此裝置上開啟電話 App 容器。"
+          }
+        }
+      }
+    },
+    "The Voice Memos container could not be opened on this device.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Voice Memos container could not be opened on this device."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法在此设备上打开语音备忘录容器。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo abrir el contenedor de Notas de voz en este dispositivo."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ظرف یادداشت‌های صوتی در این دستگاه باز نشد."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このデバイスでボイスメモのコンテナを開けませんでした。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 기기에서 음성 메모 컨테이너를 열 수 없습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось открыть контейнер диктофона на этом устройстве."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể mở vùng chứa Ghi âm trên thiết bị này."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法在此設備上開啟語音備忘錄容器。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法在此裝置上開啟語音備忘錄容器。"
+          }
+        }
+      }
+    },
+    "The asset tag could not be applied on this device.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The asset tag could not be applied on this device."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法在此设备上应用资产标签。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo aplicar la etiqueta de activo en este dispositivo."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "برچسب دارایی در این دستگاه اعمال نشد."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このデバイスで資産タグを適用できませんでした。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 기기에서 자산 태그를 적용할 수 없습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось применить тег актива на этом устройстве."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể áp dụng thẻ tài sản trên thiết bị này."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法在此設備上套用資產標籤。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法在此裝置上套用資產標籤。"
+          }
+        }
+      }
+    },
+    "The asset tag could not be removed on this device.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The asset tag could not be removed on this device."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法在此设备上移除资产标签。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo eliminar la etiqueta de activo en este dispositivo."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "برچسب دارایی در این دستگاه حذف نشد."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このデバイスで資産タグを削除できませんでした。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 기기에서 자산 태그를 제거할 수 없습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось удалить тег актива на этом устройстве."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể xóa thẻ tài sản trên thiết bị này."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法在此設備上移除資產標籤。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法在此裝置上移除資產標籤。"
+          }
+        }
+      }
+    },
+    "The asset tag is the text shown at the bottom of the Lock Screen (for example an owner or organization label). It is stored in the device-configuration plist and can be removed again at any time.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The asset tag is the text shown at the bottom of the Lock Screen (for example an owner or organization label). It is stored in the device-configuration plist and can be removed again at any time."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "资产标签是显示在锁定屏幕底部的文字（例如所有者或组织标识）。它保存在设备配置 plist 中，随时可以移除。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La etiqueta de activo es el texto que se muestra en la parte inferior de la pantalla de bloqueo (por ejemplo, una etiqueta de propietario u organización). Se guarda en el plist de configuración del dispositivo y se puede eliminar en cualquier momento."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "برچسب دارایی متنی است که در پایین صفحه قفل نمایش داده می‌شود (برای مثال برچسب مالک یا سازمان). در plist پیکربندی دستگاه ذخیره می‌شود و هر زمان قابل حذف است."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "資産タグはロック画面の下部に表示されるテキストです（所有者や組織のラベルなど）。デバイス設定plistに保存され、いつでも削除できます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "자산 태그는 잠금 화면 하단에 표시되는 텍스트입니다(소유자 또는 조직 레이블 등). 기기 구성 plist에 저장되며 언제든지 제거할 수 있습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Тег актива — это текст, отображаемый внизу экрана блокировки (например, метка владельца или организации). Он хранится в plist конфигурации устройства и может быть удалён в любое время."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thẻ tài sản là văn bản hiển thị ở cuối Màn hình khóa (ví dụ: nhãn chủ sở hữu hoặc tổ chức). Nó được lưu trong plist cấu hình thiết bị và có thể xóa bất cứ lúc nào."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "資產標籤是顯示在鎖定屏幕底部的文字（例如擁有者或組織標識）。它保存在設備設定 plist 中，隨時可以移除。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "資產標籤是顯示在鎖定畫面底部的文字（例如擁有者或組織標識）。它保存在裝置設定 plist 中，隨時可以移除。"
+          }
+        }
+      }
+    },
+    "The live SiriHub probe could not answer on this device, so SiriHub routing is unverified. Staging is not blocked on an unverified probe.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The live SiriHub probe could not answer on this device, so SiriHub routing is unverified. Staging is not blocked on an unverified probe."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "实时 SiriHub 探测无法在此设备上作答，因此 SiriHub 路由未验证。未验证的探测不会阻止暂存。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La sonda en vivo de SiriHub no pudo responder en este dispositivo, por lo que el enrutamiento de SiriHub no está verificado. Una sonda sin verificar no bloquea la preparación."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "کاوش زنده SiriHub در این دستگاه پاسخی نداد، بنابراین مسیریابی SiriHub تأیید نشده است. کاوش تأییدنشده آماده‌سازی را مسدود نمی‌کند."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ライブのSiriHub調査がこのデバイスで応答できなかったため、SiriHubルーティングは未検証です。未検証の調査ではステージングはブロックされません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "라이브 SiriHub 프로브가 이 기기에서 응답하지 못했으므로 SiriHub 라우팅이 확인되지 않았습니다. 확인되지 않은 프로브는 스테이징을 차단하지 않습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Живая проверка SiriHub не смогла ответить на этом устройстве, поэтому маршрутизация SiriHub не подтверждена. Неподтверждённая проверка не блокирует подготовку."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Công cụ dò SiriHub trực tiếp không thể trả lời trên thiết bị này, vì vậy định tuyến SiriHub chưa được xác minh. Công cụ dò chưa được xác minh không chặn việc chuẩn bị."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "即時 SiriHub 探測無法在此設備上作答，因此 SiriHub 路由未驗證。未驗證的探測不會阻止暫存。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "即時 SiriHub 探測無法在此裝置上作答，因此 SiriHub 路由未驗證。未驗證的探測不會阻止暫存。"
+          }
+        }
+      }
+    },
+    "Theme imported. Review the images, then tap Apply.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Theme imported. Review the images, then tap Apply."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "主题已导入。请检查图片，然后点击“应用”。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tema importado. Revisa las imágenes y luego toca Aplicar."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تم وارد شد. تصاویر را بررسی کنید، سپس روی «اعمال» بزنید."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "テーマを読み込みました。画像を確認してから「適用」をタップしてください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "테마를 가져왔습니다. 이미지를 검토한 다음 적용을 탭하세요."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Тема импортирована. Проверьте изображения, затем нажмите «Применить»."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã nhập giao diện. Xem lại hình ảnh, rồi chạm vào Áp dụng."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "主題已匯入。請檢查圖片，然後點一下「套用」。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "主題已匯入。請檢查圖片，然後點一下「套用」。"
+          }
+        }
+      }
+    },
+    "Total files": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Total files"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "文件总数"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Archivos totales"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعداد کل فایل‌ها"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ファイル総数"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "전체 파일"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Всего файлов"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tổng số tệp"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "檔案總數"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "檔案總數"
+          }
+        }
+      }
+    },
+    "Total size": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Total size"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "总大小"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tamaño total"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اندازه کل"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "合計サイズ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "전체 크기"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Общий размер"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tổng dung lượng"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "總大小"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "總大小"
+          }
+        }
+      }
+    },
+    "Try presets here before applying them. Staging a preset only marks it for the next apply; nothing is written until you tap Apply, which runs the same review, backup and readback as the main preset page. Groups and virtual entries are not listed here — they have their own apply paths.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Try presets here before applying them. Staging a preset only marks it for the next apply; nothing is written until you tap Apply, which runs the same review, backup and readback as the main preset page. Groups and virtual entries are not listed here — they have their own apply paths."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "先在这里试用预设，再应用。暂存预设只是为下一次应用做标记；在点击“应用”之前不会写入任何内容，应用时会执行与主预设页相同的检查、备份与回读。分组与虚拟条目不在此处列出——它们有各自的应用路径。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prueba los ajustes aquí antes de aplicarlos. Preparar un ajuste solo lo marca para la próxima aplicación; no se escribe nada hasta que toques Aplicar, que ejecuta la misma revisión, respaldo y relectura que la página principal de ajustes. Los grupos y las entradas virtuales no aparecen aquí: tienen sus propias rutas de aplicación."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "پیش‌تنظیم‌ها را اینجا پیش از اعمال امتحان کنید. آماده‌کردن یک پیش‌تنظیم فقط آن را برای اعمال بعدی علامت‌گذاری می‌کند؛ تا وقتی روی «اعمال» بزنید هیچ‌چیز نوشته نمی‌شود و اعمال همان بازبینی، پشتیبان‌گیری و بازخوانی صفحه اصلی پیش‌تنظیم را اجرا می‌کند. گروه‌ها و ورودی‌های مجازی اینجا فهرست نمی‌شوند — مسیر اعمال خودشان را دارند."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プリセットはここで適用前に試すことができます。プリセットをステージングしても、次の適用用にマークされるだけで、「適用」をタップするまで何も書き込まれません。適用時はメインプリセットページと同じ確認、バックアップ、再読み込みが実行されます。グループと仮想エントリはここには表示されません。専用の適用パスがあります。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "프리셋을 적용하기 전에 여기서 사용해 보세요. 프리셋을 스테이징하면 다음 적용을 위해 표시만 될 뿐, 적용을 탭하기 전까지는 아무것도 기록되지 않습니다. 적용 시 기본 프리셋 페이지와 동일한 검토, 백업 및 다시 읽기가 실행됩니다. 그룹과 가상 항목은 여기에 표시되지 않습니다. 전용 적용 경로가 있습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Попробуйте пресеты здесь, прежде чем применять их. Подготовка пресета лишь помечает его для следующего применения; ничего не записывается, пока вы не нажмёте «Применить», которое выполняет ту же проверку, резервное копирование и перечитывание, что и основная страница пресетов. Группы и виртуальные записи здесь не перечислены — у них свои пути применения."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hãy thử các cài đặt trước tại đây trước khi áp dụng. Việc chuẩn bị một cài đặt trước chỉ đánh dấu nó cho lần áp dụng tiếp theo; không có gì được ghi cho đến khi bạn chạm vào Áp dụng, thao tác này sẽ chạy cùng quy trình xem xét, sao lưu và đọc lại như trang cài đặt trước chính. Nhóm và mục ảo không được liệt kê ở đây — chúng có đường dẫn áp dụng riêng."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "先在這裡試用預設，再套用。暫存預設只是為下一次套用做標記；在點一下「套用」之前不會寫入任何內容，套用時會執行與主預設頁相同的檢查、備份與回讀。分組與虛擬項目不在此處列出——它們有各自的套用路徑。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "先在這裡試用預設，再套用。暫存預設只是為下一次套用做標記；在點一下「套用」之前不會寫入任何內容，套用時會執行與主預設頁相同的檢查、備份與回讀。分組與虛擬項目不在此處列出——它們有各自的套用路徑。"
+          }
+        }
+      }
+    },
+    "Unknown duration": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unknown duration"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未知时长"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Duración desconocida"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مدت نامشخص"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不明な長さ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "알 수 없는 길이"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Неизвестная длительность"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thời lượng không xác định"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未知長度"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未知長度"
+          }
+        }
+      }
+    },
+    "Voice Memo Export": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Voice Memo Export"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "语音备忘录导出"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exportación de notas de voz"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صدور یادداشت صوتی"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ボイスメモの書き出し"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "음성 메모 내보내기"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Экспорт диктофона"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xuất Ghi âm"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "語音備忘錄匯出"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "語音備忘錄匯出"
+          }
+        }
+      }
+    },
+    "Which Apple Intelligence model caches are actually present on this device, read-only. The probe reports only what it finds — it never guesses a model is present.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Which Apple Intelligence model caches are actually present on this device, read-only. The probe reports only what it finds — it never guesses a model is present."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此设备上实际存在哪些 Apple Intelligence 模型缓存，只读。探测仅报告实际找到的内容——绝不会猜测某个模型存在。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qué cachés de modelos de Apple Intelligence están realmente presentes en este dispositivo, de solo lectura. La sonda solo informa lo que encuentra: nunca supone que un modelo está presente."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "کدام حافظه‌های پنهان مدل Apple Intelligence واقعاً در این دستگاه وجود دارند، فقط خواندنی. کاوش فقط آنچه را می‌یابد گزارش می‌کند — هرگز حدس نمی‌زند که مدلی وجود دارد."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このデバイスに実際に存在するApple Intelligenceモデルキャッシュ（読み取り専用）。調査では見つけたものだけを報告し、モデルが存在すると推測することはありません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 기기에 실제로 존재하는 Apple Intelligence 모델 캐시(읽기 전용)입니다. 프로브는 찾은 내용만 보고하며, 모델이 존재한다고 추측하지 않습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Какие кэши моделей Apple Intelligence действительно присутствуют на этом устройстве, только для чтения. Проверка сообщает только то, что находит, — она никогда не предполагает наличие модели."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Những bộ nhớ đệm mô hình Apple Intelligence nào thực sự có trên thiết bị này, chỉ đọc. Công cụ dò chỉ báo cáo những gì nó tìm thấy — không bao giờ đoán rằng một mô hình đang có."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此設備上實際存在哪些 Apple Intelligence 模型快取，唯讀。探測僅報告實際找到的內容——絕不會猜測某個模型存在。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此裝置上實際存在哪些 Apple Intelligence 模型快取，唯讀。探測僅報告實際找到的內容——絕不會猜測某個模型存在。"
+          }
+        }
+      }
+    },
+    "Your own Voice Memos recordings, read-only. Only the recordings the app can legitimately reach through the Voice Memos container are listed; nothing is deleted or modified. Export writes a ZIP of the selected recordings so you can share or back them up.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your own Voice Memos recordings, read-only. Only the recordings the app can legitimately reach through the Voice Memos container are listed; nothing is deleted or modified. Export writes a ZIP of the selected recordings so you can share or back them up."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "你自己的语音备忘录录音，只读。仅列出本 App 通过语音备忘录容器合法访问的录音；不会删除或修改任何内容。导出会将所选录音打包为 ZIP，方便分享或备份。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tus propias grabaciones de Notas de voz, de solo lectura. Solo se enumeran las grabaciones a las que la app puede acceder legítimamente a través del contenedor de Notas de voz; no se elimina ni se modifica nada. La exportación crea un ZIP con las grabaciones seleccionadas para compartirlas o respaldarlas."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ضبط‌های یادداشت صوتی خودتان، فقط خواندنی. فقط ضبط‌هایی فهرست می‌شوند که برنامه به‌طور قانونی از طریق ظرف یادداشت‌های صوتی به آن‌ها دسترسی دارد؛ هیچ‌چیز حذف یا تغییر نمی‌کند. صدور، یک ZIP از ضبط‌های انتخاب‌شده می‌سازد تا بتوانید آن‌ها را به اشتراک بگذارید یا پشتیبان بگیرید."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自分のボイスメモ録音（読み取り専用）。アプリがボイスメモコンテナを通じて正当にアクセスできる録音のみが表示され、何も削除・変更されません。書き出しでは選択した録音のZIPを作成し、共有やバックアップに使えます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "자신의 음성 메모 녹음(읽기 전용)입니다. 앱이 음성 메모 컨테이너를 통해 합법적으로 접근할 수 있는 녹음만 나열되며, 아무것도 삭제하거나 수정하지 않습니다. 내보내기를 하면 선택한 녹음의 ZIP이 만들어져 공유하거나 백업할 수 있습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ваши собственные записи диктофона, только для чтения. Перечисляются только записи, к которым приложение может законно получить доступ через контейнер диктофона; ничего не удаляется и не изменяется. Экспорт создаёт ZIP выбранных записей, чтобы вы могли поделиться ими или сделать резервную копию."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Các bản ghi âm Ghi âm của riêng bạn, chỉ đọc. Chỉ liệt kê các bản ghi âm mà ứng dụng có thể truy cập hợp pháp thông qua vùng chứa Ghi âm; không xóa hay sửa đổi gì. Việc xuất sẽ tạo một tệp ZIP chứa các bản ghi âm đã chọn để bạn chia sẻ hoặc sao lưu."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "你自己的語音備忘錄錄音，唯讀。僅列出本 App 透過語音備忘錄容器合法存取的錄音；不會刪除或修改任何內容。匯出會將所選錄音打包為 ZIP，方便分享或備份。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "你自己的語音備忘錄錄音，唯讀。僅列出本 App 透過語音備忘錄容器合法存取的錄音；不會刪除或修改任何內容。匯出會將所選錄音打包為 ZIP，方便分享或備份。"
+          }
+        }
+      }
+    },
+    "This build was not verified device-by-device on real hardware. The matrix below states the designed support range from the repository source and documentation, not a per-device test result. Anything marked “unverified” has not been confirmed on a real device with this build.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This build was not verified device-by-device on real hardware. The matrix below states the designed support range from the repository source and documentation, not a per-device test result. Anything marked “unverified” has not been confirmed on a real device with this build."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本版未在真机上逐机型验证。下表是根据仓库源码与文档得出的设计支持范围，不是逐机型测试结果。标为“未验证”的项表示尚未用本版在真机上确认。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esta versión no se verificó dispositivo por dispositivo en hardware real. La siguiente matriz indica el rango de compatibilidad diseñado a partir del código y la documentación del repositorio, no un resultado de pruebas por dispositivo. Lo marcado como «sin verificar» no se ha confirmado en un dispositivo real con esta versión."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "این نسخه دستگاه‌به‌دستگاه روی سخت‌افزار واقعی تأیید نشده است. ماتریس زیر محدوده پشتیبانی طراحی‌شده را بر اساس سورس و مستندات مخزن نشان می‌دهد، نه نتیجه آزمایش هر دستگاه. موارد علامت‌گذاری‌شده با «تأییدنشده» با این نسخه روی دستگاه واقعی تأیید نشده‌اند."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このビルドは実機で機種ごとに検証されていません。以下のマトリクスは、リポジトリのソースとドキュメントに基づく設計上の対応範囲であり、機種ごとのテスト結果ではありません。「未検証」と表示された項目は、このビルドで実機確認されていません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 빌드는 실제 하드웨어에서 기기별로 검증되지 않았습니다. 아래 매트릭스는 리포지토리 소스와 문서를 기준으로 설계된 지원 범위이며, 기기별 테스트 결과가 아닙니다. “미확인”으로 표시된 항목은 이 빌드로 실제 기기에서 확인되지 않았습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Эта сборка не проверялась на реальном оборудовании по каждому устройству. Приведённая ниже матрица отражает проектный диапазон поддержки, основанный на исходном коде и документации репозитория, а не результаты тестирования по устройствам. Пункты, помеченные как «не проверено», не были подтверждены на реальном устройстве с этой сборкой."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bản dựng này chưa được xác minh từng thiết bị trên phần cứng thực. Ma trận dưới đây nêu phạm vi hỗ trợ theo thiết kế từ mã nguồn và tài liệu của kho lưu trữ, không phải kết quả kiểm tra từng thiết bị. Nội dung được đánh dấu “chưa xác minh” chưa được xác nhận trên thiết bị thực với bản dựng này."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本版未在真機上逐機型驗證。下表是根據儲存庫原始碼與文件得出的設計支援範圍，不是逐機型測試結果。標為「未驗證」的項目表示尚未用本版在真機上確認。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本版未在真機上逐機型驗證。下表是根據儲存庫原始碼與文件得出的設計支援範圍，不是逐機型測試結果。標為「未驗證」的項目表示尚未用本版在真機上確認。"
+          }
+        }
+      }
+    },
+    "Spatial Audio Recording": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spatial Audio Recording"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "空间音频录制"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grabación de audio espacial"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ضبط صدای فضایی"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "空間オーディオ録音"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "공간 음향 녹음"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Запись пространственного звука"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ghi âm không gian"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "空間音訊錄製"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "空間音訊錄製"
+          }
+        }
+      }
+    },
+    "Enable spatial audio recording in Voice Memos.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enable spatial audio recording in Voice Memos."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在语音备忘录中启用空间音频录制。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Habilita la grabación de audio espacial en Notas de voz."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ضبط صدای فضایی را در یادداشت‌های صوتی فعال کنید."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ボイスメモで空間オーディオ録音を有効にします。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "음성 메모에서 공간 음향 녹음을 활성화합니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Включите запись пространственного звука в диктофоне."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bật ghi âm không gian trong Ghi âm."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在語音備忘錄中啟用空間音訊錄製。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在語音備忘錄中啟用空間音訊錄製。"
+          }
+        }
+      }
+    },
+    "Responsive Shutter": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Responsive Shutter"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "灵敏快门"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Obturador sensible"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شاتر واکنش‌گرا"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "レスポンシブシャッター"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "반응형 셔터"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отзывчивый затвор"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Màn trập nhạy"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "靈敏快門"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "靈敏快門"
+          }
+        }
+      }
+    },
+    "Lower the camera shutter-to-imaging latency for instant capture.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lower the camera shutter-to-imaging latency for instant capture."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "降低相机快门到成像的延迟，实现即时拍摄。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reduce la latencia entre el obturador y la captura de imagen para fotos instantáneas."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تأخیر بین شاتر دوربین و ثبت تصویر را برای عکاسی فوری کاهش می‌دهد."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "カメラのシャッターから撮像までの遅延を短縮し、即座に撮影できるようにします。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "카메라 셔터에서 이미징까지의 지연을 줄여 즉시 촬영할 수 있게 합니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Снижает задержку между спуском затвора и формированием изображения для мгновенной съёмки."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giảm độ trễ từ khi nhấn nút chụp đến khi tạo ảnh để chụp tức thì."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "降低相機快門到成像的延遲，實現即時拍攝。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "降低相機快門到成像的延遲，實現即時拍攝。"
+          }
+        }
+      }
+    },
+    "Hypertension Notifications": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hypertension Notifications"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "高血压通知"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notificaciones de hipertensión"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اعلان‌های فشار خون بالا"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "高血圧通知"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "고혈압 알림"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Уведомления о гипертонии"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thông báo tăng huyết áp"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "高血壓通知"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "高血壓通知"
+          }
+        }
+      }
+    },
+    "Enable hypertension trend evaluation and notifications in the Health app.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enable hypertension trend evaluation and notifications in the Health app."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在健康 App 中启用高血压趋势评估与通知。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Habilita la evaluación de tendencias de hipertensión y las notificaciones en la app Salud."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ارزیابی روند فشار خون بالا و اعلان‌ها را در برنامه سلامت فعال کنید."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ヘルスケアアプリで高血圧傾向の評価と通知を有効にします。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "건강 앱에서 고혈압 추세 평가 및 알림을 활성화합니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Включите оценку тренда гипертонии и уведомления в приложении «Здоровье»."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bật đánh giá xu hướng tăng huyết áp và thông báo trong ứng dụng Sức khỏe."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在健康 App 中啟用高血壓趨勢評估與通知。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在健康 App 中啟用高血壓趨勢評估與通知。"
+          }
+        }
+      }
+    },
+    "Could not read any recording audio file.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not read any recording audio file."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法读取任何录音音频文件。"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo leer ningún archivo de audio de grabación."
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "هیچ فایل صوتی ضبطی خوانده نشد."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "録音オーディオファイルを読み取れませんでした。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "녹음 오디오 파일을 읽을 수 없습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось прочитать ни один аудиофайл записи."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể đọc bất kỳ tệp âm thanh ghi âm nào."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法讀取任何錄音音訊檔案。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法讀取任何錄音音訊檔案。"
+          }
+        }
+      }
+    },
+    "Files": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Files"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "文件"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Archivos"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فایل‌ها"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ファイル"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "파일"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Файлы"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tệp"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "檔案"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "檔案"
+          }
+        }
+      }
+    },
+    "Size": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Size"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "大小"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tamaño"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اندازه"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "サイズ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "크기"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Размер"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dung lượng"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "大小"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "大小"
+          }
+        }
+      }
+    },
+    "Remove": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "移除"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eliminar"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حذف"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "削除"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "제거"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Удалить"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xóa"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "移除"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "移除"
+          }
+        }
+      }
+    },
+    "Search keys": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search keys"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "搜索键名"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buscar claves"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جستجوی کلیدها"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "キーを検索"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "키 검색"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Поиск ключей"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tìm khóa"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "搜尋鍵名"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "搜尋鍵名"
+          }
+        }
+      }
+    },
+    "Search presets": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search presets"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "搜索预设"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buscar ajustes"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جستجوی پیش‌تنظیم‌ها"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プリセットを検索"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "프리셋 검색"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Поиск пресетов"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tìm cài đặt trước"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "搜尋預設"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "搜尋預設"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

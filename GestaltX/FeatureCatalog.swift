@@ -3,7 +3,7 @@
 // the home sections, the preset pages and search.
 //
 // The catalog does not duplicate the preset database: every preset
-// item is a view of a `PresetEntry` from `PresetCatalog` (42 entries),
+// item is a view of a `PresetEntry` from `PresetCatalog` (45 entries),
 // mapped onto one of the eleven feature categories below. Page items
 // are the thirteen non-preset destinations (diagnostics pages,
 // backups, modified values, personalization, launch artwork) that
@@ -161,7 +161,7 @@ struct FeatureCatalogItem: Equatable, Sendable, Identifiable {
 
 // MARK: - Catalog
 
-/// The unified catalog: 42 preset items + 13 page items = 55.
+/// The unified catalog: 45 preset items + 13 page items = 58.
 /// Built from `PresetCatalog.all` plus the explicit page table, so
 /// a preset added to the catalog appears here with no extra edit,
 /// and a preset dropped there disappears here (the count test fails

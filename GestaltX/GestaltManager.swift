@@ -448,6 +448,7 @@ final class GestaltManager: ObservableObject {
         request.audioIntelligenceSlotIndex = audioIndex
         request.personalTranslatorSlotIndex = translatorIndex
         request.liveAIEnabled = liveAIEnabled
+        request.siriHubLive = LiveGestaltProbe.queryBool(SiriHubGuard.siriHubKey)
         request.userConfirmedUnverifiedCombination = userConfirmedUnverifiedCombination
         return AIStagingGuard.decide(request)
     }

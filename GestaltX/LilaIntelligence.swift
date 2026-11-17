@@ -276,6 +276,18 @@ enum FeatureEligibilityEvaluator {
     /// app supports): staging sets the CacheData WAPI slot to false.
     static let wapiFeatureID = "wapi"
 
+    /// The verified four-microphone models for spatial audio
+    /// recording (Erosion-CN `GestaltHelpers.fourMicPhones`,
+    /// Kianuni, GPL-3.0): iPhone 16 series (iPhone17,1–5) and the
+    /// iPhone 18 models with four mics (iPhone18,1/2/3/5). iPhone
+    /// Air (iPhone18,4) is NOT in the list — it has three mics, and
+    /// forcing spatial recording on it can break the Voice Memos
+    /// Studio recording mode.
+    static let spatialAudioScope = PresetScope.verifiedModels([
+        "iPhone17,1", "iPhone17,2", "iPhone17,3", "iPhone17,4", "iPhone17,5",
+        "iPhone18,1", "iPhone18,2", "iPhone18,3", "iPhone18,5",
+    ])
+
     /// Every feature id this evaluator understands.
     static let knownFeatureIDs: [String] =
         Capability.all.map(\.id) + [esimFeatureID, regionCodeFeatureID, wapiFeatureID]
@@ -545,6 +557,7 @@ enum FeatureEligibilityEvaluator {
             audioIntelligenceSlotIndex: layout?.slotIndex(forKey: DeviceCacheOptions.audioIntelligenceKey),
             personalTranslatorSlotIndex: layout?.slotIndex(forKey: DeviceCacheOptions.personalTranslatorKey),
             liveAIEnabled: liveAIEnabled,
+            siriHubLive: LiveGestaltProbe.queryBool(SiriHubGuard.siriHubKey),
             userConfirmedUnverifiedCombination: userConfirmed)
     }
 
@@ -691,7 +704,8 @@ struct CapabilityEntry: Sendable {
 
     private static func underlyingKeyOrSlot(for capability: Capability) -> String {
         switch capability.id {
-        case "audioIntelligence", "personalTranslator":
+        case "audioIntelligence", "personalTranslator",
+             "spatialAudioRecording", "responsiveShutter", "hypertensionNotifications":
             return (capability.keys.first ?? "")
                 + " (CacheExtra key; CacheData slot resolved dynamically)"
         default:
@@ -701,6 +715,9 @@ struct CapabilityEntry: Sendable {
 
     private static func sources(for capability: Capability) -> [String] {
         var sources = ["GestaltX/Capabilities.swift"]
+        if ["spatialAudioRecording", "responsiveShutter", "hypertensionNotifications"].contains(capability.id) {
+            sources += ["Erosion-CN MGCacheLayout.swift (Kianuni, GPL-3.0)"]
+        }
         if ChinaUnlock.aiCapabilityIDs.contains(capability.id) || capability.id == "siriOnDevice" {
             sources += ["GestaltX/AIReadinessCheckup.swift (AIStagingGuard)",
                         "GestaltX/DeviceAIEligibility.swift"]
