@@ -227,10 +227,22 @@ enum AppArchiveEngine {
         manifest.manifestSha256 = digest(of: manifest)
         let manifestData = try canonicalManifestData(for: manifest)
         let fileName = "archive-\(manifestID.uuidString).zip"
-        let fileURL = archivesDir.appendingPathComponent(fileName)
+        let archiveFileURL = archivesDir.appendingPathComponent(fileName)
         do {
-            let archive = try Archive(url: fileURL, accessMode: .create)
-            try archive.addEntry(with: "manifest.json", data: manifestData, compressionMethod: .deflate)
+            let archive = try Archive(url: archiveFileURL, accessMode: .create)
+            // ZIPFoundation 0.9.20 has no addEntry(with:data:) overload:
+            // in-memory data goes in through the provider overload
+            // (README "Closure based Reading and Writing"), which is
+            // called with (position, size) until uncompressedSize
+            // bytes are provided.
+            try archive.addEntry(with: "manifest.json", type: .file,
+                                 uncompressedSize: Int64(manifestData.count),
+                                 compressionMethod: .deflate) { position, size in
+                let start = Int(position)
+                let end = min(start + size, manifestData.count)
+                guard start < end else { return Data() }
+                return manifestData.subdata(in: start..<end)
+            }
             for entry in entries {
                 try Task.checkCancellation()
                 let entryFileURL = try fileURL(for: entry, in: source)
@@ -238,11 +250,11 @@ enum AppArchiveEngine {
                                      compressionMethod: .deflate)
             }
         } catch {
-            try? FileManager.default.removeItem(at: fileURL)
+            try? FileManager.default.removeItem(at: archiveFileURL)
             throw error
         }
         return ArchiveCreationReport(
-            archiveID: manifestID, fileURL: fileURL, entries: entries,
+            archiveID: manifestID, fileURL: archiveFileURL, entries: entries,
             skippedSymlinks: collected.skippedSymlinks,
             totalBytes: entries.reduce(0) { $0 + $1.size })
     }
@@ -303,7 +315,7 @@ enum AppArchiveEngine {
                                archivesDirectory: URL? = nil,
                                progress: ((Double) -> Void)? = nil) async throws -> ArchiveRestoreReport {
         let manifest = try verifyArchive(at: archiveURL)
-        let archivesDir = archivesDirectory ?? archivesDirectory()
+        let archivesDir = archivesDirectory ?? Self.archivesDirectory()
         // Back up the current state first (TASKBOOK §4.3 rule, also
         // applied to archives): a failed restore can go back to it.
         // A picked file that is gone has nothing to back up — that

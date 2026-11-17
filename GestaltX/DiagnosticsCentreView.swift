@@ -142,7 +142,7 @@ struct DiagnosticsCentreView: View {
         guard let report else { return }
         do {
             let data = try report.exportJSON()
-            share(TemporaryExport(data: data, name: "LilaShift-Diagnostics.json"))
+            share(try TemporaryExport(data: data, name: "LilaShift-Diagnostics.json"))
         } catch {
             exportError = error.localizedDescription
         }
@@ -152,7 +152,7 @@ struct DiagnosticsCentreView: View {
         guard let report else { return }
         do {
             let data = Data(report.exportText().utf8)
-            share(TemporaryExport(data: data, name: "LilaShift-Diagnostics.txt"))
+            share(try TemporaryExport(data: data, name: "LilaShift-Diagnostics.txt"))
         } catch {
             exportError = error.localizedDescription
         }

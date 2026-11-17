@@ -25,7 +25,7 @@ enum AppAppearanceCapability: String, Equatable, Sendable {
 /// Image formats the appearance preview accepts. Detection is by magic
 /// bytes only, so it never depends on a decoder succeeding, and it never
 /// trusts a file extension.
-enum AppAppearanceImageFormat: String, Equatable, Sendable {
+enum AppAppearanceImageFormat: String, Codable, Equatable, Sendable {
     case png
     case jpeg
     case heic
