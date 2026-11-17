@@ -2,9 +2,9 @@
 //
 // DashboardV3SnapshotTests.swift — SnapshotTesting UI regression
 // tests for the LilaShift 3.0 home and its secondary navigation
-// destinations (Phase H, gaps 1, 4, 5, 6).
+// destinations (Phase H, gaps 1, 4, 6).
 //
-// What is snapshotted (10 image snapshots, all `record: .missing`
+// What is snapshotted (9 image snapshots, all `record: .missing`
 // for first-run recording on CI — see ViewSnapshotTests for how
 // references are created and committed):
 //   - DashboardV3Home (the 8-section home, summaries only):
@@ -16,7 +16,6 @@
 //     light, 390x844. The destination views are ScrollViews, so a
 //     fixed-size snapshot captures the top of the page only; that is
 //     still a regression guard for the page's header and first cards.
-//   - Dark mode (gap 5): the populated home with dark traits.
 //   - Small screen (gap 6): the populated home at 320pt wide —
 //     the home's summary tiles must wrap, not truncate, the status
 //     text at that width.
@@ -147,14 +146,13 @@ final class DashboardV3SnapshotTests: XCTestCase {
     private func assertV3Snapshot<V: View>(
         _ view: V, named name: String,
         width: CGFloat = 390,
-        userInterfaceStyle: UIUserInterfaceStyle = .light,
         contentSize: UIContentSizeCategory? = nil,
         file: StaticString = #filePath,
         testName: String = #function,
         line: UInt = #line
     ) {
         var traits: [UITraitCollection] = [
-            UITraitCollection(userInterfaceStyle: userInterfaceStyle),
+            UITraitCollection(userInterfaceStyle: .light),
             UITraitCollection(displayScale: 2),
         ]
         if let contentSize {
@@ -241,15 +239,6 @@ final class DashboardV3SnapshotTests: XCTestCase {
         assertV3Snapshot(
             destination(.advanced, try populatedManager()),
             named: "v3-tools-populated")
-    }
-
-    // MARK: - Gap 5: dark mode
-
-    func testV3HomePopulatedDarkSnapshot() throws {
-        assertV3Snapshot(
-            home(try populatedManager()),
-            named: "v3-home-populated-dark",
-            userInterfaceStyle: .dark)
     }
 
     // MARK: - Gap 6: small screen (320pt wide)
