@@ -1,0 +1,22 @@
+diff --git a/tests/DeviceIdentityEditTests.swift b/tests/DeviceIdentityEditTests.swift
+index af1d1ef..15fb446 100644
+--- a/tests/DeviceIdentityEditTests.swift
++++ b/tests/DeviceIdentityEditTests.swift
+@@ -73,7 +73,7 @@ final class DeviceIdentityEditTests: XCTestCase {
+         do {
+             _ = try await store.commit(unrelated, expected: initial)
+         } catch is GestaltFailure {
+-            throw
++            throw error
+         } catch {
+             // Diagnostic (Stage 9 fix9): the commit path only throws
+             // GestaltFailure, so a different error here names the site
+@@ -91,7 +91,7 @@ final class DeviceIdentityEditTests: XCTestCase {
+         do {
+             savedLocal = try await store.commit(localEdit, expected: local)
+         } catch is GestaltFailure {
+-            throw
++            throw error
+         } catch {
+             // Diagnostic (Stage 9 fix9): see the unrelated edit above.
+             throw Failure(message: "Local identity removal threw unexpected error: \(error)")
