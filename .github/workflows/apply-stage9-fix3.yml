@@ -59,7 +59,7 @@ jobs:
           test "$staged" = "6" || { echo "Expected 6 staged files, got $staged"; exit 1; }
           git diff --cached --name-only | grep -qxF ".github/workflows/apply-stage9-fix3.yml" && { echo "Workflow file must not be in staged patch files"; exit 1; } || true
           grep -qxF "${{ inputs.patch }}" <(git diff --cached --name-only) && { echo "Patch file must not be in staged patch files"; exit 1; } || true
-          shortstat="$(git diff --cached --shortstat)"
+          shortstat="$(git diff --cached --shortstat | sed 's/^ *//')"
           test "$shortstat" = "6 files changed, 41 insertions(+), 16 deletions(-)" || { echo "Unexpected shortstat: $shortstat"; exit 1; }
 
       - name: Verify tree hash
