@@ -1,0 +1,14 @@
+diff --git a/tests/CapabilityCatalogTests.swift b/tests/CapabilityCatalogTests.swift
+index b90a733..048bf25 100644
+--- a/tests/CapabilityCatalogTests.swift
++++ b/tests/CapabilityCatalogTests.swift
+@@ -13,7 +13,8 @@ final class CapabilityCatalogTests: XCTestCase {
+             for key in capability.keys {
+                 XCTAssert(key.count == 22 || key == "UIParallaxCapability",
+                            "\(capability.id) uses a MobileGestalt key: \(key)")
+-                if let values = capability.values {
++                let values = capability.values
++                if !values.isEmpty {
+                     XCTAssert(values[key] != nil, "\(capability.id) has a value for \(key)")
+                 }
+             }
