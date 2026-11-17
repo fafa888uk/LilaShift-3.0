@@ -69,8 +69,8 @@ final class DiagnosticsEngineTests: XCTestCase {
         return DiagnosticsInput(
             device: device, mgReadState: mgReadState,
             snapshotValues: snapshotValues, workingValues: workingValues,
-            monitorRows: monitorRows,
             backups: backups, backupVerifications: backupVerifications,
+            monitorRows: monitorRows,
             restoreReports: restoreReports, fingerprintComparison: fingerprintComparison,
             events: events, pendingRestartFeatureIDs: pendingRestartFeatureIDs)
     }
@@ -474,7 +474,7 @@ final class DiagnosticsEngineTests: XCTestCase {
         let labels = kinds.map(\.kindLabel)
         XCTAssertTrue(labels.allSatisfy { !$0.isEmpty })
         XCTAssertEqual(Set(labels).count, kinds.count, "Each fix kind needs its own label")
-        XCTAssertTrue(kinds.allSatisfy { !$0.actionText.isEmpty })
+        XCTAssertTrue(kinds.allSatisfy { !$0.text.isEmpty })
     }
 
     func testRestoreStepDisplayNamesAreNonEmpty() {

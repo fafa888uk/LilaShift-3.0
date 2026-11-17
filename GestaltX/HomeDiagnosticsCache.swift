@@ -382,9 +382,9 @@ final class HomeDiagnosticsCache: ObservableObject {
                     : .live(values: snapshotValues, readAt: readAt ?? Date()),
                 snapshotValues: snapshotValues,
                 workingValues: workingValues,
-                monitorRows: monitorRows,
                 backups: backups,
                 backupVerifications: verifications,
+                monitorRows: monitorRows,
                 fingerprintComparison: fingerprintComparison,
                 pendingRestartFeatureIDs: pendingRestartFeatureIDs))
         }()

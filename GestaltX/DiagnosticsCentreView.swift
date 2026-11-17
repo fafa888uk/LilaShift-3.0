@@ -70,7 +70,7 @@ struct DiagnosticsCentreView: View {
                                 ForEach(finding.evidence, id: \.self) { line in
                                     Text(line).font(.caption).foregroundStyle(.secondary)
                                 }
-                                Text(finding.fix.kindLabel + ": " + finding.fix.actionText)
+                                Text(finding.fix.kindLabel + ": " + finding.fix.text)
                                     .font(.caption)
                             }.padding(.vertical, 4)
                         }

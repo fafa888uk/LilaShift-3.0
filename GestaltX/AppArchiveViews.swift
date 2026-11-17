@@ -50,6 +50,17 @@ struct AppArchiveView: View {
         byteFormatter.string(fromByteCount: Int64(bytes))
     }
 
+    /// The one-line deletion summary. Built from separate statements:
+    /// the single `+` chain of localized fragments and interpolations
+    /// it replaced timed out the type checker (CI #372).
+    private func deletionSummary(for report: CacheDeletionReport) -> String {
+        let deleted = L("Deleted") + ": \(report.deleted.count)"
+        let freed = L("Freed") + ": " + formatBytes(report.freedBytes)
+        let skipped = L("Skipped (protected)") + ": \(report.skippedProtected.count)"
+        let failed = L("Failed") + ": \(report.failed.count)"
+        return [deleted, freed, skipped, failed].joined(separator: " · ")
+    }
+
     private var selectedEntries: [CacheEntry] {
         (cacheReport?.entries ?? []).filter { selectedDeletable.contains($0.relativePath) }
     }
@@ -180,10 +191,7 @@ struct AppArchiveView: View {
                 }
                 if let deletionReport {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(L("Deleted") + ": \(deletionReport.deleted.count) · "
-                             + L("Freed") + ": " + formatBytes(deletionReport.freedBytes) + " · "
-                             + L("Skipped (protected)") + ": \(deletionReport.skippedProtected.count) · "
-                             + L("Failed") + ": \(deletionReport.failed.count)")
+                        Text(deletionSummary(for: deletionReport))
                             .font(.caption).foregroundStyle(.secondary)
                         ForEach(deletionReport.failed, id: \.path) { failure in
                             Text(failure.path + ": " + failure.reason)
