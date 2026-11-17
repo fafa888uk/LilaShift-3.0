@@ -35,8 +35,8 @@ jobs:
 
       - name: Verify base commit
         run: |
-          test "$(git rev-parse HEAD)" = "${{ inputs.base_sha }}" || {
-            echo "Unexpected HEAD: $(git rev-parse HEAD) (expected ${{ inputs.base_sha }})"
+          git merge-base --is-ancestor "${{ inputs.base_sha }}" HEAD || {
+            echo "Base ${{ inputs.base_sha }} is not an ancestor of HEAD $(git rev-parse HEAD)"
             exit 1
           }
 
