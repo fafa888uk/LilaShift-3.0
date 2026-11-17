@@ -13,7 +13,8 @@ final class CapabilityCatalogTests: XCTestCase {
             for key in capability.keys {
                 XCTAssert(key.count == 22 || key == "UIParallaxCapability",
                            "\(capability.id) uses a MobileGestalt key: \(key)")
-                if let values = capability.values {
+                let values = capability.values
+                if !values.isEmpty {
                     XCTAssert(values[key] != nil, "\(capability.id) has a value for \(key)")
                 }
             }
