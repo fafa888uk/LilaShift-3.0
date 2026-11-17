@@ -236,7 +236,8 @@ final class WallpaperLibraryTests: XCTestCase {
         let listed = try await store.list()
         XCTAssertEqual(listed.count, 1)
         XCTAssertEqual(listed[0], entry)
-        XCTAssertEqual(try await store.imageData(entry.id), png)
+        let imageData = try await store.imageData(entry.id)
+        XCTAssertEqual(imageData, png)
         let thumbnail = try await store.thumbnailData(entry.id)
         XCTAssertNotNil(thumbnail)
         XCTAssertTrue(thumbnail?.starts(with: [0x89, 0x50, 0x4E, 0x47] as [UInt8]) == true)
@@ -252,7 +253,8 @@ final class WallpaperLibraryTests: XCTestCase {
         } catch let failure as CustomizationFailure {
             XCTAssertEqual(failure.key, "This image could not be used. Choose another image.")
         }
-        XCTAssertTrue(try await store.list().isEmpty)
+        let listedAfterBadImport = try await store.list()
+        XCTAssertTrue(listedAfterBadImport.isEmpty)
     }
 
     func testImportEmptyNameDefaultsToWallpaper() async throws {
@@ -285,7 +287,8 @@ final class WallpaperLibraryTests: XCTestCase {
         let listed = try await store.list()
         XCTAssertEqual(listed.map(\.id), [second.id, first.id])
         _ = try await store.setCategory(first.id, category: .gradient)
-        XCTAssertEqual(try await store.list().first(where: { $0.id == first.id })?.category, .gradient)
+        let listedAfterCategoryChange = try await store.list()
+        XCTAssertEqual(listedAfterCategoryChange.first(where: { $0.id == first.id })?.category, .gradient)
     }
 
     func testRenameValidation() async throws {
@@ -314,10 +317,12 @@ final class WallpaperLibraryTests: XCTestCase {
         let kept = try await store.importImage(makePNG(width: 16, height: 16), name: "Kept", category: .other)
         let removed = try await store.importImage(makePNG(width: 16, height: 16, red: 0, green: 1), name: "Removed", category: .other)
         try await store.delete(removed.id)
-        XCTAssertEqual(try await store.list().map(\.id), [kept.id])
+        let listedAfterDelete = try await store.list()
+        XCTAssertEqual(listedAfterDelete.map(\.id), [kept.id])
         // Deleting again is a no-op, not an error.
         try await store.delete(removed.id)
-        XCTAssertEqual(try await store.list().count, 1)
+        let listedAfterSecondDelete = try await store.list()
+        XCTAssertEqual(listedAfterSecondDelete.count, 1)
     }
 
     func testImageDataRefusesTamperedBytes() async throws {
@@ -354,7 +359,8 @@ final class WallpaperLibraryTests: XCTestCase {
         let broken = storage.appendingPathComponent(UUID().uuidString, isDirectory: true)
         try fm.createDirectory(at: broken, withIntermediateDirectories: false)
         try Data("junk".utf8).write(to: broken.appendingPathComponent("Entry.plist"))
-        XCTAssertEqual(try await store.list().map(\.id), [good.id])
+        let listedWithBrokenEntry = try await store.list()
+        XCTAssertEqual(listedWithBrokenEntry.map(\.id), [good.id])
     }
 
     // MARK: - Photos export boundary (recording fake)

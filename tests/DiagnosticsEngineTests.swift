@@ -71,8 +71,9 @@ final class DiagnosticsEngineTests: XCTestCase {
             snapshotValues: snapshotValues, workingValues: workingValues,
             backups: backups, backupVerifications: backupVerifications,
             monitorRows: monitorRows,
-            restoreReports: restoreReports, fingerprintComparison: fingerprintComparison,
-            events: events, pendingRestartFeatureIDs: pendingRestartFeatureIDs)
+            restoreReports: restoreReports, events: events,
+            fingerprintComparison: fingerprintComparison,
+            pendingRestartFeatureIDs: pendingRestartFeatureIDs)
     }
 
     private func finding(_ report: DiagnosticsReport, _ code: String) -> DiagnosticsFinding? {

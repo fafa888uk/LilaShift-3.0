@@ -529,8 +529,8 @@ final class GestaltManager: ObservableObject {
             backupVerifications: backupVerifications,
             monitorRows: monitorRows,
             restoreReports: lastRestoreReport.map { [$0] } ?? [],
-            fingerprintComparison: fingerprintComparison,
             events: await operationEvents.recordedEvents(),
+            fingerprintComparison: fingerprintComparison,
             pendingRestartFeatureIDs: pendingRestartFeatureIDs)
     }
 

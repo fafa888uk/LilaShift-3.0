@@ -210,7 +210,8 @@ final class BackupRestorePipelineTests: XCTestCase {
                        "A locally opened file always records 'Before editing'")
         XCTAssertEqual(preWrite.provenance, .importedHistory)
         _ = try await store.commit(edited, expected: snapshot, preWriteBackup: preWrite)
-        XCTAssertEqual(try await store.backups().count, 1,
+        let backupCountAfterCommit = try await store.backups().count
+        XCTAssertEqual(backupCountAfterCommit, 1,
                        "One pre-write backup exists — commit did not write a second one")
 
         // The same edit without an orchestrated record still gets
@@ -220,7 +221,8 @@ final class BackupRestorePipelineTests: XCTestCase {
         var edited2 = edited
         edited2.set("US", for: GestaltKeys.regionCode)
         _ = try await store.commit(edited2, expected: snapshot2)
-        XCTAssertEqual(try await store.backups().count, 2,
+        let backupCountAfterSecondCommit = try await store.backups().count
+        XCTAssertEqual(backupCountAfterSecondCommit, 2,
                        "Commit without a supplied record creates the backup itself")
     }
 

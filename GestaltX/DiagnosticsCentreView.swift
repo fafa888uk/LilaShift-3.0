@@ -90,7 +90,7 @@ struct DiagnosticsCentreView: View {
                         ForEach(performanceRows) { row in
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(row.label).font(.subheadline)
-                                Text(L("Runs") + ": \(row.count) · " + L("Last") + ": \(row.last, format: .number.precision(.fractionLength(2)))s · " + L("Mean") + ": \(row.mean, format: .number.precision(.fractionLength(2)))s")
+                                Text(performanceSummary(for: row))
                                     .font(.caption).foregroundStyle(.secondary)
                             }
                         }
@@ -116,6 +116,18 @@ struct DiagnosticsCentreView: View {
         .alert(L("Export Failed"), isPresented: Binding(get: { exportError != nil }, set: { if !$0 { exportError = nil } })) {
             Button(L("OK"), role: .cancel) { exportError = nil }
         } message: { Text(exportError ?? "") }
+    }
+
+    /// The one-line performance summary for a row. Built from separate
+    /// statements: the single `+` chain of localized fragments and
+    /// formatted interpolations it replaced timed out the type checker
+    /// (CI #380), the same failure mode as the deletion summary in
+    /// AppArchiveViews (CI #372).
+    private func performanceSummary(for row: PerformanceRow) -> String {
+        let runs = L("Runs") + ": \(row.count)"
+        let last = L("Last") + ": \(row.last, format: .number.precision(.fractionLength(2)))s"
+        let mean = L("Mean") + ": \(row.mean, format: .number.precision(.fractionLength(2)))s"
+        return [runs, last, mean].joined(separator: " · ")
     }
 
     private func compute() async {

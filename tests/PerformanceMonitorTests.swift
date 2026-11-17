@@ -65,14 +65,18 @@ final class PerformanceMonitorTests: XCTestCase {
 
     func testLabelsListsRecordedLabels() async {
         let monitor = PerformanceMonitor()
-        XCTAssertEqual(await monitor.labels(), [], "No samples means no labels")
+        let labelsBeforeRecording = await monitor.labels()
+        XCTAssertEqual(labelsBeforeRecording, [], "No samples means no labels")
         await monitor.record(label: "backup", duration: 0.1)
         await monitor.record(label: "apply", duration: 0.2)
         await monitor.record(label: "backup", duration: 0.3)
-        XCTAssertEqual(await monitor.labels(), ["apply", "backup"], "Labels are the recorded labels, sorted")
+        let labelsAfterRecording = await monitor.labels()
+        XCTAssertEqual(labelsAfterRecording, ["apply", "backup"], "Labels are the recorded labels, sorted")
         await monitor.reset(label: "apply")
-        XCTAssertEqual(await monitor.labels(), ["backup"], "Resetting a label removes it")
+        let labelsAfterResetOne = await monitor.labels()
+        XCTAssertEqual(labelsAfterResetOne, ["backup"], "Resetting a label removes it")
         await monitor.reset()
-        XCTAssertEqual(await monitor.labels(), [], "Resetting everything clears the labels")
+        let labelsAfterResetAll = await monitor.labels()
+        XCTAssertEqual(labelsAfterResetAll, [], "Resetting everything clears the labels")
     }
 }
