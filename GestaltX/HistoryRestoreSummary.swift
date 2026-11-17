@@ -331,7 +331,7 @@ enum RestorePreviewChecklistBuilder {
         current: GestaltDocument?, layout: MobileGestaltCacheLayout?
     ) -> Bool? {
         guard let current, let layout else { return nil }
-        return layout.matches(current)
+        return LayoutResolver.matches(layout, cacheUUID: current.cacheUUID, cacheData: current.cacheData)
     }
 }
 

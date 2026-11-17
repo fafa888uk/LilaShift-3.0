@@ -139,7 +139,7 @@ Full step-by-step tutorial (Chinese): [docs/INSTALL_ZH-CN.md](docs/INSTALL_ZH-CN
 
 1. Install the IPA with [LiveContainer](https://github.com/khanhduytran0/LiveContainer) (no re-signing needed), or re-sign it with AltStore / SideStore / Sideloadly / a developer certificate — see the tutorial for the differences.
 2. Open LilaShift and tap **Read Device** first.
-3. Open **China Unlock**, review the staged items (9 on most models; 3 on native Apple Intelligence models), then apply.
+3. Open **China Unlock**, review the staged items (10 on most models; 3 on native Apple Intelligence models), then apply.
 4. **Restart the device** after applying — power fully off and back on; a SpringBoard refresh is not enough for eSIM. Then check eSIM and Apple Intelligence in system Settings.
 5. To undo everything, use the one-tap restore — it reverts all staged items from the backup.
 

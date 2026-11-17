@@ -350,7 +350,7 @@ enum RestoreEligibilityChecker {
     static func eligibility(for change: RecordedChange, record: BackupRecord?,
                             current: GestaltDocument, layout: MobileGestaltCacheLayout?) -> RestoreEligibility {
         // The change must still match the current cache structure.
-        if let layout, !layout.matches(current) {
+        if let layout, !LayoutResolver.matches(layout, cacheUUID: current.cacheUUID, cacheData: current.cacheData) {
             return .notRestorable(reason: L("This plist uses a different system cache layout and cannot be restored."))
         }
         // A CacheData slot must be locatable on this layout; an

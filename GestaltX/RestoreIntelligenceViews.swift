@@ -52,7 +52,7 @@ struct RestoreIntelligenceCard: View {
 
     private var timeline: [RestoreTimelineEntry] {
         guard let document = model.working else { return [] }
-        let layout = try? MobileGestaltCacheLayout.resolve(in: document)
+        let layout = try? LayoutResolver.resolve(cacheUUID: document.cacheUUID, cacheData: document.cacheData)
         return RestoreIntelligence.timeline(
             records: effectiveRecords, snapshot: model.snapshot?.document,
             current: document, layout: layout)
@@ -65,7 +65,7 @@ struct RestoreIntelligenceCard: View {
     /// order.
     private var unifiedEntriesByID: [UUID: UnifiedHistoryEntry] {
         guard let document = model.working else { return [:] }
-        let layout = try? MobileGestaltCacheLayout.resolve(in: document)
+        let layout = try? LayoutResolver.resolve(cacheUUID: document.cacheUUID, cacheData: document.cacheData)
         var map: [UUID: UnifiedHistoryEntry] = [:]
         for entry in HistoryRestoreSummary.unifiedEntries(
             timeline: timeline, records: effectiveRecords,
@@ -370,7 +370,7 @@ private struct RestoreEntryDetailView: View {
 
     private var preview: RestorePreview? {
         guard let document = model.working else { return nil }
-        let layout = try? MobileGestaltCacheLayout.resolve(in: document)
+        let layout = try? LayoutResolver.resolve(cacheUUID: document.cacheUUID, cacheData: document.cacheData)
         return RestorePreviewBuilder.build(
             changes: [change], records: [:], current: document, layout: layout)
     }
@@ -383,7 +383,7 @@ private struct RestoreEntryDetailView: View {
     private var checklist: RestorePreviewChecklist? {
         guard let document = model.working,
               let item = preview?.items.first else { return nil }
-        let layout = try? MobileGestaltCacheLayout.resolve(in: document)
+        let layout = try? LayoutResolver.resolve(cacheUUID: document.cacheUUID, cacheData: document.cacheData)
         return RestorePreviewChecklistBuilder.build(
             change: change, item: item, verifications: verifications,
             deviceID: RestoreIntelligence.installationDeviceID,
@@ -649,7 +649,7 @@ private struct FullBackupRestoreView: View {
     /// current system compatibility. The diff is whole-file, so
     /// there is no single before/after value — the view says so.
     private var checklist: RestorePreviewChecklist {
-        let layout = model.working.flatMap { try? MobileGestaltCacheLayout.resolve(in: $0) }
+        let layout = model.working.flatMap { try? LayoutResolver.resolve(cacheUUID: $0.cacheUUID, cacheData: $0.cacheData) }
         return RestorePreviewChecklistBuilder.buildForBackup(
             record: record, verifications: verifications,
             deviceID: RestoreIntelligence.installationDeviceID,

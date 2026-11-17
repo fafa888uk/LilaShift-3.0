@@ -116,6 +116,18 @@ struct GestaltDocument: @unchecked Sendable {
     private(set) var root: [String: Any]
     var extra: [String: Any] { root["CacheExtra"] as? [String: Any] ?? [:] }
     var cacheUUID: String? { root["CacheUUID"] as? String }
+    /// Raw CacheData bytes (the layout resolver's second input).
+    /// Kept as a computed accessor so callers pass raw parts,
+    /// never the document, to `LayoutResolver` (ADR-2-11).
+    var cacheData: Data? { root["CacheData"] as? Data }
+    /// Raw CacheData bytes (the layout resolver's second input).
+    /// Kept as a computed accessor so callers pass raw parts,
+    /// never the document, to `LayoutResolver` (ADR-2-11).
+    var cacheData: Data? { root["CacheData"] as? Data }
+    /// Raw CacheData bytes (the layout resolver's second input).
+    /// Kept as a computed accessor so callers pass raw parts,
+    /// never the document, to `LayoutResolver` (ADR-2-11).
+    var cacheData: Data? { root["CacheData"] as? Data }
     func matchesCacheUUID(_ uuid: String) -> Bool { cacheUUID?.caseInsensitiveCompare(uuid) == .orderedSame }
     var artwork: [String: Any] { extra[GestaltKeys.artwork] as? [String: Any] ?? [:] }
     var canEditArtwork: Bool { extra[GestaltKeys.artwork] == nil || extra[GestaltKeys.artwork] is [String: Any] }
@@ -133,7 +145,7 @@ struct GestaltDocument: @unchecked Sendable {
     }
 
     mutating func setCacheOptions(_ flags: CachedOptionFlags, using resolvedLayout: MobileGestaltCacheLayout? = nil) throws {
-        let layout = try resolvedLayout ?? MobileGestaltCacheLayout.resolve(in: self)
+        let layout = try resolvedLayout ?? LayoutResolver.resolve(cacheUUID: cacheUUID, cacheData: cacheData)
         var data = try DeviceCacheOptions.validatedData(in: self, using: layout)
         data[layout.greenTeaOffset] = flags.greenTea ? 1 : 0
         data[layout.notGreenTeaOffset] = flags.notGreenTea ? 1 : 0
@@ -141,7 +153,7 @@ struct GestaltDocument: @unchecked Sendable {
     }
 
     mutating func setWAPI(_ enabled: Bool, using resolvedLayout: MobileGestaltCacheLayout? = nil) throws {
-        let layout = try resolvedLayout ?? MobileGestaltCacheLayout.resolve(in: self)
+        let layout = try resolvedLayout ?? LayoutResolver.resolve(cacheUUID: cacheUUID, cacheData: cacheData)
         _ = try DeviceCacheOptions.wapi(in: self, using: layout)
         guard let offset = layout.wapiOffset, var data = root["CacheData"] as? Data else { return }
         data[offset] = enabled ? 1 : 0
@@ -155,7 +167,7 @@ struct GestaltDocument: @unchecked Sendable {
     mutating func setAdvAISlot(_ key: String, value: Bool, using resolvedLayout: MobileGestaltCacheLayout? = nil) throws {
         guard key == DeviceCacheOptions.audioIntelligenceKey
                 || key == DeviceCacheOptions.personalTranslatorKey else { return }
-        let layout = try resolvedLayout ?? MobileGestaltCacheLayout.resolve(in: self)
+        let layout = try resolvedLayout ?? LayoutResolver.resolve(cacheUUID: cacheUUID, cacheData: cacheData)
         guard DeviceCacheOptions.advAISlotValue(key, in: self, using: layout) != nil,
               let offset = layout.slotIndex(forKey: key).map({ $0 * 8 }),
               var data = root["CacheData"] as? Data else { return }

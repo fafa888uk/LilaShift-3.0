@@ -260,7 +260,7 @@ enum CompatibilityStatusResolver {
             ids.insert("dynamicIsland")
         }
 
-        if let layout = try? MobileGestaltCacheLayout.resolve(in: working) {
+        if let layout = try? LayoutResolver.resolve(cacheUUID: working.cacheUUID, cacheData: working.cacheData) {
             for key in [DeviceCacheOptions.greenTeaKey,
                         DeviceCacheOptions.notGreenTeaKey,
                         DeviceCacheOptions.wapiKey,

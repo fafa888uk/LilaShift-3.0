@@ -4,7 +4,7 @@
 // CacheExtra-vs-CacheData conflict handling.
 //
 // Fixtures use the offline `originalProfile` layout (uuid
-// 7F1DF278-..., 720 slots) so `MobileGestaltCacheLayout.resolve`
+// 7F1DF278-..., 720 slots) so `LayoutResolver.resolve`
 // succeeds on the test host, and a scanned layout (mirroring the
 // DocumentTests scan fixture) for the AdvAI slots, which the offline
 // profile does not resolve. No test fabricates a detection value:

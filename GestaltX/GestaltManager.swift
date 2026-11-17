@@ -40,7 +40,7 @@ final class GestaltManager: ObservableObject {
     @Published var modelID = "keep"
     /// Region mode for China Unlock (default region-code-only).
     /// Persisted across launches; never reset by loading a document.
-    /// The one-tap unlock stages the same items in either mode (9 on
+    /// The one-tap unlock stages the same items in either mode (10 on
     /// non-native hardware, 3 on native Apple Intelligence hardware);
     /// the mode only affects manual region presets and restoring an
     /// unlock applied by an older build.
@@ -400,6 +400,119 @@ final class GestaltManager: ObservableObject {
         liveAIEnabled = aiEnabled
     }
 
+    // MARK: - MG monitor (Stage 4)
+
+    /// Monitor rows for every database key (three sources side by
+    /// side), or empty before the first refresh. The monitor never
+    /// shows an empty list as a result: on a sentinel-blocked build
+    /// the rows carry `.readFailed` and the view shows the banner.
+    @Published private(set) var monitorRows: [MGMonitorRow] = []
+    /// When the live values in `monitorRows` were read.
+    @Published private(set) var monitorReadAt: Date?
+    /// The version sentinel for the current iOS build. Unknown until
+    /// the first refresh classifies the build — never assumed
+    /// supported before classification.
+    @Published private(set) var monitorSentinel: VersionSentinelState = .unknownBuild(build: "")
+
+    /// Refreshes the monitor rows. Read-only; safe to call from the
+    /// monitor view's `onAppear` or its refresh button. The 77 live
+    /// MGCopyAnswer queries run off the main thread and the rows are
+    /// published back on the main actor. The monitor refreshes on
+    /// demand only — no timer polls the device.
+    ///
+    /// Sources: original values come from the first-read snapshot,
+    /// staged values from the working document (or the snapshot when
+    /// there is no working document — no staged changes exist then),
+    /// live values from MGCopyAnswer. The slot probe resolves the
+    /// layout from the snapshot document and reads the slot byte from
+    /// the snapshot and the working document; the live column for a
+    /// slot key is the MGCopyAnswer answer. A plaintext key (the
+    /// parallax key) answers under its readable name, so the live
+    /// query retries with it when the obfuscated key returns nothing.
+    func refreshMonitor() async {
+        let identity = SystemDeviceIdentitySource()
+        let productType = preview?.extra[GestaltKeys.productType] as? String ?? identity.productType
+        let iosVersion = identity.osVersion ?? ""
+        let sentinel = VersionSentinel.state(forBuild: identity.osBuild)
+        let livePairs = await Task.detached(priority: .userInitiated) {
+            MGDatabase.all.map { record -> (String, MGValue?) in
+                let value = LiveGestaltProbe.query(record.obfuscatedName)
+                    ?? (record.readableName != record.obfuscatedName
+                        ? LiveGestaltProbe.query(record.readableName) : nil)
+                return (record.obfuscatedName, value.flatMap(MGValue.fromPlistValue))
+            }
+        }.value
+        let liveByKey = Dictionary(
+            livePairs.compactMap { pair in pair.1.map { (pair.0, $0) } },
+            uniquingKeysWith: { first, _ in first })
+        let liveAt = Date()
+        let snapshotDoc = snapshot?.document
+        let stagedDoc = working ?? snapshotDoc
+        let layout = snapshotDoc.flatMap {
+            try? LayoutResolver.resolve(cacheUUID: $0.cacheUUID, cacheData: $0.cacheData)
+        }
+        monitorSentinel = sentinel
+        monitorReadAt = liveAt
+        monitorRows = MGMonitor.rows(for: MGDatabase.all.map { record in
+            MGMonitorInput(
+                record: record,
+                original: value(of: record, in: snapshotDoc),
+                staged: value(of: record, in: stagedDoc),
+                live: liveByKey[record.obfuscatedName],
+                liveReadAt: liveAt,
+                slot: slotProbe(for: record, snapshotDoc: snapshotDoc, stagedDoc: stagedDoc,
+                                layout: layout, liveByKey: liveByKey),
+                productType: productType,
+                iosVersion: iosVersion,
+                sentinel: sentinel)
+        }, now: liveAt)
+    }
+
+    /// The value of a record in a document. A plaintext key is
+    /// staged under its readable name, so the lookup retries with it
+    /// when the obfuscated key is absent.
+    private func value(of record: MGKeyRecord, in document: GestaltDocument?) -> MGValue? {
+        guard let document else { return nil }
+        let raw = document.extra[record.obfuscatedName]
+            ?? (record.readableName != record.obfuscatedName
+                ? document.extra[record.readableName] : nil)
+        return raw.flatMap(MGValue.fromPlistValue)
+    }
+
+    /// The slot probe for a record: the layout-resolved slot number
+    /// and the slot byte at each source. `nil` when the layout did
+    /// not resolve, or the key has no slot on this layout — unknown,
+    /// never a guessed slot.
+    private func slotProbe(for record: MGKeyRecord, snapshotDoc: GestaltDocument?,
+                           stagedDoc: GestaltDocument?, layout: MobileGestaltCacheLayout?,
+                           liveByKey: [String: MGValue]) -> MGSlotProbe? {
+        guard let layout, let slotNumber = layout.slotIndex(forKey: record.obfuscatedName) else { return nil }
+        let liveAnswer: Bool? = {
+            guard case .bool(let value) = liveByKey[record.obfuscatedName] else { return nil }
+            return value
+        }()
+        func slotByte(in document: GestaltDocument?) -> Bool? {
+            guard let document else { return nil }
+            switch record.obfuscatedName {
+            case DeviceCacheOptions.audioIntelligenceKey, DeviceCacheOptions.personalTranslatorKey:
+                return DeviceCacheOptions.advAISlotValue(record.obfuscatedName, in: document, using: layout)
+            case DeviceCacheOptions.greenTeaKey:
+                return (try? DeviceCacheOptions.flags(in: document, using: layout))?.greenTea
+            case DeviceCacheOptions.notGreenTeaKey:
+                return (try? DeviceCacheOptions.flags(in: document, using: layout))?.notGreenTea
+            case DeviceCacheOptions.wapiKey:
+                return try? DeviceCacheOptions.wapi(in: document, using: layout)
+            default:
+                return nil
+            }
+        }
+        return MGSlotProbe(slotNumber: slotNumber,
+                           originalByte: slotByte(in: snapshotDoc),
+                           stagedByte: slotByte(in: stagedDoc),
+                           liveAnswer: liveAnswer,
+                           nativeBaseline: record.slot?.nativeBaseline)
+    }
+
     /// Slot and key conflicts on native-AI hardware, computed from the staged
     /// preview. The Personal Translator case is split per layer: a CacheData
     /// slot reading 0 against its native baseline of 1, and a CacheExtra key
@@ -412,7 +525,7 @@ final class GestaltManager: ObservableObject {
         guard let preview,
               let productType = preview.extra[GestaltKeys.productType] as? String,
               DeviceAIEligibility.isNativeAppleIntelligence(productType: productType),
-              let layout = try? MobileGestaltCacheLayout.resolve(in: preview) else { return [] }
+              let layout = try? LayoutResolver.resolve(cacheUUID: preview.cacheUUID, cacheData: preview.cacheData) else { return [] }
         var conflicts: [AIConflict] = []
         let ptBaseline = DeviceAIEligibility.nativeAdvAISlotValue(
             key: DeviceCacheOptions.personalTranslatorKey, productType: productType)
@@ -491,7 +604,7 @@ final class GestaltManager: ObservableObject {
     /// decision's specific reason.
     var aiStagingDecision: AIStagingDecision? {
         guard let preview,
-              let layout = try? MobileGestaltCacheLayout.resolve(in: preview) else { return nil }
+              let layout = try? LayoutResolver.resolve(cacheUUID: preview.cacheUUID, cacheData: preview.cacheData) else { return nil }
         return Self.stagingDecision(for: preview, layout: layout, liveAIEnabled: liveAIEnabled,
                                     userConfirmedUnverifiedCombination: userConfirmedUnverifiedAICombination,
                                     proposedUnlock: false)
@@ -504,7 +617,7 @@ final class GestaltManager: ObservableObject {
     /// warned, or allowed.
     var proposedUnlockStagingDecision: AIStagingDecision? {
         guard let preview,
-              let layout = try? MobileGestaltCacheLayout.resolve(in: preview) else { return nil }
+              let layout = try? LayoutResolver.resolve(cacheUUID: preview.cacheUUID, cacheData: preview.cacheData) else { return nil }
         return Self.stagingDecision(for: preview, layout: layout, liveAIEnabled: liveAIEnabled,
                                     userConfirmedUnverifiedCombination: userConfirmedUnverifiedAICombination,
                                     proposedUnlock: true)
@@ -678,7 +791,7 @@ final class GestaltManager: ObservableObject {
     var cacheLayoutError: String? {
         guard let working else { return L("Read MobileGestalt first.") }
         do {
-            _ = try MobileGestaltCacheLayout.resolve(in: working)
+            _ = try LayoutResolver.resolve(cacheUUID: working.cacheUUID, cacheData: working.cacheData)
             return nil
         } catch {
             return error.localizedDescription
@@ -1060,8 +1173,8 @@ final class GestaltManager: ObservableObject {
         var lines = ["CacheExtra: \(document.extra.count) keys"]
         if let cacheData = document.root["CacheData"] as? Data { lines.append("CacheData: \(cacheData.count) bytes") }
         do {
-            let layout = try MobileGestaltCacheLayout.resolve(in: document)
-            let source = MobileGestaltCacheLayout.runtimeLayout().map { $0 == layout } == true ? "runtime scan" : "offline profile"
+            let layout = try LayoutResolver.resolve(cacheUUID: document.cacheUUID, cacheData: document.cacheData)
+            let source = LayoutResolver.runtimeLayout().map { $0 == layout } == true ? "runtime scan" : "offline profile"
             lines.append("Cache layout: \(layout.uuid), \(layout.slotCount) slots (\(source))")
             lines.append(String(format: "green-tea: index %d, offset 0x%X; not-green-tea: index %d, offset 0x%X",
                                 layout.greenTeaIndex, layout.greenTeaOffset, layout.notGreenTeaIndex, layout.notGreenTeaOffset))

@@ -181,7 +181,11 @@ copyright. No code from the AGPL-licensed projects below has been
 ported: porting it would impose AGPL terms on this app.
 - PoomSmart/MGKeys (MIT): https://github.com/PoomSmart/MGKeys
   Public MobileGestalt key mappings cross-checked
-  (GestaltX/Capabilities.swift).
+  (GestaltX/Capabilities.swift). The MGDatabase base table
+  (GestaltX/MGDatabaseSeed.swift, iOS 27.2 baseline, master
+  db9cf77f) transcribes the readable names and iOS version ranges
+  from mapping-gestalt.h and keys_versions.py; the 928-key full
+  table is not bundled.
 - leminlimez/Nugget (AGPL-3.0): https://github.com/leminlimez/Nugget
   Key mappings cross-checked; no code ported.
 - rooootdev/mond (AGPL-3.0): https://github.com/rooootdev/mond

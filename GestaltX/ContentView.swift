@@ -1632,6 +1632,17 @@ struct ToolGroupView: View {
                             }
                             .buttonStyle(.plain)
                             Divider()
+                            NavigationLink { MGMonitorView() } label: {
+                                HStack {
+                                    Label(L("MG Monitor"), systemImage: "waveform.path.ecg")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
                             NavigationLink { CompatibilityMatrixView() } label: {
                                 HStack {
                                     Label(L("Compatibility"), systemImage: "checklist")

@@ -44,6 +44,27 @@ final class ModuleBoundaryTests: XCTestCase {
         }
     }
 
+    func testWorseQueryCallSitesAreKnown() {
+        // The sandbox-escape choke point (ADR-2-05): only these files
+        // may call worse_query / worse_query_release. A doc comment
+        // mentioning worse_query does not count — only the call syntax.
+        // Stage 4 adds no call site (the sentinel only names the
+        // mechanism in comments).
+        let knownCallers: Set<String> = [
+            "ContainerAccess.swift", "GestaltManager.swift", "SystemSettingsView.swift",
+            "CustomizationStore.swift", "LaunchArtworkStore.swift",
+        ]
+        var callers: Set<String> = []
+        for file in swiftFiles(in: "GestaltX") {
+            let text = readSource("GestaltX/" + file.lastPathComponent)
+            if text.contains("worse_query(") || text.contains("worse_query_release(") {
+                callers.insert(file.lastPathComponent)
+            }
+        }
+        XCTAssertEqual(callers, knownCallers,
+                       "A new worse_query call site appeared — the escape has exactly one choke point")
+    }
+
     func testViewsDoNotCallWritersOrContainerAccess() {
         for file in viewFiles() {
             let text = readSource("GestaltX/" + file.lastPathComponent)
@@ -103,5 +124,31 @@ final class ModuleBoundaryTests: XCTestCase {
         }
         XCTAssertEqual(callers, allowed,
                        "SafePatch.simulate callers changed: \(callers.sorted())")
+    }
+
+    func testLayoutCycleIsBroken() {
+        // ADR-2-11 (Stage 4): layout resolution is a pure function
+        // over raw bytes (`LayoutResolver`), so the layout type must
+        // not reference `GestaltDocument` at all, and no code may
+        // call the removed document-taking API.
+        let layoutText = readSource("GestaltX/MobileGestaltCacheLayout.swift")
+        XCTAssertFalse(layoutText.contains("GestaltDocument"),
+                       "MobileGestaltCacheLayout must not reference GestaltDocument: the ADR-2-11 cycle is back")
+        for directory in ["GestaltX", "tests"] {
+            // This file itself holds the forbidden strings as
+            // assertion literals, so it is excluded from its own
+            // scan; every other file is checked.
+            for file in swiftFiles(in: directory) where file.lastPathComponent != "ModuleBoundaryTests.swift" {
+                let text = readSource(directory + "/" + file.lastPathComponent)
+                XCTAssertFalse(text.contains("MobileGestaltCacheLayout.resolve(in:"),
+                               "\(file.lastPathComponent) must resolve layouts via LayoutResolver, not MobileGestaltCacheLayout.resolve(in:)")
+                XCTAssertFalse(text.contains("MobileGestaltCacheLayout.lockReason(in:"),
+                               "\(file.lastPathComponent) must ask LayoutResolver for the lock reason")
+                XCTAssertFalse(text.contains("layout.matches("),
+                               "\(file.lastPathComponent) must match layouts via LayoutResolver.matches, not a layout method")
+                XCTAssertFalse(text.contains("originalProfile.matches("),
+                               "\(file.lastPathComponent) must match layouts via LayoutResolver.matches, not a layout method")
+            }
+        }
     }
 }

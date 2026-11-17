@@ -5,7 +5,7 @@
 //
 // The happy-path fixture is a known non-native model (iPhone14,7)
 // with a document matching the offline `originalProfile` layout, so
-// `resolve(in:)` succeeds on the test host and the profile is
+// `LayoutResolver.resolve` succeeds on the test host and the profile is
 // injected (the test host itself is an unknown model, which is
 // exactly what the fail-closed test exercises).
 import Foundation

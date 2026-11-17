@@ -171,7 +171,7 @@ struct DeviceProfiler {
         let cacheReadState: CacheReadState
         if let document {
             do {
-                cacheLayout = .known(try MobileGestaltCacheLayout.resolve(in: document))
+                cacheLayout = .known(try LayoutResolver.resolve(cacheUUID: document.cacheUUID, cacheData: document.cacheData))
             } catch {
                 // The lock reason: why the layout cannot be resolved,
                 // shown instead of any borrowed layout.
@@ -399,7 +399,7 @@ enum FeatureEligibilityEvaluator {
         // re-resolve it from a cached profile or the document — that
         // would defeat fail-closed.
         guard let resolvedLayout = layout else {
-            let lockReason = document.flatMap { MobileGestaltCacheLayout.lockReason(in: $0.document) }
+            let lockReason = document.flatMap { LayoutResolver.lockReason(cacheUUID: $0.document.cacheUUID, cacheData: $0.document.cacheData) }
                 ?? L("Unable to resolve this device's MobileGestalt cache layout.")
             return (.unknown, lockReason)
         }
@@ -1012,7 +1012,7 @@ enum DependencyResolver {
         if requested.contains(FeatureEligibilityEvaluator.esimFeatureID)
             || requested.contains(FeatureEligibilityEvaluator.wapiFeatureID) {
             if layout == nil {
-                let reason = MobileGestaltCacheLayout.lockReason(in: document)
+                let reason = LayoutResolver.lockReason(cacheUUID: document.cacheUUID, cacheData: document.cacheData)
                     ?? L("Unable to resolve this device's MobileGestalt cache layout.")
                 for id in [FeatureEligibilityEvaluator.esimFeatureID, FeatureEligibilityEvaluator.wapiFeatureID]
                 where requested.contains(id) {
@@ -1125,7 +1125,7 @@ enum LilaRecommendationBuilder {
                       (try? DeviceCacheOptions.flags(in: document, using: layout)) != nil else {
                     blockers.append(PlanBlocker(
                         featureID: id, code: "layout-unresolved",
-                        reason: MobileGestaltCacheLayout.lockReason(in: document)
+                        reason: LayoutResolver.lockReason(cacheUUID: document.cacheUUID, cacheData: document.cacheData)
                             ?? L("Unable to resolve this device's MobileGestalt cache layout.")))
                     continue
                 }
