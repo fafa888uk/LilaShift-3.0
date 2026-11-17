@@ -123,7 +123,7 @@ final class StandalonePresetsTests: XCTestCase {
             // Each AI key stages its capability's own value: boolean
             // true for six keys, SiriMode=2 for the siriAIMode key.
             let expected = ChinaUnlock.aiCapabilities
-                .first { $0.keys.contains(key) }?.values?[key] as? NSNumber
+                .first { $0.keys.contains(key) }?.values[key] as? NSNumber
             XCTAssert((preview.extra[key] as? NSNumber)?.intValue == (expected?.intValue ?? 1),
                        "Preview enables AI key \(key) to its staged value")
         }
@@ -258,7 +258,7 @@ final class StandalonePresetsTests: XCTestCase {
             // Each AI key stages its capability's own value: boolean
             // true for six keys, SiriMode=2 for the siriAIMode key.
             let expected = ChinaUnlock.aiCapabilities
-                .first { $0.keys.contains(key) }?.values?[key] as? NSNumber
+                .first { $0.keys.contains(key) }?.values[key] as? NSNumber
             XCTAssert((preview.extra[key] as? NSNumber)?.intValue == (expected?.intValue ?? 1),
                        "Preview enables AI key \(key) on an unsupported layout to its staged value")
         }
