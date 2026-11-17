@@ -204,11 +204,11 @@ enum HomeSorting {
         by sort: CatalogSort,
         favoritesFirst: Bool,
         favoriteIDs: Set<String>,
-        customOrder: [String]?,
+        customOrder: [String],
         recentIDs: [String]
     ) -> [FeatureCatalogItem] {
         var customRank: [String: Int] = [:]
-        for (index, id) in (customOrder ?? []).enumerated() where customRank[id] == nil {
+        for (index, id) in customOrder.enumerated() where customRank[id] == nil {
             customRank[id] = index
         }
         var recentRank: [String: Int] = [:]

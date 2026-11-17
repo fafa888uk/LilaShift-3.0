@@ -272,7 +272,7 @@ final class GestaltManager: ObservableObject {
         return Set(ChinaUnlock.aiCapabilities.filter { capability in
             capability.keys.allSatisfy { key in
                 guard let field = fields[key] else { return false }
-                return GestaltDocument.valuesEqual(field, capability.values?[key] ?? capability.enabled)
+                return GestaltDocument.valuesEqual(field, capability.values[key] ?? capability.enabled)
             }
         }.map(\.id))
     }
@@ -595,7 +595,7 @@ final class GestaltManager: ObservableObject {
         if aiStaged {
             for capability in ChinaUnlock.aiCapabilities {
                 for key in capability.keys where document.extra[key] == nil {
-                    document.set(capability.values?[key] ?? capability.enabled, for: key)
+                    document.set(capability.values[key] ?? capability.enabled, for: key)
                     staged = true
                 }
             }

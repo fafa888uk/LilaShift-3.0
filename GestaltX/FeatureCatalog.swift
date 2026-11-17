@@ -401,11 +401,12 @@ enum FeatureCatalog {
 /// file written before a field existed decodes with that field at
 /// its default, so upgrades preserve existing user config.
 struct FeatureCatalogSettings: Codable, Equatable, Sendable {
-    /// Item ids in the user's preferred order, or `nil` for the
-    /// default order. Unknown ids are ignored by the sorter; items
-    /// missing from a stored order are appended in default order,
-    /// so an item added in a later version still appears.
-    var customOrder: [String]?
+    /// Item ids in the user's preferred order; an empty array
+    /// means the default order. Unknown ids are ignored by the
+    /// sorter; items missing from a stored order are appended in
+    /// default order, so an item added in a later version still
+    /// appears.
+    var customOrder: [String] = []
     /// Item ids the user hid. Unknown ids are ignored.
     var hiddenIDs: Set<String>
     /// Recently used item ids, most recent first, capped at
@@ -415,9 +416,9 @@ struct FeatureCatalogSettings: Codable, Equatable, Sendable {
     static let maxRecentCount = 10
 
     static let defaults = FeatureCatalogSettings(
-        customOrder: nil, hiddenIDs: [], recentIDs: [])
+        customOrder: [], hiddenIDs: [], recentIDs: [])
 
-    init(customOrder: [String]? = nil, hiddenIDs: Set<String> = [],
+    init(customOrder: [String] = [], hiddenIDs: Set<String> = [],
          recentIDs: [String] = []) {
         self.customOrder = customOrder
         self.hiddenIDs = hiddenIDs

@@ -20,13 +20,13 @@ final class DialerSkinTests: XCTestCase {
         }.pngData()!
     }
 
-    private func makeContainer(seeded: [String: Data] = [:]) -> URL {
+    private func makeContainer(seeded: [String: Data] = [:]) throws -> URL {
         let fm = FileManager.default
         let root = fm.temporaryDirectory.appendingPathComponent("DialerSkinTests_\(UUID().uuidString)", isDirectory: true)
         let dir = root.appendingPathComponent("Library/Caches/TelephonyUI-10", isDirectory: true)
-        try! fm.createDirectory(at: dir, withIntermediateDirectories: true)
+        try fm.createDirectory(at: dir, withIntermediateDirectories: true)
         for (name, data) in seeded {
-            try! data.write(to: dir.appendingPathComponent(name), options: .atomic)
+            try data.write(to: dir.appendingPathComponent(name), options: .atomic)
         }
         return root
     }
@@ -67,7 +67,7 @@ final class DialerSkinTests: XCTestCase {
     func testApplyAndRestoreRoundTrip() throws {
         let original = pngData(color: .blue)
         let replacement = pngData(color: .red)
-        let container = makeContainer(seeded: ["other-1---mask.png": original])
+        let container = try makeContainer(seeded: ["other-1---mask.png": original])
         defer { try? FileManager.default.removeItem(at: container) }
         let result = try DialerSkin.apply(images: [.one: replacement], container: container)
         XCTAssertEqual(result.applied, 6)
@@ -84,7 +84,7 @@ final class DialerSkinTests: XCTestCase {
 
     func testRestoreDeletesOriginallyAbsentFiles() throws {
         let replacement = pngData(color: .red)
-        let container = makeContainer()
+        let container = try makeContainer()
         defer { try? FileManager.default.removeItem(at: container) }
         let result = try DialerSkin.apply(images: [.two: replacement], container: container)
         XCTAssertEqual(result.applied, 6)
@@ -97,7 +97,7 @@ final class DialerSkinTests: XCTestCase {
 
     func testInvalidImageIsSkipped() throws {
         let original = pngData(color: .blue)
-        let container = makeContainer(seeded: ["other-1---mask.png": original])
+        let container = try makeContainer(seeded: ["other-1---mask.png": original])
         defer { try? FileManager.default.removeItem(at: container) }
         let result = try DialerSkin.apply(images: [.one: Data("garbage".utf8)], container: container)
         XCTAssertEqual(result.applied, 0)

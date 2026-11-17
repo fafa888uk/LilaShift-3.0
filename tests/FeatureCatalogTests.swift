@@ -48,7 +48,7 @@ final class FeatureCatalogTests: XCTestCase {
         by sort: CatalogSort = .byCategory,
         favoritesFirst: Bool = false,
         favoriteIDs: Set<String> = [],
-        customOrder: [String]? = nil,
+        customOrder: [String] = [],
         recentIDs: [String] = []
     ) -> [String] {
         HomeSorting.sortCatalogItems(
@@ -267,7 +267,7 @@ final class FeatureCatalogTests: XCTestCase {
         let changed = FeatureCatalogSettings(
             customOrder: ["ai", "esim"], hiddenIDs: ["ai"], recentIDs: ["esim"])
         XCTAssertNotEqual(changed, .defaults)
-        XCTAssertEqual(FeatureCatalogSettings.defaults.customOrder, nil)
+        XCTAssertTrue(FeatureCatalogSettings.defaults.customOrder.isEmpty)
         XCTAssertTrue(FeatureCatalogSettings.defaults.hiddenIDs.isEmpty)
         XCTAssertTrue(FeatureCatalogSettings.defaults.recentIDs.isEmpty)
     }
@@ -275,7 +275,7 @@ final class FeatureCatalogTests: XCTestCase {
     // MARK: - Settings store
 
     func testSettingsDefaults() {
-        XCTAssertNil(FeatureCatalogSettings.defaults.customOrder)
+        XCTAssertTrue(FeatureCatalogSettings.defaults.customOrder.isEmpty)
         XCTAssertTrue(FeatureCatalogSettings.defaults.hiddenIDs.isEmpty)
         XCTAssertTrue(FeatureCatalogSettings.defaults.recentIDs.isEmpty)
     }

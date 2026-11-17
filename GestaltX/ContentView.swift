@@ -2060,8 +2060,9 @@ struct FieldsView: View {
             search.isEmpty || key.localizedCaseInsensitiveContains(search) || valueText(key, in: extra).localizedCaseInsensitiveContains(search)
         }
     }
-    private func valueText(_ key: String, in extra: [String: Any]? = nil) -> String {
-        guard let value = (extra ?? model.preview?.extra)?[key] else { return "" }
+    private func valueText(_ key: String, in extra: [String: Any] = [:]) -> String {
+        let fields = extra.isEmpty ? model.preview?.extra : extra
+        guard let value = fields?[key] else { return "" }
         let type = PlistValueKind.detect(value)
         if type == .data { return String(format: L("%lld bytes"), Int64((value as? Data)?.count ?? 0)) }
         return type.text(for: value)
@@ -2430,7 +2431,7 @@ struct ChangeReviewView: View {
         return ChinaUnlock.aiCapabilities.filter { capability in
             capability.keys.allSatisfy { key in
                 guard let field = fields[key] else { return false }
-                return GestaltDocument.valuesEqual(field, capability.values?[key] ?? capability.enabled)
+                return GestaltDocument.valuesEqual(field, capability.values[key] ?? capability.enabled)
             }
         }.count
     }

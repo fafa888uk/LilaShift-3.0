@@ -563,7 +563,7 @@ enum SafePatch {
             case .cacheExtraKey:
                 if let capability = Capability.all.first(where: { $0.id == step.featureID }) {
                     for key in capability.keys {
-                        document.set(capability.values?[key] ?? capability.enabled, for: key)
+                        document.set(capability.values[key] ?? capability.enabled, for: key)
                     }
                 } else if let key = step.key {
                     document.set(step.newValue.plistValue, for: key)

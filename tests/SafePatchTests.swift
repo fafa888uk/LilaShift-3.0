@@ -48,7 +48,7 @@ final class SafePatchTests: XCTestCase {
             XCTAssertEqual(diff?.original, .absent, "AI key \(key) was absent before staging")
             // The staged target is the capability's own value:
             // SiriMode=2 for siriAIMode, boolean true for the rest.
-            let expectedTarget = capability.values?[key]
+            let expectedTarget = capability.values[key]
                 .flatMap(ChangeValue.fromPlistValue) ?? .bool(true)
             XCTAssertEqual(diff?.target, expectedTarget,
                            "AI key \(key) stages its capability value")

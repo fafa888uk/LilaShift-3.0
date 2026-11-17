@@ -10,11 +10,11 @@ import XCTest
 /// diagnostic reports directory. No device is needed: parsing is
 /// pure, and cleaning is tested with constructed items.
 final class CrashDiagnosticsTests: XCTestCase {
-    private func ipsData(bugType: String, appName: String? = nil, body: [String: Any]? = nil) -> Data {
+    private func ipsData(bugType: String, appName: String? = nil, body: [String: Any] = [:]) throws -> Data {
         var header: [String: Any] = ["bug_type": bugType, "timestamp": "2026-11-17T08:00:00Z"]
         if let appName { header["app_name"] = appName }
-        let headerJSON = String(data: try! JSONSerialization.data(withJSONObject: header), encoding: .utf8)!
-        let bodyJSON = body.map { String(data: try! JSONSerialization.data(withJSONObject: $0), encoding: .utf8)! } ?? "{}"
+        let headerJSON = String(data: try JSONSerialization.data(withJSONObject: header), encoding: .utf8)!
+        let bodyJSON = String(data: try JSONSerialization.data(withJSONObject: body), encoding: .utf8)!
         return Data((headerJSON + "\n" + bodyJSON).utf8)
     }
 
@@ -23,48 +23,48 @@ final class CrashDiagnosticsTests: XCTestCase {
                                       fileSize: Int64(data.count), fileURL: URL(fileURLWithPath: "/tmp/" + fileName))
     }
 
-    func testJetsamBugType() {
-        let item = parse(ipsData(bugType: "298", appName: "TestApp"))
+    func testJetsamBugType() throws {
+        let item = parse(try ipsData(bugType: "298", appName: "TestApp"))
         XCTAssertEqual(item?.kind, .jetsam)
         XCTAssertEqual(item?.bugType, "298")
     }
 
-    func testCrashBugTypes() {
+    func testCrashBugTypes() throws {
         for bugType in ["309", "109"] {
-            let item = parse(ipsData(bugType: bugType, appName: "TestApp"))
+            let item = parse(try ipsData(bugType: bugType, appName: "TestApp"))
             XCTAssertEqual(item?.kind, .crash, "bug_type \(bugType) should map to crash")
         }
     }
 
-    func testPanicBugType() {
-        let item = parse(ipsData(bugType: "210"))
+    func testPanicBugType() throws {
+        let item = parse(try ipsData(bugType: "210"))
         XCTAssertEqual(item?.kind, .system)
         XCTAssertEqual(item?.processName, "Kernel panic / watchdog restart")
     }
 
-    func testUnknownBugTypeMapsToSystem() {
-        let item = parse(ipsData(bugType: "999"))
+    func testUnknownBugTypeMapsToSystem() throws {
+        let item = parse(try ipsData(bugType: "999"))
         XCTAssertEqual(item?.kind, .system)
     }
 
-    func testAppNameFromHeader() {
-        let item = parse(ipsData(bugType: "309", appName: "TestApp", body: ["procName": "TestApp"]))
+    func testAppNameFromHeader() throws {
+        let item = parse(try ipsData(bugType: "309", appName: "TestApp", body: ["procName": "TestApp"]))
         XCTAssertEqual(item?.processName, "TestApp")
     }
 
-    func testMissingAppNameFallsBackToFilename() {
-        let item = parse(ipsData(bugType: "309"), fileName: "MyApp-2026-11-17.ips")
+    func testMissingAppNameFallsBackToFilename() throws {
+        let item = parse(try ipsData(bugType: "309"), fileName: "MyApp-2026-11-17.ips")
         // Without a body procName the process name stays the file name.
         XCTAssertEqual(item?.processName, "MyApp-2026-11-17.ips")
     }
 
-    func testJetsamFilenameDetectsJetsam() {
-        let item = parse(ipsData(bugType: "Unknown"), fileName: "JetsamEvent-2026-11-17.ips")
+    func testJetsamFilenameDetectsJetsam() throws {
+        let item = parse(try ipsData(bugType: "Unknown"), fileName: "JetsamEvent-2026-11-17.ips")
         XCTAssertEqual(item?.kind, .jetsam)
     }
 
-    func testPanicFilenameDetectsSystem() {
-        let item = parse(ipsData(bugType: "Unknown"), fileName: "panic-full-2026-11-17.ips")
+    func testPanicFilenameDetectsSystem() throws {
+        let item = parse(try ipsData(bugType: "Unknown"), fileName: "panic-full-2026-11-17.ips")
         XCTAssertEqual(item?.kind, .system)
     }
 

@@ -69,9 +69,10 @@ enum CatalogSort: String, Codable, CaseIterable, Equatable, Hashable, Sendable {
 /// catalog card's visible entries; `visibleToolCards` filters the
 /// Tools page category grid in ContentView. `homeSectionOrder` and
 /// `hiddenHomeSections` order and filter the Tools home diagnostics
-/// sections (see `HomeDiagnosticsSectionID`); both are optional so
-/// a settings file written before they existed still decodes — nil
-/// means the default order with nothing hidden.
+/// sections (see `HomeDiagnosticsSectionID`); both default to
+/// empty so a settings file written before they existed still
+/// decodes — an empty order means the default order and an empty
+/// hidden set means nothing hidden.
 struct PersonalizationSettings: Codable, Equatable, Sendable {
     var catalogSort: CatalogSort
     var favoritesFirst: Bool
@@ -81,25 +82,25 @@ struct PersonalizationSettings: Codable, Equatable, Sendable {
     /// "personalization"). Unknown ids are ignored by the UI.
     var visibleToolCards: Set<String>
     /// Home diagnostics section ids in the user's preferred order
-    /// (`HomeDiagnosticsSectionID` raw values). `nil` means the
-    /// default order. Unknown ids are ignored; sections missing
-    /// from a stored order are appended in default order, so a
-    /// section added in a later version still appears.
-    var homeSectionOrder: [String]?
+    /// (`HomeDiagnosticsSectionID` raw values). An empty array
+    /// means the default order. Unknown ids are ignored; sections
+    /// missing from a stored order are appended in default order,
+    /// so a section added in a later version still appears.
+    var homeSectionOrder: [String] = []
     /// Home diagnostics section ids the user hid
-    /// (`HomeDiagnosticsSectionID` raw values). `nil` means nothing
-    /// hidden. Unknown ids are ignored.
-    var hiddenHomeSections: Set<String>?
+    /// (`HomeDiagnosticsSectionID` raw values). An empty set means
+    /// nothing hidden. Unknown ids are ignored.
+    var hiddenHomeSections: Set<String> = []
 
     static let defaults = PersonalizationSettings(
         catalogSort: .byCategory, favoritesFirst: false,
         visibleToolCards: Set(PersonalizationCenter.allToolCardIDs),
-        homeSectionOrder: nil, hiddenHomeSections: nil)
+        homeSectionOrder: [], hiddenHomeSections: [])
 
     init(catalogSort: CatalogSort = .byCategory, favoritesFirst: Bool = false,
          visibleToolCards: Set<String> = Set(PersonalizationCenter.allToolCardIDs),
-         homeSectionOrder: [String]? = nil,
-         hiddenHomeSections: Set<String>? = nil) {
+         homeSectionOrder: [String] = [],
+         hiddenHomeSections: Set<String> = []) {
         self.catalogSort = catalogSort
         self.favoritesFirst = favoritesFirst
         self.visibleToolCards = visibleToolCards

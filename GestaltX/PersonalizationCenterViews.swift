@@ -208,10 +208,10 @@ struct PersonalizationCenterCard: View {
                     .buttonStyle(.plain)
                     .disabled(!canMoveHomeSection(section, by: 1))
                     Toggle("", isOn: Binding(
-                        get: { !(settings.hiddenHomeSections ?? []).contains(section.rawValue) },
+                        get: { !settings.hiddenHomeSections.contains(section.rawValue) },
                         set: { newValue in
                             updateSettings { settings in
-                                var hidden = settings.hiddenHomeSections ?? []
+                                var hidden = settings.hiddenHomeSections
                                 if newValue { hidden.remove(section.rawValue) }
                                 else { hidden.insert(section.rawValue) }
                                 settings.hiddenHomeSections = hidden
@@ -228,18 +228,20 @@ struct PersonalizationCenterCard: View {
     /// default order), including hidden ones so a hidden section can
     /// be re-shown. Missing sections are appended in default order.
     private var homeSectionRows: [HomeDiagnosticsSectionID] {
-        if let stored = settings.homeSectionOrder {
-            let known = stored.compactMap { HomeDiagnosticsSectionID(rawValue: $0) }
-            let missing = HomeDiagnosticsSectionID.defaultOrder.filter { !known.contains($0) }
-            return known + missing
+        if settings.homeSectionOrder.isEmpty {
+            return HomeDiagnosticsSectionID.defaultOrder
         }
-        return HomeDiagnosticsSectionID.defaultOrder
+        let known = settings.homeSectionOrder.compactMap { HomeDiagnosticsSectionID(rawValue: $0) }
+        let missing = HomeDiagnosticsSectionID.defaultOrder.filter { !known.contains($0) }
+        return known + missing
     }
 
     /// Moves a section one position in the stored order. The stored
     /// order is created from the default order on first use.
     private func moveHomeSection(_ section: HomeDiagnosticsSectionID, by offset: Int) {
-        var order = settings.homeSectionOrder ?? HomeDiagnosticsSectionID.defaultOrder.map(\.rawValue)
+        var order = settings.homeSectionOrder.isEmpty
+            ? HomeDiagnosticsSectionID.defaultOrder.map(\.rawValue)
+            : settings.homeSectionOrder
         guard let index = order.firstIndex(of: section.rawValue) else { return }
         let target = index + offset
         guard target >= 0 && target < order.count else { return }
@@ -248,7 +250,9 @@ struct PersonalizationCenterCard: View {
     }
 
     private func canMoveHomeSection(_ section: HomeDiagnosticsSectionID, by offset: Int) -> Bool {
-        let order = settings.homeSectionOrder ?? HomeDiagnosticsSectionID.defaultOrder.map(\.rawValue)
+        let order = settings.homeSectionOrder.isEmpty
+            ? HomeDiagnosticsSectionID.defaultOrder.map(\.rawValue)
+            : settings.homeSectionOrder
         guard let index = order.firstIndex(of: section.rawValue) else { return false }
         let target = index + offset
         return target >= 0 && target < order.count

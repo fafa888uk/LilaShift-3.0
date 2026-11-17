@@ -59,7 +59,7 @@ final class AIBaselineFixTests: XCTestCase {
     /// The staged value for an AI capability key (its explicit value,
     /// or the plain boolean enable value).
     static func stagedValue(for capability: Capability, key: String) -> Any {
-        capability.values?[key] ?? capability.enabled
+        capability.values[key] ?? capability.enabled
     }
 
     @MainActor

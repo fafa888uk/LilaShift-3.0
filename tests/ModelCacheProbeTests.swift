@@ -7,31 +7,31 @@ import XCTest
 /// over a temp directory tree — depth limit, symlink handling, and
 /// the per-path probe. Only counting is tested; no device is needed.
 final class ModelCacheProbeTests: XCTestCase {
-    private func makeTree() -> URL {
+    private func makeTree() throws -> URL {
         let fm = FileManager.default
         let root = fm.temporaryDirectory.appendingPathComponent("ModelCacheProbeTests_\(UUID().uuidString)", isDirectory: true)
-        try! fm.createDirectory(at: root, withIntermediateDirectories: true)
+        try fm.createDirectory(at: root, withIntermediateDirectories: true)
         // root/a.txt (3 bytes), root/sub/b.txt (5 bytes), root/sub/deep/c.txt (7 bytes)
-        try! "abc".write(to: root.appendingPathComponent("a.txt"), atomically: true, encoding: .utf8)
+        try "abc".write(to: root.appendingPathComponent("a.txt"), atomically: true, encoding: .utf8)
         let sub = root.appendingPathComponent("sub", isDirectory: true)
-        try! fm.createDirectory(at: sub, withIntermediateDirectories: true)
-        try! "abcde".write(to: sub.appendingPathComponent("b.txt"), atomically: true, encoding: .utf8)
+        try fm.createDirectory(at: sub, withIntermediateDirectories: true)
+        try "abcde".write(to: sub.appendingPathComponent("b.txt"), atomically: true, encoding: .utf8)
         let deep = sub.appendingPathComponent("deep", isDirectory: true)
-        try! fm.createDirectory(at: deep, withIntermediateDirectories: true)
-        try! "abcdefg".write(to: deep.appendingPathComponent("c.txt"), atomically: true, encoding: .utf8)
+        try fm.createDirectory(at: deep, withIntermediateDirectories: true)
+        try "abcdefg".write(to: deep.appendingPathComponent("c.txt"), atomically: true, encoding: .utf8)
         return root
     }
 
-    func testCountFilesAndSize() {
-        let root = makeTree()
+    func testCountFilesAndSize() throws {
+        let root = try makeTree()
         defer { try? FileManager.default.removeItem(at: root) }
         let (count, bytes) = ModelCacheProbe.countFilesAndSize(at: root, maxDepth: 4)
         XCTAssertEqual(count, 3)
         XCTAssertEqual(bytes, 15)
     }
 
-    func testDepthLimit() {
-        let root = makeTree()
+    func testDepthLimit() throws {
+        let root = try makeTree()
         defer { try? FileManager.default.removeItem(at: root) }
         // Depth 0 counts only the root level.
         let (count, bytes) = ModelCacheProbe.countFilesAndSize(at: root, maxDepth: 0)
@@ -42,23 +42,23 @@ final class ModelCacheProbeTests: XCTestCase {
         XCTAssertEqual(count1, 2)
     }
 
-    func testSymlinksAreNotFollowed() {
-        let root = makeTree()
+    func testSymlinksAreNotFollowed() throws {
+        let root = try makeTree()
         defer { try? FileManager.default.removeItem(at: root) }
         // A symlink to the sub directory must not be descended into,
         // and a symlink to a file must not be counted as a file.
         let fm = FileManager.default
-        try! fm.createSymbolicLink(at: root.appendingPathComponent("linkdir"),
+        try fm.createSymbolicLink(at: root.appendingPathComponent("linkdir"),
                                    withDestinationURL: root.appendingPathComponent("sub"))
-        try! fm.createSymbolicLink(at: root.appendingPathComponent("linkfile.txt"),
+        try fm.createSymbolicLink(at: root.appendingPathComponent("linkfile.txt"),
                                    withDestinationURL: root.appendingPathComponent("a.txt"))
         let (count, bytes) = ModelCacheProbe.countFilesAndSize(at: root, maxDepth: 4)
         XCTAssertEqual(count, 3)
         XCTAssertEqual(bytes, 15)
     }
 
-    func testProbePathOverTempDirectory() {
-        let root = makeTree()
+    func testProbePathOverTempDirectory() throws {
+        let root = try makeTree()
         defer { try? FileManager.default.removeItem(at: root) }
         let item = ModelCacheProbe.probePath(title: "Test", id: "test", path: root.path,
                                              notFoundNote: "missing", deniedNote: "denied")

@@ -220,23 +220,23 @@ struct CustomizationFileTransaction {
         } else if FileManager.default.fileExists(atPath: url.path) { try FileManager.default.removeItem(at: url) }
         guard try current(path) == original else { throw CustomizationFailure("The files changed. Read again before applying.") }
     }
-    func replace(_ changes: [String: Data], expected: [String: CustomizationOriginal]? = nil) throws {
+    func replace(_ changes: [String: Data], expected: [String: CustomizationOriginal] = [:]) throws {
         try perform(changes.mapValues { CustomizationOriginal(data: $0) }, expected: expected, savingOriginals: true)
     }
     func restore() throws {
-        try perform(journal().originals, expected: nil, savingOriginals: false)
+        try perform(journal().originals, expected: [:], savingOriginals: false)
     }
     var hasOriginals: Bool { (try? journal().originals.isEmpty == false) ?? false }
     var hasChanges: Bool {
         guard let originals = try? journal().originals else { return false }
         return originals.contains { path, value in (try? current(path)) != value }
     }
-    private func perform(_ changes: [String: CustomizationOriginal], expected: [String: CustomizationOriginal]?, savingOriginals: Bool) throws {
+    private func perform(_ changes: [String: CustomizationOriginal], expected: [String: CustomizationOriginal] = [:], savingOriginals: Bool) throws {
         guard !changes.isEmpty else { return }
         var journal = try journal(), before: [String: CustomizationOriginal] = [:]
         for path in changes.keys.sorted() {
             before[path] = try current(path)
-            if let value = expected?[path], value != before[path] { throw CustomizationFailure("The files changed. Read again before applying.") }
+            if let value = expected[path], value != before[path] { throw CustomizationFailure("The files changed. Read again before applying.") }
             if savingOriginals, journal.originals[path] == nil { journal.originals[path] = before[path] }
         }
         try CustomizationFiles.saveVerified(before, to: storage.appendingPathComponent("Backups/\(UUID().uuidString).plist"))

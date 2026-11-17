@@ -43,14 +43,14 @@ enum HomeDiagnosticsSectionID: String, CaseIterable, Identifiable, Sendable {
     /// gets the missing sections appended in default order, so no
     /// section silently disappears. Unknown ids are ignored.
     static func orderedVisibleSections(_ settings: PersonalizationSettings) -> [HomeDiagnosticsSectionID] {
-        let hidden = settings.hiddenHomeSections ?? []
+        let hidden = settings.hiddenHomeSections
         let ordered: [HomeDiagnosticsSectionID]
-        if let stored = settings.homeSectionOrder {
-            let known = stored.compactMap { HomeDiagnosticsSectionID(rawValue: $0) }
+        if settings.homeSectionOrder.isEmpty {
+            ordered = defaultOrder
+        } else {
+            let known = settings.homeSectionOrder.compactMap { HomeDiagnosticsSectionID(rawValue: $0) }
             let missing = defaultOrder.filter { !known.contains($0) }
             ordered = known + missing
-        } else {
-            ordered = defaultOrder
         }
         return ordered.filter { !hidden.contains($0.rawValue) }
     }

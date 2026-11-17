@@ -37,12 +37,12 @@ final class AssetTagTests: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(atPath: url.path))
     }
 
-    func testOtherKeysArePreserved() {
+    func testOtherKeysArePreserved() throws {
         let url = tempPlist()
         defer { try? FileManager.default.removeItem(at: url) }
         let seed: [String: Any] = ["LockScreenFootnote": "Keep this", "SomeOtherKey": 42]
-        let data = try! PropertyListSerialization.data(fromPropertyList: seed, format: .binary, options: 0)
-        try! data.write(to: url, options: .atomic)
+        let data = try PropertyListSerialization.data(fromPropertyList: seed, format: .binary, options: 0)
+        try data.write(to: url, options: .atomic)
         XCTAssertTrue(AssetTag.apply("My tag", at: url))
         let back = NSDictionary(contentsOf: url) as? [String: Any]
         XCTAssertEqual(back?["LockScreenFootnote"] as? String, "Keep this")

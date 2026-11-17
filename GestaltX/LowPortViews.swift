@@ -410,10 +410,10 @@ struct DialerSkinView: View {
         let dark = showDarkKeypads
         Task.detached(priority: .userInitiated) {
             let found = DialerSkin.phoneContainer()
-            let keys: [DialerSkin.KeypadID: Data]? = found.flatMap { try? DialerSkin.currentKeypads(container: $0, dark: dark) }
+            let keys: [DialerSkin.KeypadID: Data] = found.flatMap { try? DialerSkin.currentKeypads(container: $0, dark: dark) } ?? [:]
             await MainActor.run {
                 container = found
-                current = keys ?? [:]
+                current = keys
                 isBusy = false
                 if found == nil {
                     message = L("The Phone app container could not be opened on this device.")

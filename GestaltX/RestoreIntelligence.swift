@@ -165,7 +165,15 @@ struct ChangeRecordStore: Sendable {
             case .fileNotFound:
                 return []
             case .digestMismatch, .decodeFailed:
-                if let migrated = readBareArrayIfPresent() { return migrated }
+                // Migration: before the v1 envelope, records were written
+                // as a bare JSON array with no digest sidecar. Such a file
+                // decodes here — including a valid empty array, which
+                // migrates to an empty store. A file that decodes neither
+                // as an envelope nor as a bare array is refused, never trusted.
+                if let data = try? Data(contentsOf: fileURL),
+                   let migrated = try? JSONDecoder().decode([RecordedChange].self, from: data) {
+                    return migrated
+                }
                 throw GestaltFailure("The change history could not be read. No system changes were made.")
             case .writeFailed:
                 throw GestaltFailure("The change history could not be read. No system changes were made.")
@@ -199,16 +207,6 @@ struct ChangeRecordStore: Sendable {
         try save(records)
     }
 
-    /// Reads a pre-envelope bare JSON array of records, or `nil` when
-    /// the file does not decode as one. Used only on the migration
-    /// path.
-    private func readBareArrayIfPresent() -> [RecordedChange]? {
-        guard let data = try? Data(contentsOf: fileURL),
-              let records = try? JSONDecoder().decode([RecordedChange].self, from: data) else {
-            return nil
-        }
-        return records
-    }
 }
 
 // MARK: - Restore log

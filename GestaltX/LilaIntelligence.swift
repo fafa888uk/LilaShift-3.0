@@ -1181,7 +1181,7 @@ enum LilaRecommendationBuilder {
                     continue
                 }
                 let key = capability.keys.first
-                let value = key.flatMap { capability.values?[$0] } ?? capability.enabled
+                let value = key.flatMap { capability.values[$0] } ?? capability.enabled
                 steps.append(PlanStep(
                     featureID: id, title: capability.title, kind: .cacheExtraKey,
                     key: key, layer: .cacheExtra,
@@ -1247,7 +1247,7 @@ enum LilaRecommendationBuilder {
         func cacheExtraStep(for id: String) -> PlanStep? {
             guard let capability = Capability.all.first(where: { $0.id == id }),
                   let key = capability.keys.first else { return nil }
-            let value = capability.values?[key] ?? capability.enabled
+            let value = capability.values[key] ?? capability.enabled
             return PlanStep(
                 featureID: id, title: capability.title, kind: .cacheExtraKey,
                 key: key, layer: .cacheExtra,

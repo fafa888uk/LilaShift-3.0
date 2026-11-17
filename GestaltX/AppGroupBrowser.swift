@@ -175,17 +175,25 @@ enum AppGroupBrowser {
         let resolvedBase = base.standardizedFileURL.path
         let resolvedTarget = target.standardizedFileURL.path
         guard resolvedTarget == resolvedBase || resolvedTarget.hasPrefix(resolvedBase + "/") else { return [] }
-        if let entries = tryList(resolvedTarget) {
+        let entries = tryList(resolvedTarget)
+        if !entries.isEmpty {
+            return entries
+        }
+        // An empty result is ambiguous: the directory may be directly
+        // readable but empty, or unreadable. Only attempt the grant
+        // when the direct read actually failed — a directly readable
+        // directory never needs a grant, even when it is empty.
+        if FileManager.default.isReadableFile(atPath: resolvedTarget) {
             return entries
         }
         let grant = ContainerAccess.grantAccess(path: resolvedTarget, requireWrite: false)
         guard grant.granted else { return [] }
         defer { ContainerAccess.releaseAccess(path: resolvedTarget) }
-        return tryList(resolvedTarget) ?? []
+        return tryList(resolvedTarget)
     }
 
-    private static func tryList(_ path: String) -> [Entry]? {
-        guard let names = try? FileManager.default.contentsOfDirectory(atPath: path) else { return nil }
+    private static func tryList(_ path: String) -> [Entry] {
+        guard let names = try? FileManager.default.contentsOfDirectory(atPath: path) else { return [] }
         var entries: [Entry] = []
         for name in names.sorted() where !name.hasPrefix(".") {
             let itemPath = path + "/" + name

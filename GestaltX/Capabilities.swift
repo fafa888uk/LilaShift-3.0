@@ -39,7 +39,7 @@ struct Capability: Identifiable, Equatable {
     var caution = false
     /// Per-key values for presets that are not a plain Boolean 1, such as the
     /// parallax switch (0) or the AOD flipbook count.
-    var values: [String: Any]? = nil
+    var values: [String: Any] = [:]
 
     /// Capabilities are compared by their Equatable fields. `values` is
     /// excluded: `[String: Any]` cannot be Equatable, and the catalog is
@@ -120,7 +120,7 @@ struct Capability: Identifiable, Equatable {
         guard let fields = document?.extra else { return false }
         return keys.allSatisfy { key in
             guard let value = fields[key] else { return false }
-            return GestaltDocument.valuesEqual(value, values?[key] ?? enabled)
+            return GestaltDocument.valuesEqual(value, values[key] ?? enabled)
         }
     }
 
@@ -129,7 +129,7 @@ struct Capability: Identifiable, Equatable {
         for key in keys {
             switch choice {
             case .keep: break
-            case .enable: document.set(values?[key] ?? enabled, for: key)
+            case .enable: document.set(values[key] ?? enabled, for: key)
             case .disable: document.set(snapshot.originalValue(for: key), for: key)
             case .removeAdded: document.set(nil, for: key)
             }

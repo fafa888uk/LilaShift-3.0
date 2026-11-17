@@ -229,7 +229,7 @@ enum DependencyAnalyzer {
         guard let capability = Capability.all.first(where: { $0.id == capabilityID }),
               !capability.keys.isEmpty else { return [] }
         return capability.keys.map { key in
-            let value = ChangeValue.fromPlistValue(capability.values?[key] ?? capability.enabled) ?? .absent
+            let value = ChangeValue.fromPlistValue(capability.values[key] ?? capability.enabled) ?? .absent
             // Every capability key is written through
             // `document.set(...)`, which writes CacheExtra.
             return (featureID, key, ChangeLayer.cacheExtra, value)
