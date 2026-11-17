@@ -11,6 +11,7 @@ struct ContentView: View {
     @StateObject private var model = GestaltManager()
     @StateObject private var systemSettings = SystemSettingsModel()
     @StateObject private var customizations = CustomizationModel()
+    @StateObject private var wallpaperLibrary = WallpaperLibraryModel()
     @StateObject private var launchCatalog = LaunchArtworkCatalogModel()
     /// The shared home-diagnostics cache (see HomeDiagnosticsCache):
     /// it computes the device report, backup verifications, SafePatch
@@ -83,7 +84,7 @@ struct ContentView: View {
         #if targetEnvironment(simulator)
         .sheet(item: $previewCategory) { category in
             NavigationStack {
-                ToolGroupView(group: ToolGroup(for: category), systemSettings: systemSettings, customizations: customizations, launchCatalog: launchCatalog)
+                ToolGroupView(group: ToolGroup(for: category), systemSettings: systemSettings, customizations: customizations, wallpaperLibrary: wallpaperLibrary, launchCatalog: launchCatalog)
             }.environmentObject(model)
         }
         #endif
@@ -534,7 +535,7 @@ struct ContentView: View {
                         LazyVGrid(columns: gridColumns, spacing: GlassTokens.gridSpacing) {
                             ForEach(visibleToolGroups) { group in
                                 NavigationLink {
-                                    ToolGroupView(group: group, systemSettings: systemSettings, customizations: customizations, launchCatalog: launchCatalog)
+                                    ToolGroupView(group: group, systemSettings: systemSettings, customizations: customizations, wallpaperLibrary: wallpaperLibrary, launchCatalog: launchCatalog)
                                 } label: {
                                     GlassCard(cornerRadius: GlassTokens.tileRadius) {
                                         GlassCategoryTile(
@@ -557,7 +558,7 @@ struct ContentView: View {
                             .foregroundStyle(.secondary)
                     }
                     NavigationLink {
-                        ToolGroupView(group: .advancedDiagnostics, systemSettings: systemSettings, customizations: customizations, launchCatalog: launchCatalog)
+                        ToolGroupView(group: .advancedDiagnostics, systemSettings: systemSettings, customizations: customizations, wallpaperLibrary: wallpaperLibrary, launchCatalog: launchCatalog)
                     } label: {
                         GlassCard(cornerRadius: GlassTokens.tileRadius) {
                             GlassCategoryTile(
@@ -1463,6 +1464,7 @@ struct ToolGroupView: View {
     fileprivate let group: ToolGroup
     let systemSettings: SystemSettingsModel
     let customizations: CustomizationModel
+    let wallpaperLibrary: WallpaperLibraryModel
     let launchCatalog: LaunchArtworkCatalogModel
     @EnvironmentObject private var model: GestaltManager
     @State private var asksInternalBuild = false
@@ -1722,6 +1724,17 @@ struct ToolGroupView: View {
                                 detail: L("Import and apply wallpaper packs."),
                                 symbol: "photo.on.rectangle.angled",
                                 tint: .teal
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(model.isBusy)
+                        Divider()
+                        NavigationLink { WallpaperLibraryView(model: wallpaperLibrary) } label: {
+                            GlassCategoryTile(
+                                title: L("Wallpaper Library"),
+                                detail: L("Your own images: crop, convert, save to Photos."),
+                                symbol: "photo",
+                                tint: .purple
                             )
                         }
                         .buttonStyle(.plain)

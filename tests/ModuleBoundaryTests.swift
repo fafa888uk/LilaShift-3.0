@@ -98,6 +98,70 @@ final class ModuleBoundaryTests: XCTestCase {
         }
     }
 
+    // MARK: - Stage 8 boundaries (TASKBOOK §7)
+
+    func testWallpaperLibraryNeverLeavesItsSandbox() {
+        // TASKBOOK §7.3 / ADR-2-10: the library covers this app's
+        // own images only. The engine and its view must never name
+        // the sandbox escape, the container accessor, the
+        // cross-container gate, or the PosterBoard escape — not even
+        // in a comment, so a future "just one more root" cannot
+        // sneak in unnoticed. The store's only storage root is
+        // AppDirectories.wallpaperLibraryStorage.
+        for file in ["GestaltX/WallpaperLibrary.swift", "GestaltX/WallpaperLibraryViews.swift"] {
+            let text = readSource(file)
+            for forbidden in ["worse_query", "ContainerAccess", "SecurityEngine", "GXCustomizationAccess"] {
+                XCTAssertFalse(text.contains(forbidden),
+                               "\(file) must not reference \(forbidden): the library is this app's own images only")
+            }
+        }
+        let engine = readSource("GestaltX/WallpaperLibrary.swift")
+        XCTAssertFalse(engine.contains("appendingPathComponent(\"GestaltX/"),
+                       "The library engine must not build its own GestaltX paths: storage comes from AppDirectories")
+        let view = readSource("GestaltX/WallpaperLibraryViews.swift")
+        XCTAssertTrue(view.contains("AppDirectories.wallpaperLibraryStorage"),
+                      "The library model must root at AppDirectories.wallpaperLibraryStorage")
+    }
+
+    func testWallpaperLibraryHonestBoundary() {
+        // TASKBOOK §7.3: no code path may claim to set the system
+        // wallpaper. The honest copy must be present in the view.
+        for file in ["GestaltX/WallpaperLibrary.swift", "GestaltX/WallpaperLibraryViews.swift"] {
+            let text = readSource(file)
+            XCTAssertFalse(text.contains("setSystemWallpaper"),
+                           "\(file) must not name a system-wallpaper setter: no public API does that")
+            XCTAssertFalse(text.contains("Set as Wallpaper"),
+                           "\(file) must not offer 'Set as Wallpaper': only 'Save to Photos'")
+        }
+        let view = readSource("GestaltX/WallpaperLibraryViews.swift")
+        XCTAssertTrue(view.contains("cannot set the system wallpaper directly"),
+                      "The library view must state the honest boundary on screen")
+        XCTAssertTrue(view.contains("only changes the background inside LilaShift"),
+                      "The home background must be labelled in-app only")
+    }
+
+    func testNewViewsUseGlassTokens() {
+        // Stage 8, TASKBOOK §8.1: the new views take every color,
+        // radius and spacing from GlassTokens — no ad-hoc literals.
+        let view = readSource("GestaltX/WallpaperLibraryViews.swift")
+        XCTAssertFalse(view.contains("Color(red:"),
+                       "The library view must not define its own colors: use GlassTokens / Color.gestaltAccent")
+        XCTAssertNil(view.range(of: "cornerRadius: [0-9]", options: .regularExpression),
+                     "The library view must not use literal corner radii: use GlassTokens")
+    }
+
+    func testHomeWallpaperSettingIsReal() {
+        // TASKBOOK §7.3: the home background choice is a real
+        // persisted setting (PersonalizationSettings.homeWallpaperID),
+        // and the Tools home renders through HomeBackgroundView.
+        let center = readSource("GestaltX/PersonalizationCenter.swift")
+        XCTAssertTrue(center.contains("homeWallpaperID"),
+                      "PersonalizationSettings must carry the home background choice")
+        let dashboard = readSource("GestaltX/DashboardV3.swift")
+        XCTAssertTrue(dashboard.contains("HomeBackgroundView(image: homeBackground.image)"),
+                      "The Tools home must render through HomeBackgroundView")
+    }
+
     func testNoForceTry() {
         for directory in ["GestaltX", "tests"] {
             for file in swiftFiles(in: directory) {

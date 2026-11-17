@@ -89,6 +89,10 @@ struct DashboardV3Home<DestinationView: View>: View {
     @Environment(\.homeDiagnosticsCache) private var diagnostics: HomeDiagnosticsCache?
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @AppStorage("LilaShift.v3.dashboardOrder") private var savedOrder = ""
+    /// The in-app home background (Stage 8): the wallpaper the user
+    /// chose in the Wallpaper Library, or nil for the default
+    /// lavender gradient. In-app only — never the system wallpaper.
+    @StateObject private var homeBackground = HomeBackgroundModel()
     @State private var showingReorder = false
     @State private var favoriteIDs: [String] = []
     @State private var catalogSettings = FeatureCatalogSettings.defaults
@@ -157,7 +161,7 @@ struct DashboardV3Home<DestinationView: View>: View {
             }
             .padding(GlassTokens.pageMargin)
         }
-        .background(GlassBackground())
+        .background(HomeBackgroundView(image: homeBackground.image))
         .navigationTitle("LilaShift 3.0")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
@@ -170,6 +174,10 @@ struct DashboardV3Home<DestinationView: View>: View {
             }
         }
         .onAppear { reloadFavorites(); reloadCatalogSettings() }
+        .task { await homeBackground.reload() }
+        .onReceive(NotificationCenter.default.publisher(for: .personalizationSettingsDidChange)) { _ in
+            Task { await homeBackground.reload() }
+        }
         .onReceive(NotificationCenter.default.publisher(for: .featureCatalogSettingsDidChange)) { _ in
             reloadCatalogSettings()
         }

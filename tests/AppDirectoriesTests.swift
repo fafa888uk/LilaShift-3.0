@@ -26,4 +26,11 @@ final class AppDirectoriesTests: XCTestCase {
         XCTAssertTrue(AppDirectories.customizationStorage.path.hasPrefix(AppDirectories.applicationSupport.path),
                       "Customization storage is inside Application Support")
     }
+
+    func testWallpaperLibraryStoragePath() {
+        XCTAssertTrue(AppDirectories.wallpaperLibraryStorage.path.hasSuffix("GestaltX/WallpaperLibrary"),
+                      "The wallpaper library lives under GestaltX/WallpaperLibrary")
+        XCTAssertTrue(AppDirectories.wallpaperLibraryStorage.path.hasPrefix(AppDirectories.applicationSupport.path),
+                      "The wallpaper library is inside Application Support")
+    }
 }

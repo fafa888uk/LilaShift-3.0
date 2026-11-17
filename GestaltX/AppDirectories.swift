@@ -40,4 +40,10 @@ enum AppDirectories {
     static var appArchivesStorage: URL {
         applicationSupport.appendingPathComponent("GestaltX/AppArchives", isDirectory: true)
     }
+
+    /// Personal wallpaper library (Stage 8): the user's own images,
+    /// one folder per entry under this root.
+    static var wallpaperLibraryStorage: URL {
+        applicationSupport.appendingPathComponent("GestaltX/WallpaperLibrary", isDirectory: true)
+    }
 }

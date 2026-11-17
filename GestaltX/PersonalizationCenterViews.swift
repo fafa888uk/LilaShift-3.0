@@ -531,7 +531,7 @@ struct PersonalizationCenterCard: View {
             Text(L("Wallpaper and Launch Images"))
                 .font(.headline)
                 .foregroundStyle(.primary)
-            Text(L("iOS offers no public API for an app to change the system wallpaper or another app's launch image. Save an image to Photos and set it manually."))
+            Text(L("iOS offers no public API for an app to change the system wallpaper or another app's launch image. Save an image to Photos and set it manually. The Wallpaper Library can use one of your images as the background inside LilaShift."))
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
