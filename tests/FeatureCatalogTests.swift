@@ -60,10 +60,10 @@ final class FeatureCatalogTests: XCTestCase {
     // MARK: - Contents and mapping
 
     func testCatalogCounts() {
-        XCTAssertEqual(PresetCatalog.all.count, 42)
-        XCTAssertEqual(FeatureCatalog.presetItems.count, 42)
+        XCTAssertEqual(PresetCatalog.all.count, 45)
+        XCTAssertEqual(FeatureCatalog.presetItems.count, 45)
         XCTAssertEqual(FeatureCatalog.pageItems.count, 13)
-        XCTAssertEqual(FeatureCatalog.allItems.count, 55)
+        XCTAssertEqual(FeatureCatalog.allItems.count, 58)
     }
 
     func testCatalogHasNoDuplicateIDsAndCoversEveryPreset() {
@@ -80,7 +80,7 @@ final class FeatureCatalogTests: XCTestCase {
         XCTAssertEqual(counts[.appleIntelligence], 10)
         XCTAssertEqual(counts[.esimRegion], 4)
         XCTAssertEqual(counts[.screenLock], 11)
-        XCTAssertEqual(counts[.systemSettings], 11)
+        XCTAssertEqual(counts[.systemSettings], 14)
         XCTAssertEqual(counts[.personalization], 1)
         XCTAssertEqual(counts[.launchArtwork], 1)
         XCTAssertEqual(counts[.deviceDiagnostics], 8)

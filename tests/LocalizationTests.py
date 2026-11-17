@@ -40,6 +40,12 @@ CAPABILITY_KEYS = (
     "Handwriting Synthesis",
     "Advertise the handwriting synthesis model capability.",
     "Always-Listening Hey Siri",
+    "Spatial Audio Recording",
+    "Enable spatial audio recording in Voice Memos.",
+    "Responsive Shutter",
+    "Lower the camera shutter-to-imaging latency for instant capture.",
+    "Hypertension Notifications",
+    "Enable hypertension trend evaluation and notifications in the Health app.",
     "Advertise always-listening Hey Siri support.",
 )
 LOCALE_SCRIPTS = {
