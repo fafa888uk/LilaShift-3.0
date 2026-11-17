@@ -200,6 +200,9 @@ enum AppGroupBrowser {
     static func validRelativePath(_ path: String) -> Bool {
         if path.isEmpty { return true }
         if path.hasPrefix("/") || path.contains("\\") || path.contains("\0") { return false }
-        return path.split(separator: "/").allSatisfy { !$0.isEmpty && $0 != "." && $0 != ".." }
+        // omittingEmptySubsequences: false so "a//b" splits into
+        // ["a", "", "b"] and the empty component is rejected below.
+        return path.split(separator: "/", omittingEmptySubsequences: false)
+            .allSatisfy { !$0.isEmpty && $0 != "." && $0 != ".." }
     }
 }
