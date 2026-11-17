@@ -121,14 +121,18 @@ enum MGKeysTable {
     }
 
     /// Rows matching a search string (name, key, or meaning).
+    /// Whitespace is ignored on both sides, so typing a camelCase
+    /// feature name such as "DynamicIsland" finds the
+    /// "Dynamic Island" row.
     static func matching(_ query: String) -> [MGKeyEntry] {
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return all }
-        let lower = trimmed.lowercased()
+        let squashed = trimmed.lowercased().filter { !$0.isWhitespace }
         return all.filter {
-            $0.name.lowercased().contains(lower)
-                || $0.key.lowercased().contains(lower)
-                || $0.meaning.lowercased().contains(lower)
+            let name = $0.name.lowercased().filter { !$0.isWhitespace }
+            let key = $0.key.lowercased().filter { !$0.isWhitespace }
+            let meaning = $0.meaning.lowercased().filter { !$0.isWhitespace }
+            return name.contains(squashed) || key.contains(squashed) || meaning.contains(squashed)
         }
     }
 }

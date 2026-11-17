@@ -66,11 +66,14 @@ enum AssetTag {
             if dict.count == 0 {
                 return !fm.fileExists(atPath: url.path)
             }
-            guard let back = NSDictionary(contentsOf: url),
-                  (back[key] as? String) == trimmed else {
+            guard let back = NSDictionary(contentsOf: url) else {
                 return false
             }
-            return true
+            if trimmed.isEmpty {
+                // Removing the tag: success means the key is gone.
+                return back[key] == nil
+            }
+            return (back[key] as? String) == trimmed
         } catch {
             return false
         }
