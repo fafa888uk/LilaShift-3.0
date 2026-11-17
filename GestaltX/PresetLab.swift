@@ -27,13 +27,16 @@ enum PresetLab {
     }
 
     /// Whether an entry is staged in the model right now (any
-    /// choice other than `.keep`).
+    /// choice other than `.keep`). `choices` lives on the
+    /// @MainActor `GestaltManager`, so this helper is MainActor too.
+    @MainActor
     static func isStaged(id: String, in model: GestaltManager) -> Bool {
         guard let choice = model.choices[id] else { return false }
         return choice != .keep
     }
 
     /// The staged choice for an entry, or `.keep` when unstaged.
+    @MainActor
     static func stagedChoice(id: String, in model: GestaltManager) -> PresetChoice {
         model.choices[id] ?? .keep
     }

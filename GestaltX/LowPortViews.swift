@@ -302,7 +302,8 @@ struct DialerSkinView: View {
                         ForEach(DialerSkin.KeypadID.allCases, id: \.self) { key in
                             Button { pickingKey = key } label: {
                                 VStack(spacing: 4) {
-                                    if let data = replacements[key] ?? current[key], let image = UIImage(data: data) {
+                                    let data = replacements[key] ?? current[key]
+                                    if let data, let image = UIImage(data: data) {
                                         Image(uiImage: image)
                                             .resizable()
                                             .aspectRatio(contentMode: .fit)

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import Foundation
 import SQLite3
+import ZIPFoundation
 
 /// Lossless Voice Memos & call-recording audio export (A16).
 ///
