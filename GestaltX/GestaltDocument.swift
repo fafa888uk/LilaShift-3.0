@@ -1244,10 +1244,13 @@ actor GestaltFileStore {
         guard expected.source != .device || edited.preservesDeviceIdentity(of: expected.document, excludingHardwareIdentity: recordingRestoredHardware) else {
             throw GestaltFailure("Device identity fields cannot be changed in the system plist. Open a local file to edit these fields.")
         }
-        if record == nil {
+        if record == nil && !recordingRestoredHardware {
             try DeviceCacheOptions.validateEdit(from: expected.document, to: edited)
             // §3.4 allowlist gate: the apply path may only change
-            // keys a feature stages (SecurityEngine).
+            // keys a feature stages (SecurityEngine). The Face ID
+            // hardware-identity restore path skips this gate: its
+            // keys are deliberately not allowlisted (see the doc
+            // comment on this function).
             try SecurityEngine.authorizeWrite(from: expected.document, to: edited)
         }
         guard originallyAbsentKeys.allSatisfy({ edited.extra[$0] == nil }) else {

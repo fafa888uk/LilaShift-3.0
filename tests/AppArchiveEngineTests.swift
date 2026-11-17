@@ -199,7 +199,10 @@ final class AppArchiveEngineTests: XCTestCase {
         let restore = try await AppArchiveEngine.restoreArchive(
             at: report.fileURL, to: makeSource(root: root), archivesDirectory: archives)
         XCTAssertEqual(restore.restored, ["a.txt"])
-        XCTAssertTrue(restore.failed.isEmpty)
+        // Diagnostic (fix7): print the failure reason so the next CI
+        // log shows why the restore loop recorded a failure even
+        // though the file content was written correctly.
+        XCTAssertTrue(restore.failed.isEmpty, "\(restore.failed)")
         XCTAssertEqual(try readString(root.appendingPathComponent("a.txt")), "original")
         // The pre-restore backup is a real archive holding the
         // modified bytes, and it is listed by the scan.
@@ -254,6 +257,9 @@ final class AppArchiveEngineTests: XCTestCase {
         let archives = base.appendingPathComponent("archives")
         let report = try await AppArchiveEngine.createArchive(from: makeSource(root: root), to: archives)
 
+        // Change the live file so the first restore genuinely writes;
+        // the second restore then finds identical bytes and skips.
+        try writeFile(root.appendingPathComponent("a.txt"), contents: "changed")
         let first = try await AppArchiveEngine.restoreArchive(
             at: report.fileURL, to: makeSource(root: root), archivesDirectory: archives)
         XCTAssertEqual(first.restored, ["a.txt"])
@@ -304,7 +310,10 @@ final class AppArchiveEngineTests: XCTestCase {
             at: root.appendingPathComponent("b.txt"), withIntermediateDirectories: false)
         let restore = try await AppArchiveEngine.restoreArchive(
             at: report.fileURL, to: makeSource(root: root), archivesDirectory: archives)
-        XCTAssertEqual(restore.restored, ["a.txt"])
+        // a.txt is byte-identical on disk, so it is skipped, not
+        // restored; only the blocked b.txt fails.
+        XCTAssertEqual(restore.restored, [])
+        XCTAssertEqual(restore.skipped, ["a.txt"])
         XCTAssertEqual(restore.failed.map { $0.path }, ["b.txt"])
         XCTAssertFalse(restore.failed[0].reason.isEmpty)
         XCTAssertEqual(try readString(root.appendingPathComponent("a.txt")), "aaa")

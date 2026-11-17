@@ -171,14 +171,20 @@ final class ViewSnapshotTests: XCTestCase {
     // MARK: - Preset catalog card
 
     func testPresetCatalogCardUnreadSnapshot() {
+        // The card is always inside a ScrollView in production
+        // (ContentView), where its LazyVStack renders correctly; a
+        // standalone render leaves a blank band and drops the first
+        // rows, so the snapshot renders it the way the app shows it.
         assertCardSnapshot(
-            PresetCatalogCard().environmentObject(unreadManager()),
+            ScrollView { PresetCatalogCard().environmentObject(unreadManager()) },
             named: "preset-catalog-unread")
     }
 
     func testPresetCatalogCardPopulatedSnapshot() throws {
+        // As above: the card is rendered inside a ScrollView, the
+        // way the app shows it.
         assertCardSnapshot(
-            PresetCatalogCard().environmentObject(try populatedManager()),
+            ScrollView { PresetCatalogCard().environmentObject(try populatedManager()) },
             named: "preset-catalog-populated")
     }
 

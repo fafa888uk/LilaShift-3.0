@@ -260,7 +260,9 @@ final class DocumentTests: XCTestCase {
                 var changed = initial.document
                 // Ensure a real edit even when the input already has enabled flags.
                 try changed.setCacheOptions(flags == .enabled ? .restricted : .enabled)
-                changed.set("committed", for: "other-field")
+                // "other-field" is not a staged key (Stage 5 §3.4
+                // allowlist gate); the region code is staged.
+                changed.set("committed", for: GestaltKeys.regionCode)
                 let applied = try await store.commit(changed, expected: initial)
                 XCTAssert(try applied.originalCachedOptionFlags() == flags, "Commit records the actual original pair")
                 // Repeated changes must never replace the earliest recorded state.

@@ -137,6 +137,9 @@ final class WallpaperLibraryViewsTests: XCTestCase {
         XCTAssertNil(PersonalizationCenter.setHomeWallpaperID(entry.id))
         XCTAssertEqual(PersonalizationCenter.loadHomeWallpaperID(), entry.id)
         let model = await WallpaperLibraryModel(store: store, exporter: WallpaperLibraryTests.FakeWallpaperPhotoExporter())
+        // The view always loads before deleting (`.task`); load here
+        // so the model's cached home-background id is populated.
+        await model.load()
         await model.deleteEntry(entry)
         XCTAssertNil(PersonalizationCenter.loadHomeWallpaperID(),
                      "Deleting the home background wallpaper must clear the setting")

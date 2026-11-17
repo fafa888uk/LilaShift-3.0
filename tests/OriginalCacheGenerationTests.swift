@@ -116,9 +116,11 @@ final class OriginalCacheGenerationTests: XCTestCase {
         let loaded = try await store.loadDevice()
         try expectUnavailable(loaded)
         var unrelated = loaded.document
-        unrelated.set("unrelated edit", for: "another-setting")
+        // "another-setting" is not a staged key (Stage 5 §3.4
+        // allowlist gate); the region code is staged.
+        unrelated.set("unrelated edit", for: GestaltKeys.regionCode)
         let saved = try await store.commit(unrelated, expected: loaded)
-        XCTAssert(saved.document.extra["another-setting"] as? String == "unrelated edit", "Unavailable cache originals do not block unrelated device edits")
+        XCTAssert(saved.document.extra[GestaltKeys.regionCode] as? String == "unrelated edit", "Unavailable cache originals do not block unrelated device edits")
         var flags = saved.document
         try flags.setCacheOptions(.restricted)
         try flags.setWAPI(true)

@@ -61,10 +61,12 @@ final class DeviceIdentityEditTests: XCTestCase {
         expect(!fm.fileExists(atPath: backups.appendingPathComponent("OriginalValues.plist").path), "Rejected identity changes do not poison the journal")
 
         var unrelated = initial.document
-        unrelated.set("allowed", for: "setting")
+        // "setting" is not a staged key (Stage 5 §3.4 allowlist
+        // gate), so the unrelated edit uses the staged region code.
+        unrelated.set("LL", for: GestaltKeys.regionCode)
         _ = try await store.commit(unrelated, expected: initial)
         let reopened = try await store.loadDevice()
-        expect(reopened.document.extra["setting"] as? String == "allowed", "Other edits still commit and reopen with their original identity")
+        expect(reopened.document.extra[GestaltKeys.regionCode] as? String == "LL", "Other staged edits still commit and reopen with their original identity")
         expect(trace.writes == 1, "Only the permitted edit reaches the writer")
 
         let local = try await store.loadLocal(data: bytes, name: "local.plist")

@@ -106,7 +106,10 @@ final class WallpaperLibraryModel: ObservableObject {
 
     func deleteEntry(_ entry: WallpaperLibraryEntry) async {
         await run {
-            if homeBackgroundID == entry.id {
+            // Check the stored setting directly, not only the cached
+            // id from load(): a delete must never leave a dangling
+            // home-background setting behind if load() was skipped.
+            if homeBackgroundID == entry.id || PersonalizationCenter.loadHomeWallpaperID() == entry.id {
                 homeBackgroundID = nil
                 if let error = PersonalizationCenter.setHomeWallpaperID(nil) { message = error }
             }

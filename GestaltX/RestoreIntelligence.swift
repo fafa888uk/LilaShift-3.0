@@ -605,7 +605,12 @@ enum RestoreAction: Equatable, Sendable {
                 switch change.featureID {
                 case "preset.oneTap": return .chinaUnlock
                 case "preset.aiOnly": return .aiOnly
-                default: break
+                // Any other featureID has no known group and stays
+                // preview-only: do not fall through to the
+                // capability lookup below — the audio slot key is in
+                // Capability.all, so the fallthrough would wrongly
+                // route an unknown-group slot change to a capability.
+                default: return .previewOnly(reason: L("No restore path is connected for this CacheData slot yet."))
                 }
             }
             if let capability = Capability.all.first(where: { $0.keys.contains(change.key) }) {

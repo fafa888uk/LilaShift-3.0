@@ -26,7 +26,7 @@ final class AppArchiveViewsTests: XCTestCase {
 
     func testContentViewLinksToAppArchiveView() {
         let content = readSource("GestaltX/ContentView.swift")
-        XCTAssertTrue(content.contains("AppArchiveView(share: presentShare)"),
+        XCTAssertTrue(content.contains("AppArchiveView(share: share)"),
                       "ContentView must navigate to AppArchiveView")
         XCTAssertTrue(content.contains("App Archive & Cache"),
                       "The navigation label must be 'App Archive & Cache'")

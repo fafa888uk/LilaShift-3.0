@@ -29,6 +29,16 @@ final class ModuleBoundaryTests: XCTestCase {
         return text
     }
 
+    /// Source with full-line comments removed, so a doc comment
+    /// naming an engine does not count as a reference to it — only
+    /// code counts. Same rule as testWorseQueryCallSitesAreKnown,
+    /// which matches call syntax ("worse_query("), not mentions.
+    private func codeText(_ text: String) -> String {
+        text.components(separatedBy: .newlines)
+            .filter { !$0.trimmingCharacters(in: .whitespaces).hasPrefix("//") }
+            .joined(separator: "\n")
+    }
+
     private func swiftFiles(in relativeDirectory: String) -> [URL] {
         let directory = Self.repoRoot.appendingPathComponent(relativeDirectory)
         let files = (try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)) ?? []
@@ -267,9 +277,11 @@ final class ModuleBoundaryTests: XCTestCase {
 
     func testViewsDoNotCallStage5Engines() {
         // The backup/restore/security engines are AppCore/manager
-        // only; views go through the manager.
+        // only; views go through the manager. Comments naming an
+        // engine (e.g. a restore report's section header) do not
+        // count — only code references.
         for file in viewFiles() {
-            let text = readSource("GestaltX/" + file.lastPathComponent)
+            let text = codeText(readSource("GestaltX/" + file.lastPathComponent))
             for engine in ["BackupEngine", "RestoreEngine", "SecurityEngine"] {
                 XCTAssertFalse(text.contains(engine),
                                "\(file.lastPathComponent) must not reference \(engine): engines are manager-only")
@@ -294,7 +306,9 @@ final class ModuleBoundaryTests: XCTestCase {
         // ADR-2-09: the engine is a pure DiagnosticsInput ->
         // DiagnosticsReport function. No UI framework, no manager,
         // no file store, no live probe — value snapshots only.
-        let text = readSource("GestaltX/DiagnosticsEngine.swift")
+        // Comments naming a forbidden type (e.g. a doc comment
+        // mentioning the manager) do not count — only code does.
+        let text = codeText(readSource("GestaltX/DiagnosticsEngine.swift"))
         XCTAssertFalse(text.contains("import SwiftUI"), "DiagnosticsEngine must not import SwiftUI")
         XCTAssertFalse(text.contains("import UIKit"), "DiagnosticsEngine must not import UIKit")
         for forbidden in ["GestaltManager", "GestaltFileStore", "LiveGestaltProbe",
@@ -302,7 +316,7 @@ final class ModuleBoundaryTests: XCTestCase {
             XCTAssertFalse(text.contains(forbidden),
                            "DiagnosticsEngine must not reference \(forbidden): pure input only")
         }
-        let exportText = readSource("GestaltX/DeidentifiedExport.swift")
+        let exportText = codeText(readSource("GestaltX/DeidentifiedExport.swift"))
         XCTAssertFalse(exportText.contains("import SwiftUI"), "DeidentifiedExport must not import SwiftUI")
         XCTAssertFalse(exportText.contains("GestaltManager"), "DeidentifiedExport must not reference the manager")
     }
@@ -333,10 +347,11 @@ final class ModuleBoundaryTests: XCTestCase {
     func testDiagnosticsReportIsRedactedAtConstruction() {
         // ADR-2-06: identity is redacted when a finding is built,
         // never at display time. The engine's only evidence path
-        // runs through LoggingEngine.redact.
+        // runs through LilaLog.redact (the redactor in
+        // LoggingEngine.swift).
         let text = readSource("GestaltX/DiagnosticsEngine.swift")
-        XCTAssertTrue(text.contains("LoggingEngine.redact"),
-                      "DiagnosticsEngine must redact evidence through LoggingEngine.redact")
+        XCTAssertTrue(text.contains("LilaLog.redact"),
+                      "DiagnosticsEngine must redact evidence through LilaLog.redact")
         XCTAssertFalse(text.contains("UniqueDeviceID"),
                        "DiagnosticsEngine must never name a device-identity key in its own source")
     }

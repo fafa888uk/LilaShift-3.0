@@ -66,7 +66,9 @@ final class NonFinitePlistTests: XCTestCase {
                                      writeData: { data, url in trace.writes += 1; try data.write(to: url) })
         let initial = try await store.loadDevice()
         var edited = initial.document
-        edited.set("changed", for: "setting")
+        // "setting" is not a staged key (Stage 5 §3.4 allowlist
+        // gate); the region code is staged.
+        edited.set("changed", for: GestaltKeys.regionCode)
         let result = try await store.commit(edited, expected: initial)
         XCTAssert(trace.writes == 1 && result.document.matches(edited), "An unrelated device edit with NaN passes full readback verification")
         XCTAssert(result.originals["measurement"] == nil && result.originals["nested"] == nil, "Unchanged NaNs are not recorded as field edits")

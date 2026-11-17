@@ -25,7 +25,9 @@ final class LocalRestoreProvenanceTests: XCTestCase {
         var verified = try await store.loadLocal(data: initialBytes, name: "verified-export.plist")
         verified.ownershipVerified = true
         var edit = verified.document
-        edit.set("local edit", for: "setting")
+        // "setting" is not a staged key (Stage 5 §3.4 allowlist
+        // gate); the region code is staged.
+        edit.set("local edit", for: GestaltKeys.regionCode)
         let savedEdit = try await store.commit(edit, expected: verified)
         XCTAssert(savedEdit.ownershipVerified, "Ordinary edits preserve a verified import's ownership")
 

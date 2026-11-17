@@ -33,7 +33,9 @@ final class OriginalHistoryMigrationTests: XCTestCase {
         let store = makeStore()
         let initial = try await store.loadDevice()
         var edited = initial.document
-        edited.set("changed", for: "setting")
+        // "setting" is not a staged key (Stage 5 §3.4 allowlist
+        // gate); the region code is staged.
+        edited.set("changed", for: GestaltKeys.regionCode)
         if cacheEdits { try edited.setCacheOptions(.enabled); try edited.setWAPI(false) }
         _ = try await store.commit(edited, expected: initial)
         let record = try await store.backups().first { $0.reason == "Before applying" }!

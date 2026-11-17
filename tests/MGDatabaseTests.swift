@@ -48,8 +48,8 @@ final class MGDatabaseTests: XCTestCase {
         XCTAssertEqual(audio?.slot?.nativeBaseline, false)
         XCTAssertEqual(audio?.defaultValue, .bool(false))
         XCTAssertEqual(audio?.verificationStatus, .verifiedByUpstreamProbe)
-        XCTAssertEqual(audio?.restorable, false,
-                       "Slot values are not in OriginalValues yet (ADR-2-02 gap, Stage 5)")
+        XCTAssertEqual(audio?.restorable, true,
+                       "Stage 5 records the slot originals in OriginalValues (ADR-2-02), so the slots are restorable")
         XCTAssertTrue(audio?.slot?.baselineEvidence?.contains("GestaltHelpers.swift:1027-1044") == true)
 
         let translator = MGDatabase.record(forKey: DeviceCacheOptions.personalTranslatorKey)
@@ -57,7 +57,7 @@ final class MGDatabaseTests: XCTestCase {
         XCTAssertEqual(translator?.slot?.nativeBaseline, true)
         XCTAssertEqual(translator?.defaultValue, .bool(true))
         XCTAssertEqual(translator?.verificationStatus, .verifiedByUpstreamProbe)
-        XCTAssertEqual(translator?.restorable, false)
+        XCTAssertEqual(translator?.restorable, true)
     }
 
     /// Nothing else claims verification, and nothing else carries a

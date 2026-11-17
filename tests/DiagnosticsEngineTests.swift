@@ -157,7 +157,10 @@ final class DiagnosticsEngineTests: XCTestCase {
     func testSentinelBlockReasons() {
         XCTAssertEqual(VersionSentinel.blockReason(forBuild: "24C5049d"), .atOrPastThreshold)
         XCTAssertEqual(VersionSentinel.blockReason(forBuild: "25A100a"), .newerTrainUnreviewed)
-        XCTAssertEqual(VersionSentinel.blockReason(forBuild: "24D1000a"), .newerTrainUnreviewed)
+        // 24D is past the 24C5049d threshold in the same major train,
+        // so it is known-blocked, not an unreviewed newer train (a
+        // newer train is a higher major number, e.g. 25A).
+        XCTAssertEqual(VersionSentinel.blockReason(forBuild: "24D1000a"), .atOrPastThreshold)
         XCTAssertNil(VersionSentinel.blockReason(forBuild: "23A344"))
         XCTAssertNil(VersionSentinel.blockReason(forBuild: nil))
     }
