@@ -36,12 +36,16 @@ final class PerformanceMonitorTests: XCTestCase {
         await monitor.record(label: "a", duration: 0.1)
         await monitor.record(label: "a", duration: 0.2)
         await monitor.record(label: "b", duration: 0.3)
-        XCTAssertEqual(await monitor.samples(for: "a"), [0.1, 0.2], "Samples keep recording order")
+        var samplesA = await monitor.samples(for: "a")
+        XCTAssertEqual(samplesA, [0.1, 0.2], "Samples keep recording order")
         await monitor.reset(label: "a")
-        XCTAssertEqual(await monitor.samples(for: "a"), [], "Resetting one label clears only that label")
-        XCTAssertEqual(await monitor.samples(for: "b"), [0.3], "Other labels are untouched")
+        samplesA = await monitor.samples(for: "a")
+        XCTAssertEqual(samplesA, [], "Resetting one label clears only that label")
+        let samplesB = await monitor.samples(for: "b")
+        XCTAssertEqual(samplesB, [0.3], "Other labels are untouched")
         await monitor.reset()
-        XCTAssertEqual(await monitor.samples(for: "b"), [], "Resetting with no label clears everything")
+        let samplesBCleared = await monitor.samples(for: "b")
+        XCTAssertEqual(samplesBCleared, [], "Resetting with no label clears everything")
     }
 
     func testThrowingWorkIsNotRecorded() async {
@@ -52,8 +56,10 @@ final class PerformanceMonitorTests: XCTestCase {
             XCTFail("measure must rethrow the work's error")
         } catch is Boom {
             // Expected: the error propagates.
+        } catch {
+            XCTFail("measure must rethrow Boom, got \(error)")
         }
-        XCTAssertEqual(await monitor.samples(for: "work"), [],
-                       "Failed work is not recorded as a sample")
+        let samples = await monitor.samples(for: "work")
+        XCTAssertEqual(samples, [], "Failed work is not recorded as a sample")
     }
 }
