@@ -13,11 +13,11 @@ on:
   release:
     types: [published]
   push:
-    branches: [main, feature/lilashift-3.0-dashboard]
+    branches: [main, feature/lilashift-3.0-dashboard, feature/lila-siri-ai-mode, feature/lilashift-4.0-quality-upgrade]
     tags:
       - "v*"
   pull_request:
-    branches: [main]
+    branches: [main, feature/lila-siri-ai-mode, feature/lilashift-4.0-quality-upgrade]
   workflow_dispatch:
     inputs:
       ref:
