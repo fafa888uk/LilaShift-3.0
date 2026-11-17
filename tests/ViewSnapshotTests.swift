@@ -183,8 +183,9 @@ final class ViewSnapshotTests: XCTestCase {
     func testPresetCatalogCardPopulatedSnapshot() throws {
         // As above: the card is rendered inside a ScrollView, the
         // way the app shows it.
+        let manager = try populatedManager()
         assertCardSnapshot(
-            ScrollView { PresetCatalogCard().environmentObject(try populatedManager()) },
+            ScrollView { PresetCatalogCard().environmentObject(manager) },
             named: "preset-catalog-populated")
     }
 
