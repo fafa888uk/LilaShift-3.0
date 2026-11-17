@@ -34,6 +34,7 @@ final class PresetLabTests: XCTestCase {
         XCTAssertFalse(PresetLab.requiresConfirmation(id: "aod"))
     }
 
+    @MainActor
     func testStagedStateReadsModelChoices() {
         // A fresh manager stages nothing.
         let model = GestaltManager()
