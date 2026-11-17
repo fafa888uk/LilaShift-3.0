@@ -270,9 +270,8 @@ struct RestoreIntelligenceCard: View {
             } else {
                 ForEach(effectiveVerifications, id: \.record.id) { verification in
                     HStack(spacing: 8) {
-                        Image(systemName: verification.status == .verified
-                              ? "checkmark.circle.fill" : "xmark.circle.fill")
-                            .foregroundStyle(verification.status == .verified ? .green : .red)
+                        Image(systemName: backupStatusIcon(verification.status))
+                            .foregroundStyle(backupStatusColor(verification.status))
                         VStack(alignment: .leading, spacing: 1) {
                             Text(verification.record.filename)
                                 .font(.subheadline.weight(.medium))
@@ -282,7 +281,7 @@ struct RestoreIntelligenceCard: View {
                                 .foregroundStyle(.secondary)
                         }
                         Spacer()
-                        if verification.status == .verified {
+                        if verification.status == .verified || verification.status == .legacyNoDigest {
                             Button(L("Restore")) {
                                 selectedBackup = verification.record
                             }
@@ -318,6 +317,22 @@ struct RestoreIntelligenceCard: View {
         }
     }
 
+    private func backupStatusIcon(_ status: BackupVerificationStatus) -> String {
+        switch status {
+        case .verified: return "checkmark.circle.fill"
+        case .legacyNoDigest: return "exclamationmark.triangle.fill"
+        case .failed, .notFound: return "xmark.circle.fill"
+        }
+    }
+
+    private func backupStatusColor(_ status: BackupVerificationStatus) -> Color {
+        switch status {
+        case .verified: return .green
+        case .legacyNoDigest: return .orange
+        case .failed, .notFound: return .red
+        }
+    }
+
     private func backupStatusText(_ verification: BackupVerification) -> String {
         switch verification.status {
         case .verified:
@@ -327,6 +342,8 @@ struct RestoreIntelligenceCard: View {
                     : L("Verified, but the cache layout differs from this device.")
             }
             return L("Verified.")
+        case .legacyNoDigest:
+            return L("Legacy backup — integrity not verified (no digest recorded).")
         case .failed(let reason):
             return reason
         case .notFound:

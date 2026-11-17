@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
-// Module boundary tests (Stage 3, ADR-2-04).
+// Module boundary tests (Stage 3, ADR-2-04; Stage 5 adds the
+// backup/restore/security boundaries, ADR-2-05 / ADR-2-08).
 //
 // The Stage 2 boundaries as executable rules, read straight from the
 // checked-out sources (this target runs with a host app in the same
@@ -150,5 +151,74 @@ final class ModuleBoundaryTests: XCTestCase {
                                "\(file.lastPathComponent) must match layouts via LayoutResolver.matches, not a layout method")
             }
         }
+    }
+
+    // MARK: - Stage 5 boundaries (ADR-2-05 / ADR-2-08)
+
+    func testSHA256HasOneImplementation() {
+        // ADR-2-08: BackupEngine owns the only SHA-256
+        // implementation; every other digest call delegates to it,
+        // so two call sites can never disagree. This file holds the
+        // literal as an assertion, so it is excluded from its own
+        // scan.
+        var implementers: Set<String> = []
+        for directory in ["GestaltX", "tests"] {
+            for file in swiftFiles(in: directory) where file.lastPathComponent != "ModuleBoundaryTests.swift" {
+                let text = readSource(directory + "/" + file.lastPathComponent)
+                if text.contains("SHA256.hash(") { implementers.insert(file.lastPathComponent) }
+            }
+        }
+        XCTAssertEqual(implementers, ["BackupEngine.swift"],
+                       "SHA-256 must be implemented in exactly one place (BackupEngine): \(implementers.sorted())")
+    }
+
+    func testDevicePlistWriterHasOneAppCaller() {
+        // §3.4: the device file is written only through
+        // GestaltFileStore.commit (the write choke point); the
+        // writer's own tests are the only other callers.
+        var appCallers: Set<String> = []
+        for file in swiftFiles(in: "GestaltX") {
+            let text = readSource("GestaltX/" + file.lastPathComponent)
+            if text.contains("DevicePlistWriter.write(") { appCallers.insert(file.lastPathComponent) }
+        }
+        XCTAssertEqual(appCallers, ["GestaltDocument.swift"],
+                       "DevicePlistWriter must be called only from GestaltFileStore.commit: \(appCallers.sorted())")
+    }
+
+    func testAllowlistGateLivesInCommit() {
+        // §3.4: the SecurityEngine allowlist gate runs inside
+        // commit, nowhere else in app code (tests may call it).
+        var appCallers: Set<String> = []
+        for file in swiftFiles(in: "GestaltX") {
+            let text = readSource("GestaltX/" + file.lastPathComponent)
+            if text.contains("authorizeWrite(") && !text.contains("func authorizeWrite(") {
+                appCallers.insert(file.lastPathComponent)
+            }
+        }
+        XCTAssertEqual(appCallers, ["GestaltDocument.swift"],
+                       "The allowlist gate must run in commit only: \(appCallers.sorted())")
+    }
+
+    func testViewsDoNotCallStage5Engines() {
+        // The backup/restore/security engines are AppCore/manager
+        // only; views go through the manager.
+        for file in viewFiles() {
+            let text = readSource("GestaltX/" + file.lastPathComponent)
+            for engine in ["BackupEngine", "RestoreEngine", "SecurityEngine"] {
+                XCTAssertFalse(text.contains(engine),
+                               "\(file.lastPathComponent) must not reference \(engine): engines are manager-only")
+            }
+        }
+    }
+
+    func testFingerprintNeverStoresPlaintextUDID() {
+        // Audit R-4: the fingerprint stores the SHA-256 of the UDID,
+        // never the UDID. The capture hashes it; the old plaintext
+        // assignment must not come back.
+        let text = readSource("GestaltX/DeviceFingerprint.swift")
+        XCTAssertTrue(text.contains("BackupEngine.sha256Hex(of: Data(udid.utf8))"),
+                      "Fingerprint capture must hash the UDID")
+        XCTAssertFalse(text.contains("deviceID: document.extra[\"UniqueDeviceID\"]"),
+                       "The fingerprint must never store the plaintext UDID again")
     }
 }

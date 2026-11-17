@@ -3,7 +3,6 @@
 // https://github.com/weichsel/ZIPFoundation); linked as a Swift Package.
 // Full MIT text: Licenses/ZIPFoundation-MIT.txt.
 import Foundation
-import CryptoKit
 import ZIPFoundation
 
 struct CustomizationFailure: LocalizedError {
@@ -50,7 +49,7 @@ enum CustomizationFiles {
         guard directory.lastPathComponent.hasPrefix("GX-Import-") else { return }
         try? FileManager.default.removeItem(at: directory)
     }
-    static func digest(_ data: Data) -> String { SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined() }
+    static func digest(_ data: Data) -> String { BackupEngine.sha256Hex(of: data) }
     static func relative(_ path: String) throws -> String {
         let parts = path.split(separator: "/", omittingEmptySubsequences: false)
         guard !path.isEmpty, !path.hasPrefix("/"), !path.contains("\\"), !path.contains("\0"),

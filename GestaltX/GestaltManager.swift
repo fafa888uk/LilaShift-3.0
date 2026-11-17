@@ -885,6 +885,14 @@ final class GestaltManager: ObservableObject {
                 document.set(snapshot.originalValue(for: GestaltKeys.legacyRegionInfo), for: GestaltKeys.legacyRegionInfo)
                 document.set(snapshot.originalValue(for: GestaltKeys.modelNumber), for: GestaltKeys.modelNumber)
             }
+            // ADR-2-02: restore the two AdvAI CacheData slots to their
+            // snapshot originals. A failed slot is logged and does not
+            // stop the rest of the restore.
+            for outcome in AdvAISlotRestore.restore(in: &document, from: snapshot.document) {
+                if case .failed(let key, let reason) = outcome {
+                    log("[restore] slot \(key) could not be restored: \(reason)")
+                }
+            }
             working = document
         }
         for id in ChinaUnlock.aiCapabilityIDs { choices[id] = .disable }
@@ -919,10 +927,22 @@ final class GestaltManager: ObservableObject {
 
     /// Stages a restore of the AI-only preset: the seven AI presets back to
     /// their recorded originals (`.disable` removes keys that were
-    /// originally absent). eSIM and region are left untouched.
+    /// originally absent). eSIM and region are left untouched. The two
+    /// AdvAI CacheData slots are restored to their snapshot originals
+    /// too (ADR-2-02): the AI-only staging path repairs them via
+    /// `fixAIBaseline`, so its restore path must cover them.
     @discardableResult
     func restoreChinaAIOnly() -> Bool {
         guard !isBusy else { return false }
+        if let snapshot, var document = working {
+            let outcomes = AdvAISlotRestore.restore(in: &document, from: snapshot.document)
+            for outcome in outcomes {
+                if case .failed(let key, let reason) = outcome {
+                    log("[restore] slot \(key) could not be restored: \(reason)")
+                }
+            }
+            if outcomes.contains(where: \.isRestored) { working = document }
+        }
         for id in ChinaUnlock.aiCapabilityIDs { choices[id] = .disable }
         return true
     }
@@ -1392,7 +1412,12 @@ final class GestaltManager: ObservableObject {
             log("[apply] source=\(snapshot.source.rawValue) fields=\(changeCount)")
             logChanges(from: snapshot.document, to: edited, prefix: "[diff] ")
             let absentKeys = Set(Capability.all.filter { choices[$0.id] == .removeAdded }.flatMap(\.keys))
-            let result = try await files.commit(edited, expected: snapshot, originallyAbsentKeys: absentKeys)
+            // Stage 5 orchestration (§3.4): a fresh pre-write backup
+            // first, then commit with its record — commit verifies
+            // the record covers the pre-write bytes and does not
+            // write a second backup.
+            let preWriteBackup = try await BackupEngine.createPreWriteBackup(store: files, snapshot: snapshot, reason: "Before applying")
+            let result = try await files.commit(edited, expected: snapshot, originallyAbsentKeys: absentKeys, preWriteBackup: preWriteBackup)
             accept(result); needsRestart = result.source == .device
             status = result.source == .device ? "Changes verified on device" : "Local changes saved"
             let changedCacheOption = !DeviceCacheOptions.changes(from: snapshot.document, to: edited).isEmpty
@@ -1428,7 +1453,10 @@ final class GestaltManager: ObservableObject {
             let restored = try GestaltDocument(data: data)
             log("[restore] \(record.filename) · \(record.byteCount) bytes · reason=\(record.reason)")
             logChanges(from: snapshot.document, to: restored, prefix: "[restore-diff] ")
-            let result = try await files.commit(restored, expected: snapshot, restoring: record)
+            // Stage 5 orchestration (§3.4): a fresh pre-write backup
+            // first, then commit with its record.
+            let preWriteBackup = try await BackupEngine.createPreWriteBackup(store: files, snapshot: snapshot, reason: "Before restoring")
+            let result = try await files.commit(restored, expected: snapshot, restoring: record, preWriteBackup: preWriteBackup)
             let changed = !result.document.matches(snapshot.document)
             accept(result); needsRestart = result.source == .device && (needsRestart || changed)
             message = L(result.source == .device

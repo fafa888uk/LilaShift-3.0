@@ -35,10 +35,11 @@
 //   two slot keys (Erosion-CN live probe, iPhone19,7 +
 //   iPhone16,2, iOS 27). Everything else is `unverified` —
 //   nothing is labelled verified without evidence.
-// - restorable: `false` only for the two slot keys, whose slot
-//   values are not in OriginalValues today (ADR-2-02 gap,
-//   Stage 5 flips them to `true`); `true` for the 75 CacheExtra
-//   keys, whose originals the app records.
+// - restorable: `true` for all 77 — Stage 5 records the two slot
+//   keys' originals in OriginalValues (ADR-2-02), so the slots are
+//   restorable like the 75 CacheExtra keys, whose originals the app
+//   records. A slot restores only when its original was actually
+//   recorded; an unrecorded slot is skipped, never guessed.
 // - readableViaMGCopyAnswer: `true` for all 77 — none of the
 //   used keys is a `// non-gestalt-key` (IODeviceTree) key.
 // - slot: only #178/#266. Green-tea / not-green-tea / WAPI
@@ -224,7 +225,7 @@ enum MGDatabaseSeed {
             deviceScope: .all, iosScope: IOSVersionRange(introduced: "26.0", removed: nil, reintroduced: []),
             category: .intelligence, riskLevel: .high,
             upstreamSource: "Erosion-CN MGCacheLayout.swift:42 (GPL-3.0-only); LilaShift capability 'personalTranslator'; key cross-checked against MGKeys mapping-gestalt.h (MIT); native baseline: Erosion-CN GestaltHelpers.swift:1027-1044, live probe iPhone19,7 + iPhone16,2, iOS 27", license: "GPL-3.0-only",
-            writable: true, restorable: false, verificationStatus: .verifiedByUpstreamProbe,
+            writable: true, restorable: true, verificationStatus: .verifiedByUpstreamProbe,
             readableViaMGCopyAnswer: true, slot: CacheDataSlotInfo(slotNumber: 266, nativeBaseline: true, baselineEvidence: "Erosion-CN GestaltHelpers.swift:1027-1044, live probe iPhone19,7 + iPhone16,2, iOS 27")),
         MGKeyRecord(keyID: "OnDeviceSiriCapability", readableName: "OnDeviceSiriCapability",
             obfuscatedName: "O/7gbXWA5X2IRPVtDRU+bw", dataType: .bool, defaultValue: nil,
@@ -539,7 +540,7 @@ enum MGDatabaseSeed {
             deviceScope: .all, iosScope: IOSVersionRange(introduced: "27.0", removed: nil, reintroduced: []),
             category: .intelligence, riskLevel: .high,
             upstreamSource: "Erosion-CN MGCacheLayout.swift:41 (GPL-3.0-only); LilaShift capability 'audioIntelligence'; key cross-checked against MGKeys mapping-gestalt.h (MIT); native baseline: Erosion-CN GestaltHelpers.swift:1027-1044, live probe iPhone19,7 + iPhone16,2, iOS 27", license: "GPL-3.0-only",
-            writable: true, restorable: false, verificationStatus: .verifiedByUpstreamProbe,
+            writable: true, restorable: true, verificationStatus: .verifiedByUpstreamProbe,
             readableViaMGCopyAnswer: true, slot: CacheDataSlotInfo(slotNumber: 178, nativeBaseline: false, baselineEvidence: "Erosion-CN GestaltHelpers.swift:1027-1044, live probe iPhone19,7 + iPhone16,2, iOS 27")),
         MGKeyRecord(keyID: "hearingaid-power-reduction", readableName: "hearingaid-power-reduction",
             obfuscatedName: "u3c0R+31Df4SUTHrICQkTg", dataType: .bool, defaultValue: nil,

@@ -26,6 +26,7 @@
 		60CD4B6707B2CD0562D30AC6 /* BackupExportProofTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022416D9DF999312B991AD8D /* BackupExportProofTests.swift */; };
 		FD31441029CC9F3709DA8E3A /* BackupIntegrityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47AE148DA7A2D0A6CF5AE532 /* BackupIntegrityTests.swift */; };
 		EF12B84092BB5BB7AB3DE5A2 /* BackupLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D86099C5AB038CBFDA394F85 /* BackupLayoutTests.swift */; };
+		40BB5B7EF15E42A58169E07D /* BackupRestorePipelineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B351C216EEC64008908458B4 /* BackupRestorePipelineTests.swift */; };
 		3F64ADC85BF5CCE38441FE87 /* CacheDataDiffTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3891256AD8BA383A8B3091FA /* CacheDataDiffTests.swift */; };
 		538DE9BA5E6A44CC2C44430A /* CacheLayoutGatingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96548878C43A58607A05CE41 /* CacheLayoutGatingTests.swift */; };
 		02C5E4EF7460DFFE11C3FA69 /* CacheRebuildTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EBCCBD1888BE2BA8CD6F85F /* CacheRebuildTests.swift */; };
@@ -121,6 +122,7 @@
 		0D8884E241906FB70D796812 /* PresetLabTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FF69E043A133A9C4855D45F /* PresetLabTests.swift */; };
 		C829A13829855378579209B6 /* SafariBookmarksExportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 063F1056C6A8E694D9A11B9B /* SafariBookmarksExportTests.swift */; };
 		750D117586530A89A19C328E /* SiriHubGuardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBBD61E7BADC23D27D2A1C9B /* SiriHubGuardTests.swift */; };
+		EA6A79271C1B4903BD1DC513 /* SlotRestoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60AC8DCDF7514C3A80B2C54E /* SlotRestoreTests.swift */; };
 		5960EF71B34F29F537D2FBA1 /* VoiceMemoExportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7556512817589391802482C6 /* VoiceMemoExportTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -178,6 +180,7 @@
 		022416D9DF999312B991AD8D /* BackupExportProofTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupExportProofTests.swift; sourceTree = "<group>"; };
 		47AE148DA7A2D0A6CF5AE532 /* BackupIntegrityTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupIntegrityTests.swift; sourceTree = "<group>"; };
 		D86099C5AB038CBFDA394F85 /* BackupLayoutTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupLayoutTests.swift; sourceTree = "<group>"; };
+		B351C216EEC64008908458B4 /* BackupRestorePipelineTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupRestorePipelineTests.swift; sourceTree = "<group>"; };
 		3891256AD8BA383A8B3091FA /* CacheDataDiffTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CacheDataDiffTests.swift; sourceTree = "<group>"; };
 		96548878C43A58607A05CE41 /* CacheLayoutGatingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CacheLayoutGatingTests.swift; sourceTree = "<group>"; };
 		4EBCCBD1888BE2BA8CD6F85F /* CacheRebuildTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CacheRebuildTests.swift; sourceTree = "<group>"; };
@@ -272,6 +275,7 @@
 		7FF69E043A133A9C4855D45F /* PresetLabTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PresetLabTests.swift; sourceTree = "<group>"; };
 		063F1056C6A8E694D9A11B9B /* SafariBookmarksExportTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SafariBookmarksExportTests.swift; sourceTree = "<group>"; };
 		FBBD61E7BADC23D27D2A1C9B /* SiriHubGuardTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SiriHubGuardTests.swift; sourceTree = "<group>"; };
+		60AC8DCDF7514C3A80B2C54E /* SlotRestoreTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SlotRestoreTests.swift; sourceTree = "<group>"; };
 		7556512817589391802482C6 /* VoiceMemoExportTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VoiceMemoExportTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -400,6 +404,7 @@
 				022416D9DF999312B991AD8D /* BackupExportProofTests.swift */,
 				47AE148DA7A2D0A6CF5AE532 /* BackupIntegrityTests.swift */,
 				D86099C5AB038CBFDA394F85 /* BackupLayoutTests.swift */,
+				B351C216EEC64008908458B4 /* BackupRestorePipelineTests.swift */,
 				3891256AD8BA383A8B3091FA /* CacheDataDiffTests.swift */,
 				96548878C43A58607A05CE41 /* CacheLayoutGatingTests.swift */,
 				4EBCCBD1888BE2BA8CD6F85F /* CacheRebuildTests.swift */,
@@ -471,6 +476,7 @@
 				A4A683ED87150CEDBF035E3E /* SharedWallpaperImportTests.swift */,
 				4F95D4CCB08774DA750651F3 /* SiriCapabilityTests.swift */,
 				FBBD61E7BADC23D27D2A1C9B /* SiriHubGuardTests.swift */,
+				60AC8DCDF7514C3A80B2C54E /* SlotRestoreTests.swift */,
 				8B9F2EE54417F1ED12123955 /* SmartFaultDiagnosisTests.swift */,
 				7855C855237441FD9AE48803 /* StandalonePresetsTests.swift */,
 				67F087075E10E918A4D64AE8 /* SupervisionAuditTests.swift */,
@@ -658,6 +664,7 @@
 				60CD4B6707B2CD0562D30AC6 /* BackupExportProofTests.swift in Sources */,
 				FD31441029CC9F3709DA8E3A /* BackupIntegrityTests.swift in Sources */,
 				EF12B84092BB5BB7AB3DE5A2 /* BackupLayoutTests.swift in Sources */,
+				40BB5B7EF15E42A58169E07D /* BackupRestorePipelineTests.swift in Sources */,
 				3F64ADC85BF5CCE38441FE87 /* CacheDataDiffTests.swift in Sources */,
 				538DE9BA5E6A44CC2C44430A /* CacheLayoutGatingTests.swift in Sources */,
 				02C5E4EF7460DFFE11C3FA69 /* CacheRebuildTests.swift in Sources */,
@@ -730,6 +737,7 @@
 				038597A87681F8DC1D335263 /* SharedWallpaperImportTests.swift in Sources */,
 				CE7268CB52FB7B02198ECCF0 /* SiriCapabilityTests.swift in Sources */,
 				750D117586530A89A19C328E /* SiriHubGuardTests.swift in Sources */,
+				EA6A79271C1B4903BD1DC513 /* SlotRestoreTests.swift in Sources */,
 				E28B04032B5F8FE4FF1B9276 /* SmartFaultDiagnosisTests.swift in Sources */,
 				9A7C7D4DD36F45B3B9ACFDB2 /* StandalonePresetsTests.swift in Sources */,
 				62786B5ABE3A796C417C5293 /* SupervisionAuditTests.swift in Sources */,

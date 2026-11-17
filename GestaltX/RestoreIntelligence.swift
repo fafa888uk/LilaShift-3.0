@@ -55,9 +55,10 @@ struct HistoryEnvelope<Record: Codable>: Codable {
 }
 
 enum HistoryJournal {
-    /// SHA-256 hex of data, reusing the store's digest.
+    /// SHA-256 hex of data, reusing the engine's digest (Stage 5,
+    /// ADR-2-08: the single implementation lives in BackupEngine).
     static func sha256Hex(of data: Data) -> String {
-        GestaltFileStore.sha256Hex(of: data)
+        BackupEngine.sha256Hex(of: data)
     }
 
     /// The digest sidecar for a history file: `<filename>.sha256`.
@@ -585,13 +586,27 @@ enum RestoreAction: Equatable, Sendable {
     /// belong to a capability restore through that capability; the
     /// eSIM flags restore through the cache-option path; the region
     /// code has no per-item path (it restores with the eSIM & Region
-    /// group), so it is preview-only here.
+    /// group), so it is preview-only here. The two AdvAI slots
+    /// restore through the one-tap (`preset.oneTap`) or AI-only
+    /// (`preset.aiOnly`) group that staged them (Stage 5, ADR-2-02).
     static func forChange(_ change: RecordedChange) -> RestoreAction {
         switch change.layer {
         case .cacheData:
             if change.key == DeviceCacheOptions.greenTeaKey
                 || change.key == DeviceCacheOptions.notGreenTeaKey {
                 return .cacheOption
+            }
+            // AdvAI slots (Stage 5, ADR-2-02): the one-tap and AI-only
+            // restore paths write them back, so the action is the
+            // group that staged the change. Any other featureID has no
+            // known group and stays preview-only.
+            if change.key == DeviceCacheOptions.audioIntelligenceKey
+                || change.key == DeviceCacheOptions.personalTranslatorKey {
+                switch change.featureID {
+                case "preset.oneTap": return .chinaUnlock
+                case "preset.aiOnly": return .aiOnly
+                default: break
+                }
             }
             if let capability = Capability.all.first(where: { $0.keys.contains(change.key) }) {
                 return .capability(capability)
@@ -663,9 +678,15 @@ struct RestoreTimelineEntry: Identifiable, Equatable, Sendable {
 /// from the backup directory: the file must exist, match its
 /// recorded byte count and SHA-256 digest, parse as a MobileGestalt
 /// plist, and (when a current document is supplied) match its cache
-/// layout generation.
+/// layout generation. A backup written before digests were recorded
+/// (`.legacyNoDigest`) is never shown as verified: its bytes and
+/// parse were checked, but integrity was not proven.
 enum BackupVerificationStatus: Equatable, Sendable {
     case verified
+    /// Legacy backup: no digest was ever recorded, so integrity
+    /// cannot be proven. Restorable only with explicit user
+    /// confirmation, never shown as "verified".
+    case legacyNoDigest
     case failed(reason: String)
     case notFound
 }
@@ -898,8 +919,9 @@ enum RestoreIntelligence {
     /// an existing file can be exercised without touching the real
     /// backup store. A record with no recorded digest (`sha256 == nil`,
     /// legacy records) is checked by byte count and parse only — there
-    /// is no digest to compare against, and the result says so by
-    /// still reporting `.verified` when those checks pass.
+    /// is no digest to compare against — and reports
+    /// `.legacyNoDigest`, never `.verified`: the bytes were checked,
+    /// integrity was not proven.
     static func verifyBackups(_ records: [BackupRecord],
                               against current: GestaltDocument?,
                               directory: URL? = nil) -> [BackupVerification] {
@@ -929,7 +951,10 @@ enum RestoreIntelligence {
                 }()
                 layoutMatches = uuidMatches && cacheMatches
             }
-            return BackupVerification(record: record, status: .verified, layoutMatchesCurrent: layoutMatches)
+            // A legacy backup has no digest to prove integrity with:
+            // byte count and parse passed, but it is never "verified".
+            let status: BackupVerificationStatus = record.sha256 == nil ? .legacyNoDigest : .verified
+            return BackupVerification(record: record, status: status, layoutMatchesCurrent: layoutMatches)
         }
     }
 }

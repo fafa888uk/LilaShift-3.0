@@ -2,7 +2,6 @@
 // Copyright (C) 2026 huamidev
 import Foundation
 import CoreFoundation
-import CryptoKit
 
 struct GestaltFailure: LocalizedError, Sendable {
     let key: String
@@ -358,6 +357,10 @@ struct DocumentSnapshot: @unchecked Sendable {
     var originals: [String: OriginalField] = [:]
     var cachedOptionsOriginal: CachedOptionsOriginal?
     var wapiOriginal: WAPIOriginal?
+    /// Recorded originals of the two AdvAI CacheData slots (#178/#266),
+    /// keyed by obfuscated key. Mirrors `OriginalValues.advAISlots`;
+    /// see `recordingOriginals(to:)`. Stage 5 (ADR-2-02).
+    var advAISlotOriginals: [String: Bool] = [:]
     var ownershipVerified = false
     /// Where this snapshot's bytes came from. A live device snapshot is
     /// `.firstRead`, never factory state; a locally opened file is
@@ -386,7 +389,32 @@ struct DocumentSnapshot: @unchecked Sendable {
         var wapi = wapiOriginal
         if wapi == nil, let before = try? WAPIOriginal(document: document),
            let after = try? DeviceCacheOptions.wapi(in: edited), before.enabled != after { wapi = before }
-        return OriginalValues(fields: recordingChanges(to: edited), cachedOptions: audio, wapi: wapi)
+        return OriginalValues(fields: recordingChanges(to: edited), cachedOptions: audio, wapi: wapi,
+                              advAISlots: Self.slotOriginals(before: document, after: edited,
+                                                            previouslyRecorded: advAISlotOriginals))
+    }
+
+    /// Original values of the two AdvAI CacheData slots, read from the
+    /// `before` document's CacheData bytes (the snapshot retains the
+    /// original bytes — U-2-3, verified by `SlotRestoreTests`). A slot
+    /// is recorded only when both sides resolve and differ; an
+    /// unresolvable slot is skipped, never guessed, and an equal slot
+    /// is not a change. Previously recorded originals are kept: the
+    /// first recording wins, so a later edit cannot overwrite the
+    /// original. `layout` is the explicit layout for tests; production
+    /// passes `nil` and resolves it from the documents.
+    static func slotOriginals(before: GestaltDocument, after: GestaltDocument,
+                              previouslyRecorded: [String: Bool] = [:],
+                              using layout: MobileGestaltCacheLayout? = nil) -> [String: Bool] {
+        var recorded = previouslyRecorded
+        for key in [DeviceCacheOptions.audioIntelligenceKey, DeviceCacheOptions.personalTranslatorKey] {
+            guard recorded[key] == nil,
+                  let original = DeviceCacheOptions.advAISlotValue(key, in: before, using: layout),
+                  let current = DeviceCacheOptions.advAISlotValue(key, in: after, using: layout),
+                  original != current else { continue }
+            recorded[key] = original
+        }
+        return recorded
     }
 
     func originalValue(for key: String) -> Any? {
@@ -429,6 +457,34 @@ struct OriginalValues {
     // A failed legacy migration must not later use backups created after the
     // failure as evidence of the original values for this layout.
     var unavailableCacheOriginals: [String: Set<String>] = [:]
+    /// Original values of the two AdvAI CacheData slots (#178/#266),
+    /// keyed by obfuscated key. Present only when a slot value was
+    /// recorded as differing from its later state (see
+    /// `DocumentSnapshot.recordingOriginals`); an absent entry means
+    /// "no original recorded", never a guessed value. Stage 5 (ADR-2-02).
+    var advAISlots: [String: Bool] = [:]
+
+    /// The two slot keys whose originals may be recorded. Any other
+    /// key in a persisted slot-originals dict is corruption, never a
+    /// future slot: new slots are added here explicitly, not inferred.
+    static let advAISlotKeys: Set<String> = [
+        DeviceCacheOptions.audioIntelligenceKey,
+        DeviceCacheOptions.personalTranslatorKey,
+    ]
+
+    /// Validates a persisted slot-originals dict: every key must be a
+    /// known AdvAI slot key and every value a Bool. Throws on anything
+    /// else — a corrupt record must fail loudly, never guess.
+    static func decodeAdvAISlots(_ raw: Any?) throws -> [String: Bool] {
+        guard let raw else { return [:] }
+        guard let dict = raw as? [String: Bool] else {
+            throw GestaltFailure("Original values could not be read. No system changes were made.")
+        }
+        guard dict.keys.allSatisfy({ advAISlotKeys.contains($0) }) else {
+            throw GestaltFailure("Original values could not be read. No system changes were made.")
+        }
+        return dict
+    }
 }
 
 struct BackupRecord: Identifiable, Codable, Equatable, Sendable {
@@ -543,7 +599,11 @@ actor GestaltFileStore {
                         try baseline.setCacheOptions(flags)
                     }
                     if let wapi = originals.wapi, let value = try? wapi.value(in: baseline) { try baseline.setWAPI(value) }
+                    for (key, value) in originals.advAISlots {
+                        try? baseline.setAdvAISlot(key, value: value)
+                    }
                     let hasOriginals = !originals.fields.isEmpty || originals.cachedOptions != nil || originals.wapi != nil
+                        || !originals.advAISlots.isEmpty
                     let initialData = hasOriginals ? try baseline.encoded() : data
                     // A baseline rebuilt from recorded pre-write originals is
                     // pre-modification state; a plain first read is first-read
@@ -559,6 +619,7 @@ actor GestaltFileStore {
             }
             return DocumentSnapshot(data: data, document: document, source: .device, name: "MobileGestalt",
                                     originals: originals.fields, cachedOptionsOriginal: originals.cachedOptions, wapiOriginal: originals.wapi,
+                                    advAISlotOriginals: originals.advAISlots,
                                     provenance: .firstRead)
         }
     }
@@ -592,7 +653,8 @@ actor GestaltFileStore {
     private func loadOriginals(for document: GestaltDocument) throws -> OriginalValues {
         guard FileManager.default.fileExists(atPath: originalsURL.path) else {
             let recovered = try recoverOriginals(from: document)
-            if !recovered.fields.isEmpty || recovered.cachedOptions != nil || recovered.wapi != nil {
+            if !recovered.fields.isEmpty || recovered.cachedOptions != nil || recovered.wapi != nil
+                || !recovered.advAISlots.isEmpty {
                 try saveOriginals(recovered, for: document)
             }
             return recovered
@@ -631,6 +693,10 @@ actor GestaltFileStore {
             }
             wapi = decoded
         }
+        // AdvAI slot originals (Stage 5): only the two known slot keys
+        // are admitted; anything else is a corrupt record, never a
+        // guessed slot.
+        let advAISlots = try OriginalValues.decodeAdvAISlots(plist["advAISlots"])
         // Recover absent entries once for legacy journals, then migrate any
         // saved cache values that belong to a different system generation.
         let needsMigration = plist["cacheHistoryRecovered"] as? Bool != true
@@ -665,7 +731,7 @@ actor GestaltFileStore {
             // cache values or the fact that their original state is unavailable.
             try archiveOriginals(data)
         }
-        let state = OriginalValues(fields: originals, cachedOptions: audio, wapi: wapi, unavailableCacheOriginals: unavailable)
+        let state = OriginalValues(fields: originals, cachedOptions: audio, wapi: wapi, unavailableCacheOriginals: unavailable, advAISlots: advAISlots)
         if needsMigration || migrateAudio || migrateWAPI { try saveOriginals(state, for: document) }
         return state
     }
@@ -703,7 +769,8 @@ actor GestaltFileStore {
             guard let data = try? backupData(record), let document = try? GestaltDocument(data: data) else { return OriginalValues() }
             guard document.matchesIdentity(current), matchesCacheGeneration(document, current) else { continue }
             return OriginalValues(cachedOptions: try? CachedOptionsOriginal(document: document),
-                                  wapi: try? WAPIOriginal(document: document))
+                                  wapi: try? WAPIOriginal(document: document),
+                                  advAISlots: DocumentSnapshot.slotOriginals(before: document, after: current))
         }
         return OriginalValues()
     }
@@ -736,17 +803,20 @@ actor GestaltFileStore {
             guard document.matchesIdentity(current), matchesCacheGeneration(document, current) else { continue }
             if let previous {
                 originals = DocumentSnapshot(data: Data(), document: previous, source: .device, name: "",
-                                             originals: originals.fields, cachedOptionsOriginal: originals.cachedOptions, wapiOriginal: originals.wapi)
+                                             originals: originals.fields, cachedOptionsOriginal: originals.cachedOptions, wapiOriginal: originals.wapi,
+                                             advAISlotOriginals: originals.advAISlots)
                     .recordingOriginals(to: document)
             }
             previous = document
         }
         if let previous {
             originals = DocumentSnapshot(data: Data(), document: previous, source: .device, name: "",
-                                         originals: originals.fields, cachedOptionsOriginal: originals.cachedOptions, wapiOriginal: originals.wapi)
+                                         originals: originals.fields, cachedOptionsOriginal: originals.cachedOptions, wapiOriginal: originals.wapi,
+                                         advAISlotOriginals: originals.advAISlots)
                 .recordingOriginals(to: current)
         }
-        if !originals.fields.isEmpty || originals.cachedOptions != nil || originals.wapi != nil {
+        if !originals.fields.isEmpty || originals.cachedOptions != nil || originals.wapi != nil
+            || !originals.advAISlots.isEmpty {
             eventSink("Original values: recovered from device backups")
         }
         return originals
@@ -762,6 +832,7 @@ actor GestaltFileStore {
             }
             if let audio = originals.cachedOptions { plist["faceTimeAudio"] = try PropertyListEncoder().encode(audio) }
             if let wapi = originals.wapi { plist["wapi"] = try PropertyListEncoder().encode(wapi) }
+            if !originals.advAISlots.isEmpty { plist["advAISlots"] = originals.advAISlots }
             let data = try PropertyListSerialization.data(fromPropertyList: plist, format: .binary, options: 0)
             try data.write(to: originalsURL, options: .atomic)
             guard try Data(contentsOf: originalsURL) == data else {
@@ -789,6 +860,24 @@ actor GestaltFileStore {
         try JSONEncoder().encode(record).write(to: backupDirectory.appendingPathComponent(record.id.uuidString + ".json"), options: .atomic)
         eventSink("Backup: \(data.count) bytes saved and verified")
         return record
+    }
+
+    /// Creates a fresh pre-write backup of the snapshot's current
+    /// state (Stage 5, §3.4): the AppCore orchestration entry point
+    /// for "never write without a fresh backup first". For a device
+    /// snapshot the live bytes are re-read and saved with `reason`
+    /// ("Before applying" / "Before restoring") and
+    /// `.preModification` provenance; for a locally opened file the
+    /// file's own bytes are saved as "Before editing" with
+    /// `.importedHistory`, matching what `commit` used to do
+    /// internally. The store verifies the backup by read-back before
+    /// returning, so a returned record always covers bytes on disk.
+    func createPreWriteBackup(_ snapshot: DocumentSnapshot, reason: String) throws -> BackupRecord {
+        if snapshot.source == .device {
+            return try withAccess { try saveBackup(Data(contentsOf: deviceURL), source: .device, reason: reason, provenance: .preModification) }
+        } else {
+            return try saveBackup(snapshot.data, source: .local, reason: "Before editing", provenance: .importedHistory)
+        }
     }
 
     func backup(_ snapshot: DocumentSnapshot) throws {
@@ -825,7 +914,10 @@ actor GestaltFileStore {
     }
 
     static func sha256Hex(of data: Data) -> String {
-        SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+        // The single implementation lives in BackupEngine (Stage 5,
+        // ADR-2-08); this is only a delegate so older call sites
+        // keep compiling.
+        BackupEngine.sha256Hex(of: data)
     }
 
     /// The system vault lives next to the live plist in the shared
@@ -1155,11 +1247,17 @@ actor GestaltFileStore {
     /// be rewritten to the verified real hardware, so a future
     /// Revert does not restore a spoofed value.
     func commit(_ edited: GestaltDocument, expected: DocumentSnapshot, restoring record: BackupRecord? = nil,
-                originallyAbsentKeys: Set<String> = [], recordingRestoredHardware: Bool = false) throws -> DocumentSnapshot {
+                originallyAbsentKeys: Set<String> = [], recordingRestoredHardware: Bool = false,
+                preWriteBackup: BackupRecord? = nil) throws -> DocumentSnapshot {
         guard expected.source != .device || edited.preservesDeviceIdentity(of: expected.document, excludingHardwareIdentity: recordingRestoredHardware) else {
             throw GestaltFailure("Device identity fields cannot be changed in the system plist. Open a local file to edit these fields.")
         }
-        if record == nil { try DeviceCacheOptions.validateEdit(from: expected.document, to: edited) }
+        if record == nil {
+            try DeviceCacheOptions.validateEdit(from: expected.document, to: edited)
+            // §3.4 allowlist gate: the apply path may only change
+            // keys a feature stages (SecurityEngine).
+            try SecurityEngine.authorizeWrite(from: expected.document, to: edited)
+        }
         guard originallyAbsentKeys.allSatisfy({ edited.extra[$0] == nil }) else {
             throw GestaltFailure("The selected added fields must be removed before applying.")
         }
@@ -1167,14 +1265,22 @@ actor GestaltFileStore {
         guard expected.source == .device else {
             // The pre-edit state of a locally opened file is imported
             // history, even when the file was previously verified.
-            try saveBackup(expected.data, source: .local, reason: "Before editing", provenance: .importedHistory)
+            if let preWriteBackup {
+                // AppCore already created the pre-write backup; verify
+                // it covers the pre-write bytes instead of writing a
+                // second one.
+                try SecurityEngine.requirePreWriteBackup(preWriteBackup, covering: expected.data)
+            } else {
+                try saveBackup(expected.data, source: .local, reason: "Before editing", provenance: .importedHistory)
+            }
             var originals = expected.recordingOriginals(to: edited)
             for key in originallyAbsentKeys { originals.fields[key] = OriginalField(value: nil) }
             // A backup replaces the imported payload. Its ownership has not been
             // verified merely because the previously open document was verified.
             let ownershipVerified = record == nil && expected.ownershipVerified
             return DocumentSnapshot(data: output, document: edited, source: .local, name: expected.name,
-                                    originals: originals.fields, cachedOptionsOriginal: originals.cachedOptions, wapiOriginal: originals.wapi, ownershipVerified: ownershipVerified,
+                                    originals: originals.fields, cachedOptionsOriginal: originals.cachedOptions, wapiOriginal: originals.wapi,
+                                    advAISlotOriginals: originals.advAISlots, ownershipVerified: ownershipVerified,
                                     provenance: expected.provenance)
         }
         if let record {
@@ -1198,10 +1304,19 @@ actor GestaltFileStore {
             // Resolve old history before creating today's pre-write backup, so
             // this current (possibly already modified) state cannot migrate it.
             // The pre-write state is pre-modification state by definition.
-            try saveBackup(current, source: .device, reason: record == nil ? "Before applying" : "Before restoring", provenance: .preModification)
+            // When AppCore already created the pre-write backup (Stage 5
+            // orchestration), verify it covers these exact bytes instead
+            // of writing a second backup; otherwise create it here, so
+            // a write never proceeds without a fresh backup (§3.4).
+            if let preWriteBackup {
+                try SecurityEngine.requirePreWriteBackup(preWriteBackup, covering: current)
+            } else {
+                try saveBackup(current, source: .device, reason: record == nil ? "Before applying" : "Before restoring", provenance: .preModification)
+            }
             baseline.originals.merge(saved.fields) { _, saved in saved }
             if let audio = saved.cachedOptions { baseline.cachedOptionsOriginal = audio }
             if let wapi = saved.wapi { baseline.wapiOriginal = wapi }
+            baseline.advAISlotOriginals.merge(saved.advAISlots) { _, saved in saved }
             var originals = baseline.recordingOriginals(to: edited)
             originals.unavailableCacheOriginals = saved.unavailableCacheOriginals
             // Explicitly removing a user-confirmed added field also corrects
@@ -1238,7 +1353,8 @@ actor GestaltFileStore {
             eventSink("Readback: verified")
             return DocumentSnapshot(data: readback, document: edited, source: .device, name: expected.name,
                                     originals: originals.fields, cachedOptionsOriginal: originals.cachedOptions,
-                                    wapiOriginal: originals.wapi, provenance: record?.provenance ?? .unknown)
+                                    wapiOriginal: originals.wapi, advAISlotOriginals: originals.advAISlots,
+                                    provenance: record?.provenance ?? .unknown)
         }
     }
 

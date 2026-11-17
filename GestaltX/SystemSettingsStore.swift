@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import Foundation
-import CryptoKit
 import Darwin
 
 enum SystemSettingsFile: String, Codable, CaseIterable, Sendable {
@@ -168,7 +167,7 @@ actor SystemSettingsStore {
                 let output = folder.appendingPathComponent(plan.file.rawValue + ".plist")
                 try bytes.write(to: output, options: .atomic)
                 guard try Data(contentsOf: output) == bytes else { throw GestaltFailure("The settings backup could not be verified. No changes were applied.") }
-                entry["sha256"] = SHA256.hash(data: bytes).map { String(format: "%02x", $0) }.joined()
+                entry["sha256"] = BackupEngine.sha256Hex(of: bytes)
             }
             files[plan.file.rawValue] = entry
         }

@@ -58,8 +58,10 @@ enum ModifiedValuesReport: Equatable, Sendable {
 
 enum ModifiedValues {
     /// Builds the report for a snapshot. `snapshot` is nil when no
-    /// document has been read yet.
-    static func report(for snapshot: DocumentSnapshot?) -> ModifiedValuesReport {
+    /// document has been read yet. `layout` is the explicit cache
+    /// layout for tests; production passes `nil` and each slot read
+    /// resolves the layout from the document.
+    static func report(for snapshot: DocumentSnapshot?, using layout: MobileGestaltCacheLayout? = nil) -> ModifiedValuesReport {
         guard let snapshot else { return .noDocument }
         var rows: [ModifiedValueRow] = []
 
@@ -113,12 +115,28 @@ enum ModifiedValues {
                 wasAbsent: false))
         }
 
+        // AdvAI CacheData slots (#178/#266, Stage 5). The original
+        // comes from the recorded slot originals, the current from
+        // the live-read document. Both sides must read; an
+        // unresolvable slot is omitted, never guessed.
+        for (key, original) in snapshot.advAISlotOriginals {
+            guard let current = DeviceCacheOptions.advAISlotValue(key, in: snapshot.document, using: layout),
+                  original != current else { continue }
+            rows.append(ModifiedValueRow(
+                key: key,
+                title: title(forKey: key),
+                originalText: boolText(original),
+                currentText: boolText(current),
+                wasAbsent: false))
+        }
+
         // Whether any original was recorded at all. Without one, the
         // report cannot say anything about modifications — not even
         // "none".
         let hasAnyOriginal = !snapshot.originals.isEmpty
             || snapshot.cachedOptionsOriginal != nil
             || snapshot.wapiOriginal != nil
+            || !snapshot.advAISlotOriginals.isEmpty
         guard hasAnyOriginal else { return .noRecordedOriginals }
 
         rows = HomeSorting.sortModifiedValues(rows)
@@ -160,6 +178,8 @@ enum ModifiedValues {
         case GestaltKeys.regionInfo, GestaltKeys.legacyRegionInfo: return "Sales Region"
         case GestaltKeys.modelNumber: return "Regulatory Model"
         case GestaltKeys.productType: return "Product Type"
+        case DeviceCacheOptions.audioIntelligenceKey: return "Audio Intelligence (#178 slot)"
+        case DeviceCacheOptions.personalTranslatorKey: return "Personal Translator (#266 slot)"
         default: return key
         }
     }

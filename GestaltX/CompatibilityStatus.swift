@@ -29,10 +29,12 @@
 //     read failed); distinct from unverified, where the read
 //     succeeded but the evidence is insufficient.
 //
-// The #178 decision is still OPEN (whether to skip
-// audioIntelligence on native-AI devices). This model implements
-// no skip and changes no guard behavior: it only surfaces the
-// existing conflict honestly as `nativeAIWarning` on the affected
+// The #178 decision was made 2026-11-15 (PR #17 merged): on
+// native-AI hardware the one-tap unlock skips the seven AI keys and
+// changes only the two eSIM items and the region code, while the
+// #178/#266 slots are repaired to their native baselines. This model
+// implements no skip and changes no guard behavior: it only surfaces
+// the existing conflict honestly as `nativeAIWarning` on the affected
 // capability, so the warning is visible wherever the status is.
 import Foundation
 
