@@ -9,7 +9,7 @@
 > **预发布版本：LilaShift 3.0.0-rc.1** —— 这是**预发布版，不是正式稳定版**。
 > 基于 `feature/lilashift-3.0-dashboard` 分支构建，提交 `37c4a368c73ec80654c8b395387abea9a24915f6`（包含 fix 提交 `7020964`）。
 > App 内版本号 `3.0.0`（构建号 `30000002`），IPA 文件名 `LilaShift_3.0.0.ipa`。
-> **真机安装、eSIM 激活、Apple Intelligence 激活与恢复，均已在真机 iPhone Air（iPhone18,4，iOS 27.0.1）上验证通过。** 详见[已验证内容与未验证内容](#已验证内容与未验证内容)。
+> **真机安装、eSIM 激活、Apple Intelligence 激活与恢复，本版本均未验证：仓库中没有针对此 HEAD 的真机证据。** 详见[已验证内容与未验证内容](#已验证内容与未验证内容)与 `CHANGELOG_ZH-CN.md`（本 HEAD 已知缺口）。
 
 [![版本](https://img.shields.io/badge/version-3.0.0--rc.1%20预发布-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v3.0.0-rc.1)
 [![Build LilaShift IPA](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml)
@@ -61,10 +61,10 @@
 | CI 源码构建（`Build LilaShift IPA`） | ✅ 已通过 GitHub Actions 验证——见上方徽章 |
 | Swift 单元测试（`Run Swift Tests`） | ✅ 已通过 GitHub Actions 验证——见上方徽章 |
 | 许可证 / 署名检查（`Check Licenses`） | ✅ 已通过 GitHub Actions 验证 |
-| 本版本 IPA 的真机安装 | ✅ **已验证**——iPhone Air（iPhone18,4），iOS 27.0.1 |
-| 解锁后的 eSIM 激活 | ✅ **已验证**——iPhone Air 一键解锁后 eSIM 已激活（中国联通，漫游中） |
-| Apple Intelligence 实际出现 / 可用 | ✅ **已验证**——iPhone Air 地区码 `LL` 重启后仍在，Apple Intelligence 已识别 |
-| 恢复后设备是否回到原始状态 | ✅ **已验证**——iPhone Air 恢复可还原记录的原始值 |
+| 本版本 IPA 的真机安装 | ⚠️ **本版本未验证**——仓库中没有针对此 HEAD 的真机证据（见 `CHANGELOG_ZH-CN.md`，本 HEAD 已知缺口） |
+| 解锁后的 eSIM 激活 | ⚠️ **本版本未验证**——仓库中没有针对此 HEAD 的真机证据 |
+| Apple Intelligence 实际出现 / 可用 | ⚠️ **本版本未验证**——仓库中没有针对此 HEAD 的真机证据 |
+| 恢复后设备是否回到原始状态 | ⚠️ **本版本未验证**——仓库中没有针对此 HEAD 的真机证据 |
 
 修改 MobileGestalt 标志位**不等于**功能真正可用：标志位可能显示为"已开启"，但硬件、系统版本或 Apple 服务端仍可能拒绝。本文档不保证任何设备都能解锁全部功能。
 
@@ -78,7 +78,7 @@
 
 ## 3.0.0-rc.1 新增内容
 
-- **紫序 3.0 仪表盘**——轻量首页展示真实设备读取与待处理更改状态；55 项功能目录分为 11 个分类（42 项预设 + 13 项页面功能，统一排序规则：版本化 JSON + SHA-256 校验文件）；统一的 8 状态兼容性模型；带二次确认的历史/恢复视图；诊断缓存将文件读取与 SHA-256 计算移出渲染路径。详见 [CHANGELOG_ZH-CN.md](CHANGELOG_ZH-CN.md)。
+- **紫序 3.0 仪表盘**——轻量首页展示真实设备读取与待处理更改状态；58 项功能目录分为 11 个分类（45 项预设 + 13 项页面功能，统一排序规则：版本化 JSON + SHA-256 校验文件）；统一的 8 状态兼容性模型；带二次确认的历史/恢复视图；诊断缓存将文件读取与 SHA-256 计算移出渲染路径。详见 [CHANGELOG_ZH-CN.md](CHANGELOG_ZH-CN.md)。
 - **一键国行解锁（10 项；原生 Apple Intelligence 机型 3 项）**——eSIM 开关（green-tea 关闭、not-green-tea 开启）、区域代码设为美国（`LL`，销售地区保持不变）、七项 Apple Intelligence 能力，全部一键暂存后再统一审核应用。
   - 应用前会先验证 eSIM 缓存布局；若无法验证，整个 eSIM 分组会停止并显示原因，区域与 AI 开关仍可单独设置。
   - 原生 Apple Intelligence 机型（如 iPhone Air）上 7 项 AI 会跳过——机器本身已有这些能力——一键只暂存 eSIM 两项 + 地区码。
@@ -243,7 +243,7 @@ GestaltX 跟随你的 iOS 语言设置，默认语言与回退语言为英语。
 - 上游项目：[huamidev/GestaltX](https://github.com/huamidev/GestaltX)（`v1.0.7`，提交 `dfd4a7e`，加上 PR #126，提交 `c60519c`）
 - 增强版维护者：`@steam8871`
 - 本版本中的修改内容：国行解锁预设（10 项；原生 Apple Intelligence 机型 3 项）及其安全检查、浅紫色 Liquid Glass 重新设计、每项功能的一句话用途说明、作者徽章与进度卡片、App 内源码仓库链接、开源合规页面、参考 Erosion-CN 思路做的加固（写入路径、动态布局解析、差异预览、双保险库备份、区域模式、AI 体检）、紫序品牌重塑，以及猫咪应用图标。
-- LilaShift 3.0 新增内容：轻量仪表盘、55 项功能目录、统一兼容性模型、历史/恢复视图、诊断缓存，以及带每个项目来源记录的开源贡献者中心（"关于"页），详细记录见 `docs/OPEN_SOURCE_REFERENCES.md`。
+- LilaShift 3.0 新增内容：轻量仪表盘、58 项功能目录、统一兼容性模型、历史/恢复视图、诊断缓存，以及带每个项目来源记录的开源贡献者中心（"关于"页），详细记录见 `docs/OPEN_SOURCE_REFERENCES.md`。
 - 完整的对应源码均在本仓库中（全量源码，无单独补丁步骤）。
 
 ## 致谢

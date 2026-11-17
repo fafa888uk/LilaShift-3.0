@@ -38,6 +38,7 @@ let openSourceProjects: [OpenSourceProject] = [
     OpenSourceProject(name: "Nugget", author: "leminlimez", relationshipKey: "Research reference", tech: "Key mappings · Feature grouping", license: "AGPL-3.0", licenseFile: nil, url: "https://github.com/leminlimez/Nugget", shippedInIPA: false),
     OpenSourceProject(name: "mond", author: "rooootdev", relationshipKey: "Research reference", tech: "Key mappings", license: "AGPL-3.0", licenseFile: nil, url: "https://github.com/rooootdev/mond", shippedInIPA: false),
     OpenSourceProject(name: "GestaltEdit", author: "frs0n", relationshipKey: "Research reference", tech: "Workflow reference", license: "GPL-3.0-or-later", licenseFile: nil, url: "https://github.com/frs0n/GestaltEdit", shippedInIPA: false),
+    OpenSourceProject(name: "WQFiles", author: "kolbicz", relationshipKey: "Research reference", tech: "LaunchServices discovery", license: "GPL-3.0", licenseFile: "GestaltX-GPL-3.0", url: "https://github.com/kolbicz/WQFiles", shippedInIPA: false),
     OpenSourceProject(name: "SnapshotTesting", author: "Point-Free, Inc.", relationshipKey: "Test tool", tech: "Snapshot tests", license: "MIT", licenseFile: nil, url: "https://github.com/pointfreeco/swift-snapshot-testing", shippedInIPA: false),
     OpenSourceProject(name: "SwiftLint", author: "Realm Inc.", relationshipKey: "Build tool", tech: "Code style checks", license: "MIT", licenseFile: nil, url: "https://github.com/realm/SwiftLint", shippedInIPA: false),
 ]

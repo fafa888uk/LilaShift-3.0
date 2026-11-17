@@ -85,6 +85,7 @@
 		F412F296D4FF2A1C61ADF81B /* HomeDiagnosticsCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC7FB59F120F6B63EAAA34D /* HomeDiagnosticsCacheTests.swift */; };
 		DB12434CDC500609761216B1 /* HomeDiagnosticsCacheConcurrencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 007542ED35DFB2E93B7F0F41 /* HomeDiagnosticsCacheConcurrencyTests.swift */; };
 		BE026BD50295ABE265201260 /* DashboardV3SnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3624FBBE3C977DC36106724 /* DashboardV3SnapshotTests.swift */; };
+		22D3507955DABE5AE767272F /* DashboardV3Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAF5CBBEE41185FD281BF8D3 /* DashboardV3Tests.swift */; };
 		7DED2B4236ED38CA1B96C42F /* CPUImageDiffing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B54C7F4463E10A786731690A /* CPUImageDiffing.swift */; };
 		C5463A77EE63DF48864201E8 /* ShareLilaShiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E50F80F2FADE84F33D5410C /* ShareLilaShiftTests.swift */; };
 		09F2D22304F64048B9E6369A /* WallpaperSaveToPhotosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A80799FA4AA04135A981E681 /* WallpaperSaveToPhotosTests.swift */; };
@@ -226,6 +227,7 @@
 		4CC7FB59F120F6B63EAAA34D /* HomeDiagnosticsCacheTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HomeDiagnosticsCacheTests.swift; sourceTree = "<group>"; };
 		007542ED35DFB2E93B7F0F41 /* HomeDiagnosticsCacheConcurrencyTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HomeDiagnosticsCacheConcurrencyTests.swift; sourceTree = "<group>"; };
 		A3624FBBE3C977DC36106724 /* DashboardV3SnapshotTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DashboardV3SnapshotTests.swift; sourceTree = "<group>"; };
+		BAF5CBBEE41185FD281BF8D3 /* DashboardV3Tests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DashboardV3Tests.swift; sourceTree = "<group>"; };
 		B54C7F4463E10A786731690A /* CPUImageDiffing.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CPUImageDiffing.swift; sourceTree = "<group>"; };
 		3E50F80F2FADE84F33D5410C /* ShareLilaShiftTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareLilaShiftTests.swift; sourceTree = "<group>"; };
 		A80799FA4AA04135A981E681 /* WallpaperSaveToPhotosTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WallpaperSaveToPhotosTests.swift; sourceTree = "<group>"; };
@@ -456,6 +458,7 @@
 				4CC7FB59F120F6B63EAAA34D /* HomeDiagnosticsCacheTests.swift */,
 				007542ED35DFB2E93B7F0F41 /* HomeDiagnosticsCacheConcurrencyTests.swift */,
 				A3624FBBE3C977DC36106724 /* DashboardV3SnapshotTests.swift */,
+				BAF5CBBEE41185FD281BF8D3 /* DashboardV3Tests.swift */,
 				B54C7F4463E10A786731690A /* CPUImageDiffing.swift */,
 				3E50F80F2FADE84F33D5410C /* ShareLilaShiftTests.swift */,
 				A80799FA4AA04135A981E681 /* WallpaperSaveToPhotosTests.swift */,
@@ -705,6 +708,7 @@
 				F412F296D4FF2A1C61ADF81B /* HomeDiagnosticsCacheTests.swift in Sources */,
 				DB12434CDC500609761216B1 /* HomeDiagnosticsCacheConcurrencyTests.swift in Sources */,
 				BE026BD50295ABE265201260 /* DashboardV3SnapshotTests.swift in Sources */,
+				22D3507955DABE5AE767272F /* DashboardV3Tests.swift in Sources */,
 				7DED2B4236ED38CA1B96C42F /* CPUImageDiffing.swift in Sources */,
 				C5463A77EE63DF48864201E8 /* ShareLilaShiftTests.swift in Sources */,
 				09F2D22304F64048B9E6369A /* WallpaperSaveToPhotosTests.swift in Sources */,

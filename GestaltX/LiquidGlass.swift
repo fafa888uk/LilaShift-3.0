@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
-// Copyright (C) 2026 huamidev
+// Copyright (C) 2026 LilaShift
+// LilaShift original: light-lavender Liquid Glass design system.
+// Maintainer: @steam8871. Not derived from upstream GestaltX code.
 import SwiftUI
 
 /// Liquid Glass design system for the Tools home, preset groups and change

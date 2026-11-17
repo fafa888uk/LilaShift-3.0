@@ -78,14 +78,18 @@ Author: Kianuni — https://github.com/Kianuni/Erosion-CN
 License: GNU GPL v3; full text: Erosion-GPL-3.0.txt (standard GPL v3 text,
 identical to LICENSE). Erosion-CN is a Simplified-Chinese fork of Erosion.
 No Erosion-CN code is copied verbatim. Its ideas were reimplemented for
-GestaltX, and two data tables were transcribed value-for-value:
+GestaltX, and three data tables were transcribed value-for-value:
 - Design reference, reimplemented: the Apple Intelligence readiness
   checkup idea (GestaltX/AIReadinessCheckup.swift, adapted from
   Erosion-CN's AppleIntelligenceCheckupCard); the in-place device-plist
   writer idea (GestaltX/DevicePlistWriter.swift, adapted from Erosion-CN's
   `writeFileAtomically` — the name only; our writer is an in-place pwrite
   writer with no atomicity claim, see its header); the `__cfstring` walk for CacheUUID discovery
-  (GestaltX/GXMobileGestaltImage.m, adapted from Erosion-CN's MGImageReader).
+  (GestaltX/GXMobileGestaltImage.m, adapted from Erosion-CN's MGImageReader);
+  the clear-and-rebuild-cache mechanism (GestaltX/GestaltDocument.swift
+  `rebuildCache`, adapted from Erosion-CN's `mgExecuteCleanCacheRebuild` —
+  backup first, then delete the live cache so iOS regenerates it from the
+  hardware on restart).
 - Reused data, transcribed: the US regulatory-model A-number pairs in
   GestaltX/USRegulatoryModelMapping.swift (from Erosion-CN's
   `usRegulatoryModelNumber`); the native Apple Intelligence device list in
@@ -93,9 +97,41 @@ GestaltX, and two data tables were transcribed value-for-value:
   the native Audio Intelligence / Personal Translator slot baselines in
   GestaltX/DeviceAIEligibility.swift, taken from Erosion-CN's live device
   probes (iPhone 18 Pro Max iPhone19,7 and iPhone 15 Pro Max iPhone16,2,
-  iOS 27). Erosion-CN's own note warning that a full-US mapping can
+  iOS 27); the 56 MobileGestalt keys in GestaltX/MGKeysTable.swift (from
+  Erosion-CN's `MGCacheLayout.swift`, transcribed value-for-value with the
+  upstream line number on each key — the data comes from Erosion-CN, not
+  from MGKeys, despite the file name). Erosion-CN's own note warning that a full-US mapping can
   conflict on CN dual-physical-SIM + eSIM hardware is followed in
   GestaltX/Capabilities.swift (Full US stays an explicit opt-in).
+- Design reference, reimplemented (LilaShift 3.0 MEDIUM port): the
+  fake-supervision residue audit and cleanup (GestaltX/SupervisionAudit.swift,
+  from Erosion-CN's ConfigView — deletes only a residue file, never a
+  genuine MDM profile); the read-only battery-health and thermal telemetry
+  reader (GestaltX/PowerTelemetry.swift, from Erosion-CN's PowerTelemetryView
+  — APFS clonefile snapshot of CurrentPowerlog.PLSQL, never written); the
+  read-only crash-diagnostics reader (GestaltX/CrashDiagnostics.swift, from
+  Erosion-CN's CrashDiagnosticsView — parses .ips reports, never edits a
+  system log); the .sgmodule / Stash rule generator and Surge injector
+  (GestaltX/ProxyRuleGenerator.swift, GestaltX/ProxyRuleInjector.swift, from
+  Erosion-CN's AppGroupHubView — writes one module file into a detected
+  proxy client's own AppGroup container only); the AppGroup discovery and
+  read-only container browser plus Safari bookmark export
+  (GestaltX/AppGroupBrowser.swift, from Erosion-CN's AppGroupHubView —
+  group identity read from the container xattr or metadata plist, never
+  inferred from a name). The shared container-access and snapshot helpers
+  (GestaltX/ContainerAccess.swift, GestaltX/SQLiteSnapshotHelper.swift)
+  follow Erosion-CN's WorseQuery.grantAccess and SQLiteSnapshotHelper.
+- Design reference, reimplemented (LilaShift 3.0 LOW port): the
+  lock-screen asset tag (GestaltX/AssetTag.swift, from Erosion-CN's
+  `ConfigView`); the Phone dialer keypad skin (GestaltX/DialerSkin.swift,
+  from Erosion-CN's `KeypadManager`/`KeypadView`); the on-device AI model
+  cache probe (GestaltX/ModelCacheProbe.swift, from Erosion-CN's
+  `VoiceMemosAIView.probeAIModelCaches`); the lossless Voice Memos audio
+  export (GestaltX/VoiceMemoExport.swift, from Erosion-CN's
+  `VoiceMemosAIView`); the four-microphone phone list for spatial audio
+  recording (GestaltX/LilaIntelligence.swift, from Erosion-CN's
+  `GestaltHelpers.fourMicPhones`) and the MGCacheLayout key references in
+  the same file's capability sources (from Erosion-CN's `MGCacheLayout.swift`).
 Because LilaShift is itself GPL-3.0, this reuse stays under the same
 license; the attribution above records where the data came from.
 
@@ -157,6 +193,11 @@ ported: porting it would impose AGPL terms on this app.
   1.0.0 (2026-08-20), then GPL v3 (2026-11-09, commit ed8192e, when the
   project adopted GPL-licensed worse_query). The earlier PolyForm
   statement in this file was outdated and is corrected here.
+- kolbicz/WQFiles (GPL-3.0): https://github.com/kolbicz/WQFiles
+  LaunchServices database discovery lookup researched
+  (GestaltX/GXLaunchServicesDatabase.m); independently implemented,
+  no code copied. License: GNU GPL v3; full text: GestaltX-GPL-3.0.txt.
+  Not shipped in the IPA.
 
 
 11. Test and build tools (not shipped in the app)

@@ -269,7 +269,7 @@
 | 主要修改 | 无。快照参考图须在与 CI 相同的模拟器/Xcode 上录制；UI 改动须有意更新参考图 |
 | 是否打包进入 IPA | 否 |
 | 版权与许可证义务 | MIT（保留版权声明即可）；测试工具不随 App 分发，许可证文本不打包进 App（上游链接见上） |
-| 仍需人工确认 | **是——构建清单问题（非许可证问题）**：已提交的 `Package.resolved` 仅固定了 ZIPFoundation 0.9.20，**未列出 SnapshotTesting**，而 `project.pbxproj` 要求其精确版本 1.19.7。须在有 Xcode 的环境运行 `xcodebuild -resolvePackageDependencies` 重新生成并提交；在此之前 `scripts/check-licenses.py` 会报出该差异作为警告 |
+| 仍需人工确认 | 否——构建清单问题已在 Stage 0（P0 LICENSE SYNC）修复：`Package.resolved` 现固定 SnapshotTesting **1.19.7**（revision `1488390b0735e726564b948bf08b384398bdab5c`，`git ls-remote` 核实上游 tag `1.19.7`，轻量 tag、无 `^{}` 解引用，2026-11-17）。`originHash` 未随手改重算，下次 Xcode 解析依赖时会重新生成；仍建议在有 Xcode 的环境跑一次 `xcodebuild -resolvePackageDependencies` 复核 |
 
 ## 16. SwiftLint — 构建工具（不随 IPA 分发）
 
@@ -290,6 +290,25 @@
 
 ---
 
+## 17. WQFiles — 研究参考
+
+| 项目 | 内容 |
+|---|---|
+| 作者 / 组织 | kolbicz |
+| GitHub | https://github.com/kolbicz/WQFiles |
+| 使用的版本 / 提交 | 未记录（NOT RECORDED）：仓库内此前除 URL 外无任何版本/commit 记录；Stage 1 如需对照须补记 |
+| 许可证 | **GPL-3.0**（2026-11-17 核实：GitHub 仓库页标注 "GNU General Public License v3.0 (GPL-3.0)"，仓库含 `LICENSE` 文件；此前 `docs/APP_APPEARANCE_RESEARCH_ZH.md` 的 GPL-3.0 说法经此次核实确认） |
+| 证据来源 | https://github.com/kolbicz/WQFiles（仓库页许可证标注与 `LICENSE` 文件） |
+| LilaShift 对应功能 | LaunchServices 数据库发现：通过 LaunchServices 数据库定位已安装 App 的容器（App 数据、App Group、扩展数据） |
+| 对应源码文件 | `GestaltX/GXLaunchServicesDatabase.m:3`（头注释引用；独立实现） |
+| 使用关系 | **研究参考**（reference only; independently implemented）：仅研究了其数据库发现思路，**未复制任何代码** |
+| 主要修改 | 无（无代码引入） |
+| 是否打包进入 IPA | 否 |
+| 版权与许可证义务 | GPL-3.0；仅作研究参考且无代码再分发，无分发义务；署名与来源已记入 `THIRD_PARTY_NOTICES.md` §10 与 About 页 |
+| 仍需人工确认 | 否（许可证已核实；版本/commit 补记属 Stage 1 研究任务） |
+
+---
+
 ## 已调研、未集成（仅作记录，防止未来误认）
 
 | 项目 | 许可证 | 状态 |
@@ -307,6 +326,6 @@
 ## 已知问题（需人工跟进）
 
 1. **NeoSpring 无许可证**（见 §4）：**已决定并处理（2026-11-14，用户选方案 c：移除/替换）**。改编的法律依据不足，`GestaltX/NeoSpringView.swift` 已删除，Respring 操作改为手动重启提示，不再随 IPA 分发。重新集成须先获得有效授权并经独立审计与测试。决定前不得新增对该技术的依赖。
-2. **`Package.resolved` 缺少 SnapshotTesting 的固定版本**（见 §15）：须在 Xcode 环境重新生成。
+2. **`Package.resolved` 缺少 SnapshotTesting 的固定版本**（见 §15）：**已修复（Stage 0，2026-11-17）**——现固定 1.19.7（revision `1488390b…`，`git ls-remote` 核实）；`originHash` 仍待下次 Xcode 解析时重算复核。
 3. **worse_query 与 Ketamine 的引入提交尚未核实**（见 §2、§3）：低优先级，不影响许可证结论（文件自带完整声明）。
 4. **fa 语言的 32 个新增本地化键未经母语审校**（3.0 集成遗留）；本次新增的 21 个关于页键的 8 语种翻译同样未经母语审校，测试只校验格式与脚本，不校验翻译质量。

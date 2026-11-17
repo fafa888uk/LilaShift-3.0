@@ -149,7 +149,7 @@
 | 模块 | 来源 | 说明 |
 |---|---|---|
 | `GestaltX/DashboardV3.swift` | **LilaShift 新增实现** | 轻量可配置首页 + 稳定快捷排序（3.0 分支提交 `493d71c`） |
-| `GestaltX/FeatureCatalog.swift`、`FeatureCatalogViews.swift` | **LilaShift 新增实现** | 55 项、11 分类的功能目录；单一排序规则；版本化 JSON + SHA-256 sidecar |
+| `GestaltX/FeatureCatalog.swift`、`FeatureCatalogViews.swift` | **LilaShift 新增实现** | 58 项、11 分类的功能目录；单一排序规则；版本化 JSON + SHA-256 sidecar |
 | `GestaltX/CompatibilityStatus.swift` | **LilaShift 新增实现** | 8 状态兼容性模型；`isOffered()` 仅对 `.modifiable` 返回真 |
 | `GestaltX/HistoryRestoreSummary.swift` | **LilaShift 新增实现** | 统一历史与恢复视图；恢复预览清单；二次确认 |
 | `GestaltX/HomeDiagnosticsCache.swift`、`HomeDiagnosticsSection.swift` | **LilaShift 新增实现** | 诊断计算缓存（后台算一次、只发变化值）+ 11 张诊断卡的二级页 |
@@ -163,10 +163,10 @@
 
 | 功能 | 状态 | 来源/备注 |
 |---|---|---|
-| MGKeys 键名表与版本覆盖表（Swift 表） | 未实现（Tier 1） | MGKeys，MIT，需署名；只纳入已用键子集 |
+| MGKeys 键名表与版本覆盖表（Swift 表） | 部分实现：键名表已实现，版本覆盖表未实现 | MGKeys，MIT，需署名；键名表 `GestaltX/MGKeysTable.swift`（A22；56 个 Erosion-CN 键 + 能力/身份行，测试 `tests/MGKeysTableTests.swift`）；版本覆盖表仍无实现 |
 | 完整兼容性矩阵（逐机型/逐版本） | 未实现（Tier 1） | Erosion-CN FAQ，设计参考 |
-| 清除并重建缓存（纯净原厂基线） | 未实现（Tier 1） | Erosion-CN，GPL-3.0，需先有可信原厂备份 |
-| 电池与崩溃诊断（真实读数） | 未实现（Tier 2） | Erosion-CN，GPL-3.0 |
+| 清除并重建缓存（纯净原厂基线） | 已实现（Erosion-CN 机制，重新实现；先备份再删缓存，重启后由系统重建） | Erosion-CN，GPL-3.0；`GestaltX/GestaltDocument.swift:1116` `rebuildCache(expected:)` + `GestaltX/GestaltManager.swift:1345` 包装，测试 `tests/CacheRebuildTests.swift` |
+| 电池与崩溃诊断（真实读数） | 已实现（MEDIUM 轮 A7/A8，重新实现；真实读数，无法访问时报 unavailable 而非编造） | Erosion-CN，GPL-3.0；电池/温度 `GestaltX/PowerTelemetry.swift`，崩溃报告 `GestaltX/CrashDiagnostics.swift` |
 | 应用存档备份、跨容器写操作 | 未实现（Tier 2，须单独评估权限与风险） | Erosion-CN，GPL-3.0 |
 | 铃声管理、设备配对、桌面助手 | 未实现（Tier 2，依赖 1.0.8 rebase） | 上游 GestaltX 1.0.8 + idevice（MIT）/ libimobiledevice（LGPL-2.1） |
 | iOS 27.2 逃逸（Gester class 7 symlink） | 研究中，未实现 | Gester，MIT；须先真机验证；class-2 无 App Group 回退保持默认关闭 |

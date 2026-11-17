@@ -9,7 +9,7 @@
 > **Pre-release: LilaShift 3.0.0-rc.1** — this is a **pre-release, not a stable release**.
 > Built from `feature/lilashift-3.0-dashboard` at commit `37c4a368c73ec80654c8b395387abea9a24915f6` (includes fix commit `7020964`).
 > In-app version `3.0.0` (build `30000002`) · IPA file `LilaShift_3.0.0.ipa`.
-> **Real-device install, eSIM activation, Apple Intelligence activation and restore have been verified on a real iPhone Air (iPhone18,4, iOS 27.0.1) for this build.** See [What is verified](#what-is-verified-and-what-is-not).
+> **Real-device install, eSIM activation, Apple Intelligence activation and restore have NOT been verified for this build: no real-device evidence for this HEAD is in this repository.** See [What is verified](#what-is-verified-and-what-is-not) and `CHANGELOG.md` (Known gaps).
 
 [![Version](https://img.shields.io/badge/version-3.0.0--rc.1%20pre--release-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v3.0.0-rc.1)
 [![Build LilaShift IPA](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml)
@@ -61,10 +61,10 @@ One-tap eSIM, region code, and Apple Intelligence setup for China-model iPhones 
 | Source builds in CI (`Build LilaShift IPA`) | ✅ Verified by GitHub Actions — see badge above |
 | Swift unit tests (`Run Swift Tests`) | ✅ Verified by GitHub Actions — see badge above |
 | License / attribution check (`Check Licenses`) | ✅ Verified by GitHub Actions |
-| Real-device install of this exact IPA | ✅ **Verified** on iPhone Air (iPhone18,4), iOS 27.0.1 |
-| eSIM activation after unlocking | ✅ **Verified** on iPhone Air — eSIM active (China Unicom, roaming) after one-tap unlock |
-| Apple Intelligence actually appearing / working | ✅ **Verified** on iPhone Air — region code `LL` persisted after reboot; Apple Intelligence recognized |
-| Restore returning a device to its exact prior state | ✅ **Verified** on iPhone Air — restore returns the recorded original values |
+| Real-device install of this exact IPA | ⚠️ **Not verified for this build** — no real-device evidence for this HEAD in this repository (see `CHANGELOG.md`, Known gaps) |
+| eSIM activation after unlocking | ⚠️ **Not verified for this build** — no real-device evidence for this HEAD in this repository |
+| Apple Intelligence actually appearing / working | ⚠️ **Not verified for this build** — no real-device evidence for this HEAD in this repository |
+| Restore returning a device to its exact prior state | ⚠️ **Not verified for this build** — no real-device evidence for this HEAD in this repository |
 
 Changing a MobileGestalt flag is **not** the same as the feature working: a flag can read as "on" while the hardware, OS version, or Apple services still say no. Nothing in this README claims every device can unlock everything.
 
@@ -78,7 +78,7 @@ This is the **full-source project** for LilaShift 3.0 (紫序), the China Unlock
 
 ## What's new in 3.0.0-rc.1
 
-- **LilaShift 3.0 dashboard** — a lightweight home screen with real device read and staged-change status, a 55-item feature catalog across 11 categories (42 preset items + 13 page items), a unified 8-state compatibility model, a history/restore view with confirmation steps, and diagnostic caching that moves file reads and SHA-256 hashing off the render path. See [CHANGELOG.md](CHANGELOG.md).
+- **LilaShift 3.0 dashboard** — a lightweight home screen with real device read and staged-change status, a 58-item feature catalog across 11 categories (45 preset items + 13 page items), a unified 8-state compatibility model, a history/restore view with confirmation steps, and diagnostic caching that moves file reads and SHA-256 hashing off the render path. See [CHANGELOG.md](CHANGELOG.md).
 - **One-tap China Unlock (10 items; 3 on native Apple Intelligence models)** — eSIM switches (`green-tea` off, `not-green-tea` on), region code set to US (`LL`, sales region untouched), and seven Apple Intelligence capabilities, all staged in one tap and reviewed before applying.
   - The eSIM cache layout is verified before staging; if it cannot be verified, the whole eSIM group stops and shows the reason. Region and AI flags can still be set individually.
   - On models with native Apple Intelligence (e.g. iPhone Air), the seven AI items are skipped — the device already has them — so one-tap stages only the 2 eSIM switches + region code.
@@ -243,7 +243,7 @@ This project is distributed under the **GNU General Public License v3.0** — se
 - Upstream project: [huamidev/GestaltX](https://github.com/huamidev/GestaltX) (`v1.0.7`, commit `dfd4a7e`, plus PR #126, commit `c60519c`)
 - Enhanced version maintainer: `@steam8871`
 - Modifications in this build: the China Unlock preset (10 items; 3 on native Apple Intelligence models) and its safety checks, the light-lavender Liquid Glass redesign, one-line purpose descriptions, the author badge and progress cards, the in-app source-repository link, the open-source compliance section, the Erosion-CN-inspired hardening (write path, dynamic layout resolution, diff preview, dual-vault backup, region mode, AI checkup), the LilaShift rebrand, and the cat app icon.
-- LilaShift 3.0 additions: the lightweight dashboard, the 55-item feature catalog, the unified compatibility model, the history/restore view, diagnostic caching, and the open-source contributor center (About page) with the per-project source record in `docs/OPEN_SOURCE_REFERENCES.md`. Also: Face ID recovery (restore only the four hardware-identity fields from a verified same-device backup, upstream GestaltX #128/#146, extended to iPhone 16/17/Air), clear-and-rebuild MobileGestalt cache (Erosion-CN mechanism, reimplemented; backup taken first), and a one-click AI baseline fix in the one-tap flow (Personal Translator slot #266 = 1, Audio Intelligence slot #178 = 0, absent AI keys filled).
+- LilaShift 3.0 additions: the lightweight dashboard, the 58-item feature catalog, the unified compatibility model, the history/restore view, diagnostic caching, and the open-source contributor center (About page) with the per-project source record in `docs/OPEN_SOURCE_REFERENCES.md`. Also: Face ID recovery (restore only the four hardware-identity fields from a verified same-device backup, upstream GestaltX #128/#146, extended to iPhone 16/17/Air), clear-and-rebuild MobileGestalt cache (Erosion-CN mechanism, reimplemented; backup taken first), and a one-click AI baseline fix in the one-tap flow (Personal Translator slot #266 = 1, Audio Intelligence slot #178 = 0, absent AI keys filled).
 - The complete corresponding source is in this repository (full source, no patch step).
 
 ## Credits
