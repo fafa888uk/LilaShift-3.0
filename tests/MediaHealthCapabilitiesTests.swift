@@ -67,14 +67,14 @@ final class MediaHealthCapabilitiesTests: XCTestCase {
     }
 
     func testRiskLevels() {
-        XCTAssertEqual(LilaIntelligence.entry(for: "spatialAudioRecording")?.riskLevel, .high)
-        XCTAssertEqual(LilaIntelligence.entry(for: "responsiveShutter")?.riskLevel, .high)
-        XCTAssertEqual(LilaIntelligence.entry(for: "hypertensionNotifications")?.riskLevel, .low)
+        XCTAssertEqual(CapabilityEntry.entry(for: "spatialAudioRecording")?.riskLevel, .high)
+        XCTAssertEqual(CapabilityEntry.entry(for: "responsiveShutter")?.riskLevel, .high)
+        XCTAssertEqual(CapabilityEntry.entry(for: "hypertensionNotifications")?.riskLevel, .low)
     }
 
     func testBothLayersNamed() {
         for id in ids {
-            let entry = LilaIntelligence.entry(for: id)
+            let entry = CapabilityEntry.entry(for: id)
             XCTAssertNotNil(entry)
             XCTAssertTrue(entry!.underlyingKeyOrSlot.contains("CacheExtra key"),
                           "\(id) must name the CacheExtra key layer")
@@ -85,7 +85,7 @@ final class MediaHealthCapabilitiesTests: XCTestCase {
 
     func testErosionCNCitedAsSource() {
         for id in ids {
-            let entry = LilaIntelligence.entry(for: id)
+            let entry = CapabilityEntry.entry(for: id)
             XCTAssertNotNil(entry)
             XCTAssertTrue(entry!.sources.contains { $0.contains("Erosion-CN") },
                           "\(id) must cite Erosion-CN as its key source")
