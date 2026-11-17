@@ -1548,6 +1548,61 @@ struct ToolGroupView: View {
                                 }
                             }
                             .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { BatteryTelemetryView() } label: {
+                                HStack {
+                                    Label(L("Battery Telemetry"), systemImage: "battery.100.bolt")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { CrashDiagnosticsView() } label: {
+                                HStack {
+                                    Label(L("Crash Diagnostics"), systemImage: "exclamationmark.triangle")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { SupervisionAuditView() } label: {
+                                HStack {
+                                    Label(L("Supervision Audit"), systemImage: "shield.checkered")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { ProxyRulesView() } label: {
+                                HStack {
+                                    Label(L("Proxy Rules"), systemImage: "network")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { AppGroupBrowserView() } label: {
+                                HStack {
+                                    Label(L("AppGroup Browser"), systemImage: "folder.badge.gearshape")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
                 }
