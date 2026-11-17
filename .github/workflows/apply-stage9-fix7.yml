@@ -57,7 +57,7 @@ jobs:
             echo "Workflow file must not be part of the patch"
             exit 1
           }
-          STAT="$(git diff --cached --shortstat)"
+          STAT="$(git diff --cached --shortstat | sed 's/^ *//')"
           test "$STAT" = "19 files changed, 95 insertions(+), 34 deletions(-)" || {
             echo "Unexpected staged stats: $STAT"
             exit 1
