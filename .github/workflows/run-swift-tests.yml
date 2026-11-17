@@ -12,9 +12,9 @@ name: Run Swift Tests
 
 on:
   push:
-    branches: [main, dev/p0-security-fixes, feature/lilashift-3.0-dashboard]
+    branches: [main, dev/p0-security-fixes, feature/lilashift-3.0-dashboard, feature/lila-siri-ai-mode, feature/lilashift-4.0-quality-upgrade]
   pull_request:
-    branches: [main]
+    branches: [main, feature/lila-siri-ai-mode, feature/lilashift-4.0-quality-upgrade]
   workflow_dispatch:
 
 concurrency:
