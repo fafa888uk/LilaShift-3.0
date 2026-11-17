@@ -144,16 +144,13 @@ private extension Severity {
         }
     }
 
+    /// More severe means a smaller `sortOrder` (the single
+    /// definition lives on `Severity` in DiagnosticsEngine:
+    /// error 0, warning 1, info 2). A second `sortOrder` here
+    /// would be an invalid redeclaration — and Stage 6 shipped
+    /// one with the opposite ordering; Stage 7 removes it.
     static func > (lhs: Severity, rhs: Severity) -> Bool {
-        lhs.sortOrder > rhs.sortOrder
-    }
-
-    var sortOrder: Int {
-        switch self {
-        case .error: return 2
-        case .warning: return 1
-        case .info: return 0
-        }
+        lhs.sortOrder < rhs.sortOrder
     }
 }
 

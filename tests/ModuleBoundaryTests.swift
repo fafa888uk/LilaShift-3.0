@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // Module boundary tests (Stage 3, ADR-2-04; Stage 5 adds the
 // backup/restore/security boundaries, ADR-2-05 / ADR-2-08; Stage 6
-// adds the diagnostics boundaries, ADR-2-09).
+// adds the diagnostics boundaries, ADR-2-09; Stage 7 adds the
+// archive/cache boundaries, ADR-2-10).
 //
 // The Stage 2 boundaries as executable rules, read straight from the
 // checked-out sources (this target runs with a host app in the same
@@ -274,5 +275,68 @@ final class ModuleBoundaryTests: XCTestCase {
                       "DiagnosticsEngine must redact evidence through LoggingEngine.redact")
         XCTAssertFalse(text.contains("UniqueDeviceID"),
                        "DiagnosticsEngine must never name a device-identity key in its own source")
+    }
+
+    // MARK: - Stage 7 boundaries (ADR-2-10)
+
+    func testAppArchiveEngineNeverTouchesOtherAppsContainers() {
+        // ADR-2-10 / TASKBOOK §6.2: archives cover this app's own
+        // data only. The engine and its view must never name the
+        // sandbox escape, the container accessor, the cross-container
+        // gate, or a device-identity key — not even in a comment, so
+        // a future "just one more root" cannot sneak in unnoticed.
+        for file in ["GestaltX/AppArchiveEngine.swift", "GestaltX/AppArchiveViews.swift"] {
+            let text = readSource(file)
+            for forbidden in ["worse_query", "ContainerAccess", "SecurityEngine", "UniqueDeviceID"] {
+                XCTAssertFalse(text.contains(forbidden),
+                               "\(file) must not reference \(forbidden): archives are this app's own data only")
+            }
+        }
+    }
+
+    func testCacheDeletionOnlyTouchesTrackedItems() {
+        // TASKBOOK §6.3: deletion only ever touches entries this
+        // module produced. The delete path must check deletability
+        // first and must refuse protected entries by listing them as
+        // skipped, never by silently dropping them.
+        let text = readSource("GestaltX/CacheAnalysis.swift")
+        XCTAssertTrue(text.contains("isDeletableFile(atPath:"),
+                      "CacheAnalyzer must check deletability before removing a file")
+        XCTAssertTrue(text.contains("skippedProtected.append"),
+                      "CacheAnalyzer must list refused protected entries as skipped")
+        XCTAssertTrue(text.contains("CustomizationFiles.checked("),
+                      "CacheAnalyzer must resolve every deletion through the checked-path helper")
+    }
+
+    func testCacheMeasurementHasOneImplementation() {
+        // DATA_MODELS §4.3: the cache measurement lives in exactly
+        // one place (CacheAnalyzer). The old measurer delegates; it
+        // must not keep its own enumeration loop.
+        let text = readSource("GestaltX/DiagnosticsExpansion.swift")
+        XCTAssertFalse(text.contains("enumerator("),
+                       "DiagnosticsExpansion must not enumerate directories itself: CacheAnalyzer owns measurement")
+        XCTAssertTrue(text.contains("CacheAnalyzer.analyze("),
+                      "AppContainerCacheMeasurer must delegate measurement to CacheAnalyzer")
+        XCTAssertTrue(text.contains("CacheAnalyzer.clearCaches("),
+                      "AppContainerCacheMeasurer must delegate clearing to CacheAnalyzer")
+    }
+
+    func testSeverityHasExactlyOneSortOrder() {
+        // Stage 6 shipped `Severity.sortOrder` twice with opposite
+        // orderings (error 0 in DiagnosticsEngine, error 2 in the
+        // centre view's extension) — an invalid redeclaration that
+        // fails compilation, in the same class as the Stage 4
+        // `cacheData` triplication. Exactly one definition may
+        // exist, and it must be the engine's (error first when
+        // sorted ascending).
+        let engine = readSource("GestaltX/DiagnosticsEngine.swift")
+        let view = readSource("GestaltX/DiagnosticsCentreView.swift")
+        let definitions = engine.components(separatedBy: "var sortOrder").count - 1
+            + view.components(separatedBy: "var sortOrder").count - 1
+        XCTAssertEqual(definitions, 1, "Severity.sortOrder must be defined exactly once")
+        XCTAssertTrue(engine.contains("case .error: return 0"),
+                      "The single sortOrder must order error first (error 0)")
+        XCTAssertFalse(view.contains("var sortOrder"),
+                       "The centre view must not redeclare sortOrder")
     }
 }

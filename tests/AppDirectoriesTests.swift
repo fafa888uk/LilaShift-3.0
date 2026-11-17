@@ -19,6 +19,10 @@ final class AppDirectoriesTests: XCTestCase {
                       "The catalog is inside the launch images directory")
         XCTAssertTrue(AppDirectories.appAppearanceDraftsStorage.path.hasSuffix("GestaltX/AppAppearance/Drafts"),
                       "App-appearance drafts live under GestaltX/AppAppearance/Drafts")
+        XCTAssertTrue(AppDirectories.appArchivesStorage.path.hasSuffix("GestaltX/AppArchives"),
+                      "App archives live under GestaltX/AppArchives")
+        XCTAssertTrue(AppDirectories.appArchivesStorage.path.hasPrefix(AppDirectories.applicationSupport.path),
+                      "App archives are inside Application Support")
         XCTAssertTrue(AppDirectories.customizationStorage.path.hasPrefix(AppDirectories.applicationSupport.path),
                       "Customization storage is inside Application Support")
     }

@@ -148,6 +148,12 @@ struct AppContainerCacheReport: Equatable, Sendable {
 /// app's OWN Caches directory. The URLs are injected so tests can
 /// measure a temporary directory; the production caller passes the
 /// real container URLs from FileManager.
+///
+/// Stage 7 convergence: the measurement lives in exactly one place
+/// (`CacheAnalyzer`). This type only maps the per-file
+/// `CacheReport` onto the per-directory totals this card has always
+/// shown, and delegates clearing to `CacheAnalyzer.clearCaches`.
+/// There is no second enumeration loop here.
 enum AppContainerCacheMeasurer {
     /// Measures the app's own container directories (Application
     /// Support, Caches, tmp). Read-only: nothing is created, moved
@@ -162,7 +168,7 @@ enum AppContainerCacheMeasurer {
 
     /// Clears the app's OWN Caches directory; see `clearCaches(at:)`.
     static func clearContainerCaches() throws -> Int64 {
-        try clearCaches(at: FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0])
+        try CacheAnalyzer.clearCaches(at: FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0])
     }
 
     /// Measures the three container directories. Read-only: nothing
@@ -170,31 +176,24 @@ enum AppContainerCacheMeasurer {
     static func measure(
         applicationSupport: URL, caches: URL, temporary: URL
     ) -> AppContainerCacheReport {
-        AppContainerCacheReport(
+        let report = CacheAnalyzer.analyze(
+            applicationSupport: applicationSupport, caches: caches, temporary: temporary)
+        return AppContainerCacheReport(
             entries: [
-                measureOne(.applicationSupport, url: applicationSupport),
-                measureOne(.caches, url: caches),
-                measureOne(.temporary, url: temporary),
+                AppContainerCacheEntry(
+                    kind: .applicationSupport,
+                    byteCount: Int64(report.entries(for: .other).reduce(0) { $0 + $1.size }),
+                    fileCount: report.entries(for: .other).count),
+                AppContainerCacheEntry(
+                    kind: .caches,
+                    byteCount: Int64(report.entries(for: .caches).reduce(0) { $0 + $1.size }),
+                    fileCount: report.entries(for: .caches).count),
+                AppContainerCacheEntry(
+                    kind: .temporary,
+                    byteCount: Int64(report.entries(for: .tmp).reduce(0) { $0 + $1.size }),
+                    fileCount: report.entries(for: .tmp).count),
             ],
-            measuredAt: Date())
-    }
-
-    private static func measureOne(_ kind: AppCacheDirectoryKind, url: URL) -> AppContainerCacheEntry {
-        var bytes: Int64 = 0
-        var files = 0
-        let keys: [URLResourceKey] = [.isRegularFileKey, .fileSizeKey]
-        guard let enumerator = FileManager.default.enumerator(
-            at: url, includingPropertiesForKeys: keys,
-            options: [.skipsHiddenFiles], errorHandler: nil) else {
-            return AppContainerCacheEntry(kind: kind, byteCount: 0, fileCount: 0)
-        }
-        for case let fileURL as URL in enumerator {
-            guard let values = try? fileURL.resourceValues(forKeys: Set(keys)),
-                  values.isRegularFile == true else { continue }
-            files += 1
-            bytes += Int64(values.fileSize ?? 0)
-        }
-        return AppContainerCacheEntry(kind: kind, byteCount: bytes, fileCount: files)
+            measuredAt: report.measuredAt)
     }
 
     /// Clears the app's OWN Caches directory: removes its contents,
@@ -203,20 +202,7 @@ enum AppContainerCacheMeasurer {
     /// wrong URL can never delete another directory. System caches
     /// are never touched.
     static func clearCaches(at cachesURL: URL) throws -> Int64 {
-        guard cachesURL.lastPathComponent == "Caches" else {
-            throw GestaltFailure("Refusing to clear a directory that is not the app's Caches directory.")
-        }
-        let before = measureOne(.caches, url: cachesURL)
-        let contents = (try? FileManager.default.contentsOfDirectory(
-            at: cachesURL, includingPropertiesForKeys: nil)) ?? []
-        for item in contents {
-            try FileManager.default.removeItem(at: item)
-        }
-        let after = measureOne(.caches, url: cachesURL)
-        guard after.fileCount == 0 else {
-            throw GestaltFailure("The app cache could not be cleared.")
-        }
-        return before.byteCount - after.byteCount
+        try CacheAnalyzer.clearCaches(at: cachesURL)
     }
 }
 

@@ -1557,6 +1557,17 @@ struct ToolGroupView: View {
                             }
                             .buttonStyle(.plain)
                             Divider()
+                            NavigationLink { AppArchiveView(share: presentShare) } label: {
+                                HStack {
+                                    Label(L("App Archive & Cache"), systemImage: "archivebox")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
                             NavigationLink { SupervisionAuditView() } label: {
                                 HStack {
                                     Label(L("Supervision Audit"), systemImage: "shield.checkered")

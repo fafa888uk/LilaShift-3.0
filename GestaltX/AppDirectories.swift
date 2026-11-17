@@ -34,4 +34,10 @@ enum AppDirectories {
     static var appAppearanceDraftsStorage: URL {
         applicationSupport.appendingPathComponent("GestaltX/AppAppearance/Drafts", isDirectory: true)
     }
+
+    /// App archives (Stage 7): sandbox-compliant ZIP archives of
+    /// this app's own data, plus their pre-restore archives.
+    static var appArchivesStorage: URL {
+        applicationSupport.appendingPathComponent("GestaltX/AppArchives", isDirectory: true)
+    }
 }
