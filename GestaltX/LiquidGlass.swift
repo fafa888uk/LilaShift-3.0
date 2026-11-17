@@ -70,14 +70,10 @@ enum GlassTokens {
 }
 
 extension Color {
-    /// Primary lavender accent (#8652DC in light mode, a lighter
-    /// lavender in dark mode so text and icons stay readable). Used for
-    /// the tab bar, primary buttons, accent pills and the author badge.
-    static let gestaltAccent = Color(uiColor: UIColor { traits in
-        traits.userInterfaceStyle == .dark
-            ? UIColor(red: 0.66, green: 0.55, blue: 0.98, alpha: 1)
-            : UIColor(red: 0.53, green: 0.32, blue: 0.86, alpha: 1)
-    })
+    /// Primary lavender accent (#8652DC). The app is light-only: there
+    /// is no dark mode, so the accent never changes. Used for the tab
+    /// bar, primary buttons, accent pills and the author badge.
+    static let gestaltAccent = Color(red: 0.53, green: 0.32, blue: 0.86)
 
     /// Soft periwinkle for the two blue-ish category/preset tints, so
     /// icons keep a slight colour distinction without system blue.
@@ -91,44 +87,37 @@ extension Color {
 }
 
 /// Light-lavender page background (#F6F3FF family) with a few soft,
-/// static lavender light spots. Dark mode uses a deep-plum glass theme
-/// in the same lavender family (no midnight blue). No animation, no
+/// static lavender light spots. The app is light-only: there is no
+/// dark mode, so this background never changes. No animation, no
 /// strong glow. When Reduce Transparency is on, the spots disappear
-/// and the background is solid.
+/// and the background is solid light.
 struct GlassBackground: View {
-    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
     private var gradientColors: [Color] {
-        if colorScheme == .dark {
-            [Color(red: 0.09, green: 0.07, blue: 0.16),
-             Color(red: 0.12, green: 0.09, blue: 0.20),
-             Color(red: 0.16, green: 0.12, blue: 0.27)]
-        } else {
-            [Color(red: 0.96, green: 0.95, blue: 1.0),
-             Color(red: 0.94, green: 0.91, blue: 1.0),
-             Color(red: 0.92, green: 0.88, blue: 1.0)]
-        }
+        [Color(red: 0.96, green: 0.95, blue: 1.0),
+         Color(red: 0.94, green: 0.91, blue: 1.0),
+         Color(red: 0.92, green: 0.88, blue: 1.0)]
     }
 
     var body: some View {
         if reduceTransparency {
-            Color(uiColor: .systemGroupedBackground).ignoresSafeArea()
+            Color(red: 0.95, green: 0.95, blue: 0.97).ignoresSafeArea()
         } else {
             ZStack {
                 LinearGradient(colors: gradientColors, startPoint: .topLeading, endPoint: .bottomTrailing)
                 Circle()
-                    .fill(Color.purple.opacity(colorScheme == .dark ? 0.20 : 0.10))
+                    .fill(Color.purple.opacity(0.10))
                     .frame(width: 320, height: 320)
                     .blur(radius: 90)
                     .offset(x: -140, y: -260)
                 Circle()
-                    .fill(Color.gestaltAccent.opacity(colorScheme == .dark ? 0.16 : 0.08))
+                    .fill(Color.gestaltAccent.opacity(0.08))
                     .frame(width: 280, height: 280)
                     .blur(radius: 90)
                     .offset(x: 150, y: 180)
                 Circle()
-                    .fill(Color.purple.opacity(colorScheme == .dark ? 0.12 : 0.05))
+                    .fill(Color.purple.opacity(0.05))
                     .frame(width: 220, height: 220)
                     .blur(radius: 80)
                     .offset(x: 120, y: -80)
@@ -172,7 +161,7 @@ private struct GlassCardModifier: ViewModifier {
     func body(content: Content) -> some View {
         if reduceTransparency {
             content
-                .background(Color(uiColor: .secondarySystemGroupedBackground),
+                .background(Color.white,
                             in: RoundedRectangle(cornerRadius: cornerRadius))
         } else if #available(iOS 26.0, *) {
             // No .shadow() here on purpose: on iOS 26+ the glass effect

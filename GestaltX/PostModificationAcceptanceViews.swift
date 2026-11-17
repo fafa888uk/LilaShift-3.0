@@ -17,7 +17,6 @@ import SwiftUI
 
 struct PostModificationAcceptanceCard: View {
     @EnvironmentObject private var model: GestaltManager
-    @Environment(\.colorScheme) private var colorScheme
     @State private var records: [RecordedChange] = []
     @State private var historyError: String?
     @State private var restartConfirmed = false
@@ -25,9 +24,7 @@ struct PostModificationAcceptanceCard: View {
     @State private var showingDetails = false
 
     private var heroTint: Color {
-        colorScheme == .dark
-            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
-            : Color.lavenderGlass.opacity(0.65)
+        Color.lavenderGlass.opacity(0.65)
     }
 
     /// The acceptance report for the recorded changes against the

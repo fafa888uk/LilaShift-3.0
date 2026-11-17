@@ -13,7 +13,6 @@ import SwiftUI
 struct SafePatchCard: View {
     @EnvironmentObject private var model: GestaltManager
     @Environment(\.homeDiagnosticsCache) private var diagnostics: HomeDiagnosticsCache?
-    @Environment(\.colorScheme) private var colorScheme
     @State private var selectedKind: SafePatchProposalKind = .oneTap
     @State private var showingChecks = false
 
@@ -39,9 +38,7 @@ struct SafePatchCard: View {
     }
 
     private var heroTint: Color {
-        colorScheme == .dark
-            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
-            : Color.lavenderGlass.opacity(0.65)
+        Color.lavenderGlass.opacity(0.65)
     }
 
     /// The simulation for the selected proposal, or `nil` when the

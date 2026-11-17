@@ -12,7 +12,6 @@ import SwiftUI
 
 struct DependencyAnalyzerCard: View {
     @EnvironmentObject private var model: GestaltManager
-    @Environment(\.colorScheme) private var colorScheme
     @State private var selectedKind: SafePatchProposalKind = .oneTap
     @State private var showingDetails = false
 
@@ -35,9 +34,7 @@ struct DependencyAnalyzerCard: View {
     }
 
     private var heroTint: Color {
-        colorScheme == .dark
-            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
-            : Color.lavenderGlass.opacity(0.65)
+        Color.lavenderGlass.opacity(0.65)
     }
 
     /// The analysis for the selected proposal, or `nil` when the

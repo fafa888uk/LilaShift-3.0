@@ -14,7 +14,6 @@ import SwiftUI
 
 struct DiagnosticsExpansionCard: View {
     @EnvironmentObject private var model: GestaltManager
-    @Environment(\.colorScheme) private var colorScheme
 
     @State private var batteryReader = UIDeviceBatteryReader()
     @State private var battery = BatteryStatus(level: nil, state: .unknown)
@@ -26,9 +25,7 @@ struct DiagnosticsExpansionCard: View {
     @State private var records: [RecordedChange] = []
 
     private var heroTint: Color {
-        colorScheme == .dark
-            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
-            : Color.lavenderGlass.opacity(0.65)
+        Color.lavenderGlass.opacity(0.65)
     }
 
     /// The per-device report (profile + eligibility evaluations), or

@@ -13,15 +13,12 @@ import SwiftUI
 struct LilaIntelligenceCard: View {
     @EnvironmentObject private var model: GestaltManager
     @Environment(\.homeDiagnosticsCache) private var diagnostics: HomeDiagnosticsCache?
-    @Environment(\.colorScheme) private var colorScheme
     @State private var recordCount = 0
     @State private var records: [RecordedChange] = []
     @State private var showingDetails = false
 
     private var heroTint: Color {
-        colorScheme == .dark
-            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
-            : Color.lavenderGlass.opacity(0.65)
+        Color.lavenderGlass.opacity(0.65)
     }
 
     /// The report for the current snapshot, or `nil` when the device

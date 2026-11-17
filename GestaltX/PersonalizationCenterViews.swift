@@ -16,7 +16,6 @@ import SwiftUI
 struct PersonalizationCenterCard: View {
     @EnvironmentObject private var model: GestaltManager
     @Environment(\.homeDiagnosticsCache) private var diagnostics: HomeDiagnosticsCache?
-    @Environment(\.colorScheme) private var colorScheme
 
     @State private var settings = PersonalizationSettings.defaults
     @State private var settingsError: String?
@@ -39,9 +38,7 @@ struct PersonalizationCenterCard: View {
     @State private var deletingPresetID: UUID?
 
     private var heroTint: Color {
-        colorScheme == .dark
-            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
-            : Color.lavenderGlass.opacity(0.65)
+        Color.lavenderGlass.opacity(0.65)
     }
 
     /// The records to use: the cache's, when the cache is present

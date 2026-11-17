@@ -23,7 +23,6 @@ import SwiftUI
 struct SmartFaultDiagnosisCard: View {
     @EnvironmentObject private var model: GestaltManager
     @Environment(\.homeDiagnosticsCache) private var diagnostics: HomeDiagnosticsCache?
-    @Environment(\.colorScheme) private var colorScheme
     @State private var records: [RecordedChange] = []
     @State private var historyError: String?
     @State private var storedFingerprint: DeviceFingerprint?
@@ -37,9 +36,7 @@ struct SmartFaultDiagnosisCard: View {
     @State private var recordedEvents: [OperationEvent] = []
 
     private var heroTint: Color {
-        colorScheme == .dark
-            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
-            : Color.lavenderGlass.opacity(0.65)
+        Color.lavenderGlass.opacity(0.65)
     }
 
     /// The records to use: the cache's, when the cache is present

@@ -31,7 +31,6 @@ extension EnvironmentValues {
 
 struct DeviceFingerprintCard: View {
     @EnvironmentObject private var model: GestaltManager
-    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.fingerprintRecordedAt) private var fingerprintRecordedAt
     @State private var stored: DeviceFingerprint?
     @State private var fingerprintError: String?
@@ -39,9 +38,7 @@ struct DeviceFingerprintCard: View {
     @State private var showingDetails = false
 
     private var heroTint: Color {
-        colorScheme == .dark
-            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
-            : Color.lavenderGlass.opacity(0.65)
+        Color.lavenderGlass.opacity(0.65)
     }
 
     /// The current fingerprint from the latest read, or `nil` when

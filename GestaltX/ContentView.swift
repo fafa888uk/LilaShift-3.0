@@ -692,15 +692,11 @@ struct ContentView: View {
 private struct ChinaUnlockCard: View {
     let onReviewChanges: () -> Void
     @EnvironmentObject private var model: GestaltManager
-    @Environment(\.colorScheme) private var colorScheme
 
-    /// Light-purple glass tint for the hero card (#EAE1FF in light mode,
-    /// a deep plum in dark mode). Text on the card uses the adaptive
-    /// primary/secondary styles so contrast holds in both modes.
+    /// Light-purple glass tint for the hero card (#EAE1FF). The app is
+    /// light-only: there is no dark mode, so this tint never changes.
     private var heroTint: Color {
-        colorScheme == .dark
-            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
-            : Color.lavenderGlass.opacity(0.65)
+        Color.lavenderGlass.opacity(0.65)
     }
 
     var body: some View {
@@ -843,12 +839,9 @@ private struct ChinaUnlockCard: View {
 private struct ChinaAIOnlyCard: View {
     let onReviewChanges: () -> Void
     @EnvironmentObject private var model: GestaltManager
-    @Environment(\.colorScheme) private var colorScheme
 
     private var heroTint: Color {
-        colorScheme == .dark
-            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
-            : Color.lavenderGlass.opacity(0.65)
+        Color.lavenderGlass.opacity(0.65)
     }
 
     var body: some View {
@@ -960,12 +953,9 @@ private struct ChinaAIOnlyCard: View {
 private struct ChinaSiriAIModeCard: View {
     let onReviewChanges: () -> Void
     @EnvironmentObject private var model: GestaltManager
-    @Environment(\.colorScheme) private var colorScheme
 
     private var heroTint: Color {
-        colorScheme == .dark
-            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
-            : Color.lavenderGlass.opacity(0.65)
+        Color.lavenderGlass.opacity(0.65)
     }
 
     var body: some View {
@@ -1070,12 +1060,9 @@ private struct ChinaSiriAIModeCard: View {
 private struct ChinaESIMRegionCard: View {
     let onReviewChanges: () -> Void
     @EnvironmentObject private var model: GestaltManager
-    @Environment(\.colorScheme) private var colorScheme
 
     private var heroTint: Color {
-        colorScheme == .dark
-            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
-            : Color.lavenderGlass.opacity(0.65)
+        Color.lavenderGlass.opacity(0.65)
     }
 
     var body: some View {
@@ -1267,12 +1254,9 @@ private struct AppleIntelligenceCheckupCard: View {
 /// that nothing was modified.
 private struct ModifiedValuesCard: View {
     @EnvironmentObject private var model: GestaltManager
-    @Environment(\.colorScheme) private var colorScheme
 
     private var heroTint: Color {
-        colorScheme == .dark
-            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
-            : Color.lavenderGlass.opacity(0.65)
+        Color.lavenderGlass.opacity(0.65)
     }
 
     var body: some View {

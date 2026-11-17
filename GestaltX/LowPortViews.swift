@@ -310,7 +310,12 @@ private struct DialerKeypadButton: View {
 }
 
 struct DialerSkinView: View {
-    @Environment(\.colorScheme) private var colorScheme
+    /// Which keypad artwork set is shown and edited: the Phone app
+    /// keeps separate light and dark keypad PNGs. This is an explicit
+    /// switch because the app is light-only and no longer follows the
+    /// system appearance — without it, the dark keypad set could not
+    /// be viewed or edited at all.
+    @State private var showDarkKeypads = false
     @State private var container: URL?
     @State private var current: [DialerSkin.KeypadID: Data] = [:]
     @State private var replacements: [DialerSkin.KeypadID: Data] = [:]
@@ -333,6 +338,12 @@ struct DialerSkinView: View {
                         .font(.subheadline).foregroundStyle(.secondary)
                 } else {
                     Toggle(L("Circular buttons"), isOn: $circle)
+                    Picker(L("Keypad appearance"), selection: $showDarkKeypads) {
+                        Text(L("Light")).tag(false)
+                        Text(L("Dark")).tag(true)
+                    }
+                    .pickerStyle(.segmented)
+                    .onChange(of: showDarkKeypads) { _, _ in load() }
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: 88), spacing: 12)], spacing: 12) {
                         ForEach(DialerSkin.KeypadID.allCases, id: \.self) { key in
                             DialerKeypadButton(
@@ -384,7 +395,7 @@ struct DialerSkinView: View {
             guard url.startAccessingSecurityScopedResource() else { return }
             defer { url.stopAccessingSecurityScopedResource() }
             do {
-                let matched = try DialerSkin.importTheme(from: url, dark: colorScheme == .dark)
+                let matched = try DialerSkin.importTheme(from: url, dark: showDarkKeypads)
                 replacements.merge(matched) { _, new in new }
                 message = L("Theme imported. Review the images, then tap Apply.")
             } catch {
@@ -396,7 +407,7 @@ struct DialerSkinView: View {
 
     private func load() {
         isBusy = true
-        let dark = colorScheme == .dark
+        let dark = showDarkKeypads
         Task.detached(priority: .userInitiated) {
             let found = DialerSkin.phoneContainer()
             let keys: [DialerSkin.KeypadID: Data]? = found.flatMap { try? DialerSkin.currentKeypads(container: $0, dark: dark) }
@@ -414,7 +425,7 @@ struct DialerSkinView: View {
     private func apply() {
         guard let container else { return }
         isBusy = true
-        let dark = colorScheme == .dark
+        let dark = showDarkKeypads
         Task.detached(priority: .userInitiated) {
             do {
                 let result = try DialerSkin.apply(images: replacements, container: container)
@@ -436,7 +447,7 @@ struct DialerSkinView: View {
     private func restore() {
         guard let container else { return }
         isBusy = true
-        let dark = colorScheme == .dark
+        let dark = showDarkKeypads
         Task.detached(priority: .userInitiated) {
             do {
                 let count = try DialerSkin.restore(container: container)
