@@ -1,0 +1,23 @@
+diff --git a/GestaltX/DiagnosticsCentreView.swift b/GestaltX/DiagnosticsCentreView.swift
+index 9cae955..fed9e8b 100644
+--- a/GestaltX/DiagnosticsCentreView.swift
++++ b/GestaltX/DiagnosticsCentreView.swift
+@@ -122,11 +122,15 @@ struct DiagnosticsCentreView: View {
+     /// statements: the single `+` chain of localized fragments and
+     /// formatted interpolations it replaced timed out the type checker
+     /// (CI #380), the same failure mode as the deletion summary in
+-    /// AppArchiveViews (CI #372).
++    /// AppArchiveViews (CI #372). The durations are formatted with
++    /// `.formatted(...)`, not with a `\(value, format:)` interpolation:
++    /// the interpolation form does not type-check here (CI #386/#388:
++    /// "binary operator '+' cannot be applied to operands of type
++    /// 'String' and 'String.Stride'").
+     private func performanceSummary(for row: PerformanceRow) -> String {
+         let runs = L("Runs") + ": \(row.count)"
+-        let last = L("Last") + ": \(row.last, format: .number.precision(.fractionLength(2)))s"
+-        let mean = L("Mean") + ": \(row.mean, format: .number.precision(.fractionLength(2)))s"
++        let last = L("Last") + ": " + row.last.formatted(.number.precision(.fractionLength(2))) + "s"
++        let mean = L("Mean") + ": " + row.mean.formatted(.number.precision(.fractionLength(2))) + "s"
+         return [runs, last, mean].joined(separator: " · ")
+     }
+ 
