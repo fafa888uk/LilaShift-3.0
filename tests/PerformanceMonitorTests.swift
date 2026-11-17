@@ -21,7 +21,7 @@ final class PerformanceMonitorTests: XCTestCase {
 
     func testAsyncMeasureRecordsDuration() async throws {
         let monitor = PerformanceMonitor()
-        let result = await monitor.measure(label: "work") {
+        let result = try await monitor.measure(label: "work") {
             try await Task.sleep(nanoseconds: 10_000_000)
             return "done"
         }
