@@ -23,6 +23,11 @@ struct DiagnosticsExpansionCard: View {
     @State private var showingClearCacheConfirmation = false
     @State private var recordedEvents: [OperationEvent] = []
     @State private var records: [RecordedChange] = []
+    /// The in-flight cache measurement/clear task, if any. Measuring
+    /// enumerates the whole container (TASKBOOK §8.2), so it runs in
+    /// a detached task and only the result is published; starting a
+    /// new measurement cancels the previous one.
+    @State private var cacheTask: Task<Void, Never>?
 
     /// The per-device report (profile + eligibility evaluations), or
     /// `nil` when the device has not been read yet.
@@ -81,6 +86,7 @@ struct DiagnosticsExpansionCard: View {
             }
         }
         .onAppear { refresh() }
+        .onDisappear { cacheTask?.cancel() }
         .confirmationDialog(
             L("Clear App Cache"),
             isPresented: $showingClearCacheConfirmation,
@@ -196,19 +202,43 @@ struct DiagnosticsExpansionCard: View {
         }
     }
 
+    /// Measures the app's own container directories off the main
+    /// thread (TASKBOOK §8.2): `measureContainer` enumerates
+    /// Application Support, Caches and tmp with a per-file stat, so
+    /// running it synchronously in `refresh()` (onAppear) blocked
+    /// the first paint of this card. Only the result is published.
     private func measureCache() {
-        cacheReport = AppContainerCacheMeasurer.measureContainer()
+        cacheTask?.cancel()
+        cacheTask = Task.detached(priority: .userInitiated) {
+            let report = AppContainerCacheMeasurer.measureContainer()
+            guard !Task.isCancelled else { return }
+            await MainActor.run { cacheReport = report }
+        }
     }
 
+    /// Clears the app's own Caches directory off the main thread,
+    /// then re-measures there too (same §8.2 reason as
+    /// `measureCache`): deleting files and re-enumerating the
+    /// container never run on the main actor.
     private func clearAppCache() {
-        do {
-            let freed = try AppContainerCacheMeasurer.clearContainerCaches()
-            cacheMessage = L("App cache cleared.") + " " + formatBytes(freed)
-            cacheError = nil
-            measureCache()
-        } catch {
-            cacheMessage = nil
-            cacheError = L("The app cache could not be cleared.")
+        cacheTask?.cancel()
+        cacheTask = Task.detached(priority: .userInitiated) {
+            do {
+                let freed = try AppContainerCacheMeasurer.clearContainerCaches()
+                let report = AppContainerCacheMeasurer.measureContainer()
+                guard !Task.isCancelled else { return }
+                await MainActor.run {
+                    cacheReport = report
+                    cacheMessage = L("App cache cleared.") + " " + formatBytes(freed)
+                    cacheError = nil
+                }
+            } catch {
+                guard !Task.isCancelled else { return }
+                await MainActor.run {
+                    cacheMessage = nil
+                    cacheError = L("The app cache could not be cleared.")
+                }
+            }
         }
     }
 

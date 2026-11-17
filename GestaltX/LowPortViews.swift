@@ -382,22 +382,44 @@ struct DialerSkinView: View {
         .onChange(of: pickerItem) { _, item in
             guard let item, let key = pickingKey else { return }
             Task {
-                if let data = try? await item.loadTransferable(type: Data.self), !data.isEmpty {
-                    replacements[key] = DialerSkin.resize(data, to: CGSize(width: 250, height: 250), circle: circle)
+                guard let data = try? await item.loadTransferable(type: Data.self), !data.isEmpty else {
+                    pickerItem = nil
+                    return
                 }
+                // Image decode runs off the main thread (TASKBOOK §8.2):
+                // `resize` decodes the picked photo.
+                let resized = await Task.detached(priority: .userInitiated) {
+                    DialerSkin.resize(data, to: CGSize(width: 250, height: 250), circle: circle)
+                }.value
+                replacements[key] = resized
                 pickerItem = nil
             }
         }
         .fileImporter(isPresented: $importingTheme, allowedContentTypes: [.zip], allowsMultipleSelection: false) { result in
             guard case .success(let urls) = result, let url = urls.first else { return }
             guard url.startAccessingSecurityScopedResource() else { return }
-            defer { url.stopAccessingSecurityScopedResource() }
-            do {
-                let matched = try DialerSkin.importTheme(from: url, dark: showDarkKeypads)
-                replacements.merge(matched) { _, new in new }
-                message = L("Theme imported. Review the images, then tap Apply.")
-            } catch {
-                message = error.localizedDescription
+            // ZIP extraction + reading every keypad PNG runs off the
+            // main thread (TASKBOOK §8.2): a theme archive can be
+            // multi-MB, and this handler runs on the main actor. The
+            // scoped access stays open until the detached work
+            // finishes; state is published back on the main actor.
+            isBusy = true
+            let dark = showDarkKeypads
+            Task.detached(priority: .userInitiated) {
+                defer { url.stopAccessingSecurityScopedResource() }
+                do {
+                    let matched = try DialerSkin.importTheme(from: url, dark: dark)
+                    await MainActor.run {
+                        replacements.merge(matched) { _, new in new }
+                        message = L("Theme imported. Review the images, then tap Apply.")
+                        isBusy = false
+                    }
+                } catch {
+                    await MainActor.run {
+                        message = error.localizedDescription
+                        isBusy = false
+                    }
+                }
             }
         }
         .task { load() }
@@ -518,6 +540,11 @@ struct SiriHubGuardView: View {
 
 struct MGKeysTableView: View {
     @State private var query = ""
+    /// Debounced search text (TASKBOOK §8.2, Stage 3 pattern): the
+    /// full-table filter runs on the debounced value, so fast typing
+    /// runs the pipeline once per pause instead of once per keystroke
+    /// in the body.
+    @StateObject private var searchDebouncer = SearchDebouncer()
 
     var body: some View {
         VStack(alignment: .leading, spacing: GlassTokens.rowSpacing) {
@@ -528,7 +555,8 @@ struct MGKeysTableView: View {
                 .textFieldStyle(.roundedBorder)
                 .autocapitalization(.none)
                 .disableAutocorrection(true)
-            List(MGKeysTable.matching(query)) { entry in
+                .onChange(of: query) { _, newValue in searchDebouncer.submit(newValue) }
+            List(MGKeysTable.matching(searchDebouncer.debounced)) { entry in
                 VStack(alignment: .leading, spacing: 4) {
                     Text(entry.name).font(.subheadline)
                     Text(entry.key).font(.caption).foregroundStyle(.secondary).textSelection(.enabled)

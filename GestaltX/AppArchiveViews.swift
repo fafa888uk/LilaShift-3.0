@@ -21,6 +21,12 @@ struct AppArchiveView: View {
     @State private var workProgress = 0.0
     @State private var workLabel = ""
     @State private var activeTask: Task<Void, Never>?
+    /// The in-flight archive scan / cache measurement tasks, if any.
+    /// Scanning reads every archive's manifest and measuring
+    /// enumerates the whole container (TASKBOOK §8.2), so both run
+    /// in detached tasks; starting a new one cancels the previous.
+    @State private var scanTask: Task<Void, Never>?
+    @State private var cacheTask: Task<Void, Never>?
     @State private var creationReport: ArchiveCreationReport?
     @State private var restoreReport: ArchiveRestoreReport?
     @State private var restoreCandidate: AppArchiveInfo?
@@ -191,6 +197,7 @@ struct AppArchiveView: View {
         }
         .navigationTitle(L("App Archive & Cache"))
         .task { refreshScan() }
+        .onDisappear { scanTask?.cancel(); cacheTask?.cancel() }
         .fileImporter(isPresented: $showingFileImporter, allowedContentTypes: [UTType.item],
                       allowsMultipleSelection: false) { result in
             handlePickedFile(result)
@@ -267,8 +274,17 @@ struct AppArchiveView: View {
 
     // MARK: - Archives
 
+    /// Scans the archives directory off the main thread (TASKBOOK
+    /// §8.2): `scanArchives` opens every archive's manifest, so it
+    /// never runs synchronously in `.task` (main actor) or after a
+    /// create/restore. Only the result is published.
     private func refreshScan() {
-        scan = AppArchiveEngine.scanArchives(in: AppArchiveEngine.archivesDirectory())
+        scanTask?.cancel()
+        scanTask = Task.detached(priority: .userInitiated) {
+            let result = AppArchiveEngine.scanArchives(in: AppArchiveEngine.archivesDirectory())
+            guard !Task.isCancelled else { return }
+            await MainActor.run { scan = result }
+        }
     }
 
     private func startCreate() {
@@ -447,10 +463,26 @@ struct AppArchiveView: View {
 
     // MARK: - Cache
 
-    private func measureCache() {
-        cacheReport = CacheAnalyzer.analyzeContainer()
-        selectedDeletable.removeAll()
-        deletionReport = nil
+    /// Measures the container off the main thread (TASKBOOK §8.2):
+    /// `analyzeContainer` enumerates Application Support, Caches
+    /// and tmp with a per-file stat, so it never runs synchronously
+    /// from the Measure button, after a delete, or after clearing
+    /// caches. A fresh measurement clears a stale deletion report,
+    /// unless the caller passes the report it just produced —
+    /// previously `measureCache()` unconditionally cleared
+    /// `deletionReport`, so the report set by a delete/clear was
+    /// swallowed before it could display.
+    private func measureCache(keeping report: CacheDeletionReport? = nil) {
+        cacheTask?.cancel()
+        cacheTask = Task.detached(priority: .userInitiated) {
+            let result = CacheAnalyzer.analyzeContainer()
+            guard !Task.isCancelled else { return }
+            await MainActor.run {
+                cacheReport = result
+                selectedDeletable.removeAll()
+                deletionReport = report
+            }
+        }
     }
 
     private func deleteSelectedCache() {
@@ -461,10 +493,8 @@ struct AppArchiveView: View {
             do {
                 let report = try CacheAnalyzer.deleteTracked(entries)
                 await MainActor.run {
-                    deletionReport = report
-                    selectedDeletable.removeAll()
                     isWorking = false
-                    measureCache()
+                    measureCache(keeping: report)
                 }
             } catch {
                 await MainActor.run {
@@ -475,14 +505,27 @@ struct AppArchiveView: View {
         }
     }
 
+    /// Clears the app's Caches directories off the main thread
+    /// (TASKBOOK §8.2): deleting files and re-enumerating the
+    /// container never run on the main actor.
     private func clearCaches() {
-        do {
-            let freed = try CacheAnalyzer.clearContainerCaches()
-            deletionReport = CacheDeletionReport(
-                deleted: [], skippedProtected: [], failed: [], freedBytes: Int(freed))
-            measureCache()
-        } catch {
-            workError = error.localizedDescription
+        isWorking = true
+        workError = nil
+        activeTask = Task.detached(priority: .userInitiated) {
+            do {
+                let freed = try CacheAnalyzer.clearContainerCaches()
+                let report = CacheDeletionReport(
+                    deleted: [], skippedProtected: [], failed: [], freedBytes: Int(freed))
+                await MainActor.run {
+                    isWorking = false
+                    measureCache(keeping: report)
+                }
+            } catch {
+                await MainActor.run {
+                    isWorking = false
+                    workError = error.localizedDescription
+                }
+            }
         }
     }
 }

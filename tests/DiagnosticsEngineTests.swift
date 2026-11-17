@@ -27,7 +27,7 @@ final class DiagnosticsEngineTests: XCTestCase {
 
     private func device(build: String? = "23A344", region: String? = "LL",
                         native: Bool = false) -> DiagnosticsDevice {
-        DiagnosticsDevice(model: "iPhone18,4", build: build, regionCode: region,
+        DiagnosticsDevice(productType: "iPhone18,4", osBuild: build, regionCode: region,
                           isNativeAppleIntelligence: native)
     }
 
@@ -43,10 +43,33 @@ final class DiagnosticsEngineTests: XCTestCase {
                        fingerprintComparison: FingerprintComparison? = nil,
                        events: [OperationEvent] = [],
                        pendingRestartFeatureIDs: Set<String> = []) -> DiagnosticsInput {
-        DiagnosticsInput(
-            device: deviceValue, mgReadState: mgReadState,
+        // The engine derives the sentinel from device.osBuild
+        // (DiagnosticsInput has no monitorSentinel field), so the
+        // parameter only selects the build the device reports. When
+        // the caller gives no device, or a device with no build, the
+        // sentinel's build becomes the reported build; a device that
+        // already reports a build is left alone.
+        let sentinelBuild: String? = {
+            switch monitorSentinel {
+            case .blocked(let build), .unknownBuild(let build): return build
+            case .supported: return nil
+            }
+        }()
+        let device: DiagnosticsDevice? = {
+            guard let sentinelBuild else { return deviceValue }
+            if let deviceValue, deviceValue.osBuild != nil { return deviceValue }
+            return DiagnosticsDevice(
+                productType: deviceValue?.productType,
+                modelNumber: deviceValue?.modelNumber,
+                osVersion: deviceValue?.osVersion,
+                osBuild: sentinelBuild,
+                regionCode: deviceValue?.regionCode,
+                isNativeAppleIntelligence: deviceValue?.isNativeAppleIntelligence)
+        }()
+        return DiagnosticsInput(
+            device: device, mgReadState: mgReadState,
             snapshotValues: snapshotValues, workingValues: workingValues,
-            monitorRows: monitorRows, monitorSentinel: monitorSentinel,
+            monitorRows: monitorRows,
             backups: backups, backupVerifications: backupVerifications,
             restoreReports: restoreReports, fingerprintComparison: fingerprintComparison,
             events: events, pendingRestartFeatureIDs: pendingRestartFeatureIDs)
@@ -103,7 +126,7 @@ final class DiagnosticsEngineTests: XCTestCase {
         let found = finding(report, "sentinel-blocked")
         XCTAssertNotNil(found)
         XCTAssertEqual(found?.severity, .error)
-        XCTAssertEqual(found?.category, .sentinel)
+        XCTAssertEqual(found?.category, .device)
         if case .unsupported = found?.fix { } else {
             XCTFail("A blocked build must suggest the unsupported fix, got \(String(describing: found?.fix))")
         }
@@ -113,15 +136,15 @@ final class DiagnosticsEngineTests: XCTestCase {
         let report = DiagnosticsEngine.report(input(
             device: device(build: "23A344"), monitorSentinel: .supported))
         XCTAssertNil(finding(report, "sentinel-blocked"))
-        XCTAssertNil(finding(report, "sentinel-unknown"))
+        XCTAssertNil(finding(report, "sentinel-unknown-build"))
     }
 
-    func testSentinelUnknownBuildProducesInfoFinding() {
+    func testSentinelUnknownBuildProducesWarningFinding() {
         let report = DiagnosticsEngine.report(input(
             device: device(build: nil), monitorSentinel: .unknownBuild(build: "abc")))
-        let found = finding(report, "sentinel-unknown")
+        let found = finding(report, "sentinel-unknown-build")
         XCTAssertNotNil(found)
-        XCTAssertEqual(found?.severity, .info)
+        XCTAssertEqual(found?.severity, .warning)
     }
 
     func testSentinelBlockReasons() {
@@ -445,8 +468,8 @@ final class DiagnosticsEngineTests: XCTestCase {
 
     func testFixKindLabelsAreDistinctAndNonEmpty() {
         let kinds: [FixSuggestion] = [
-            .autoFixable("Do it"), .needsConfirmation("Confirm it"), .needsRebackup("Back up first"),
-            .needsColdRestart("Restart"), .unsupported("Not supported"), .cannotConfirm("Cannot confirm"),
+            .autoFixable(action: "Do it"), .needsConfirmation(action: "Confirm it"), .needsRebackup(action: "Back up first"),
+            .needsColdRestart(action: "Restart"), .unsupported(reason: "Not supported"), .cannotConfirm(reason: "Cannot confirm"),
         ]
         let labels = kinds.map(\.kindLabel)
         XCTAssertTrue(labels.allSatisfy { !$0.isEmpty })

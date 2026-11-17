@@ -84,7 +84,7 @@ struct ContentView: View {
         #if targetEnvironment(simulator)
         .sheet(item: $previewCategory) { category in
             NavigationStack {
-                ToolGroupView(group: ToolGroup(for: category), systemSettings: systemSettings, customizations: customizations, wallpaperLibrary: wallpaperLibrary, launchCatalog: launchCatalog)
+                ToolGroupView(group: ToolGroup(for: category), systemSettings: systemSettings, customizations: customizations, wallpaperLibrary: wallpaperLibrary, launchCatalog: launchCatalog, share: presentShare)
             }.environmentObject(model)
         }
         #endif
@@ -535,7 +535,7 @@ struct ContentView: View {
                         LazyVGrid(columns: gridColumns, spacing: GlassTokens.gridSpacing) {
                             ForEach(visibleToolGroups) { group in
                                 NavigationLink {
-                                    ToolGroupView(group: group, systemSettings: systemSettings, customizations: customizations, wallpaperLibrary: wallpaperLibrary, launchCatalog: launchCatalog)
+                                    ToolGroupView(group: group, systemSettings: systemSettings, customizations: customizations, wallpaperLibrary: wallpaperLibrary, launchCatalog: launchCatalog, share: presentShare)
                                 } label: {
                                     GlassCard(cornerRadius: GlassTokens.tileRadius) {
                                         GlassCategoryTile(
@@ -558,7 +558,7 @@ struct ContentView: View {
                             .foregroundStyle(.secondary)
                     }
                     NavigationLink {
-                        ToolGroupView(group: .advancedDiagnostics, systemSettings: systemSettings, customizations: customizations, wallpaperLibrary: wallpaperLibrary, launchCatalog: launchCatalog)
+                        ToolGroupView(group: .advancedDiagnostics, systemSettings: systemSettings, customizations: customizations, wallpaperLibrary: wallpaperLibrary, launchCatalog: launchCatalog, share: presentShare)
                     } label: {
                         GlassCard(cornerRadius: GlassTokens.tileRadius) {
                             GlassCategoryTile(
@@ -1466,6 +1466,12 @@ struct ToolGroupView: View {
     let customizations: CustomizationModel
     let wallpaperLibrary: WallpaperLibraryModel
     let launchCatalog: LaunchArtworkCatalogModel
+    /// Shares an export sheet (Stage 6 fix, Stage 9 first commit):
+    /// `presentShare` is a private method of `ContentView`, out of
+    /// scope inside this struct, so the closure is threaded in from
+    /// the instantiation site — the same shape as
+    /// `BackupsView(share: presentShare)`.
+    let share: (TemporaryExport) -> Void
     @EnvironmentObject private var model: GestaltManager
     @State private var asksInternalBuild = false
 
@@ -1548,7 +1554,7 @@ struct ToolGroupView: View {
                             }
                             .buttonStyle(.plain)
                             Divider()
-                            NavigationLink { DiagnosticsCentreView(share: presentShare) } label: {
+                            NavigationLink { DiagnosticsCentreView(share: share) } label: {
                                 HStack {
                                     Label(L("Diagnostics Centre"), systemImage: "stethoscope")
                                     Spacer(minLength: 8)
@@ -1559,7 +1565,7 @@ struct ToolGroupView: View {
                             }
                             .buttonStyle(.plain)
                             Divider()
-                            NavigationLink { AppArchiveView(share: presentShare) } label: {
+                            NavigationLink { AppArchiveView(share: share) } label: {
                                 HStack {
                                     Label(L("App Archive & Cache"), systemImage: "archivebox")
                                     Spacer(minLength: 8)
@@ -1913,7 +1919,7 @@ private struct PresetRow: View {
             actionTitle: status == .unconfigured ? L("Enable") : nil,
             actionEnabled: model.hasDocument,
             onAction: { stage(.enable, for: capability) },
-            menu: AnyView(optionsMenu)
+            menu: optionsMenu
         )
     }
 

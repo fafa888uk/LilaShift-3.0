@@ -8,6 +8,11 @@ import UniformTypeIdentifiers
 final class CustomizationModel: ObservableObject {
     @Published private(set) var packs: [WallpaperPack] = []
     @Published private(set) var previews: [UUID: Data] = [:]
+    /// Decoded preview images, one per pack (Stage 9, TASKBOOK
+    /// §8.2). The view reads from here and never calls
+    /// `UIImage(data:)` in its body; the decode runs once per pack
+    /// in `loadPreviews`, off the main thread.
+    private(set) var previewCache = PreviewImageCache()
     @Published private(set) var busy = false
     @Published private(set) var isPresenting = false
     private var presentationOwners = Set<UUID>()
@@ -26,7 +31,18 @@ final class CustomizationModel: ObservableObject {
         do { try await operation() } catch is CancellationError {} catch { message = error.localizedDescription }
     }
     private func loadPreviews() async {
-        for pack in packs where previews[pack.id] == nil { previews[pack.id] = try? await store.wallpaperPreview(pack.id) }
+        for pack in packs where previews[pack.id] == nil {
+            guard let data = try? await store.wallpaperPreview(pack.id) else { continue }
+            // Decode off the main thread (TASKBOOK §8.2) and store
+            // the decoded image; the view reads `previewCache` and
+            // never re-decodes on every render. The data is published
+            // after the image is stored, so the render that follows
+            // the publish always finds the image.
+            if let image = await Task.detached(priority: .userInitiated) { UIImage(data: data) }.value {
+                previewCache.store(image, for: pack.id)
+            }
+            previews[pack.id] = data
+        }
     }
     func loadWallpapers() async {
         await run { packs = try await store.listWallpapers(); await loadPreviews() }
@@ -68,13 +84,14 @@ final class CustomizationModel: ObservableObject {
         }
     }
     func removeWallpaper(_ pack: WallpaperPack) async {
-        await run { packs = try await store.removeWallpaper(pack.id); previews.removeValue(forKey: pack.id) }
+        await run { packs = try await store.removeWallpaper(pack.id); previews.removeValue(forKey: pack.id); previewCache.remove(for: pack.id) }
     }
     func deleteImportedWallpaper(_ pack: WallpaperPack) async {
         await run {
             try await store.deleteImportedWallpaper(pack.id)
             packs.removeAll { $0.id == pack.id }
             previews.removeValue(forKey: pack.id)
+            previewCache.remove(for: pack.id)
         }
     }
     func open(_ identifier: String) {
@@ -184,7 +201,9 @@ struct WallpapersView: View {
         } message: { Text(model.message ?? "") }
     }
     @ViewBuilder private func preview(_ pack: WallpaperPack) -> some View {
-        if let data = model.previews[pack.id], let image = UIImage(data: data) {
+        // The decoded image comes from the cache (Stage 9): decoding
+        // `UIImage(data:)` here would re-decode on every render.
+        if let image = model.previewCache.image(for: pack.id) {
             Image(uiImage: image).resizable().scaledToFill().clipped()
         } else {
             RoundedRectangle(cornerRadius: 12).fill(Color(uiColor: .tertiarySystemFill))

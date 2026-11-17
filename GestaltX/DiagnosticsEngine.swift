@@ -461,7 +461,7 @@ enum DiagnosticsEngine {
                 title: L("This iOS version blocks the mechanism"),
                 evidence: [String(format: L("Build %@: %@"), build,
                                   VersionSentinel.supportedRangeDescription(for: sentinel))],
-                fix: .unsupported(VersionSentinel.guidance(for: sentinel)
+                fix: .unsupported(reason: VersionSentinel.guidance(for: sentinel)
                     ?? L("This iOS version blocks the mechanism."))))
         case .unknownBuild(let build):
             add(DiagnosticsFinding(
@@ -471,7 +471,7 @@ enum DiagnosticsEngine {
                 title: L("iOS build could not be confirmed"),
                 evidence: [String(format: L("Build %@: %@"), build.isEmpty ? L("unknown") : build,
                                   VersionSentinel.supportedRangeDescription(for: sentinel))],
-                fix: .cannotConfirm(VersionSentinel.guidance(for: sentinel)
+                fix: .cannotConfirm(reason: VersionSentinel.guidance(for: sentinel)
                     ?? L("The iOS build could not be confirmed."))))
         }
     }
@@ -487,7 +487,7 @@ enum DiagnosticsEngine {
                 severity: .info,
                 title: L("Device not read yet"),
                 evidence: [],
-                fix: .autoFixable(L("Read the device to see its current state."))))
+                fix: .autoFixable(action: L("Read the device to see its current state."))))
         case .readFailed(let reason):
             add(DiagnosticsFinding(
                 code: "mg-read-failed",
@@ -495,7 +495,7 @@ enum DiagnosticsEngine {
                 severity: .error,
                 title: L("MobileGestalt read failed"),
                 evidence: [reason],
-                fix: .cannotConfirm(L("The read failed. Re-read the device."))))
+                fix: .cannotConfirm(reason: L("The read failed. Re-read the device."))))
         case .live:
             break
         }
@@ -547,7 +547,7 @@ extension DiagnosticsEngine {
                     severity: .warning,
                     title: L("Apple Intelligence keys are not staged"),
                     evidence: [L("None of the 7 AI keys is staged, and the live answers show them off.")],
-                    fix: .needsConfirmation(L("Stage the AI preset (one-tap unlock or AI Only) so the 7 AI keys are staged."))))
+                    fix: .needsConfirmation(action: L("Stage the AI preset (one-tap unlock or AI Only) so the 7 AI keys are staged."))))
             }
         }
 
@@ -567,7 +567,7 @@ extension DiagnosticsEngine {
                            staged[key.key]?.displayText ?? L("absent"),
                            liveByKey[key.key]?.displayText ?? L("unreadable"))
                 },
-                fix: .needsColdRestart(L("Restart the device, then re-read: the staged AI values are not what the device reports live."))))
+                fix: .needsColdRestart(action: L("Restart the device, then re-read: the staged AI values are not what the device reports live."))))
         }
 
         // 3. Write success: a failed AI write event.
@@ -584,7 +584,7 @@ extension DiagnosticsEngine {
                 severity: .error,
                 title: L("An Apple Intelligence write did not verify"),
                 evidence: writeFailed.prefix(3).map(\.detail),
-                fix: .needsRebackup(L("Create a fresh backup, then retry the AI write."))))
+                fix: .needsRebackup(action: L("Create a fresh backup, then retry the AI write."))))
         }
 
         // 4. Cold restart: AI changes applied but not yet verified
@@ -598,7 +598,7 @@ extension DiagnosticsEngine {
                 title: L("Apple Intelligence changes await a restart check"),
                 evidence: [String(format: L("Applied but not yet verified after a restart: %@"),
                                   pendingAI.sorted().joined(separator: ", "))],
-                fix: .needsColdRestart(L("Restart the device: the AI changes are applied but not yet verified after a restart."))))
+                fix: .needsColdRestart(action: L("Restart the device: the AI changes are applied but not yet verified after a restart."))))
         }
 
         // 5. Dependencies: AI is staged (or live on) but the region
@@ -613,7 +613,7 @@ extension DiagnosticsEngine {
                     severity: .warning,
                     title: L("Apple Intelligence needs region LL"),
                     evidence: [String(format: L("Region code is %@, not LL."), region)],
-                    fix: .needsConfirmation(L("Change the region code to LL: Apple Intelligence depends on it on non-native hardware."))))
+                    fix: .needsConfirmation(action: L("Change the region code to LL: Apple Intelligence depends on it on non-native hardware."))))
             }
         }
     }
@@ -645,8 +645,8 @@ extension DiagnosticsEngine {
             title: L("Live values differ from the staged values"),
             evidence: evidence,
             fix: needsRestart
-                ? .needsColdRestart(L("Restart the device, then re-read: the live values still differ from the staged values."))
-                : .needsConfirmation(L("Apply or discard the staged changes, then re-read."))))
+                ? .needsColdRestart(action: L("Restart the device, then re-read: the live values still differ from the staged values."))
+                : .needsConfirmation(action: L("Apply or discard the staged changes, then re-read."))))
     }
 
     /// Slot rows whose live answer disagrees with the native
@@ -670,7 +670,7 @@ extension DiagnosticsEngine {
             severity: .warning,
             title: L("An Apple Intelligence slot disagrees with its native baseline"),
             evidence: Array(evidence),
-            fix: .needsConfirmation(L("Restore the slot to its native value from a verified backup."))))
+            fix: .needsConfirmation(action: L("Restore the slot to its native value from a verified backup."))))
     }
 
     private static func diagnoseBackups(_ input: DiagnosticsInput, add: (DiagnosticsFinding) -> Void) {
@@ -681,7 +681,7 @@ extension DiagnosticsEngine {
                 severity: .info,
                 title: L("No backups yet"),
                 evidence: [],
-                fix: .autoFixable(L("Create a backup before changing anything."))))
+                fix: .autoFixable(action: L("Create a backup before changing anything."))))
             return
         }
         let failed = input.backupVerifications.filter { verification in
@@ -699,7 +699,7 @@ extension DiagnosticsEngine {
                 evidence: failed.prefix(3).map { verification in
                     String(format: L("Backup “%@” — verification failed."), verification.record.reason)
                 },
-                fix: .needsRebackup(L("Create a fresh backup. A failed backup cannot be used to restore."))))
+                fix: .needsRebackup(action: L("Create a fresh backup. A failed backup cannot be used to restore."))))
             return
         }
         let legacyOnly = !input.backupVerifications.isEmpty
@@ -714,7 +714,7 @@ extension DiagnosticsEngine {
                 severity: .warning,
                 title: L("Backups have no recorded digest"),
                 evidence: [L("Every verified backup is a legacy backup with no recorded digest, so integrity cannot be proven.")],
-                fix: .needsConfirmation(L("Create a fresh backup with a recorded digest. Restore from a legacy backup only after explicit confirmation."))))
+                fix: .needsConfirmation(action: L("Create a fresh backup with a recorded digest. Restore from a legacy backup only after explicit confirmation."))))
         } else if input.backupVerifications.isEmpty {
             add(DiagnosticsFinding(
                 code: "backup-unverified",
@@ -722,7 +722,7 @@ extension DiagnosticsEngine {
                 severity: .info,
                 title: L("Backups have not been verified"),
                 evidence: [],
-                fix: .autoFixable(L("Verify the backups before relying on one."))))
+                fix: .autoFixable(action: L("Verify the backups before relying on one."))))
         }
     }
 
@@ -730,15 +730,15 @@ extension DiagnosticsEngine {
     private static func fix(forFailedStep step: RestoreEngine.Step) -> FixSuggestion {
         switch step {
         case .verifyIntegrity, .backUpFirst:
-            return .needsRebackup(L("Create a fresh backup before retrying the restore."))
+            return .needsRebackup(action: L("Create a fresh backup before retrying the restore."))
         case .verifyDeviceIdentity:
-            return .cannotConfirm(L("This backup does not belong to this device."))
+            return .cannotConfirm(reason: L("This backup does not belong to this device."))
         case .verifyVersionCompatibility:
-            return .unsupported(L("This iOS version blocks the mechanism. Stay on iOS 27.2.1 or below."))
+            return .unsupported(reason: L("This iOS version blocks the mechanism. Stay on iOS 27.2.1 or below."))
         case .preview:
-            return .needsConfirmation(L("Review the restore preview: a check failed."))
+            return .needsConfirmation(action: L("Review the restore preview: a check failed."))
         case .execute, .readBackVerify, .report:
-            return .cannotConfirm(L("The restore step failed. Check the restore report for the detail."))
+            return .cannotConfirm(reason: L("The restore step failed. Check the restore report for the detail."))
         }
     }
 
@@ -746,12 +746,12 @@ extension DiagnosticsEngine {
         let failed = input.restoreReports.filter { !$0.succeeded }
         guard !failed.isEmpty else { return }
         var evidence: [String] = []
-        var fix: FixSuggestion = .cannotConfirm(L("The restore did not complete. Check the restore report for the failed step."))
+        var suggestion: FixSuggestion = .cannotConfirm(reason: L("The restore did not complete. Check the restore report for the failed step."))
         for (index, report) in failed.prefix(3).enumerated() {
             guard let firstFailed = report.outcomes.first(where: { !$0.passed }) else { continue }
             evidence.append(String(format: L("Backup “%@”: %@ — %@"),
                                    report.plan.record.reason, firstFailed.step.rawValue, firstFailed.detail))
-            if index == 0 { fix = fix(forFailedStep: firstFailed.step) }
+            if index == 0 { suggestion = fix(forFailedStep: firstFailed.step) }
         }
         add(DiagnosticsFinding(
             code: "restore-failed",
@@ -759,7 +759,7 @@ extension DiagnosticsEngine {
             severity: .error,
             title: L("A restore did not complete"),
             evidence: evidence,
-            fix: fix))
+            fix: suggestion))
     }
 
     private static func diagnoseFingerprint(_ input: DiagnosticsInput, add: (DiagnosticsFinding) -> Void) {
@@ -771,7 +771,7 @@ extension DiagnosticsEngine {
                 severity: .error,
                 title: L("The stored fingerprint is from a different device"),
                 evidence: [],
-                fix: .cannotConfirm(L("The stored fingerprint belongs to a different device, so the recorded support scope does not apply here."))))
+                fix: .cannotConfirm(reason: L("The stored fingerprint belongs to a different device, so the recorded support scope does not apply here."))))
             return
         }
         let evidence = comparison.changes.prefix(5).map { change in
@@ -783,7 +783,7 @@ extension DiagnosticsEngine {
             severity: .warning,
             title: L("The device fingerprint changed"),
             evidence: Array(evidence),
-            fix: .needsConfirmation(L("Review the changed fields. If the change is expected, re-capture the fingerprint."))))
+            fix: .needsConfirmation(action: L("Review the changed fields. If the change is expected, re-capture the fingerprint."))))
     }
 
     /// One finding per failed/guard event kind present, with the
@@ -791,23 +791,23 @@ extension DiagnosticsEngine {
     private static func diagnoseEvents(_ input: DiagnosticsInput, add: (DiagnosticsFinding) -> Void) {
         let mapping: [(kind: OperationEventKind, severity: Severity, category: FindingCategory, fix: FixSuggestion)] = [
             (.writeFailed, .error, .mgWrite,
-             .needsRebackup(L("Create a fresh backup, then retry the write."))),
+             .needsRebackup(action: L("Create a fresh backup, then retry the write."))),
             (.restoreFailed, .error, .restore,
-             .needsRebackup(L("Create a fresh backup before retrying the restore."))),
+             .needsRebackup(action: L("Create a fresh backup before retrying the restore."))),
             (.readFailed, .error, .mgRead,
-             .cannotConfirm(L("The read failed. Re-read the device."))),
+             .cannotConfirm(reason: L("The read failed. Re-read the device."))),
             (.guardLayoutUnresolved, .warning, .conflict,
-             .cannotConfirm(L("The cache layout could not be resolved on this model and OS build."))),
+             .cannotConfirm(reason: L("The cache layout could not be resolved on this model and OS build."))),
             (.guardHardwareIdentity, .warning, .conflict,
-             .cannotConfirm(L("The proposal touched a hardware-identity field. Remove it from the proposal."))),
+             .cannotConfirm(reason: L("The proposal touched a hardware-identity field. Remove it from the proposal."))),
             (.guardNativeConflict, .warning, .conflict,
-             .needsConfirmation(L("On native Apple Intelligence hardware, skip this item: the native slot stays off."))),
+             .needsConfirmation(action: L("On native Apple Intelligence hardware, skip this item: the native slot stays off."))),
             (.slotUnresolvable, .warning, .conflict,
-             .needsConfirmation(L("The CacheData slot could not be located on this device's layout."))),
+             .needsConfirmation(action: L("The CacheData slot could not be located on this device's layout."))),
             (.backupFailed, .error, .backup,
-             .needsRebackup(L("Create a fresh backup. This record cannot be used to restore."))),
+             .needsRebackup(action: L("Create a fresh backup. This record cannot be used to restore."))),
             (.regionReverted, .warning, .compatibility,
-             .needsRebackup(L("If the region keeps reverting, restore from a verified backup."))),
+             .needsRebackup(action: L("If the region keeps reverting, restore from a verified backup."))),
         ]
         for entry in mapping {
             let events = input.events.filter { $0.kind == entry.kind }
@@ -830,6 +830,6 @@ extension DiagnosticsEngine {
             severity: .info,
             title: L("Monitor values are stale"),
             evidence: [L("The live values were read more than five minutes ago.")],
-            fix: .autoFixable(L("Refresh the monitor to re-read the live values."))))
+            fix: .autoFixable(action: L("Refresh the monitor to re-read the live values."))))
     }
 }

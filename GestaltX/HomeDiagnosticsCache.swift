@@ -156,7 +156,7 @@ final class HomeDiagnosticsCache: ObservableObject {
     /// into the manager's input builder.
     var fingerprintComparison: FingerprintComparison? {
         guard let stored = storedFingerprint, let current = currentFingerprint else { return nil }
-        return DeviceFingerprint.compare(stored: stored, current: current)
+        return DeviceFingerprintCapture.compare(stored: stored, current: current)
     }
     /// True while a background refresh is in flight. The previous
     /// cached values stay visible until the new ones arrive.
@@ -366,12 +366,12 @@ final class HomeDiagnosticsCache: ObservableObject {
             let workingValues = valuesByKey(in: working ?? snapshot?.document)
             let fingerprintComparison: FingerprintComparison? = {
                 guard let stored = storedFingerprint, let current = currentFingerprint else { return nil }
-                return DeviceFingerprint.compare(stored: stored, current: current)
+                return DeviceFingerprintCapture.compare(stored: stored, current: current)
             }()
             let device: DiagnosticsDevice? = deviceReport.map { report in
                 DiagnosticsDevice(
-                    model: report.profile.productType.value,
-                    build: report.profile.osBuild.value,
+                    productType: report.profile.productType.value,
+                    osBuild: report.profile.osBuild.value,
                     regionCode: report.profile.regionCode.value,
                     isNativeAppleIntelligence: report.profile.isNativeAppleIntelligence.value ?? false)
             }
@@ -383,7 +383,6 @@ final class HomeDiagnosticsCache: ObservableObject {
                 snapshotValues: snapshotValues,
                 workingValues: workingValues,
                 monitorRows: monitorRows,
-                monitorSentinel: monitorSentinel,
                 backups: backups,
                 backupVerifications: verifications,
                 fingerprintComparison: fingerprintComparison,

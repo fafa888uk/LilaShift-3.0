@@ -34,6 +34,13 @@ final class GestaltManager: ObservableObject {
     /// backups only — see `OperationEventRecorder`). Observation
     /// only: recording never changes an operation's outcome.
     let operationEvents = OperationEventRecorder()
+    /// Real measured durations of this session's long operations
+    /// (backup, restore, live probe, monitor refresh, apply).
+    /// Stage 3 only built the monitor (ADR-2-12); Stage 9 wires it
+    /// into the operations and shows the samples in the Diagnostics
+    /// Centre. Every sample is a real measured duration — an
+    /// operation with no runs has no row, never a placeholder.
+    let performance = PerformanceMonitor()
     /// When the last successful read happened, or `nil` when no read
     /// has happened yet. Read-path state only.
     @Published private(set) var lastReadAt: Date?
@@ -392,14 +399,16 @@ final class GestaltManager: ObservableObject {
     /// the main thread (the live query can be slow) and the results are
     /// published back on the main actor.
     func refreshLiveProbe() async {
-        let (region, regModel, aiEnabled) = await Task.detached(priority: .userInitiated) {
-            let region = LiveGestaltProbe.queryString(GestaltKeys.regionCode)
-            let regModel = LiveGestaltProbe.queryString(GestaltKeys.modelNumber)
-            let aiEnabled = Capability.all.first { $0.id == "ai" }.flatMap { capability in
-                capability.keys.first.flatMap { LiveGestaltProbe.queryBool($0) }
-            }
-            return (region, regModel, aiEnabled)
-        }.value
+        let (region, regModel, aiEnabled) = await performance.measure(label: "live-probe") {
+            await Task.detached(priority: .userInitiated) {
+                let region = LiveGestaltProbe.queryString(GestaltKeys.regionCode)
+                let regModel = LiveGestaltProbe.queryString(GestaltKeys.modelNumber)
+                let aiEnabled = Capability.all.first { $0.id == "ai" }.flatMap { capability in
+                    capability.keys.first.flatMap { LiveGestaltProbe.queryBool($0) }
+                }
+                return (region, regModel, aiEnabled)
+            }.value
+        }
         liveRegionCode = region
         liveRegModel = regModel
         liveAIEnabled = aiEnabled
@@ -439,14 +448,16 @@ final class GestaltManager: ObservableObject {
         let productType = preview?.extra[GestaltKeys.productType] as? String ?? identity.productType
         let iosVersion = identity.osVersion ?? ""
         let sentinel = VersionSentinel.state(forBuild: identity.osBuild)
-        let livePairs = await Task.detached(priority: .userInitiated) {
-            MGDatabase.all.map { record -> (String, MGValue?) in
-                let value = LiveGestaltProbe.query(record.obfuscatedName)
-                    ?? (record.readableName != record.obfuscatedName
-                        ? LiveGestaltProbe.query(record.readableName) : nil)
-                return (record.obfuscatedName, value.flatMap(MGValue.fromPlistValue))
-            }
-        }.value
+        let livePairs = await performance.measure(label: "monitor-refresh") {
+            await Task.detached(priority: .userInitiated) {
+                MGDatabase.all.map { record -> (String, MGValue?) in
+                    let value = LiveGestaltProbe.query(record.obfuscatedName)
+                        ?? (record.readableName != record.obfuscatedName
+                            ? LiveGestaltProbe.query(record.readableName) : nil)
+                    return (record.obfuscatedName, value.flatMap(MGValue.fromPlistValue))
+                }
+            }.value
+        }
         let liveByKey = Dictionary(
             livePairs.compactMap { pair in pair.1.map { (pair.0, $0) } },
             uniquingKeysWith: { first, _ in first })
@@ -498,8 +509,8 @@ final class GestaltManager: ObservableObject {
             return nil
         }()
         let device = DiagnosticsDevice(
-            model: document?.extra[GestaltKeys.productType] as? String,
-            build: SystemDeviceIdentitySource().osBuild,
+            productType: document?.extra[GestaltKeys.productType] as? String,
+            osBuild: SystemDeviceIdentitySource().osBuild,
             regionCode: regionCode,
             isNativeAppleIntelligence: isNativeAppleIntelligence)
         // Only the read-state case is diagnosed; the timestamp is
@@ -515,7 +526,6 @@ final class GestaltManager: ObservableObject {
             snapshotValues: snapshotValues,
             workingValues: workingValues,
             monitorRows: monitorRows,
-            monitorSentinel: monitorSentinel,
             backups: backups,
             backupVerifications: backupVerifications,
             restoreReports: lastRestoreReport.map { [$0] } ?? [],
@@ -1496,9 +1506,13 @@ final class GestaltManager: ObservableObject {
             // Stage 5 orchestration (§3.4): a fresh pre-write backup
             // first, then commit with its record — commit verifies
             // the record covers the pre-write bytes and does not
-            // write a second backup.
-            let preWriteBackup = try await BackupEngine.createPreWriteBackup(store: files, snapshot: snapshot, reason: "Before applying")
-            let result = try await files.commit(edited, expected: snapshot, originallyAbsentKeys: absentKeys, preWriteBackup: preWriteBackup)
+            // write a second backup. The measured "apply" duration
+            // covers both writes (Stage 9, ADR-2-12: real durations
+            // only).
+            let result = try await performance.measure(label: "apply") {
+                let preWriteBackup = try await BackupEngine.createPreWriteBackup(store: files, snapshot: snapshot, reason: "Before applying")
+                return try await files.commit(edited, expected: snapshot, originallyAbsentKeys: absentKeys, preWriteBackup: preWriteBackup)
+            }
             accept(result); needsRestart = result.source == .device
             status = result.source == .device ? "Changes verified on device" : "Local changes saved"
             let changedCacheOption = !DeviceCacheOptions.changes(from: snapshot.document, to: edited).isEmpty
@@ -1513,7 +1527,8 @@ final class GestaltManager: ObservableObject {
         guard !isBusy, let snapshot else { return }
         isBusy = true; defer { isBusy = false }
         do {
-            try await files.backup(snapshot); log(L("Backup saved")); message = L("Backup saved")
+            try await performance.measure(label: "backup") { try await files.backup(snapshot) }
+            log(L("Backup saved")); message = L("Backup saved")
             recordOperationEvent(.backupCreated, detail: L("Backup saved"))
             await reloadBackups()
         }
@@ -1532,26 +1547,28 @@ final class GestaltManager: ObservableObject {
         var committed: DocumentSnapshot?
         let plan = RestoreEngine.Plan(record: record, allowLegacyNoDigest: allowLegacyNoDigest)
         let currentBuild = SystemDeviceIdentitySource().osBuild
-        let report = await RestoreEngine.run(
-            plan: plan, snapshot: snapshot,
-            installationDeviceID: RestoreIntelligence.installationDeviceID,
-            currentBuild: currentBuild,
-            deviceDisplayName: modelName.isEmpty ? L("This device") : modelName,
-            createPreWriteBackup: { snapshot in
-                try await BackupEngine.createPreWriteBackup(store: files, snapshot: snapshot, reason: "Before restoring")
-            },
-            execute: { record, preWrite in
-                let data = try await files.backupData(record)
-                let restored = try GestaltDocument(data: data)
-                log("[restore] \(record.filename) · \(record.byteCount) bytes · reason=\(record.reason)")
-                logChanges(from: snapshot.document, to: restored, prefix: "[restore-diff] ")
-                let result = try await files.commit(restored, expected: snapshot, restoring: record, preWriteBackup: preWrite)
-                committed = result
-                return result.document
-            },
-            readBack: {
-                try await files.loadDevice().document
-            })
+        let report = await performance.measure(label: "restore") {
+            await RestoreEngine.run(
+                plan: plan, snapshot: snapshot,
+                installationDeviceID: RestoreIntelligence.installationDeviceID,
+                currentBuild: currentBuild,
+                deviceDisplayName: modelName.isEmpty ? L("This device") : modelName,
+                createPreWriteBackup: { snapshot in
+                    try await BackupEngine.createPreWriteBackup(store: files, snapshot: snapshot, reason: "Before restoring")
+                },
+                execute: { record, preWrite in
+                    let data = try await files.backupData(record)
+                    let restored = try GestaltDocument(data: data)
+                    log("[restore] \(record.filename) · \(record.byteCount) bytes · reason=\(record.reason)")
+                    logChanges(from: snapshot.document, to: restored, prefix: "[restore-diff] ")
+                    let result = try await files.commit(restored, expected: snapshot, restoring: record, preWriteBackup: preWrite)
+                    committed = result
+                    return result.document
+                },
+                readBack: {
+                    try await files.loadDevice().document
+                })
+        }
         lastRestoreReport = report
         if let committed {
             let changed = !committed.document.matches(snapshot.document)

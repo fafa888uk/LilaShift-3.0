@@ -163,6 +163,10 @@ private struct LaunchArtworkEditor: View {
     @StateObject private var model = LaunchArtworkModel()
     @State private var selectedPhoto: PhotosPickerItem?
     @State private var showsPhotos = false
+    /// The decoded preview image (Stage 9, TASKBOOK §8.2): decoded
+    /// once per preview change, off the main thread — the body used
+    /// to call `UIImage(data:)` on every render.
+    @State private var previewImage: UIImage?
     @State private var asksApply = false
     @State private var asksRestore = false
     @State private var presentationOwner = UUID()
@@ -173,9 +177,15 @@ private struct LaunchArtworkEditor: View {
                 HStack {
                     Spacer()
                     Group {
-                        if let data = model.preview, let image = UIImage(data: data) {
+                        if let image = previewImage {
                             Image(uiImage: image).resizable().scaledToFill()
                         } else { Rectangle().fill(Color(uiColor: .tertiarySystemFill)).overlay { Image(systemName: "photo").foregroundStyle(.secondary) } }
+                    }
+                    .task(id: model.preview) {
+                        let data = model.preview
+                        previewImage = await Task.detached(priority: .userInitiated) {
+                            data.flatMap { UIImage(data: $0) }
+                        }.value
                     }
                     .frame(width: 180, height: min(420, max(100, 180 * CGFloat(model.state?.height ?? 2) / CGFloat(model.state?.width ?? 1))))
                     .clipped().clipShape(RoundedRectangle(cornerRadius: 14))

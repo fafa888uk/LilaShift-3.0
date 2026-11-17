@@ -330,7 +330,12 @@ struct GlassBottomBar<Content: View>: View {
 /// purpose, current-status badge, an Enable/Pending action, and the "⋯"
 /// menu with conditions, compatibility notes and restore. The row itself
 /// only presents state; all staging logic stays in the caller.
-struct GlassFeatureRow: View {
+///
+/// The menu is generic over its view type (Stage 9, TASKBOOK §8.2):
+/// the row used to erase it to `AnyView`, the only `AnyView` in the
+/// app, which defeats SwiftUI's view-identity diffing on every
+/// rebuild of the row.
+struct GlassFeatureRow<Menu: View>: View {
     let symbol: String
     let tint: Color
     let title: String
@@ -342,7 +347,7 @@ struct GlassFeatureRow: View {
     let actionTitle: String?
     let actionEnabled: Bool
     let onAction: () -> Void
-    let menu: AnyView
+    let menu: Menu
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 

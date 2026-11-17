@@ -38,6 +38,11 @@ actor PerformanceMonitor {
         recorded[label] ?? []
     }
 
+    /// The labels with at least one recorded sample, sorted.
+    func labels() -> [String] {
+        recorded.keys.sorted()
+    }
+
     /// Drops the samples for one label, or all labels when nil.
     func reset(label: String? = nil) {
         if let label { recorded[label] = nil } else { recorded.removeAll() }

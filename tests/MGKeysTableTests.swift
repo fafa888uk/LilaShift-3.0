@@ -61,6 +61,22 @@ final class MGKeysTableTests: XCTestCase {
         XCTAssertTrue(MGKeysTable.matching("definitely-not-a-real-key-xyz").isEmpty)
     }
 
+    func testMatchingIgnoresCaseAndSurroundingWhitespace() {
+        // The debounced search (Stage 9) feeds raw typed text into
+        // `matching`: case and surrounding whitespace must never
+        // change the result set.
+        let lower = MGKeysTable.matching("sirihub")
+        let upper = MGKeysTable.matching("SIRIHUB")
+        let padded = MGKeysTable.matching("  SiriHub  ")
+        XCTAssertEqual(lower.count, 1, "Lowercase matches")
+        XCTAssertEqual(upper.count, 1, "Uppercase matches")
+        XCTAssertEqual(padded.count, 1, "Surrounding whitespace is ignored")
+        XCTAssertEqual(lower.first?.key, upper.first?.key)
+        XCTAssertEqual(lower.first?.key, padded.first?.key)
+        XCTAssertEqual(MGKeysTable.matching("   ").count, MGKeysTable.all.count,
+                       "Whitespace-only input matches everything, like empty input")
+    }
+
     func testEveryEntryCitesASource() {
         for entry in MGKeysTable.all {
             XCTAssertFalse(entry.source.isEmpty, "Entry \(entry.key) has no source")

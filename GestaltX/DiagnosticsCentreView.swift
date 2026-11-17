@@ -18,6 +18,20 @@ struct DiagnosticsCentreView: View {
     @State private var report: DiagnosticsReport?
     @State private var isComputing = false
     @State private var exportError: String?
+    /// Real measured operation durations from this session (Stage 9,
+    /// ADR-2-12). Empty until an operation has run — never a
+    /// placeholder row.
+    @State private var performanceRows: [PerformanceRow] = []
+
+    /// One measured operation: how many runs, the last duration and
+    /// the mean, all computed from the monitor's real samples.
+    private struct PerformanceRow: Identifiable {
+        let label: String
+        let count: Int
+        let last: TimeInterval
+        let mean: TimeInterval
+        var id: String { label }
+    }
 
     private var sortedFindings: [DiagnosticsFinding] {
         (report?.findings ?? []).sorted {
@@ -34,9 +48,7 @@ struct DiagnosticsCentreView: View {
                         Text(report.summary).font(.headline)
                         Text(report.generatedAt, format: .dateTime.year().month().day().hour().minute().second())
                             .font(.caption).foregroundStyle(.secondary)
-                        if let device = report.device {
-                            Text(deviceSummary(device)).font(.caption).foregroundStyle(.secondary)
-                        }
+                        Text(report.inputSummary).font(.caption).foregroundStyle(.secondary)
                     }
                 }
                 if report.findings.isEmpty {
@@ -71,6 +83,23 @@ struct DiagnosticsCentreView: View {
                     Text(L("Exports contain no UDID, serial number or chip ID: the report redacts device identity at construction."))
                 }
                 Section {
+                    if performanceRows.isEmpty {
+                        Text(L("No measurements yet. Durations appear here after a backup, restore, monitor refresh or apply."))
+                            .font(.caption).foregroundStyle(.secondary)
+                    } else {
+                        ForEach(performanceRows) { row in
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(row.label).font(.subheadline)
+                                Text(L("Runs") + ": \(row.count) · " + L("Last") + ": \(row.last, format: .number.precision(.fractionLength(2)))s · " + L("Mean") + ": \(row.mean, format: .number.precision(.fractionLength(2)))s")
+                                    .font(.caption).foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                } header: { Text(L("Performance")) } footer: {
+                    Text(L("Real measured durations of operations on this device. Nothing here is estimated; an operation with no runs has no row."))
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+                Section {
                     Text(L("This report covers the iOS version sentinel, the device read state, the Apple Intelligence chain, monitor differences, the slot baseline, backups, restore reports, the device fingerprint, operation events and monitor staleness. Operation events and restore reports come from this session; the fingerprint comparison needs a stored fingerprint."))
                         .font(.caption).foregroundStyle(.secondary)
                 } header: { Text(L("What This Report Covers")) }
@@ -89,14 +118,6 @@ struct DiagnosticsCentreView: View {
         } message: { Text(exportError ?? "") }
     }
 
-    private func deviceSummary(_ device: DiagnosticsDevice) -> String {
-        var parts: [String] = []
-        if let model = device.model { parts.append(model) }
-        if let build = device.build { parts.append(build) }
-        if let region = device.regionCode { parts.append(L("Region") + " " + region) }
-        return parts.joined(separator: " · ")
-    }
-
     private func compute() async {
         isComputing = true
         defer { isComputing = false }
@@ -104,6 +125,17 @@ struct DiagnosticsCentreView: View {
             fingerprintComparison: diagnostics?.fingerprintComparison,
             backupVerifications: diagnostics?.backupVerifications ?? [],
             pendingRestartFeatureIDs: diagnostics?.pendingRestartFeatureIDs ?? [])
+        // Real measured durations (Stage 9): one row per operation
+        // label with at least one sample, from the monitor.
+        var rows: [PerformanceRow] = []
+        for label in await model.performance.labels() {
+            let samples = await model.performance.samples(for: label)
+            guard !samples.isEmpty else { continue }
+            rows.append(PerformanceRow(
+                label: label, count: samples.count, last: samples.last ?? 0,
+                mean: samples.reduce(0, +) / Double(samples.count)))
+        }
+        performanceRows = rows
     }
 
     private func exportJSON() {
@@ -157,7 +189,6 @@ private extension Severity {
 private extension FindingCategory {
     var label: String {
         switch self {
-        case .sentinel: return L("iOS Version")
         case .mgRead: return L("Read")
         case .mgWrite: return L("Write")
         case .compatibility: return L("Compatibility")
@@ -165,6 +196,7 @@ private extension FindingCategory {
         case .backup: return L("Backup")
         case .restore: return L("Restore")
         case .device: return L("Device")
+        case .anomaly: return L("Anomaly")
         }
     }
 }
