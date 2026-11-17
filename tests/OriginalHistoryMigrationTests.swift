@@ -71,7 +71,7 @@ final class OriginalHistoryMigrationTests: XCTestCase {
         let again = try await makeStore().loadDevice()
         XCTAssert(trace.backupReads == 0, "Reopening does not rescan a now-corrupt backup after migration")
         var laterEdit = again.document
-        laterEdit.set("another edit", for: "later")
+        laterEdit.set("another edit", for: GestaltKeys.regionCode)
         _ = try await reopened.commit(laterEdit, expected: again)
         XCTAssert(trace.backupReads == 0 && trace.writes == 2, "A complete journal allows subsequent verified device writes without reading corrupt history")
     }

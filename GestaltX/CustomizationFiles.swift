@@ -84,6 +84,13 @@ enum CustomizationFiles {
         return next
     }
     static func read(_ url: URL) throws -> Data {
+        // URL caches resource values per URL object. The restore loop
+        // reads a target, replaces it with an atomic write, then reads
+        // it back through the same URL object: without invalidating,
+        // the read-back sees the pre-write size and fails the length
+        // check even though the bytes on disk are correct.
+        var url = url
+        url.removeAllCachedResourceValues()
         let values = try url.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey])
         guard values.isRegularFile == true, values.isSymbolicLink != true,
               let size = values.fileSize, size >= 0, size <= maximumFile else {

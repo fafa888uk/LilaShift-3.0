@@ -1250,8 +1250,15 @@ actor GestaltFileStore {
             // keys a feature stages (SecurityEngine). The Face ID
             // hardware-identity restore path skips this gate: its
             // keys are deliberately not allowlisted (see the doc
-            // comment on this function).
-            try SecurityEngine.authorizeWrite(from: expected.document, to: edited)
+            // comment on this function). Local files skip it too:
+            // the identity check above already exempts local sources
+            // ("Open a local file to edit these fields"), and a local
+            // file can never reach the device without passing this
+            // gate on the device path — so gating local edits only
+            // blocks legitimate local editing.
+            if expected.source == .device {
+                try SecurityEngine.authorizeWrite(from: expected.document, to: edited)
+            }
         }
         guard originallyAbsentKeys.allSatisfy({ edited.extra[$0] == nil }) else {
             throw GestaltFailure("The selected added fields must be removed before applying.")

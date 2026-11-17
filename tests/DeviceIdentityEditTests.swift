@@ -43,6 +43,12 @@ final class DeviceIdentityEditTests: XCTestCase {
                         throw Failure(message: "A device identity edit was accepted: " + key)
                     } catch let failure as GestaltFailure {
                         expect(failure.key == "Device identity fields cannot be changed in the system plist. Open a local file to edit these fields.", "Reject at the device identity preflight")
+                    } catch {
+                        // Diagnostic (Stage 9 fix9): the commit path
+                        // only throws GestaltFailure, so a different
+                        // error here names the exact attempt that hit
+                        // it instead of failing opaquely.
+                        throw Failure(message: "Identity edit for key \(key) replacement \(String(describing: replacement)) restore=\(restore) threw unexpected error: \(error)")
                     }
                 }
             }
@@ -64,7 +70,16 @@ final class DeviceIdentityEditTests: XCTestCase {
         // "setting" is not a staged key (Stage 5 §3.4 allowlist
         // gate), so the unrelated edit uses the staged region code.
         unrelated.set("LL", for: GestaltKeys.regionCode)
-        _ = try await store.commit(unrelated, expected: initial)
+        do {
+            _ = try await store.commit(unrelated, expected: initial)
+        } catch is GestaltFailure {
+            throw
+        } catch {
+            // Diagnostic (Stage 9 fix9): the commit path only throws
+            // GestaltFailure, so a different error here names the site
+            // instead of failing opaquely.
+            throw Failure(message: "Unrelated staged edit threw unexpected error: \(error)")
+        }
         let reopened = try await store.loadDevice()
         expect(reopened.document.extra[GestaltKeys.regionCode] as? String == "LL", "Other staged edits still commit and reopen with their original identity")
         expect(trace.writes == 1, "Only the permitted edit reaches the writer")
@@ -72,7 +87,15 @@ final class DeviceIdentityEditTests: XCTestCase {
         let local = try await store.loadLocal(data: bytes, name: "local.plist")
         var localEdit = local.document
         for key in identifiers.keys { localEdit.set(nil, for: key) }
-        let savedLocal = try await store.commit(localEdit, expected: local)
+        let savedLocal: DocumentSnapshot
+        do {
+            savedLocal = try await store.commit(localEdit, expected: local)
+        } catch is GestaltFailure {
+            throw
+        } catch {
+            // Diagnostic (Stage 9 fix9): see the unrelated edit above.
+            throw Failure(message: "Local identity removal threw unexpected error: \(error)")
+        }
         expect(savedLocal.document.extra.isEmpty && trace.writes == 1, "Local documents remain freely editable")
 
         let emptyDevice = directory.appendingPathComponent("missing-identifiers.plist")
@@ -88,6 +111,10 @@ final class DeviceIdentityEditTests: XCTestCase {
                 _ = try await emptyStore.commit(added, expected: empty)
                 throw Failure(message: "A previously absent system identity field was added: " + key)
             } catch is GestaltFailure {}
+            catch {
+                // Diagnostic (Stage 9 fix9): see the identity loop above.
+                throw Failure(message: "Adding absent identity field \(key) threw unexpected error: \(error)")
+            }
         }
         expect(try Data(contentsOf: emptyDevice) == emptyBytes, "Absent identity fields remain absent on the device")
     }
