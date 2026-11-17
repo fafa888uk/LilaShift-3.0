@@ -12,9 +12,9 @@ name: SwiftLint
 
 on:
   push:
-    branches: [main]
+    branches: [main, feature/lila-siri-ai-mode, feature/lilashift-4.0-quality-upgrade]
   pull_request:
-    branches: [main]
+    branches: [main, feature/lila-siri-ai-mode, feature/lilashift-4.0-quality-upgrade]
   workflow_dispatch:
 
 jobs:
