@@ -1,5 +1,6 @@
 name: Apply Stage 9-fix6 Patch
 
+
 on:
   workflow_dispatch:
     inputs:
@@ -20,8 +21,10 @@ on:
         required: true
         default: 'Stage 9 fix6'
 
+
 permissions:
   contents: write
+
 
 jobs:
   apply:
@@ -33,20 +36,24 @@ jobs:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
 
+
       - name: Verify base commit
         run: |
           git merge-base --is-ancestor "${{ inputs.base_sha }}" HEAD || { echo "Base ${{ inputs.base_sha }} is not an ancestor of HEAD $(git rev-parse HEAD)"; exit 1; }
           echo "Base verified: ${{ inputs.base_sha }} is ancestor of HEAD"
+
 
       - name: Verify patch file exists
         run: |
           test -f "${{ inputs.patch }}" || { echo "Patch file ${{ inputs.patch }} not found"; exit 1; }
           sha256sum "${{ inputs.patch }}"
 
+
       - name: Apply patch
         run: |
           git apply --check "${{ inputs.patch }}" || { echo "Patch does not apply cleanly"; exit 1; }
           git apply "${{ inputs.patch }}"
+
 
       - name: Verify staged files
         run: |
@@ -63,6 +70,7 @@ jobs:
           STAT="$(git diff --cached --shortstat | sed 's/^ *//')"
           test "$STAT" = "1 file changed, 1 insertion(+), 1 deletion(-)" || { echo "Unexpected shortstat: [$STAT]"; exit 1; }
 
+
       - name: Verify tree hash
         run: |
           git rm --cached -q "${{ inputs.patch }}" .github/workflows/apply-stage9-fix6.yml
@@ -73,21 +81,21 @@ jobs:
           echo "Expected tree: ${{ inputs.expected_tree }}"
           test "$TREE" = "${{ inputs.expected_tree }}" || { echo "Tree hash mismatch"; exit 1; }
 
-      - name: Commit applied patch
+
+      - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "${{ inputs.commit_message }}"
-          git log --oneline -3
-          git status
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git diff --cached --quiet && { echo "Nothing to commit"; exit 1; }
+          git commit -m "Stage 9 fix6"
+          git push origin HEAD
 
-      - name: Cleanup scaffolding files
-        run: |
-          git rm -q --ignore-unmatch "${{ inputs.patch }}" .github/workflows/apply-stage9-fix6.yml || true
-          git status --short
-          ls "${{ inputs.patch }}" 2>/dev/null && { echo "Patch file still exists on disk"; exit 1; } || echo "Patch file removed from disk"
-          ls .github/workflows/apply-stage9-fix6.yml 2>/dev/null && { echo "Workflow file still exists on disk"; exit 1; } || echo "Workflow file removed from disk"
 
-      - name: Push
+      - name: Cleanup scaffolding
+        if: always()
         run: |
-          git push origin HEAD:${{ github.ref_name }}
+          rm -f stage9-fix6.patch .github/workflows/apply-stage9-fix6.yml
+          echo "--- files in index ---"
+          git ls-files
+          echo "--- status ---"
+          git status --porcelain
