@@ -317,6 +317,7 @@ struct DialerSkinView: View {
     @State private var circle = false
     @State private var pickingKey: DialerSkin.KeypadID?
     @State private var pickerItem: PhotosPickerItem?
+    @State private var showsPicker = false
     @State private var importingTheme = false
     @State private var isBusy = false
     @State private var message: String?
@@ -338,7 +339,10 @@ struct DialerSkinView: View {
                                 key: key,
                                 data: replacements[key] ?? current[key],
                                 circle: circle
-                            ) { pickingKey = key }
+                            ) {
+                                pickingKey = key
+                                showsPicker = true
+                            }
                         }
                     }
                     HStack {
@@ -365,7 +369,7 @@ struct DialerSkinView: View {
         .background(GlassBackground())
         .navigationTitle(L("Dialer Skin"))
         .navigationBarTitleDisplayMode(.large)
-        .photosPicker(item: $pickerItem, matching: .images)
+        .photosPicker(isPresented: $showsPicker, selection: $pickerItem, matching: .images, preferredItemEncoding: .compatible)
         .onChange(of: pickerItem) { _, item in
             guard let item, let key = pickingKey else { return }
             Task {
