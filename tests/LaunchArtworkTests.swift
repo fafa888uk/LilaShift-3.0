@@ -59,7 +59,8 @@ final class LaunchArtworkTests: XCTestCase {
 
         _ = try await store.apply(blue, to: app)
         let foreign = LaunchArtworkStore(storage: storage, device: "other-device", resolver: { _ in container })
-        do { _ = try await foreign.restore(app); throw CocoaError(.coderInvalidValue) } catch is CustomizationFailure {}
+        XCTAssert(try await foreign.restore(app) == 2, "A changed installation ID orphaned sibling backups")
+        _ = try await store.apply(blue, to: app)
         try fm.removeItem(at: first)
         try green.write(to: second, options: .atomic)
         let restoredAfterDelete = try await store.restore(app)
@@ -76,17 +77,16 @@ final class LaunchArtworkTests: XCTestCase {
         XCTAssert(try Data(contentsOf: first) == red && Data(contentsOf: second) == red, "Interrupted write did not roll back")
 
         _ = try await store.apply(blue, to: app)
-        let activeURL = storage.appendingPathComponent(app.id).appendingPathComponent("Originals.plist")
-        let goodRecord = try Data(contentsOf: activeURL)
-        var corrupt = try PropertyListSerialization.propertyList(from: goodRecord, format: nil) as! [String: Any]
-        var savedFiles = corrupt["files"] as! [String: [String: Any]]
-        savedFiles[first.lastPathComponent]!["original"] = green
-        corrupt["files"] = savedFiles
-        try PropertyListSerialization.data(fromPropertyList: corrupt, format: .binary, options: 0).write(to: activeURL)
+        let sibling = first.appendingPathExtension("bak")
+        XCTAssert(try Data(contentsOf: sibling) == red, "Sibling backup did not retain the earliest original")
+        try green.write(to: sibling)
         do { _ = try await store.restore(app); throw CocoaError(.coderInvalidValue) } catch is CustomizationFailure {}
-        XCTAssert(try Data(contentsOf: first) != red, "A corrupted backup was restored")
-        try goodRecord.write(to: activeURL)
-        _ = try await store.restore(app)
+        XCTAssert(try Data(contentsOf: first) != red, "A corrupted sibling backup was restored")
+        try red.write(to: sibling)
+        try fm.removeItem(at: storage)
+        let fresh = LaunchArtworkStore(storage: root.appendingPathComponent("NewInstallation"), device: "new-IDFV", resolver: { _ in container })
+        XCTAssert(try await fresh.restore(app) == 2, "Reinstalling GestaltX lost the originals")
+        XCTAssert(fm.fileExists(atPath: sibling.path), "Restore removed the persistent original")
 
         _ = try await store.apply(blue, to: app)
         let reinstall = root.appendingPathComponent(UUID().uuidString)
@@ -94,7 +94,7 @@ final class LaunchArtworkTests: XCTestCase {
         try fm.createDirectory(at: newGroup, withIntermediateDirectories: true)
         try green.write(to: newGroup.appendingPathComponent("new.ktx"))
         let newStore = LaunchArtworkStore(storage: storage, device: "device", resolver: { _ in reinstall })
-        do { _ = try await newStore.restore(app); throw CocoaError(.coderInvalidValue) } catch is CustomizationFailure {}
+        XCTAssert(try await newStore.restore(app) == 0, "Reinstalled target adopted another container's backup")
         _ = try await newStore.apply(blue, to: app)
         _ = try await newStore.restore(app)
         XCTAssert(try Data(contentsOf: newGroup.appendingPathComponent("new.ktx")) == green, "Reinstallation reused another container's originals")
@@ -116,6 +116,26 @@ final class LaunchArtworkTests: XCTestCase {
         XCTAssert(try Data(contentsOf: outside.appendingPathComponent(first.lastPathComponent)) == red, "A swapped parent redirected the write")
         XCTAssertThrowsError(try LaunchArtworkDirectory(container: container, identifier: app.id))
         try fm.removeItem(at: group); try fm.moveItem(at: moved, to: group)
+
+        let legacyContainer = root.appendingPathComponent(UUID().uuidString)
+        let legacyGroup = legacyContainer.appendingPathComponent("Library/SplashBoard/Snapshots/\(app.id) - {DEFAULT GROUP}")
+        try fm.createDirectory(at: legacyGroup, withIntermediateDirectories: true)
+        try blue.write(to: legacyGroup.appendingPathComponent("old.ktx"))
+        let legacyStorage = root.appendingPathComponent("Legacy")
+        let legacyRecord = LaunchArtworkStore.Record(version: 1, device: "old-installation", app: app.id,
+            container: legacyContainer.lastPathComponent, files: ["old.ktx": .init(original: red,
+                originalHash: CustomizationFiles.digest(red), expected: CustomizationFiles.digest(blue), mode: 0o640, protection: nil)])
+        let legacyURL = legacyStorage.appendingPathComponent(app.id).appendingPathComponent("Originals.plist")
+        try CustomizationFiles.saveVerified(legacyRecord, to: legacyURL)
+        let historyURL = legacyURL.deletingLastPathComponent().appendingPathComponent("Backups/\(UUID().uuidString).plist")
+        try CustomizationFiles.saveVerified(["old.ktx": CustomizationOriginal(data: red)], to: historyURL)
+        let migrator = LaunchArtworkStore(storage: legacyStorage, device: "current-installation", resolver: { _ in legacyContainer })
+        await migrator.migrateLegacyBackups()
+        XCTAssert(!fm.fileExists(atPath: legacyURL.path) && !fm.fileExists(atPath: historyURL.path), "Verified migration retained original bytes inside GestaltX")
+        XCTAssert(try Data(contentsOf: legacyGroup.appendingPathComponent("old.ktx.bak")) == red, "Migration lost the legacy original")
+        XCTAssert(fm.fileExists(atPath: legacyGroup.appendingPathComponent(".GestaltX-legacy").path), "Legacy history was discarded")
+        let migrated = LaunchArtworkStore(storage: root.appendingPathComponent("AfterUpgradeReinstall"), device: "another-installation", resolver: { _ in legacyContainer })
+        XCTAssert(try await migrated.restore(app) == 1, "Migrated .bak did not restore after reinstall")
 
         let rendered = try LaunchArtworkImages.render(blue, width: 160, height: 80)
         let size = try LaunchArtworkImages.dimensions(rendered)
