@@ -31,6 +31,9 @@ struct ContentView: View {
     @State private var activeExport: TemporaryExport?
     @State private var showsChanges = false
     @State private var showsRestartHelp = false
+    /// The export warning (Stage 6, audit R-3): shown before any
+    /// full plist export, offering the de-identified export.
+    @State private var showsExportWarning = false
     @State private var asksImportedRestore = false
     @State private var showsShareNotice = false
     @AppStorage("GestaltX.sharedImportNotice.v1") private var sharedImportNoticeShown = false
@@ -104,6 +107,14 @@ struct ContentView: View {
         .alert(L("Restart Your Device"), isPresented: $showsRestartHelp) {
             Button(L("OK"), role: .cancel) {}
         } message: { Text(L("Some changes need a device restart to take effect. LilaShift cannot restart SpringBoard itself. Please restart your device manually: hold the side button and a volume button, then slide to power off, or use Settings → General → Shut Down.")) }
+        // Export warning (Stage 6, audit R-3): the full file
+        // contains this device's UDID and serial number. The
+        // de-identified export removes them and cannot be restored.
+        .alert(L("Export this plist?"), isPresented: $showsExportWarning) {
+            Button(L("Cancel"), role: .cancel) {}
+            Button(L("Export De-identified")) { if let export = model.exportDocumentDeidentified() { presentShare(export) } }
+            Button(L("Export Full")) { if let export = model.exportDocument() { presentShare(export) } }
+        } message: { Text(L("The full file contains this device's UDID and serial number. Anyone with the file can identify this device. De-identified removes the UDID, serial number and chip ID; the de-identified file cannot be restored.")) }
         .alert(L("Import Plist"), isPresented: $showsImportConfirmation) {
             Button(L("Cancel"), role: .cancel) {
                 if let offer = importOffer { model.discardImport(offer) }
@@ -275,7 +286,9 @@ struct ContentView: View {
     private func refreshDiagnostics() {
         diagnostics.refresh(
             snapshot: model.snapshot, working: model.working,
-            backups: model.backups)
+            backups: model.backups,
+            monitorRows: model.monitorRows, monitorSentinel: model.monitorSentinel,
+            readAt: model.lastReadAt ?? model.monitorReadAt)
     }
 
     private var canPresentSharedImport: Bool {
@@ -576,7 +589,7 @@ struct ContentView: View {
                         actionButton(label: L("Create Backup"), systemImage: "externaldrive.badge.plus", enabled: model.hasDocument && !model.isBusy) { Task { await model.backup() } }
                         Divider()
                         actionButton(label: L("Export Plist"), systemImage: "square.and.arrow.up", enabled: model.hasDocument && !model.isBusy) {
-                            if let export = model.exportDocument() { presentShare(export) }
+                            showsExportWarning = true
                         }
                         Divider()
                         actionButton(label: L("Restart Device"), systemImage: "power", enabled: !model.isBusy) { showsRestartHelp = true }
@@ -1525,6 +1538,17 @@ struct ToolGroupView: View {
                             NavigationLink { CrashDiagnosticsView() } label: {
                                 HStack {
                                     Label(L("Crash Diagnostics"), systemImage: "exclamationmark.triangle")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { DiagnosticsCentreView(share: presentShare) } label: {
+                                HStack {
+                                    Label(L("Diagnostics Centre"), systemImage: "stethoscope")
                                     Spacer(minLength: 8)
                                     Image(systemName: "chevron.right")
                                         .font(.subheadline.weight(.semibold))

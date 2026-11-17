@@ -11,6 +11,13 @@ import Foundation
 /// explicitly confirmed action (`cleanAllReports`) and only removes
 /// archived `.ips`/`.crash`/`.panic` files; iOS regenerates them.
 ///
+/// Deleting reports (Stage 6 decision): an explicit
+/// "unrecoverable" warning, not a 7-day in-app recycle bin. The
+/// reports are system logs iOS regenerates — a bin would duplicate
+/// system files into the sandbox for no diagnostic value. The
+/// confirmation must say the deletion is permanent and cannot be
+/// undone.
+///
 /// A normal sandboxed app cannot open the osanalytics container, so
 /// access is granted through `ContainerAccess` (the bundled
 /// `worse_query` escape). When the firmware does not grant the token

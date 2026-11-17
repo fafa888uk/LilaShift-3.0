@@ -119,14 +119,6 @@ struct GestaltDocument: @unchecked Sendable {
     /// Kept as a computed accessor so callers pass raw parts,
     /// never the document, to `LayoutResolver` (ADR-2-11).
     var cacheData: Data? { root["CacheData"] as? Data }
-    /// Raw CacheData bytes (the layout resolver's second input).
-    /// Kept as a computed accessor so callers pass raw parts,
-    /// never the document, to `LayoutResolver` (ADR-2-11).
-    var cacheData: Data? { root["CacheData"] as? Data }
-    /// Raw CacheData bytes (the layout resolver's second input).
-    /// Kept as a computed accessor so callers pass raw parts,
-    /// never the document, to `LayoutResolver` (ADR-2-11).
-    var cacheData: Data? { root["CacheData"] as? Data }
     func matchesCacheUUID(_ uuid: String) -> Bool { cacheUUID?.caseInsensitiveCompare(uuid) == .orderedSame }
     var artwork: [String: Any] { extra[GestaltKeys.artwork] as? [String: Any] ?? [:] }
     var canEditArtwork: Bool { extra[GestaltKeys.artwork] == nil || extra[GestaltKeys.artwork] is [String: Any] }

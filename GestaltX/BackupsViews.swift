@@ -8,6 +8,9 @@ struct BackupsView: View {
     @State private var restores: BackupRecord?
     @State private var deletes: BackupRecord?
     @State private var hardwareRestores: BackupRecord?
+    /// The export warning (Stage 6, audit R-3): the record whose
+    /// export was requested, shown before any full backup export.
+    @State private var exportWarningRecord: BackupRecord?
     @State private var confirmsRebuild = false
     var body: some View {
         List {
@@ -44,7 +47,7 @@ struct BackupsView: View {
                             Button(L("Open")) { Task { await model.openBackup(record) } }
                                 .disabled(model.changeCount > 0)
                             Spacer()
-                            Button(L("Export")) { Task { if let url = await model.exportBackup(record) { share(url) } } }
+                            Button(L("Export")) { exportWarningRecord = record }
                             Spacer()
                             Button(L("Restore")) { restores = record }
                                 .disabled(model.changeCount > 0 || !model.hasDocument || (model.sourceIsDevice && record.source != .device))
@@ -62,17 +65,47 @@ struct BackupsView: View {
                     }.padding(.vertical, 6)
                 }.swipeActions(allowsFullSwipe: false) { Button(L("Delete")) { deletes = record }.tint(.red) }
             }
+            // The eight-step report of the most recent restore
+            // attempt (`RestoreEngine`), success or failure. A
+            // failed step shows its own detail; nothing here is a
+            // summary claim — every step is listed.
+            if let report = model.lastRestoreReport {
+                Section {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Image(systemName: report.succeeded ? "checkmark.circle.fill" : "xmark.circle.fill")
+                                .foregroundStyle(report.succeeded ? Color.green : Color.red)
+                            Text(L(report.succeeded ? "Restore complete" : "Restore did not complete")).fontWeight(.medium)
+                            Spacer()
+                        }
+                        ForEach(report.outcomes, id: \.step) { outcome in
+                            HStack(alignment: .top, spacing: 8) {
+                                Image(systemName: outcome.passed ? "checkmark.circle.fill" : "xmark.circle.fill")
+                                    .foregroundStyle(outcome.passed ? Color.green : Color.red)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(outcome.step.displayName).font(.subheadline)
+                                    Text(outcome.detail).font(.caption).foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                    }.padding(.vertical, 6)
+                } header: { Text(L("Last Restore Report")) }
+            }
         }
         .navigationTitle(L("Backups")).disabled(model.isBusy)
         .task { await model.reloadBackups() }
         .refreshable { await model.reloadBackups() }
         .alert(L("Restore this backup?"), isPresented: Binding(get: { restores != nil }, set: { if !$0 { restores = nil } })) {
             Button(L("Cancel"), role: .cancel) { restores = nil }
-            Button(L("Restore")) { if let record = restores { Task { await model.restore(record) } }; restores = nil }
+            Button(L("Restore")) { if let record = restores { Task { await model.restore(record, allowLegacyNoDigest: record.sha256 == nil) } }; restores = nil }
                 .disabled(model.isBusy || model.changeCount > 0)
         } message: {
             if let record = restores {
-                Text(record.provenanceLabel + "\n" + L("The current document is backed up first. Device restores are verified after writing."))
+                if record.sha256 == nil {
+                    Text(record.provenanceLabel + "\n" + L("This is a legacy backup with no recorded digest, so its integrity cannot be proven. Restore only if you trust this file.") + "\n" + L("The current document is backed up first. Device restores are verified after writing."))
+                } else {
+                    Text(record.provenanceLabel + "\n" + L("The current document is backed up first. Device restores are verified after writing."))
+                }
             } else {
                 Text(L("The current document is backed up first. Device restores are verified after writing."))
             }
@@ -81,6 +114,14 @@ struct BackupsView: View {
             Button(L("Cancel"), role: .cancel) { deletes = nil }
             Button(L("Delete"), role: .destructive) { if let record = deletes { Task { await model.deleteBackup(record) } }; deletes = nil }
         } message: { Text(L("This removes the local backup permanently. It does not change the device file.")) }
+        // Export warning (Stage 6, audit R-3): the full backup
+        // contains this device's UDID and serial number. The
+        // de-identified export removes them and cannot be restored.
+        .alert(L("Export this backup?"), isPresented: Binding(get: { exportWarningRecord != nil }, set: { if !$0 { exportWarningRecord = nil } })) {
+            Button(L("Cancel"), role: .cancel) { exportWarningRecord = nil }
+            Button(L("Export De-identified")) { if let record = exportWarningRecord { Task { if let url = await model.exportBackupDeidentified(record) { share(url) } } }; exportWarningRecord = nil }
+            Button(L("Export Full")) { if let record = exportWarningRecord { Task { if let url = await model.exportBackup(record) { share(url) } } }; exportWarningRecord = nil }
+        } message: { Text(L("The full file contains this device's UDID and serial number. Anyone with the file can identify this device. De-identified removes the UDID, serial number and chip ID; the de-identified file cannot be restored.")) }
         .alert(L("Restore Hardware Identity"), isPresented: Binding(get: { hardwareRestores != nil }, set: { if !$0 { hardwareRestores = nil } })) {
             Button(L("Cancel"), role: .cancel) { hardwareRestores = nil }
             Button(L("Restore"), role: .destructive) { if let record = hardwareRestores { Task { await model.restoreHardwareIdentity(from: record) } }; hardwareRestores = nil }

@@ -75,6 +75,12 @@ private struct HomeDiagnosticsResult: Sendable {
     /// Feature ids applied but not yet verified after a restart,
     /// for the compatibility status model (Phase F).
     var pendingRestartFeatureIDs: Set<String>
+    /// The unified diagnostics report (Stage 6, ADR-2-09), computed
+    /// in this same background pass. The cache path has no operation
+    /// events and no restore reports (both live in GestaltManager),
+    /// so the input leaves them empty — the report never claims
+    /// findings it did not see.
+    var diagnosticsReport: DiagnosticsReport?
 }
 
 /// Environment key for the shared diagnostics cache. The default is
@@ -140,6 +146,18 @@ final class HomeDiagnosticsCache: ObservableObject {
     /// Feature ids applied but not yet verified after a restart.
     /// See `HomeDiagnosticsResult.pendingRestartFeatureIDs`.
     @Published private(set) var pendingRestartFeatureIDs: Set<String> = []
+    /// The unified diagnostics report (Stage 6, ADR-2-09), computed
+    /// in the background pass. The Diagnostics Centre runs the same
+    /// engine on demand with the full input (events, restore
+    /// reports); this cached report is the home's cheap copy.
+    @Published private(set) var diagnosticsReport: DiagnosticsReport?
+    /// The stored-vs-current fingerprint comparison, or `nil` when
+    /// either side is missing. The Diagnostics Centre passes it
+    /// into the manager's input builder.
+    var fingerprintComparison: FingerprintComparison? {
+        guard let stored = storedFingerprint, let current = currentFingerprint else { return nil }
+        return DeviceFingerprint.compare(stored: stored, current: current)
+    }
     /// True while a background refresh is in flight. The previous
     /// cached values stay visible until the new ones arrive.
     @Published private(set) var isComputing = false
@@ -169,7 +187,16 @@ final class HomeDiagnosticsCache: ObservableObject {
     /// not publish anything. Call this when the snapshot, the working
     /// document or the backup inventory changes, and after an explicit
     /// backup or restore.
-    func refresh(snapshot: DocumentSnapshot?, working: GestaltDocument?, backups: [BackupRecord]) {
+    ///
+    /// `monitorRows`/`monitorSentinel`/`readAt` feed the cached
+    /// diagnostics report (Stage 6): the monitor rows and sentinel
+    /// come from `GestaltManager.refreshMonitor`, `readAt` is the
+    /// last read time. All three default to "unknown", so callers
+    /// that do not have them still compile — the report then says
+    /// the monitor is unknown instead of fabricating one.
+    func refresh(snapshot: DocumentSnapshot?, working: GestaltDocument?, backups: [BackupRecord],
+                 monitorRows: [MGMonitorRow] = [], monitorSentinel: VersionSentinelState = .unknownBuild(build: ""),
+                 readAt: Date? = nil) {
         refreshTask?.cancel()
         isComputing = true
         // These are cheap reads (URL construction / UserDefaults);
@@ -180,7 +207,8 @@ final class HomeDiagnosticsCache: ObservableObject {
             let result = await Task.detached(priority: .userInitiated) {
                 Self.compute(
                     snapshot: snapshot, working: working, backups: backups,
-                    deviceID: deviceID, historyDirectory: historyDirectory)
+                    deviceID: deviceID, historyDirectory: historyDirectory,
+                    monitorRows: monitorRows, monitorSentinel: monitorSentinel, readAt: readAt)
             }.value
             guard let self, !Task.isCancelled else { return }
             self.apply(result)
@@ -205,6 +233,7 @@ final class HomeDiagnosticsCache: ObservableObject {
         if liveValues != result.liveValues { liveValues = result.liveValues }
         if stagedFeatureIDs != result.stagedFeatureIDs { stagedFeatureIDs = result.stagedFeatureIDs }
         if pendingRestartFeatureIDs != result.pendingRestartFeatureIDs { pendingRestartFeatureIDs = result.pendingRestartFeatureIDs }
+        if diagnosticsReport != result.diagnosticsReport { diagnosticsReport = result.diagnosticsReport }
     }
 
     /// One background pass over the shared inputs. Pure: reads only
@@ -217,7 +246,10 @@ final class HomeDiagnosticsCache: ObservableObject {
         working: GestaltDocument?,
         backups: [BackupRecord],
         deviceID: String?,
-        historyDirectory: URL
+        historyDirectory: URL,
+        monitorRows: [MGMonitorRow] = [],
+        monitorSentinel: VersionSentinelState = .unknownBuild(build: ""),
+        readAt: Date? = nil
     ) -> HomeDiagnosticsResult {
         // 1. History (disk I/O, background). A missing installation
         // id means the history stores are unavailable — never scoped
@@ -318,6 +350,46 @@ final class HomeDiagnosticsCache: ObservableObject {
         let pendingRestartFeatureIDs = CompatibilityStatusResolver.pendingRestartFeatureIDs(
             records: records)
 
+        // 10. Unified diagnostics report (Stage 6, ADR-2-09): the
+        // same pure engine the Diagnostics Centre runs on demand.
+        // The cache path has no operation events and no restore
+        // reports (both live in GestaltManager, not in this cache),
+        // so the input leaves them empty and the report never
+        // claims findings it did not see. With no snapshot the
+        // report still runs — sentinel + backup state — so the home
+        // can show "not read yet" honestly instead of nothing.
+        // Only the read-state case is diagnosed; the timestamp is
+        // never displayed, so the live clock stands in when no read
+        // time was passed.
+        let diagnosticsReport: DiagnosticsReport = {
+            let snapshotValues = valuesByKey(in: snapshot?.document)
+            let workingValues = valuesByKey(in: working ?? snapshot?.document)
+            let fingerprintComparison: FingerprintComparison? = {
+                guard let stored = storedFingerprint, let current = currentFingerprint else { return nil }
+                return DeviceFingerprint.compare(stored: stored, current: current)
+            }()
+            let device: DiagnosticsDevice? = deviceReport.map { report in
+                DiagnosticsDevice(
+                    model: report.profile.productType.value,
+                    build: report.profile.osBuild.value,
+                    regionCode: report.profile.regionCode.value,
+                    isNativeAppleIntelligence: report.profile.isNativeAppleIntelligence.value ?? false)
+            }
+            return DiagnosticsEngine.report(DiagnosticsInput(
+                device: device,
+                mgReadState: snapshot == nil
+                    ? .notReadYet
+                    : .live(values: snapshotValues, readAt: readAt ?? Date()),
+                snapshotValues: snapshotValues,
+                workingValues: workingValues,
+                monitorRows: monitorRows,
+                monitorSentinel: monitorSentinel,
+                backups: backups,
+                backupVerifications: verifications,
+                fingerprintComparison: fingerprintComparison,
+                pendingRestartFeatureIDs: pendingRestartFeatureIDs))
+        }()
+
         return HomeDiagnosticsResult(
             deviceReport: deviceReport,
             backupVerifications: verifications,
@@ -331,6 +403,22 @@ final class HomeDiagnosticsCache: ObservableObject {
             currentFingerprint: currentFingerprint,
             liveValues: liveValues,
             stagedFeatureIDs: stagedFeatureIDs,
-            pendingRestartFeatureIDs: pendingRestartFeatureIDs)
+            pendingRestartFeatureIDs: pendingRestartFeatureIDs,
+            diagnosticsReport: diagnosticsReport)
+    }
+
+    /// Values by MG key from a document's CacheExtra (same read as
+    /// `GestaltManager.value(of:in:)`). Keys absent from the
+    /// document are absent from the map — never a placeholder.
+    nonisolated private static func valuesByKey(in document: GestaltDocument?) -> [String: MGValue] {
+        guard let document else { return [:] }
+        return Dictionary(
+            MGDatabase.all.compactMap { record in
+                let raw = document.extra[record.obfuscatedName]
+                    ?? (record.readableName != record.obfuscatedName
+                        ? document.extra[record.readableName] : nil)
+                return raw.flatMap(MGValue.fromPlistValue).map { (record.obfuscatedName, $0) }
+            },
+            uniquingKeysWith: { first, _ in first })
     }
 }

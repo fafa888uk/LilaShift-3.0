@@ -24,6 +24,11 @@ final class GestaltManager: ObservableObject {
     @Published private(set) var status = "Connect to your device or open a plist."
     @Published private(set) var deviceAccessible = false
     @Published private(set) var backups: [BackupRecord] = []
+    /// The report of the most recent restore attempt (success or
+    /// failure), from the eight-step `RestoreEngine` pipeline. Kept
+    /// for the Backups view; a failure is a failed outcome in it,
+    /// never a thrown error.
+    @Published private(set) var lastRestoreReport: RestoreEngine.Report?
     @Published private(set) var logs: [String] = []
     /// Structured operation events recorded this session (reads and
     /// backups only — see `OperationEventRecorder`). Observation
@@ -466,6 +471,82 @@ final class GestaltManager: ObservableObject {
                 iosVersion: iosVersion,
                 sentinel: sentinel)
         }, now: liveAt)
+    }
+
+    /// The unified diagnostics input for the Diagnostics Centre
+    /// (Stage 6, ADR-2-09): every value the engine needs, as plain
+    /// snapshots — no live objects cross into the engine. Async only
+    /// because the session operation events live in an actor.
+    ///
+    /// The fingerprint comparison, the backup verifications and the
+    /// restart-pending set come from the home cache (the only place
+    /// that loads the stored fingerprint, verifies backups and
+    /// tracks applied changes); pass `nil`/empty when the cache is
+    /// not available and the report says so honestly.
+    func diagnosticsInput(
+        fingerprintComparison: FingerprintComparison? = nil,
+        backupVerifications: [BackupVerification] = [],
+        pendingRestartFeatureIDs: Set<String> = []
+    ) async -> DiagnosticsInput {
+        let document = working ?? snapshot?.document
+        let snapshotValues = valuesByKey(in: snapshot?.document)
+        let workingValues = valuesByKey(in: document)
+        let regionRecord = MGDatabase.all.first { $0.obfuscatedName == GestaltKeys.regionCode }
+        let regionCode: String? = {
+            guard let value = regionRecord.flatMap({ value(of: $0, in: document) }) else { return nil }
+            if case .string(let code) = value { return code }
+            return nil
+        }()
+        let device = DiagnosticsDevice(
+            model: document?.extra[GestaltKeys.productType] as? String,
+            build: SystemDeviceIdentitySource().osBuild,
+            regionCode: regionCode,
+            isNativeAppleIntelligence: isNativeAppleIntelligence)
+        // Only the read-state case is diagnosed; the timestamp is
+        // never displayed. The fallback is the monitor's live-read
+        // time, then the live clock.
+        let readAt = lastReadAt ?? monitorReadAt ?? Date()
+        let mgReadState: MGReadState = snapshot == nil
+            ? .notReadYet
+            : .live(values: snapshotValues, readAt: readAt)
+        return DiagnosticsInput(
+            device: device,
+            mgReadState: mgReadState,
+            snapshotValues: snapshotValues,
+            workingValues: workingValues,
+            monitorRows: monitorRows,
+            monitorSentinel: monitorSentinel,
+            backups: backups,
+            backupVerifications: backupVerifications,
+            restoreReports: lastRestoreReport.map { [$0] } ?? [],
+            fingerprintComparison: fingerprintComparison,
+            events: await operationEvents.recordedEvents(),
+            pendingRestartFeatureIDs: pendingRestartFeatureIDs)
+    }
+
+    /// The unified diagnostics report for the Diagnostics Centre:
+    /// the input from `diagnosticsInput`, run through the pure
+    /// engine. Views call this — never the engine directly.
+    func diagnosticsReport(
+        fingerprintComparison: FingerprintComparison? = nil,
+        backupVerifications: [BackupVerification] = [],
+        pendingRestartFeatureIDs: Set<String> = []
+    ) async -> DiagnosticsReport {
+        DiagnosticsEngine.report(await diagnosticsInput(
+            fingerprintComparison: fingerprintComparison,
+            backupVerifications: backupVerifications,
+            pendingRestartFeatureIDs: pendingRestartFeatureIDs))
+    }
+
+    /// Values by MG key from a document's CacheExtra, for the
+    /// diagnostics input. Keys absent from the document are absent
+    /// from the map — never a placeholder value.
+    private func valuesByKey(in document: GestaltDocument?) -> [String: MGValue] {
+        Dictionary(
+            MGDatabase.all.compactMap { record in
+                value(of: record, in: document).map { (record.obfuscatedName, $0) }
+            },
+            uniquingKeysWith: { first, _ in first })
     }
 
     /// The value of a record in a document. A plaintext key is
@@ -1441,29 +1522,56 @@ final class GestaltManager: ObservableObject {
     func reloadBackups() async {
         do { backups = try await files.backups() } catch { failed(error) }
     }
-    func restore(_ record: BackupRecord) async {
+    func restore(_ record: BackupRecord, allowLegacyNoDigest: Bool = false) async {
         guard !isBusy, let snapshot else { return }
         guard changeCount == 0 else {
             message = L("Save or discard your current changes before opening another plist.")
             return
         }
         isBusy = true; defer { isBusy = false }
-        do {
-            let data = try await files.backupData(record)
-            let restored = try GestaltDocument(data: data)
-            log("[restore] \(record.filename) · \(record.byteCount) bytes · reason=\(record.reason)")
-            logChanges(from: snapshot.document, to: restored, prefix: "[restore-diff] ")
-            // Stage 5 orchestration (§3.4): a fresh pre-write backup
-            // first, then commit with its record.
-            let preWriteBackup = try await BackupEngine.createPreWriteBackup(store: files, snapshot: snapshot, reason: "Before restoring")
-            let result = try await files.commit(restored, expected: snapshot, restoring: record, preWriteBackup: preWriteBackup)
-            let changed = !result.document.matches(snapshot.document)
-            accept(result); needsRestart = result.source == .device && (needsRestart || changed)
-            message = L(result.source == .device
-                        ? (changed ? "Backup restored and verified." : "This backup already matches the device. No changes were made.")
-                        : "Backup opened as a local document.")
-            log(message ?? ""); await reloadBackups()
-        } catch { failed(error); await reloadBackups() }
+        var committed: DocumentSnapshot?
+        let plan = RestoreEngine.Plan(record: record, allowLegacyNoDigest: allowLegacyNoDigest)
+        let currentBuild = SystemDeviceIdentitySource().osBuild
+        let report = await RestoreEngine.run(
+            plan: plan, snapshot: snapshot,
+            installationDeviceID: RestoreIntelligence.installationDeviceID,
+            currentBuild: currentBuild,
+            deviceDisplayName: modelName.isEmpty ? L("This device") : modelName,
+            createPreWriteBackup: { snapshot in
+                try await BackupEngine.createPreWriteBackup(store: files, snapshot: snapshot, reason: "Before restoring")
+            },
+            execute: { record, preWrite in
+                let data = try await files.backupData(record)
+                let restored = try GestaltDocument(data: data)
+                log("[restore] \(record.filename) · \(record.byteCount) bytes · reason=\(record.reason)")
+                logChanges(from: snapshot.document, to: restored, prefix: "[restore-diff] ")
+                let result = try await files.commit(restored, expected: snapshot, restoring: record, preWriteBackup: preWrite)
+                committed = result
+                return result.document
+            },
+            readBack: {
+                try await files.loadDevice().document
+            })
+        lastRestoreReport = report
+        if let committed {
+            let changed = !committed.document.matches(snapshot.document)
+            accept(committed)
+            needsRestart = committed.source == .device && (needsRestart || changed)
+            if report.succeeded {
+                message = L(committed.source == .device
+                            ? (changed ? "Backup restored and verified." : "This backup already matches the device. No changes were made.")
+                            : "Backup opened as a local document.")
+            } else {
+                message = report.outcomes.first(where: { !$0.passed })?.detail
+                    ?? L("The restore did not complete. No system changes were made.")
+            }
+            log(message ?? "")
+        } else if !report.succeeded {
+            message = report.outcomes.first(where: { !$0.passed })?.detail
+                ?? L("The restore did not complete. No system changes were made.")
+            log(message ?? "")
+        }
+        await reloadBackups()
     }
     /// Restores only the four hardware-identity fields (product type,
     /// hardware board, CPU, model number) from a verified same-device
@@ -1574,6 +1682,33 @@ final class GestaltManager: ObservableObject {
             let plain = try doc.encoded()
             let bytes = snapshot.source == .device || snapshot.ownershipVerified ? try DeviceBoundPlist.seal(plain) : plain
             return try exportData(bytes, name: "MobileGestalt-LilaShift.plist")
+        }
+        catch { failed(error); return nil }
+    }
+
+    /// Exports the current document with the device-identifying
+    /// values removed (UDID, serial number, chip ID). The result
+    /// is unsealed and explicitly NOT restorable: it has no
+    /// recorded digest and no `DeviceBoundPlist` seal, and
+    /// `restore` never accepts an unsealed document as a backup.
+    /// Use it when a plist must be shared without handing over
+    /// this device's identity.
+    func exportDocumentDeidentified() -> TemporaryExport? {
+        guard let doc = preview else { return nil }
+        do {
+            let stripped = try DeidentifiedExport.strip(try doc.encoded())
+            return try exportData(stripped.data, name: DeidentifiedExport.fileName)
+        }
+        catch { failed(error); return nil }
+    }
+
+    /// The same de-identified export for a backup record: built
+    /// from the plain backup bytes, never from the sealed export.
+    func exportBackupDeidentified(_ record: BackupRecord) async -> TemporaryExport? {
+        do {
+            let stripped = try DeidentifiedExport.strip(try await files.backupData(record))
+            let base = (record.filename as NSString).deletingPathExtension
+            return try exportData(stripped.data, name: base + "-deidentified.plist")
         }
         catch { failed(error); return nil }
     }

@@ -27,6 +27,22 @@ enum RestoreEngine {
         case execute
         case readBackVerify
         case report
+
+        /// The user-facing name shown in the Backups view's restore
+        /// report. The `rawValue` stays the stable identifier used
+        /// in logs and in `StepOutcome` equality.
+        var displayName: String {
+            switch self {
+            case .verifyIntegrity: return L("Verify integrity")
+            case .verifyDeviceIdentity: return L("Verify device identity")
+            case .verifyVersionCompatibility: return L("Check iOS version")
+            case .preview: return L("Preview changes")
+            case .backUpFirst: return L("Back up first")
+            case .execute: return L("Write changes")
+            case .readBackVerify: return L("Read back and verify")
+            case .report: return L("Report")
+            }
+        }
     }
 
     /// The outcome of one step. `passed` is false for a failed step

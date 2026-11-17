@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // Module boundary tests (Stage 3, ADR-2-04; Stage 5 adds the
-// backup/restore/security boundaries, ADR-2-05 / ADR-2-08).
+// backup/restore/security boundaries, ADR-2-05 / ADR-2-08; Stage 6
+// adds the diagnostics boundaries, ADR-2-09).
 //
 // The Stage 2 boundaries as executable rules, read straight from the
 // checked-out sources (this target runs with a host app in the same
@@ -220,5 +221,58 @@ final class ModuleBoundaryTests: XCTestCase {
                       "Fingerprint capture must hash the UDID")
         XCTAssertFalse(text.contains("deviceID: document.extra[\"UniqueDeviceID\"]"),
                        "The fingerprint must never store the plaintext UDID again")
+    }
+
+    // MARK: - Stage 6 boundaries (ADR-2-09)
+
+    func testDiagnosticsEngineIsPure() {
+        // ADR-2-09: the engine is a pure DiagnosticsInput ->
+        // DiagnosticsReport function. No UI framework, no manager,
+        // no file store, no live probe — value snapshots only.
+        let text = readSource("GestaltX/DiagnosticsEngine.swift")
+        XCTAssertFalse(text.contains("import SwiftUI"), "DiagnosticsEngine must not import SwiftUI")
+        XCTAssertFalse(text.contains("import UIKit"), "DiagnosticsEngine must not import UIKit")
+        for forbidden in ["GestaltManager", "GestaltFileStore", "LiveGestaltProbe",
+                          "MGCopyAnswer", "DeviceBoundPlist"] {
+            XCTAssertFalse(text.contains(forbidden),
+                           "DiagnosticsEngine must not reference \(forbidden): pure input only")
+        }
+        let exportText = readSource("GestaltX/DeidentifiedExport.swift")
+        XCTAssertFalse(exportText.contains("import SwiftUI"), "DeidentifiedExport must not import SwiftUI")
+        XCTAssertFalse(exportText.contains("GestaltManager"), "DeidentifiedExport must not reference the manager")
+    }
+
+    func testViewsDoNotCallStage6Engines() {
+        // The diagnostics engine and the de-identified export are
+        // manager/cache only; views go through the manager (the
+        // centre view calls model.diagnosticsReport, the export
+        // alerts call model.export*Deidentified).
+        var callers: Set<String> = []
+        for file in swiftFiles(in: "GestaltX") {
+            let text = readSource("GestaltX/" + file.lastPathComponent)
+            if text.contains("DiagnosticsEngine.report(") || text.contains("DeidentifiedExport.strip(") {
+                callers.insert(file.lastPathComponent)
+            }
+        }
+        XCTAssertEqual(callers, ["GestaltManager.swift", "HomeDiagnosticsCache.swift"],
+                       "Only the manager and the home cache may run the diagnostics engine or strip an export: \(callers.sorted())")
+        for file in viewFiles() {
+            let text = readSource("GestaltX/" + file.lastPathComponent)
+            XCTAssertFalse(text.contains("DiagnosticsEngine"),
+                           "\(file.lastPathComponent) must not reference DiagnosticsEngine: views go through the manager")
+            XCTAssertFalse(text.contains("DeidentifiedExport"),
+                           "\(file.lastPathComponent) must not reference DeidentifiedExport: views go through the manager")
+        }
+    }
+
+    func testDiagnosticsReportIsRedactedAtConstruction() {
+        // ADR-2-06: identity is redacted when a finding is built,
+        // never at display time. The engine's only evidence path
+        // runs through LoggingEngine.redact.
+        let text = readSource("GestaltX/DiagnosticsEngine.swift")
+        XCTAssertTrue(text.contains("LoggingEngine.redact"),
+                      "DiagnosticsEngine must redact evidence through LoggingEngine.redact")
+        XCTAssertFalse(text.contains("UniqueDeviceID"),
+                       "DiagnosticsEngine must never name a device-identity key in its own source")
     }
 }

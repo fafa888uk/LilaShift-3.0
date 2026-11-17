@@ -89,15 +89,6 @@ final class SlotRestoreTests: XCTestCase {
         ], format: .binary, options: 0))
     }
 
-    @MainActor
-    func manager(for document: GestaltDocument) throws -> GestaltManager {
-        let snapshot = DocumentSnapshot(data: try document.encoded(), document: document,
-                                        source: .local, name: "fixture")
-        let manager = GestaltManager()
-        manager.loadSnapshotForTests(snapshot)
-        return manager
-    }
-
     /// A manager loaded with the given document as its snapshot and
     /// working document (mirrors the AIBaselineFixTests fixture).
     @MainActor

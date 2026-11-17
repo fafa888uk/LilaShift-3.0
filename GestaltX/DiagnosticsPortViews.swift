@@ -197,7 +197,7 @@ struct CrashDiagnosticsView: View {
                 }
             }
         } message: {
-            Text(L("This deletes the crash, jetsam and panic reports listed above. It does not affect system logs or any app data."))
+            Text(L("This permanently deletes the crash, jetsam and panic reports listed above. The deletion cannot be undone — the files are removed, not moved to a recycle bin. iOS will regenerate new reports as crashes happen; deleted reports cannot be recovered. It does not affect any app data."))
         }
     }
 

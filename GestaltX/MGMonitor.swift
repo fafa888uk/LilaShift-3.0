@@ -47,6 +47,52 @@ enum VersionSentinel {
         }
     }
 
+    /// The highest iOS version the mechanism is known to work on:
+    /// 27.3 beta 1 — the build just before `blockedFromBuild`.
+    static let supportedThroughLabel = "iOS 27.3 beta 1"
+
+    /// Why a build is blocked: at or past the known threshold, or
+    /// from a newer train whose threshold has not been reviewed
+    /// (blocked fail-closed, not known-blocked).
+    enum BlockReason: Equatable, Sendable {
+        case atOrPastThreshold
+        case newerTrainUnreviewed
+    }
+
+    /// The block reason for a build, or `nil` when the build is not
+    /// blocked (supported or unknown). A newer train (a major number
+    /// above the threshold's) is blocked fail-closed until the
+    /// threshold is reviewed — it is not claimed to be a known block.
+    static func blockReason(forBuild build: String?) -> BlockReason? {
+        guard let build, let parsed = parse(build), parsed >= blockedFrom else { return nil }
+        return parsed.major > blockedFrom.major ? .newerTrainUnreviewed : .atOrPastThreshold
+    }
+
+    /// The honest supported range, as named in diagnostics reports.
+    /// The range is build-based, not version-based: every build older
+    /// than `blockedFromBuild` (through 27.3 beta 1) is supported;
+    /// builds from 24C5049d on are blocked; newer trains are blocked
+    /// fail-closed until the threshold is reviewed. Older trains
+    /// (for example 23x, iOS 26 and earlier) classify supported by
+    /// the same total order — the range statement says so, rather
+    /// than naming a lower bound that was never verified.
+    static func supportedRangeDescription(for state: VersionSentinelState) -> String {
+        let range = L("Supported: iOS 27.3 beta 1 and earlier (builds before 24C5049d).")
+        switch state {
+        case .supported:
+            return range + " " + L("Builds from 24C5049d on are blocked; newer trains are blocked until the threshold is reviewed.")
+        case .blocked(let build):
+            switch blockReason(forBuild: build) {
+            case .newerTrainUnreviewed:
+                return String(format: L("Build %@: blocked fail-closed — it is from a newer train than the reviewed threshold (24C5049d, iOS 27.3 beta 2), and support for this train has not been reviewed. %@"), build, range)
+            case .atOrPastThreshold, nil:
+                return String(format: L("Build %@: blocked — it is at or past 24C5049d (iOS 27.3 beta 2), where Apple blocked the mechanism. %@"), build, range)
+            }
+        case .unknownBuild:
+            return L("The supported range could not be confirmed for this build. ") + range
+        }
+    }
+
     /// The structured twin of `blockedFromBuild`.
     private static let blockedFrom = Build(major: 24, letter: "C", number: 5049, suffix: "d")
 
