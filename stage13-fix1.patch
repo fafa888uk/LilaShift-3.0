@@ -1,0 +1,32 @@
+diff --git a/tests/SystemSettingsTests.swift b/tests/SystemSettingsTests.swift
+index c94cc9e..26ee0a6 100644
+--- a/tests/SystemSettingsTests.swift
++++ b/tests/SystemSettingsTests.swift
+@@ -91,16 +91,23 @@ final class SystemSettingsTests: XCTestCase {
+     func testVersionSentinelGate() async {
+         let blocked = await SystemSettingsModel(osBuild: "24C5049d")
+         await blocked.load()
+-        XCTAssertEqual(await blocked.message,
++        // await must not sit inside an XCTAssert autoclosure
++        // (and @MainActor properties cannot be read from one):
++        // hoist every awaited value first, then assert.
++        let blockedMessage = await blocked.message
++        let blockedSnapshot = await blocked.snapshot
++        XCTAssertEqual(blockedMessage,
+                        VersionSentinel.guidance(for: VersionSentinel.state(forBuild: "24C5049d")),
+                        "Blocked build must report the sentinel guidance, not the generic error")
+-        XCTAssertNil(await blocked.snapshot, "Blocked build must not load a snapshot")
++        XCTAssertNil(blockedSnapshot, "Blocked build must not load a snapshot")
+         let unknown = await SystemSettingsModel(osBuild: "not-a-build")
+         await unknown.load()
+-        XCTAssertEqual(await unknown.message,
++        let unknownMessage = await unknown.message
++        let unknownSnapshot = await unknown.snapshot
++        XCTAssertEqual(unknownMessage,
+                        VersionSentinel.guidance(for: VersionSentinel.state(forBuild: "not-a-build")),
+                        "Unknown build must fail closed with the sentinel guidance")
+-        XCTAssertNil(await unknown.snapshot, "Unknown build must not load a snapshot")
++        XCTAssertNil(unknownSnapshot, "Unknown build must not load a snapshot")
+         // Supported build (27.3 beta 1): no sentinel message. On the
+         // simulator load then fails at acquire with the simulator
+         // error; on a device it would load. Either way the message
