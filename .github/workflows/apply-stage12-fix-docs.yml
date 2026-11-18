@@ -1,0 +1,90 @@
+name: Apply Stage 12-fix-docs Patch
+
+on:
+  workflow_dispatch:
+    inputs:
+      patch_file:
+        description: 'Patch file to apply (must exist on the branch)'
+        required: true
+        default: 'stage12-fix-docs.patch'
+      base_sha:
+        description: 'Expected base commit (Stage 12 version bump)'
+        required: true
+        default: '7c6df01bd89a0b909564baf608a122084a177d0a'
+      expected_tree:
+        description: 'Expected tree hash after applying the patch'
+        required: true
+        default: '0abb795041608e263de4d4dba8d86a732d42d68c'
+      commit_message:
+        description: 'Commit message for the applied patch'
+        required: true
+        default: 'Stage 12: document 4.0.0 release in changelog and README badges'
+
+permissions:
+  contents: write
+
+jobs:
+  apply-patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/lilashift-4.0-quality-upgrade
+          fetch-depth: 0
+
+      - name: Verify base commit is an ancestor
+        run: |
+          git merge-base --is-ancestor "${{ inputs.base_sha }}" HEAD
+          echo "Base commit ${{ inputs.base_sha }} is an ancestor of HEAD $(git rev-parse HEAD)"
+
+      - name: Apply patch and verify staged change
+        run: |
+          test -f "${{ inputs.patch_file }}"
+          git apply --index "${{ inputs.patch_file }}"
+          ACTUAL_COUNT="$(git diff --cached --name-only | wc -l)"
+          if [ "$ACTUAL_COUNT" -ne 4 ]; then
+            echo "Expected exactly 4 staged files, got: $ACTUAL_COUNT"
+            git diff --cached --name-only
+            exit 1
+          fi
+          ACTUAL_SHORTSTAT="$(git diff --cached --shortstat | sed 's/^ *//')"
+          if [ "$ACTUAL_SHORTSTAT" != "4 files changed, 32 insertions(+), 2 deletions(-)" ]; then
+            echo "Expected shortstat: 4 files changed, 32 insertions(+), 2 deletions(-)"
+            echo "Actual shortstat: $ACTUAL_SHORTSTAT"
+            exit 1
+          fi
+          echo "Staged change verified: $ACTUAL_SHORTSTAT"
+
+      - name: Verify tree hash
+        run: |
+          git rm --cached -q "${{ inputs.patch_file }}"
+          git rm --cached -q .github/workflows/apply-stage12-fix-docs.yml
+          ACTUAL_TREE="$(git write-tree)"
+          if [ "$ACTUAL_TREE" != "${{ inputs.expected_tree }}" ]; then
+            echo "Expected tree: ${{ inputs.expected_tree }}"
+            echo "Actual tree: $ACTUAL_TREE"
+            exit 1
+          fi
+          echo "Tree hash verified: $ACTUAL_TREE"
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -m "${{ inputs.commit_message }}"
+          git push
+          echo "Pushed commit $(git rev-parse HEAD)"
+
+      - name: Cleanup scaffolding
+        if: always()
+        run: |
+          rm -f "${{ inputs.patch_file }}" .github/workflows/apply-stage12-fix-docs.yml
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "Remove stage12-fix-docs scaffolding patch and workflow"
+            git push
+            echo "Cleanup committed and pushed"
+          else
+            echo "Nothing to clean up"
+          fi
