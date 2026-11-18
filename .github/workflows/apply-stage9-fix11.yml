@@ -1,0 +1,102 @@
+name: Apply Stage 9-fix11 Patch
+
+on:
+  workflow_dispatch:
+    inputs:
+      patch_file:
+        description: 'Patch file in the repo root'
+        required: true
+        default: 'stage9-fix11.patch'
+      base_sha:
+        description: 'Expected base commit (Stage 9 fix10)'
+        required: true
+        default: 'be9484c476f7930bc329353e945198949088d4cd'
+      expected_tree:
+        description: 'Expected tree hash after applying the patch'
+        required: true
+        default: '8230ad9b7647a84994610cb921816ba9c65d22f1'
+      commit_message:
+        description: 'Commit message for the applied patch'
+        required: true
+        default: 'Stage 9 fix11'
+
+permissions:
+  contents: write
+
+jobs:
+  apply-patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/lilashift-4.0-quality-upgrade
+          fetch-depth: 0
+
+      - name: Verify base commit
+        run: |
+          git merge-base --is-ancestor "${{ inputs.base_sha }}" HEAD || {
+            echo "Base commit ${{ inputs.base_sha }} is not an ancestor of HEAD $(git rev-parse HEAD)"
+            exit 1
+          }
+          echo "Base commit ${{ inputs.base_sha }} is an ancestor of HEAD $(git rev-parse HEAD)"
+
+      - name: Verify patch file exists
+        run: |
+          test -f "${{ inputs.patch_file }}" || {
+            echo "Patch file ${{ inputs.patch_file }} not found"
+            exit 1
+          }
+          ls -l "${{ inputs.patch_file }}"
+
+      - name: Apply patch and verify staged change
+        run: |
+          git apply --check "${{ inputs.patch_file }}"
+          git apply "${{ inputs.patch_file }}"
+          git add -A
+          ACTUAL_COUNT="$(git diff --cached --name-only | wc -l)"
+          if [ "$ACTUAL_COUNT" -ne 1 ]; then
+            echo "Expected exactly 1 staged files, got: $ACTUAL_COUNT"
+            git status --short
+            exit 1
+          fi
+          ACTUAL_SHORTSTAT="$(git diff --cached --shortstat | sed 's/^ *//')"
+          if [ "$ACTUAL_SHORTSTAT" != "1 file changed, 4 insertions(+), 4 deletions(-)" ]; then
+            echo "Unexpected staged shortstat: [$ACTUAL_SHORTSTAT]"
+            git status --short
+            git diff --cached --stat
+            exit 1
+          fi
+
+      - name: Verify tree hash
+        run: |
+          git rm --cached -q "${{ inputs.patch_file }}"
+          git rm --cached -q .github/workflows/apply-stage9-fix11.yml
+          ACTUAL_TREE="$(git write-tree)"
+          if [ "$ACTUAL_TREE" != "${{ inputs.expected_tree }}" ]; then
+            echo "Tree hash mismatch: expected ${{ inputs.expected_tree }}, got $ACTUAL_TREE"
+            exit 1
+          fi
+          echo "Tree hash matches: $ACTUAL_TREE"
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "${{ inputs.commit_message }}"
+          git push
+          git status --short
+          echo "Committed and pushed"
+
+      - name: Cleanup scaffolding
+        if: always()
+        run: |
+          rm -f "${{ inputs.patch_file }}" .github/workflows/apply-stage9-fix11.yml
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "Remove stage9-fix11 scaffolding patch and workflow"
+            git push
+          fi
+          git status --short
+          git diff --cached --stat
+          echo "Cleanup complete"
