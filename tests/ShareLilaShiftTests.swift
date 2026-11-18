@@ -24,13 +24,13 @@ final class ShareLilaShiftTests: XCTestCase {
 
     func testShareTextLinksFormalRelease() {
         let text = ShareLilaShift.text()
-        XCTAssertTrue(text.contains("/releases/tag/v4.0.0"), "Share text must link the formal 4.0.0 release page")
+        XCTAssertTrue(text.contains("/releases/tag/v4.1.0"), "Share text must link the formal 4.0.0 release page")
         XCTAssertFalse(text.localizedCaseInsensitiveContains("rc."), "A formal release must not link a release candidate")
     }
 
     func testShareURLsAreValid() {
         XCTAssertEqual(ShareLilaShift.releaseURL.host, "github.com")
-        XCTAssertEqual(ShareLilaShift.releaseURL.path, "/fafa888uk/LilaShift-3.0/releases/tag/v4.0.0")
+        XCTAssertEqual(ShareLilaShift.releaseURL.path, "/fafa888uk/LilaShift-3.0/releases/tag/v4.1.0")
         XCTAssertEqual(ShareLilaShift.telegramURL.host, "t.me")
         XCTAssertEqual(ShareLilaShift.telegramURL.path, "/LilaShiftUpdates")
     }

@@ -28,6 +28,21 @@
 // because a restore writes the whole file back — and live only in
 // the app sandbox; that is a deliberate, documented exception, not
 // a second identifier store.
+//
+// System Settings writes do NOT pass through this engine
+// (Stage 13): they touch no `GestaltDocument` and no CacheExtra
+// key — the lock-screen text is a plain `String` (`LockScreenFootnote`)
+// in a configuration-profiles plist. Their equivalent gate lives
+// in `SystemSettingsStore.apply` (stale-snapshot check, single-line
+// ≤ 256 validation, verified pre-write backup, verified journal,
+// read-back verification, rollback). Do not "fix" the bypass by
+// adding `LockScreenFootnote` to the CacheExtra allowlist: the
+// allowlist is defined as every CacheExtra key the app may write,
+// and this key is not one. The same applies to file writes that
+// go through `GXCustomizationAccess.acquirePath` (launch images,
+// wallpapers, notification sounds): their gate is the per-app
+// writer lock plus sibling-`.bak` backup and pinning, documented
+// where those stores live.
 import Foundation
 
 enum SecurityEngine {

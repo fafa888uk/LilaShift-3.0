@@ -10,8 +10,15 @@ final class SystemSettingsModel: ObservableObject {
     @Published private(set) var lockScreenText = ""
     @Published var message: String?
     private let store: SystemSettingsStore
+    /// The device's iOS build string, injected for tests. Production
+    /// reads it from the device; the version-sentinel gate in
+    /// `load()` uses it to refuse blocked builds with
+    /// stay/downgrade guidance instead of a misleading
+    /// "not accessible" error.
+    private let osBuild: String?
 
-    init() {
+    init(osBuild: String? = SystemDeviceIdentitySource().osBuild) {
+        self.osBuild = osBuild
         let directory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("GestaltX/SystemSettings", isDirectory: true)
         let deviceID = UIDevice.current.identifierForVendor?.uuidString
@@ -56,6 +63,15 @@ final class SystemSettingsModel: ObservableObject {
     }
     func load() async {
         guard !isBusy, !hasChanges else { return }
+        // Version sentinel (Stage 13): on builds where Apple blocked
+        // the mechanism (27.3 beta 2 and later), report the
+        // stay/downgrade guidance and do not attempt worse_query at
+        // all — the acquire closure's generic "not accessible" error
+        // would mislead the user about the real cause.
+        if let guidance = VersionSentinel.guidance(for: VersionSentinel.state(forBuild: osBuild)) {
+            message = guidance
+            return
+        }
         isBusy = true; defer { isBusy = false }
         do { accept(try await store.load(), clearing: []) }
         catch { message = error.localizedDescription }

@@ -325,8 +325,9 @@ enum PresetCatalog {
     }
 
     /// Builds the catalog: the 37 `CapabilityEntry` entries (35
-    /// capabilities + eSIM + region code), the WAPI and model-number
-    /// virtual entries, and the four preset groups.
+    /// capabilities + eSIM + region code), the WAPI, model-number,
+    /// and lock-screen-text virtual entries, and the four preset
+    /// groups.
     private static func build() -> [PresetEntry] {
         var entries: [PresetEntry] = []
         for capabilityEntry in CapabilityEntry.all {
@@ -335,6 +336,7 @@ enum PresetCatalog {
         }
         entries.append(wapiEntry)
         entries.append(modelNumberEntry)
+        entries.append(lockScreenTextEntry)
         entries.append(contentsOf: groupEntries)
         return entries
     }
@@ -378,6 +380,37 @@ enum PresetCatalog {
             underlyingKeyOrSlot: capabilityEntry.underlyingKeyOrSlot,
             dependencies: capabilityEntry.dependencies,
             conflicts: capabilityEntry.conflicts)
+    }
+
+    /// The lock-screen-text virtual entry: a pointer, not a
+    /// stageable preset. The text lives in a configuration-profiles
+    /// plist (`LockScreenFootnote` in
+    /// `SharedDeviceConfiguration.plist`), not in the MobileGestalt
+    /// cache, so no MG pipeline can stage it. Tapping the entry
+    /// opens the Tools page, where the System Settings tile lets
+    /// the user type and apply the text. The entry exists so the
+    /// feature is discoverable from the catalog, search, and
+    /// combinations — it never offers a stage toggle.
+    private static var lockScreenTextEntry: PresetEntry {
+        PresetEntry(
+            featureID: "lockScreenText",
+            kind: .virtual,
+            category: .display,
+            chineseName: "锁屏文字",
+            englishTitle: "Lock Screen Text",
+            chineseDescription: "在锁屏底部显示自定义文字（写入系统配置描述文件 SharedDeviceConfiguration.plist 的 LockScreenFootnote）。只改这一项文字，不改 MobileGestalt 缓存、不改壁纸与启动图。预设本身不暂存文字：点开后进入工具页，在「系统设置」里输入并应用；重启设备不需要，但文字是否立即显示须真机验收。恢复须在「系统设置」页点还原，全局恢复不包含此项。",
+            scope: .unknown(reason: "各机型未经逐一验证，仅确认 iOS 27 可访问系统配置组。"),
+            scopeNote: "仅确认 iOS 27 可访问系统配置组；各机型未经逐一验证。",
+            minSystem: .known("iOS 27"),
+            riskLevel: .low,
+            riskReason: "只改锁屏底部文字；写入前有备份与原文记录。文字过长或含换行会被拒绝；生效时机未经逐机型验证。",
+            restoreMethod: "在「系统设置」页点还原可恢复记录的原文；全局恢复（备份页的全部恢复）不包含此项。",
+            evidence: [PresetEvidence(text: "GestaltX/SystemSettingsStore.swift (upstream v1.0.6, GPL-3.0)", kind: .code)],
+            memberIDs: [],
+            keys: ["LockScreenFootnote"],
+            underlyingKeyOrSlot: "LockScreenFootnote (String) in SharedDeviceConfiguration.plist",
+            dependencies: [],
+            conflicts: [])
     }
 
     /// The WAPI virtual entry: staging sets the CacheData WAPI slot

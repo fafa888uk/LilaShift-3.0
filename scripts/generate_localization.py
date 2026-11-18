@@ -1367,6 +1367,26 @@ Search presets	搜索预设
 Light	浅色
 Dark	深色
 Keypad appearance	拨号盘外观
+App Audio Library	应用音频库
+Apps that already have notification sounds or audio files	这里列出包含通知音或音频文件的 App
+Existing Audio	已有音频
+No Notification Sounds	未找到通知音
+Play Current Audio	试听当前音频
+Play Replacement	试听替换音频
+Choose Audio	选择音频
+Restore Original Audio	还原原始音频
+Restore Audio	还原音频
+Original audio restored.	已恢复原始音频。
+Audio replaced.	已替换音频。
+Not every sound listed is the current notification sound. Preview the sounds before replacing one.	列表中的音频不一定是当前通知音，可先试听，确认后再替换。
+Some folders could not be read or the scan limit was reached.	部分目录无法读取，或已达到扫描上限。
+Choose notification audio shorter than 30 seconds and smaller than 32 MB.	请选择短于 30 秒且小于 32 MB 的通知音频。
+This audio format is not supported.	不支持此音频格式。
+This format cannot be converted. Import audio with the same format, sample rate and channel count.	此格式暂不支持转换，请导入格式、采样率及声道数相同的音频。
+Enter the notification sound's exact filename, including its extension.	请输入通知铃声的完整文件名，包含扩展名。
+A file with this name already exists. Select it from the list to replace it.	同名文件已存在，请从列表中选择后替换。
+No saved original was found for this sound. The app may have replaced it after the last edit.	找不到这个音频的原始备份，App 可能在编辑后替换了它。
+Replace an app's notification sounds with your own audio.	用自己的音频替换 App 的通知音。
 '''
 entries = {}
 for line in TRANSLATIONS.strip().splitlines():

@@ -16,10 +16,11 @@ final class PresetCatalogTests: XCTestCase {
 
     /// The catalog covers every preset the app offers: the 36
     /// `CapabilityEntry` entries (37 capabilities + eSIM + region
-    /// code), WAPI, the model number, and the four preset groups.
+    /// code), WAPI, the model number, lock screen text, and the four
+    /// preset groups.
     func testCatalogEntryCount() {
-        XCTAssertEqual(PresetCatalog.all.count, 45,
-                       "Catalog must have 45 entries, got \(PresetCatalog.all.count)")
+        XCTAssertEqual(PresetCatalog.all.count, 46,
+                       "Catalog must have 46 entries, got \(PresetCatalog.all.count)")
     }
 
     /// Every `CapabilityEntry` id is covered by the catalog.
@@ -173,11 +174,11 @@ final class PresetCatalogTests: XCTestCase {
     // MARK: - Filters
 
     /// Category filter counts: intelligence 10 (8 AI-family + region
-    /// + model number), display 11, device 13 (11 + eSIM + WAPI),
+    /// + model number), display 12 (11 + lock screen text), device 13 (11 + eSIM + WAPI),
     /// iPad 3, advanced 4, group 4.
     func testFilterByCategory() {
         XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, category: .intelligence).count, 10)
-        XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, category: .display).count, 11)
+        XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, category: .display).count, 12)
         XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, category: .device).count, 13)
         XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, category: .ipad).count, 3)
         XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, category: .advanced).count, 4)
@@ -188,11 +189,11 @@ final class PresetCatalogTests: XCTestCase {
     /// capabilities + modelNumber + one-tap + the Siri AI Mode
     /// group), medium 6 (the non-caution intelligence capability
     /// "ai" + eSIM + region code + WAPI + the two medium groups),
-    /// low 18.
+    /// low 19 (18 + lock screen text).
     func testFilterByRisk() {
         XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, riskLevel: .high).count, 21)
         XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, riskLevel: .medium).count, 6)
-        XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, riskLevel: .low).count, 18)
+        XCTAssertEqual(PresetCatalog.filtered(PresetCatalog.all, riskLevel: .low).count, 19)
     }
 
     /// Eligibility filtering with no evaluations: everything is

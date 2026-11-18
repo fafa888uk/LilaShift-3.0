@@ -2,6 +2,19 @@
 
 [English](CHANGELOG.md) | 简体中文
 
+## [4.1.0] - 2026-11-18
+
+正式版。基于分支 `feature/lilashift-4.0-quality-upgrade` 的 4.0.0 基线提交 `6c8c4aba` 加 Stage 13 功能批构建。应用内版本 `4.1.0`，构建号 `41000001`；IPA 文件 `LilaShift_4.1.0.ipa`（bundle `com.huami.gestultx`，最低 iOS `26.0`）。
+
+### 新增（相对 4.0.0）
+- App Audio Library：用自定义音频替换通知音，按上游 GestaltX v1.1.1 1:1 移植（GPL-3.0，已署名）。覆盖已在容器内露出通知音的 App；捕获指引（用于声音在 App 包内的应用）需要配对与设备连接，推迟到后续阶段——见 Stage 13 实施记录。
+- 锁屏文字（目录集成）：系统设置页本身已在 4.0.0 中（按上游 GestaltX v1.0.6 1:1 移植）；Stage 13 新增目录指针条目（可在搜索与目录中发现）、版本哨兵门控（被封堵的版本现显示停留/降级指引而非误导性错误），并说明全局恢复不包含此项——须在「系统设置」页点还原。
+- 上游 v1.1.1 全量对照中其余可移植项（对照表见 Stage 13 实施记录）。
+- 日文 README（README_JA.md），由英文 README 翻译并适配至 4.1.0——包含 App Audio Library、锁屏文本条目与 iOS 27.3 beta 2 提示。初版翻译，待母语者校对。
+
+### 注意
+- 新功能适用于 iOS 27.0–27.3 beta 1。苹果已在 iOS 27.3 beta 2 中封堵底层机制，如需使用这些功能请勿升级超过 27.3 beta 1。
+
 ## [4.0.0] - 2026-11-18
 
 正式版。基于分支 `feature/lilashift-4.0-quality-upgrade` 的提交 `7c6df01` 构建（代码基线；同分支随后还有一次仅改文档的版本一致性修复）。应用内版本 `4.0.0`，构建号 `40000001`；IPA 文件 `LilaShift_4.0.0.ipa`（bundle `com.huami.gestultx`，最低 iOS `26.0`）。

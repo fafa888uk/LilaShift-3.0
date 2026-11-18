@@ -46,4 +46,18 @@ enum AppDirectories {
     static var wallpaperLibraryStorage: URL {
         applicationSupport.appendingPathComponent("GestaltX/WallpaperLibrary", isDirectory: true)
     }
+
+    /// App Audio Library (Stage 13): per-app notification-sound
+    /// backups and named overrides, following the launch-images
+    /// storage pattern. Kept separate from the launch-images root
+    /// because the audio store writes sibling `.bak` files next to
+    /// the replaced sounds, not into this root.
+    static var audioStorage: URL {
+        applicationSupport.appendingPathComponent("GestaltX/Audio", isDirectory: true)
+    }
+
+    /// The App Audio Library catalog (scan results and ordering).
+    static var audioCatalogStorage: URL {
+        applicationSupport.appendingPathComponent("GestaltX/NotificationSoundCatalog-v2", isDirectory: true)
+    }
 }

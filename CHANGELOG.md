@@ -2,6 +2,19 @@
 
 English | [简体中文](CHANGELOG_ZH-CN.md)
 
+## [4.1.0] - 2026-11-18
+
+Formal release. Built from branch `feature/lilashift-4.0-quality-upgrade` at the 4.0.0 baseline commit `6c8c4aba` plus the Stage 13 feature batch. In-app version `4.1.0`, build `41000001`; IPA file `LilaShift_4.1.0.ipa` (bundle `com.huami.gestultx`, minimum iOS `26.0`).
+
+### Added (vs 4.0.0)
+- App Audio Library: replace notification sounds with custom audio, ported 1:1 from upstream GestaltX v1.1.1 (GPL-3.0, with attribution). Covers apps that already expose notification sounds in their containers. The capture guide (for apps whose sounds live in the bundle) needs Pairing & Device Connection, which is deferred to a later stage — see the Stage 13 implementation record.
+- Lock screen text (catalog integration): the System Settings page itself was already in 4.0.0 (ported 1:1 from upstream GestaltX v1.0.6); Stage 13 adds the catalog pointer entry (discoverable from search and the catalog browser), the version-sentinel gate (blocked builds now show stay/downgrade guidance instead of a misleading error), and documents that global restore-all does not cover the footnote — use Revert on the System Settings page.
+- Further upstream v1.1.1 ports from the full comparison (see the Stage 13 implementation record for the covered / ported / skipped table).
+- Japanese README (README_JA.md), translated from the English README and adapted to 4.1.0 — including the App Audio Library, the lock screen text entry, and the iOS 27.3 beta 2 notice. First-pass translation; native-speaker review pending.
+
+### Notes
+- New features work on iOS 27.0–27.3 beta 1. Apple blocked the underlying mechanism in iOS 27.3 beta 2, so do not upgrade past 27.3 beta 1 if you use these features.
+
 ## [4.0.0] - 2026-11-18
 
 Formal release. Built from branch `feature/lilashift-4.0-quality-upgrade` at commit `7c6df01` (code baseline; a docs-only version-consistency fix follows on the same branch). In-app version `4.0.0`, build `40000001`; IPA file `LilaShift_4.0.0.ipa` (bundle `com.huami.gestultx`, minimum iOS `26.0`).

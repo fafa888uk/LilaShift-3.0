@@ -80,6 +80,7 @@
 		CE7268CB52FB7B02198ECCF0 /* SiriCapabilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F95D4CCB08774DA750651F3 /* SiriCapabilityTests.swift */; };
 		9A7C7D4DD36F45B3B9ACFDB2 /* StandalonePresetsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7855C855237441FD9AE48803 /* StandalonePresetsTests.swift */; };
 		B20A12924CF9E683E96DC4EF /* SystemSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F848381DE0AD4A5154849284 /* SystemSettingsTests.swift */; };
+		78F31286C41A43CFA763A2CD /* LockScreenTextPresetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B76D066CEE9482AB7181EDA /* LockScreenTextPresetTests.swift */; };
 		6FE5E41B444361737A6B5CF7 /* SystemVaultTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3248D1891FD847DDF066F239 /* SystemVaultTests.swift */; };
 		463E96480D908A56F1FA67EB /* TemporaryExportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3267ABB75431ED88EA0E5AF /* TemporaryExportTests.swift */; };
 		3F3BE99F7D8C4C9A2152E28C /* UnchangedRestoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29A583AA06A71D72C9F62655 /* UnchangedRestoreTests.swift */; };
@@ -115,6 +116,8 @@
 		8CD35CF6D39FBACD8631455F /* DialerSkinTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE575E43ADBB37C57699B4C3 /* DialerSkinTests.swift */; };
 		0091B93AE1073B147BC12351 /* MGKeysTableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DDC0AE147A66774543D706C /* MGKeysTableTests.swift */; };
 		9A09104DF12E9F6F9B3D51CE /* AppDirectoriesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC75FB35CDF6D8327E921AA /* AppDirectoriesTests.swift */; };
+		83A8821963DDE3A3544422C7 /* AppSoundSecurityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C4438CA53F2BF20CC13797C /* AppSoundSecurityTests.swift */; };
+		8DEFA438EA745088253D7A36 /* AppSoundTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAC2630647C617223B790C68 /* AppSoundTests.swift */; };
 		38809F7AF0DDE6BE248B8B4D /* CacheAnalysisTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B14A75518A27659AFF766A7E /* CacheAnalysisTests.swift */; };
 		88A8708498FB1567D79B0235 /* PreviewImageCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE56BA3BA712796310082679 /* PreviewImageCacheTests.swift */; };
 		F9A98BB7D5189306A34B023E /* LoggingEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 603D80F7955D1522254EBC99 /* LoggingEngineTests.swift */; };
@@ -241,6 +244,7 @@
 		4F95D4CCB08774DA750651F3 /* SiriCapabilityTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SiriCapabilityTests.swift; sourceTree = "<group>"; };
 		7855C855237441FD9AE48803 /* StandalonePresetsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StandalonePresetsTests.swift; sourceTree = "<group>"; };
 		F848381DE0AD4A5154849284 /* SystemSettingsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SystemSettingsTests.swift; sourceTree = "<group>"; };
+		0B76D066CEE9482AB7181EDA /* LockScreenTextPresetTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LockScreenTextPresetTests.swift; sourceTree = "<group>"; };
 		3248D1891FD847DDF066F239 /* SystemVaultTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SystemVaultTests.swift; sourceTree = "<group>"; };
 		B3267ABB75431ED88EA0E5AF /* TemporaryExportTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TemporaryExportTests.swift; sourceTree = "<group>"; };
 		29A583AA06A71D72C9F62655 /* UnchangedRestoreTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UnchangedRestoreTests.swift; sourceTree = "<group>"; };
@@ -276,6 +280,8 @@
 		EE575E43ADBB37C57699B4C3 /* DialerSkinTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DialerSkinTests.swift; sourceTree = "<group>"; };
 		5DDC0AE147A66774543D706C /* MGKeysTableTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MGKeysTableTests.swift; sourceTree = "<group>"; };
 		AEC75FB35CDF6D8327E921AA /* AppDirectoriesTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppDirectoriesTests.swift; sourceTree = "<group>"; };
+		6C4438CA53F2BF20CC13797C /* AppSoundSecurityTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppSoundSecurityTests.swift; sourceTree = "<group>"; };
+		DAC2630647C617223B790C68 /* AppSoundTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppSoundTests.swift; sourceTree = "<group>"; };
 		B14A75518A27659AFF766A7E /* CacheAnalysisTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CacheAnalysisTests.swift; sourceTree = "<group>"; };
 		EE56BA3BA712796310082679 /* PreviewImageCacheTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PreviewImageCacheTests.swift; sourceTree = "<group>"; };
 		603D80F7955D1522254EBC99 /* LoggingEngineTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LoggingEngineTests.swift; sourceTree = "<group>"; };
@@ -415,6 +421,8 @@
 				B831EA60248B4944246EDB78 /* AppArchiveEngineTests.swift */,
 				845685FDB202FCF773AFECE5 /* AppArchiveViewsTests.swift */,
 				AEC75FB35CDF6D8327E921AA /* AppDirectoriesTests.swift */,
+				6C4438CA53F2BF20CC13797C /* AppSoundSecurityTests.swift */,
+				DAC2630647C617223B790C68 /* AppSoundTests.swift */,
 				CFBA64DBB71D36DE61C93AB6 /* AppGroupBrowserTests.swift */,
 				6C88BF6F88088F1ADD1F8ED9 /* ArtworkPreservationTests.swift */,
 				BC90950613C8B7A704294990 /* AssetTagTests.swift */,
@@ -501,6 +509,7 @@
 				67F087075E10E918A4D64AE8 /* SupervisionAuditTests.swift */,
 				093F094BCB46F978E3A84937 /* SystemHealthScoreTests.swift */,
 				F848381DE0AD4A5154849284 /* SystemSettingsTests.swift */,
+				0B76D066CEE9482AB7181EDA /* LockScreenTextPresetTests.swift */,
 				3248D1891FD847DDF066F239 /* SystemVaultTests.swift */,
 				B3267ABB75431ED88EA0E5AF /* TemporaryExportTests.swift */,
 				29A583AA06A71D72C9F62655 /* UnchangedRestoreTests.swift */,
@@ -683,6 +692,8 @@
 				6CA2ACDC0E04F88A8AFB4E1F /* AppArchiveEngineTests.swift in Sources */,
 				0F5A77CE689DE8DB1859E852 /* AppArchiveViewsTests.swift in Sources */,
 				9A09104DF12E9F6F9B3D51CE /* AppDirectoriesTests.swift in Sources */,
+				83A8821963DDE3A3544422C7 /* AppSoundSecurityTests.swift in Sources */,
+				8DEFA438EA745088253D7A36 /* AppSoundTests.swift in Sources */,
 				39BC5E981AD03AF6C8E32C9B /* AppGroupBrowserTests.swift in Sources */,
 				C1E32D9FDD2029C3CC8895C8 /* ArtworkPreservationTests.swift in Sources */,
 				9B1917A29C133AB69297CDF6 /* AssetTagTests.swift in Sources */,
@@ -770,6 +781,7 @@
 				62786B5ABE3A796C417C5293 /* SupervisionAuditTests.swift in Sources */,
 				2626D3584530BA06A2CCC380 /* SystemHealthScoreTests.swift in Sources */,
 				B20A12924CF9E683E96DC4EF /* SystemSettingsTests.swift in Sources */,
+				78F31286C41A43CFA763A2CD /* LockScreenTextPresetTests.swift in Sources */,
 				6FE5E41B444361737A6B5CF7 /* SystemVaultTests.swift in Sources */,
 				463E96480D908A56F1FA67EB /* TemporaryExportTests.swift in Sources */,
 				3F3BE99F7D8C4C9A2152E28C /* UnchangedRestoreTests.swift in Sources */,
@@ -948,7 +960,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = GestaltX/GestaltX.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 40000001;
+				CURRENT_PROJECT_VERSION = 41000001;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -965,7 +977,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.0;
+				MARKETING_VERSION = 4.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.huami.gestultx;
 				PRODUCT_NAME = GestaltX;
 				REGISTER_APP_GROUPS = YES;
@@ -992,7 +1004,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = GestaltX/GestaltX.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 40000001;
+				CURRENT_PROJECT_VERSION = 41000001;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1009,7 +1021,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.0;
+				MARKETING_VERSION = 4.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.huami.gestultx;
 				PRODUCT_NAME = GestaltX;
 				REGISTER_APP_GROUPS = YES;
@@ -1035,7 +1047,7 @@
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/GestaltXShare.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 40000001;
+				CURRENT_PROJECT_VERSION = 41000001;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
@@ -1045,7 +1057,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 4.0.0;
+				MARKETING_VERSION = 4.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.huami.gestultx.ShareExtension;
 				PRODUCT_NAME = GestaltXShare;
 				SDKROOT = iphoneos;
@@ -1067,7 +1079,7 @@
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/GestaltXShare.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 40000001;
+				CURRENT_PROJECT_VERSION = 41000001;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
@@ -1077,7 +1089,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 4.0.0;
+				MARKETING_VERSION = 4.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.huami.gestultx.ShareExtension;
 				PRODUCT_NAME = GestaltXShare;
 				SDKROOT = iphoneos;
@@ -1095,7 +1107,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 40000001;
+				CURRENT_PROJECT_VERSION = 41000001;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
@@ -1104,7 +1116,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.0;
+				MARKETING_VERSION = 4.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.huami.gestultx.GestaltXTests;
 				PRODUCT_NAME = GestaltXTests;
 				SDKROOT = iphoneos;
@@ -1121,7 +1133,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 40000001;
+				CURRENT_PROJECT_VERSION = 41000001;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
@@ -1130,7 +1142,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.0.0;
+				MARKETING_VERSION = 4.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.huami.gestultx.GestaltXTests;
 				PRODUCT_NAME = GestaltXTests;
 				SDKROOT = iphoneos;

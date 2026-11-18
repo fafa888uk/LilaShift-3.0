@@ -1755,6 +1755,25 @@ struct ToolGroupView: View {
                             )
                         }
                         .buttonStyle(.plain)
+                        Divider()
+                        NavigationLink { AppSoundApplicationsView(customizations: customizations) } label: {
+                            GlassCategoryTile(
+                                title: L("App Audio Library"),
+                                detail: L("Replace an app's notification sounds with your own audio."),
+                                symbol: "bell.badge",
+                                tint: .orange
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(model.isBusy || AppSoundAvailability.unavailableReason(forBuild: SystemDeviceIdentitySource().osBuild) != nil)
+                        // Sound replacement goes through the worse_query lease,
+                        // so it is blocked wherever the version sentinel says
+                        // the mechanism is blocked. The tile stays visible
+                        // with the reason instead of opening an empty list.
+                        if let audioGuidance = AppSoundAvailability.unavailableReason(forBuild: SystemDeviceIdentitySource().osBuild) {
+                            Text(audioGuidance)
+                                .font(.footnote).foregroundStyle(.secondary)
+                        }
                     }
                 }
 

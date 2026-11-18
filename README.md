@@ -4,14 +4,14 @@
 
 **Smart device detection · Feature management · Safe backups · Traceable restore**
 
-[English](README.md) · [简体中文](README_ZH-CN.md)
+[English](README.md) · [简体中文](README_ZH-CN.md) · [日本語](README_JA.md)
 
 > **Pre-release: LilaShift 3.0.0-rc.1** — this is a **pre-release, not a stable release**.
 > Built from `feature/lilashift-3.0-dashboard` at commit `37c4a368c73ec80654c8b395387abea9a24915f6` (includes fix commit `7020964`).
 > In-app version `3.0.0` (build `30000002`) · IPA file `LilaShift_3.0.0.ipa`.
 > **Real-device install, eSIM activation, Apple Intelligence activation and restore have NOT been verified for this build: no real-device evidence for this HEAD is in this repository.** See [What is verified](#what-is-verified-and-what-is-not) and `CHANGELOG.md` (Known gaps).
 
-[![Version](https://img.shields.io/badge/version-4.0.0-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.0.0)
+[![Version](https://img.shields.io/badge/version-4.1.0-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.1.0)
 [![Build LilaShift IPA](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml)
 [![Run Swift Tests](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml)
 [![Check Licenses](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml)
