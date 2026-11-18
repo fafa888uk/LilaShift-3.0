@@ -1,0 +1,78 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index 7277e93..3f42b0d 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -2,6 +2,21 @@
+ 
+ English | [简体中文](CHANGELOG_ZH-CN.md)
+ 
++## [4.0.0] - 2026-11-18
++
++Formal release. Built from branch `feature/lilashift-4.0-quality-upgrade` at commit `7c6df01` (code baseline; a docs-only version-consistency fix follows on the same branch). In-app version `4.0.0`, build `40000001`; IPA file `LilaShift_4.0.0.ipa` (bundle `com.huami.gestultx`, minimum iOS `26.0`).
++
++### Added (vs 3.0.0)
++- MG real-time monitoring and key database (77 seeded keys, version sentinel, compatibility model).
++- Advanced backup and differential restore (BackupEngine/RestoreEngine).
++- Intelligent diagnostics centre (DiagnosticsEngine with fix suggestions, plus a performance section).
++- App archive and cache analysis (sandbox-compliant ZIP archive; no third-party app backup).
++- Wallpaper and personalisation centre (WallpaperLibrary; no public API can set the system wallpaper or another app's launch image — applying means exporting to Photos plus guidance).
++- Performance optimisation (dialer import/scaling, MG key search debounce, diagnostics caching, PreviewImageCache, PerformanceMonitor; no fabricated metrics — the baseline lists measurement methods only).
++
++### Verified
++- Run Swift Tests #429: 744 executed, 3 skipped, 0 failed. Build IPA #431 green. SwiftLint #178 green. All on commit `7c6df01`.
++
+ ## [3.0.0-rc.1] - Pre-release (not stable)
+ 
+ Built from branch `feature/lilashift-3.0-dashboard` at commit `37c4a36`
+diff --git a/CHANGELOG_ZH-CN.md b/CHANGELOG_ZH-CN.md
+index 4db29b0..2b5795e 100644
+--- a/CHANGELOG_ZH-CN.md
++++ b/CHANGELOG_ZH-CN.md
+@@ -2,6 +2,21 @@
+ 
+ [English](CHANGELOG.md) | 简体中文
+ 
++## [4.0.0] - 2026-11-18
++
++正式版。基于分支 `feature/lilashift-4.0-quality-upgrade` 的提交 `7c6df01` 构建（代码基线；同分支随后还有一次仅改文档的版本一致性修复）。应用内版本 `4.0.0`，构建号 `40000001`；IPA 文件 `LilaShift_4.0.0.ipa`（bundle `com.huami.gestultx`，最低 iOS `26.0`）。
++
++### 新增（相对 3.0.0）
++- MG 实时监控与键值库（77 条种子键、版本哨兵、兼容性模型）。
++- 高级备份与差异恢复（BackupEngine/RestoreEngine）。
++- 智能诊断中心（DiagnosticsEngine，含修复建议与性能区）。
++- 应用存档与缓存分析（沙盒合规 ZIP 存档；不做第三方应用备份）。
++- 壁纸与个性化中心（WallpaperLibrary；无公开 API 可设系统壁纸或他人 App 启动图，「应用」指导出到相册加指引）。
++- 性能优化（拨号盘导入/缩放、MG 键表搜索防抖、诊断缓存、PreviewImageCache、PerformanceMonitor；不编造指标，基线只写测量方法）。
++
++### 已验证
++- Run Swift Tests #429：744 执行、3 跳过、0 失败；Build IPA #431 绿；SwiftLint #178 绿；均在提交 `7c6df01` 上。
++
+ ## [3.0.0-rc.1] - 预发布（非稳定版）
+ 
+ 由 `feature/lilashift-3.0-dashboard` 分支构建，提交 `37c4a36`
+diff --git a/README.md b/README.md
+index 5633843..785c206 100644
+--- a/README.md
++++ b/README.md
+@@ -11,7 +11,7 @@
+ > In-app version `3.0.0` (build `30000002`) · IPA file `LilaShift_3.0.0.ipa`.
+ > **Real-device install, eSIM activation, Apple Intelligence activation and restore have NOT been verified for this build: no real-device evidence for this HEAD is in this repository.** See [What is verified](#what-is-verified-and-what-is-not) and `CHANGELOG.md` (Known gaps).
+ 
+-[![Version](https://img.shields.io/badge/version-3.0.0--rc.1%20pre--release-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v3.0.0-rc.1)
++[![Version](https://img.shields.io/badge/version-4.0.0-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.0.0)
+ [![Build LilaShift IPA](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml)
+ [![Run Swift Tests](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml)
+ [![Check Licenses](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml)
+diff --git a/README_ZH-CN.md b/README_ZH-CN.md
+index 85ed560..936fa4b 100644
+--- a/README_ZH-CN.md
++++ b/README_ZH-CN.md
+@@ -11,7 +11,7 @@
+ > App 内版本号 `3.0.0`（构建号 `30000002`），IPA 文件名 `LilaShift_3.0.0.ipa`。
+ > **真机安装、eSIM 激活、Apple Intelligence 激活与恢复，本版本均未验证：仓库中没有针对此 HEAD 的真机证据。** 详见[已验证内容与未验证内容](#已验证内容与未验证内容)与 `CHANGELOG_ZH-CN.md`（本 HEAD 已知缺口）。
+ 
+-[![版本](https://img.shields.io/badge/version-3.0.0--rc.1%20预发布-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v3.0.0-rc.1)
++[![版本](https://img.shields.io/badge/version-4.0.0-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.0.0)
+ [![Build LilaShift IPA](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml)
+ [![Run Swift Tests](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml)
+ [![Check Licenses](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml)
