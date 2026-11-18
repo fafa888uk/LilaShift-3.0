@@ -14,22 +14,23 @@ final class ShareLilaShiftTests: XCTestCase {
         XCTAssertTrue(text.contains(ShareLilaShift.telegramURLString), "Share text must link the Telegram updates channel")
     }
 
-    func testShareTextNamesVersionAndMarksPreRelease() {
+    func testShareTextNamesVersionWithoutPreReleaseMark() {
         let text = ShareLilaShift.text()
         XCTAssertTrue(text.contains(ShareLilaShift.versionLabel), "Share text must name the shared version")
-        XCTAssertTrue(text.contains(ShareLilaShift.preReleaseLabel), "Share text must mark the build as a pre-release")
+        XCTAssertFalse(text.localizedCaseInsensitiveContains("pre-release"), "A formal release must not be marked as a pre-release")
+        XCTAssertFalse(text.contains("预发布"), "A formal release must not be marked as a pre-release")
         XCTAssertTrue(text.contains(L("Telegram Updates Channel")), "Share text must label the Telegram link")
     }
 
-    func testShareTextDoesNotClaimStableRelease() {
+    func testShareTextLinksFormalRelease() {
         let text = ShareLilaShift.text()
-        XCTAssertFalse(text.localizedCaseInsensitiveContains("stable release"), "A pre-release must never be presented as stable")
-        XCTAssertFalse(text.contains("正式版"), "A pre-release must never be presented as stable")
+        XCTAssertTrue(text.contains("/releases/tag/v4.0.0"), "Share text must link the formal 4.0.0 release page")
+        XCTAssertFalse(text.localizedCaseInsensitiveContains("rc."), "A formal release must not link a release candidate")
     }
 
     func testShareURLsAreValid() {
         XCTAssertEqual(ShareLilaShift.releaseURL.host, "github.com")
-        XCTAssertEqual(ShareLilaShift.releaseURL.path, "/fafa888uk/LilaShift-3.0/releases/tag/v3.0.0-rc.1")
+        XCTAssertEqual(ShareLilaShift.releaseURL.path, "/fafa888uk/LilaShift-3.0/releases/tag/v4.0.0")
         XCTAssertEqual(ShareLilaShift.telegramURL.host, "t.me")
         XCTAssertEqual(ShareLilaShift.telegramURL.path, "/LilaShiftUpdates")
     }
