@@ -1,94 +1,118 @@
 name: Apply Stage 13-features Patch
 
 on:
+
   workflow_dispatch:
+
     inputs:
+
       patch_file:
-        description: 'Patch file in the repository root'
+
+        description: 'Patch file to apply (must exist on the branch)'
+
         required: true
+
         default: 'stage13-features.patch'
+
       base_sha:
+
         description: 'Expected base commit (Stage 12 docs commit)'
+
         required: true
+
         default: '6c8c4aba8fb2d4192864db7fe3846b00d2208eb8'
+
       expected_tree:
+
         description: 'Expected tree hash after applying the patch'
+
         required: true
+
         default: '97e0b582a81d99c289d103b537545e2745e4c813'
+
       commit_message:
+
         description: 'Commit message for the applied patch'
+
         required: true
+
         default: 'Stage 13: App Audio Library Phase 1, lock screen text entry, Japanese README, version 4.1.0'
 
 permissions:
+
   contents: write
 
 jobs:
+
   apply-patch:
+
     runs-on: ubuntu-latest
+
     steps:
+
       - name: Check out branch
         uses: actions/checkout@v4
         with:
           ref: feature/lilashift-4.0-quality-upgrade
           fetch-depth: 0
 
-      - name: Verify base commit is ancestor
+      - name: Verify base commit is an ancestor
         run: |
-          git merge-base --is-ancestor "${{ inputs.base_sha }}" HEAD || {
-            echo "::error::Base commit ${{ inputs.base_sha }} is not an ancestor of HEAD $(git rev-parse HEAD)"
-            exit 1
-          }
+          git merge-base --is-ancestor "${{ inputs.base_sha }}" HEAD
           echo "Base commit ${{ inputs.base_sha }} is an ancestor of HEAD $(git rev-parse HEAD)"
 
-      - name: Apply patch
+      - name: Apply patch and verify staged change
         run: |
-          git apply --whitespace=fix --index "${{ inputs.patch_file }}"
+          test -f "${{ inputs.patch_file }}"
+          git apply --index "${{ inputs.patch_file }}"
 
-      - name: Verify staged file count and stats
-        run: |
-          ACTUAL_COUNT=$(git diff --cached --name-only | wc -l)
+          ACTUAL_COUNT="$(git diff --cached --name-only | wc -l)"
           if [ "$ACTUAL_COUNT" -ne 37 ]; then
-            echo "::error::Expected exactly 37 staged files, got $ACTUAL_COUNT"
-            git diff --cached --stat
+            echo "Expected exactly 37 staged files, got: $ACTUAL_COUNT"
+            git diff --cached --name-only
             exit 1
           fi
-          ACTUAL_SHORTSTAT=$(git diff --cached --shortstat | sed 's/^ *//')
-          EXPECTED_SHORTSTAT="37 files changed, 3408 insertions(+), 48 deletions(-)"
-          if [ "$ACTUAL_SHORTSTAT" != "$EXPECTED_SHORTSTAT" ]; then
-            echo "::error::Shortstat mismatch: expected '$EXPECTED_SHORTSTAT', got '$ACTUAL_SHORTSTAT'"
-            git diff --cached --stat
+
+          ACTUAL_SHORTSTAT="$(git diff --cached --shortstat | sed 's/^ *//')"
+          if [ "$ACTUAL_SHORTSTAT" != "37 files changed, 3408 insertions(+), 48 deletions(-)" ]; then
+            echo "Expected shortstat: 37 files changed, 3408 insertions(+), 48 deletions(-)"
+            echo "Actual shortstat: $ACTUAL_SHORTSTAT"
             exit 1
           fi
-          echo "Staged changes match expected shortstat: $ACTUAL_SHORTSTAT"
+
+          echo "Staged change verified: $ACTUAL_SHORTSTAT"
 
       - name: Verify tree hash
         run: |
+          git rm --cached -q "${{ inputs.patch_file }}"
           git rm --cached -q .github/workflows/apply-stage13-features.yml
-          ACTUAL_TREE=$(git write-tree)
+
+          ACTUAL_TREE="$(git write-tree)"
           if [ "$ACTUAL_TREE" != "${{ inputs.expected_tree }}" ]; then
-            echo "::error::Tree hash mismatch: expected ${{ inputs.expected_tree }}, got $ACTUAL_TREE"
-            git diff --cached --stat
+            echo "Expected tree: ${{ inputs.expected_tree }}"
+            echo "Actual tree: $ACTUAL_TREE"
             exit 1
           fi
-          echo "Tree hash matches: $ACTUAL_TREE"
+
+          echo "Tree hash verified: $ACTUAL_TREE"
 
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A
           git commit -m "${{ inputs.commit_message }}"
-          git push origin HEAD:feature/lilashift-4.0-quality-upgrade
+          git push
+          echo "Pushed commit $(git rev-parse HEAD)"
 
-      - name: Remove scaffolding patch and workflow
+      - name: Cleanup scaffolding
         if: always()
         run: |
-          git checkout feature/lilashift-4.0-quality-upgrade
-          git rm -f stage13-features.patch .github/workflows/apply-stage13-features.yml
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git commit -m "Remove stage13-features scaffolding patch and workflow" || echo "Nothing to clean up"
-          git push origin HEAD:feature/lilashift-4.0-quality-upgrade || echo "Nothing to push"
-          git status --short --branch
-          git diff --cached --stat
+          rm -f "${{ inputs.patch_file }}" .github/workflows/apply-stage13-features.yml
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "Remove stage13-features scaffolding patch and workflow"
+            git push
+            echo "Cleanup committed and pushed"
+          else
+            echo "Nothing to clean up"
+          fi
