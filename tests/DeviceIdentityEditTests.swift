@@ -72,8 +72,8 @@ final class DeviceIdentityEditTests: XCTestCase {
         unrelated.set("LL", for: GestaltKeys.regionCode)
         do {
             _ = try await store.commit(unrelated, expected: initial)
-        } catch is GestaltFailure {
-            throw error
+        } catch let caught as GestaltFailure {
+            throw caught
         } catch {
             // Diagnostic (Stage 9 fix9): the commit path only throws
             // GestaltFailure, so a different error here names the site
@@ -90,8 +90,8 @@ final class DeviceIdentityEditTests: XCTestCase {
         let savedLocal: DocumentSnapshot
         do {
             savedLocal = try await store.commit(localEdit, expected: local)
-        } catch is GestaltFailure {
-            throw error
+        } catch let caught as GestaltFailure {
+            throw caught
         } catch {
             // Diagnostic (Stage 9 fix9): see the unrelated edit above.
             throw Failure(message: "Local identity removal threw unexpected error: \(error)")
