@@ -20,7 +20,7 @@ import Combine
 import AVFAudio
 
 /// Whether the audio library can replace sounds on this iOS build.
-/// Replacement goes through the `worse_query` lease, so it is
+/// Replacement goes through the sandbox-escape lease, so it is
 /// blocked wherever the version sentinel says the mechanism is
 /// blocked. Returns the sentinel guidance for blocked/unknown
 /// builds, `nil` when replacement is available. The Tools-page tile

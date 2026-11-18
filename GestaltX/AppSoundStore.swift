@@ -101,7 +101,12 @@ actor AppSoundStore {
             let current = try directory.read(entry.path)
             guard current.device == entry.device, current.inode == entry.inode else { throw AppSoundDirectory.changed }
             let info = try AppSoundCodec.inspect(current.data, extension: (entry.path as NSString).pathExtension)
-            let saved = try? directory.original(entry.path, app: app.id)
+            // Do NOT swallow the error here: ContainerOriginals.read
+            // returns nil only when no .bak exists, and throws when a
+            // .bak is present but foreign or unverifiable. Treating
+            // that throw as "no backup" would silently adopt a foreign
+            // backup as the original; selection must fail instead.
+            let saved = try directory.original(entry.path, app: app.id)
             return AppSoundSelection(entry: entry, current: current, duration: info.duration,
                                      // A verified sibling backup is enough to offer restore.
                                      // The app (or a previous edit) may legitimately have
@@ -183,7 +188,10 @@ actor AppSoundStore {
     func restore(_ selection: AppSoundSelection, app: LaunchArtworkApp) throws {
         try access(app, group: selection.entry.group) { container, directory in
             let path = selection.entry.path, current = try directory.read(path)
-            let saved = try? directory.original(path, app: app.id)
+            // Same rule as select: a present-but-unverifiable .bak is
+            // a refusal, not "no backup". Only a missing .bak may fall
+            // through to the ledger / no-original branches below.
+            let saved = try directory.original(path, app: app.id)
             if saved == nil, ledger(app.id).contains(path) {
                 // The marker was lost, but GestaltX created this same-name
                 // override and knows the original state was "absent".

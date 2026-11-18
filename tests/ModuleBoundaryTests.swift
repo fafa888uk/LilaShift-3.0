@@ -65,8 +65,12 @@ final class ModuleBoundaryTests: XCTestCase {
         // mechanism in comments).
         let knownCallers: Set<String> = [
             "ContainerAccess.swift", "GestaltManager.swift", "SystemSettingsView.swift",
-            "CustomizationStore.swift", "LaunchArtworkStore.swift",
+            "CustomizationStore.swift", "LaunchArtworkStore.swift", "AppSoundStore.swift",
         ]
+        // AppSoundStore belongs here: it follows the LaunchArtworkStore
+        // pattern exactly — acquire through GXCustomizationAccess (the
+        // single choke point) and release the lease handle. It adds no
+        // new escape entry point.
         var callers: Set<String> = []
         for file in swiftFiles(in: "GestaltX") {
             let text = readSource("GestaltX/" + file.lastPathComponent)

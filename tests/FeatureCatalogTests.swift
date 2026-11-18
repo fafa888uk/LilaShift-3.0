@@ -79,7 +79,7 @@ final class FeatureCatalogTests: XCTestCase {
         XCTAssertEqual(counts[.smartUnlock], 1)
         XCTAssertEqual(counts[.appleIntelligence], 10)
         XCTAssertEqual(counts[.esimRegion], 4)
-        XCTAssertEqual(counts[.screenLock], 11)
+        XCTAssertEqual(counts[.screenLock], 12)
         XCTAssertEqual(counts[.systemSettings], 14)
         XCTAssertEqual(counts[.personalization], 1)
         XCTAssertEqual(counts[.launchArtwork], 1)
@@ -143,7 +143,7 @@ final class FeatureCatalogTests: XCTestCase {
 
     func testFilterByCategoryAndRisk() {
         XCTAssertEqual(
-            FeatureCatalog.filtered(FeatureCatalog.allItems, category: .screenLock).count, 11)
+            FeatureCatalog.filtered(FeatureCatalog.allItems, category: .screenLock).count, 12)
         XCTAssertEqual(
             FeatureCatalog.filtered(FeatureCatalog.allItems, category: .deviceDiagnostics).count, 8)
         // A risk filter excludes page items: they carry no risk.
