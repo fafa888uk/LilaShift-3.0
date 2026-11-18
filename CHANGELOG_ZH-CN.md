@@ -2,6 +2,21 @@
 
 [English](CHANGELOG.md) | 简体中文
 
+## [4.0.0] - 2026-11-18
+
+正式版。基于分支 `feature/lilashift-4.0-quality-upgrade` 的提交 `7c6df01` 构建（代码基线；同分支随后还有一次仅改文档的版本一致性修复）。应用内版本 `4.0.0`，构建号 `40000001`；IPA 文件 `LilaShift_4.0.0.ipa`（bundle `com.huami.gestultx`，最低 iOS `26.0`）。
+
+### 新增（相对 3.0.0）
+- MG 实时监控与键值库（77 条种子键、版本哨兵、兼容性模型）。
+- 高级备份与差异恢复（BackupEngine/RestoreEngine）。
+- 智能诊断中心（DiagnosticsEngine，含修复建议与性能区）。
+- 应用存档与缓存分析（沙盒合规 ZIP 存档；不做第三方应用备份）。
+- 壁纸与个性化中心（WallpaperLibrary；无公开 API 可设系统壁纸或他人 App 启动图，「应用」指导出到相册加指引）。
+- 性能优化（拨号盘导入/缩放、MG 键表搜索防抖、诊断缓存、PreviewImageCache、PerformanceMonitor；不编造指标，基线只写测量方法）。
+
+### 已验证
+- Run Swift Tests #429：744 执行、3 跳过、0 失败；Build IPA #431 绿；SwiftLint #178 绿；均在提交 `7c6df01` 上。
+
 ## [3.0.0-rc.1] - 预发布（非稳定版）
 
 由 `feature/lilashift-3.0-dashboard` 分支构建，提交 `37c4a36`

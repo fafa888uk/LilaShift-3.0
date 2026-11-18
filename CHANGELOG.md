@@ -2,6 +2,21 @@
 
 English | [简体中文](CHANGELOG_ZH-CN.md)
 
+## [4.0.0] - 2026-11-18
+
+Formal release. Built from branch `feature/lilashift-4.0-quality-upgrade` at commit `7c6df01` (code baseline; a docs-only version-consistency fix follows on the same branch). In-app version `4.0.0`, build `40000001`; IPA file `LilaShift_4.0.0.ipa` (bundle `com.huami.gestultx`, minimum iOS `26.0`).
+
+### Added (vs 3.0.0)
+- MG real-time monitoring and key database (77 seeded keys, version sentinel, compatibility model).
+- Advanced backup and differential restore (BackupEngine/RestoreEngine).
+- Intelligent diagnostics centre (DiagnosticsEngine with fix suggestions, plus a performance section).
+- App archive and cache analysis (sandbox-compliant ZIP archive; no third-party app backup).
+- Wallpaper and personalisation centre (WallpaperLibrary; no public API can set the system wallpaper or another app's launch image — applying means exporting to Photos plus guidance).
+- Performance optimisation (dialer import/scaling, MG key search debounce, diagnostics caching, PreviewImageCache, PerformanceMonitor; no fabricated metrics — the baseline lists measurement methods only).
+
+### Verified
+- Run Swift Tests #429: 744 executed, 3 skipped, 0 failed. Build IPA #431 green. SwiftLint #178 green. All on commit `7c6df01`.
+
 ## [3.0.0-rc.1] - Pre-release (not stable)
 
 Built from branch `feature/lilashift-3.0-dashboard` at commit `37c4a36`
