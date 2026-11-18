@@ -1,0 +1,85 @@
+name: Apply Stage 12-fix-version Patch
+
+on:
+  workflow_dispatch:
+    inputs:
+      patch_file:
+        description: 'Patch file in the repo root'
+        required: true
+        default: 'stage12-fix-version.patch'
+      base_sha:
+        description: 'Expected base commit (Stage 9 fix11)'
+        required: true
+        default: 'bf5d58f955d9096000944b8c5acffb042446773c'
+      expected_tree:
+        description: 'Expected tree hash after applying the patch'
+        required: true
+        default: '59a583dfd74042b2d7b61523a49ee265137eb837'
+      commit_message:
+        description: 'Commit message for the applied patch'
+        required: true
+        default: 'Stage 12: bump version to 4.0.0 (40000001) and drop pre-release label from share text'
+
+permissions:
+  contents: write
+
+jobs:
+  apply-patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/lilashift-4.0-quality-upgrade
+          fetch-depth: 0
+
+      - name: Verify base commit is an ancestor of HEAD
+        run: |
+          git merge-base --is-ancestor "${{ inputs.base_sha }}" HEAD
+
+      - name: Apply patch and verify staged change
+        run: |
+          test -f "${{ inputs.patch_file }}"
+          git apply --index "${{ inputs.patch_file }}"
+          ACTUAL_COUNT="$(git diff --cached --name-only | wc -l)"
+          if [ "$ACTUAL_COUNT" -ne 3 ]; then
+            echo "Expected exactly 3 staged files, got: $ACTUAL_COUNT"
+            echo "Staged files:"
+            git diff --cached --name-only
+            exit 1
+          fi
+          ACTUAL_SHORTSTAT="$(git diff --cached --shortstat | sed 's/^ *//')"
+          if [ "$ACTUAL_SHORTSTAT" != "3 files changed, 28 insertions(+), 30 deletions(-)" ]; then
+            echo "Unexpected staged shortstat: [$ACTUAL_SHORTSTAT]"
+            echo "Expected: [3 files changed, 28 insertions(+), 30 deletions(-)]"
+            git diff --cached --stat
+            exit 1
+          fi
+
+      - name: Verify tree hash
+        run: |
+          git rm --cached -q "${{ inputs.patch_file }}"
+          git rm --cached -q .github/workflows/apply-stage12-fix-version.yml
+          ACTUAL_TREE="$(git write-tree)"
+          if [ "$ACTUAL_TREE" != "${{ inputs.expected_tree }}" ]; then
+            echo "Tree mismatch: got $ACTUAL_TREE, expected ${{ inputs.expected_tree }}"
+            exit 1
+          fi
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "${{ inputs.commit_message }}"
+          git push
+          echo "Pushed commit: $(git rev-parse HEAD)"
+
+      - name: Cleanup scaffolding
+        if: always()
+        run: |
+          rm -f "${{ inputs.patch_file }}" .github/workflows/apply-stage12-fix-version.yml
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "Remove stage12-fix-version scaffolding patch and workflow"
+            git push
+          fi
