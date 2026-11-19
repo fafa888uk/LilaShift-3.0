@@ -11,7 +11,7 @@
 > App 内版本号 `3.0.0`（构建号 `30000002`），IPA 文件名 `LilaShift_3.0.0.ipa`。
 > **真机安装、eSIM 激活、Apple Intelligence 激活与恢复，本版本均未验证：仓库中没有针对此 HEAD 的真机证据。** 详见[已验证内容与未验证内容](#已验证内容与未验证内容)与 `CHANGELOG_ZH-CN.md`（本 HEAD 已知缺口）。
 
-[![版本](https://img.shields.io/badge/version-4.1.0-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.1.0)
+[![版本](https://img.shields.io/badge/version-4.2.0-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0)
 [![Build LilaShift IPA](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml)
 [![Run Swift Tests](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml)
 [![Check Licenses](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml)

@@ -2,6 +2,20 @@
 
 [English](CHANGELOG.md) | 简体中文
 
+## [4.2.0] - 2026-11-19
+
+导航归类重构（Stage 14）。基于 4.1.0 正式版（分支 `feature/lilashift-4.0-quality-upgrade`，提交 `4dbc674`）加 Stage 14 归类重构批构建。应用内版本 `4.2.0`，构建号 `42000001`；IPA 文件 `LilaShift_4.2.0.ipa`（bundle `com.huami.gestultx`，最低 iOS `26.0`）。
+
+### 变更（相对 4.1.0）
+- 首页四张卡（一键解锁、仅开启 AI、仅 Siri AI 模式、eSIM 与地区）现在各进各的专属页，不再全部打开同一个长长的一键解锁页。
+- 工具 Tab 不再内联一键解锁族的卡片，只保留分类网格、诊断摘要与操作区。
+- 归类统一到工具页的 7 组；FeatureCatalog 目的地映射与 ToolGroup 映射现已一致（同一张映射表，有测试覆盖）。
+- 首页标题改为读真实 bundle 版本，不再是写死的“LilaShift 3.0”。
+
+### 注意
+- 预设与目录条目没有增减（46 预设 / 59 目录项）。两个新页面（Siri AI 模式、eSIM 与地区）从首页常用功能磁贴与目录进入，不占首页 section——首页仍为 8 个 section。
+- 首页、一键解锁页、工具页的快照基线已删除，待 CI 重录；三个新目的地快照在首次运行时录制。
+
 ## [4.1.0] - 2026-11-18
 
 正式版。基于分支 `feature/lilashift-4.0-quality-upgrade` 的 4.0.0 基线提交 `6c8c4aba` 加 Stage 13 功能批构建。应用内版本 `4.1.0`，构建号 `41000001`；IPA 文件 `LilaShift_4.1.0.ipa`（bundle `com.huami.gestultx`，最低 iOS `26.0`）。

@@ -1,6 +1,6 @@
 [![LilaShift](GestaltX/Assets.xcassets/AppIcon.appiconset/AppIcon.png)](GestaltX/Assets.xcassets/AppIcon.appiconset/AppIcon.png)
 
-# LilaShift 4.1.0 · 紫序
+# LilaShift 4.2.0 · 紫序
 
 **スマートなデバイス検出 · 機能管理 · 安全なバックアップ · 追跡可能な復元**
 
@@ -11,7 +11,7 @@
 > アプリ内バージョン `3.0.0`（ビルド `30000002`）· IPA ファイル `LilaShift_3.0.0.ipa`。
 > **このビルドでは、実機へのインストール、eSIM の有効化、Apple Intelligence の有効化、復元は検証されていません。この HEAD に対する実機の証拠はこのリポジトリにありません。**[検証済みの内容と未検証の内容](#検証済みの内容と未検証の内容)と `CHANGELOG.md`（既知の不足）を参照してください。
 
-[![Version](https://img.shields.io/badge/version-4.1.0-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.1.0)
+[![Version](https://img.shields.io/badge/version-4.2.0-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0)
 [![Build LilaShift IPA](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml)
 [![Run Swift Tests](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml)
 [![Check Licenses](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml)
@@ -39,6 +39,7 @@
 - [このリポジトリについて](#このリポジトリについて)
 - [3.0.0-rc.1 の新機能](#300-rc1-の新機能)
 - [4.1.0 の新機能](#410-の新機能)
+- [4.2.0 の新機能](#420-の新機能)
 - [機能](#機能)
 - [互換性](#互換性)
 - [ダウンロード](#ダウンロード)
@@ -92,6 +93,12 @@ MobileGestalt のフラグを変更することと、その機能が実際に動
 - **MobileGestalt 書き込みの強化**（Erosion-CN から着想を得た設計で、コードのコピーはありません）— インプレース書き込み（事前の切り詰めなし、`F_FULLFSYNC`、完全な読み戻し、失敗時のインプレースロールバック）、eSIM キャッシュレイアウトの実行時動的解決、適用前の差分プレビュー、デュアルボールトバックアップ（アンインストール / 再インストール後も残るファクトリーボールトを含む）、地域モードの選択（地域コードのみ、または完全な米国 `LL` + `LL/A`）、競合ガード付きの 4 要素 Apple Intelligence チェックアップ。
 - **ライセンス上の理由によりリスプリングを削除** — NeoSpring / Ketamine のリスプリング実装は 2026-11-14 に削除されました（NeoSpring はライセンスを明記していません）。このビルドにはリスプリングのコードはありません。代わりにアプリは手動でのデバイス再起動を促します。[docs/OPEN_SOURCE_REFERENCES.md](docs/OPEN_SOURCE_REFERENCES.md) §3–§4 を参照してください。
 - **LilaShift のアイデンティティ** — アプリ名は **LilaShift**（中文：紫序）で、猫の写真がアプリアイコンです。
+
+## 4.2.0 の新機能
+
+- **ナビゲーションの再分類** — ホームの 4 枚のカード（ワンタップアンロック / AI のみ / Siri AI モード / eSIM と地域）が、それぞれ専用のページを開くようになりました。以前は 4 枚とも同じワンタップの長いページを開いていました。ツールタブの重複カードも削除されました。
+- **ホームのタイトルが動的に** — ホームのタイトルがバンドルの実際のバージョンを読むようになりました（以前は "LilaShift 3.0" とハードコードされていました）。
+- 分類はツールページの 7 グループに統一されました。プリセット 46 項目 / カタログ 59 項目は変わりません。
 
 ## 4.1.0 の新機能
 

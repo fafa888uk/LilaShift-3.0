@@ -407,14 +407,47 @@ struct ContentView: View {
     func dashboardDestination(_ section: DashboardV3Destination) -> some View {
         switch section {
         case .unlock:
+            // Stage 14: the unlock page holds the one-tap card
+            // only, plus the modified-values list as its restore
+            // entry. The AI, Siri AI Mode and eSIM cards each have
+            // their own page now — before Stage 14 all four home
+            // tiles opened this same page.
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 16) {
                     ChinaUnlockCard { showsChanges = true }
-                    ChinaAIOnlyCard { showsChanges = true }
-                    ChinaSiriAIModeCard { showsChanges = true }
-                    ChinaESIMRegionCard { showsChanges = true }
-                    AppleIntelligenceCheckupCard { showsChanges = true }
                     ModifiedValuesCard()
+                }
+                .padding()
+            }
+            .background(GlassBackground())
+            .navigationTitle(section.title)
+        case .aiOnly:
+            // Stage 14: the AI-only card plus the AI readiness
+            // checkup as its status row.
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 16) {
+                    ChinaAIOnlyCard { showsChanges = true }
+                    AppleIntelligenceCheckupCard { showsChanges = true }
+                }
+                .padding()
+            }
+            .background(GlassBackground())
+            .navigationTitle(section.title)
+        case .siriAIMode:
+            // Stage 14: the Siri AI Mode card only.
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 16) {
+                    ChinaSiriAIModeCard { showsChanges = true }
+                }
+                .padding()
+            }
+            .background(GlassBackground())
+            .navigationTitle(section.title)
+        case .esimRegion:
+            // Stage 14: the eSIM & region card only.
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 16) {
+                    ChinaESIMRegionCard { showsChanges = true }
                 }
                 .padding()
             }
@@ -502,18 +535,12 @@ struct ContentView: View {
                     }
                 }
 
-                ChinaUnlockCard { showsChanges = true }
-
-                ChinaAIOnlyCard { showsChanges = true }
-
-                ChinaSiriAIModeCard { showsChanges = true }
-
-                ChinaESIMRegionCard { showsChanges = true }
-
-                AppleIntelligenceCheckupCard { showsChanges = true }
-
-                ModifiedValuesCard()
-
+                // Stage 14: the unlock-family cards are NOT inlined
+                // here any more — each has its own destination page
+                // (unlock / AI-only / Siri AI Mode / eSIM & region)
+                // and the home tiles already link to those pages.
+                // The tools page keeps only the category grid, the
+                // diagnostics summary and the actions below.
                 // Diagnostics summary + one row per diagnostic area.
                 // The full cards live on secondary pages behind a
                 // NavigationLink (see HomeDiagnosticsSection): the
@@ -1336,7 +1363,12 @@ private struct ModifiedValuesCard: View {
 /// iPad, personalization, diagnostics) without changing any preset
 /// behavior: each group only filters `Capability.all` and reuses the
 /// same staging, restore and review flow.
-private enum ToolGroup: String, CaseIterable, Identifiable {
+/// The seven user-visible tool groups on the Tools page (Stage 14:
+/// the single user-facing classification). Internal, not private:
+/// the mapping tests assert the group routing, and
+/// `FeatureCatalog.destination(for:)` must agree with it — see
+/// `init(for: FeatureCatalogCategory)` below.
+enum ToolGroup: String, CaseIterable, Identifiable {
     case screenLock, networkEsim, intelligenceRegion, chargingButtons, ipadMultitasking, personalization, advancedDiagnostics
     var id: String { rawValue }
 
@@ -1345,13 +1377,49 @@ private enum ToolGroup: String, CaseIterable, Identifiable {
 
     /// Maps the upstream preset category used by the simulator preview
     /// launch argument to the matching presentation group.
+    /// Stage 14 fix: `.device` used to map to `.networkEsim`, but
+    /// that group only holds the two call-audio capabilities
+    /// (audioMix, spatialFaceTimeAudio). Six of the eleven `.device`
+    /// capabilities live in `.chargingButtons`, which is the
+    /// majority group; the remaining three (spatialAudioRecording,
+    /// responsiveShutter, hypertensionNotifications) have no group
+    /// section at all and stage from the catalog / MG Control only.
     init(for category: CapabilityCategory) {
         switch category {
         case .display: self = .screenLock
-        case .device: self = .networkEsim
+        case .device: self = .chargingButtons
         case .intelligence: self = .intelligenceRegion
         case .ipad: self = .ipadMultitasking
         case .advanced: self = .advancedDiagnostics
+        }
+    }
+
+    /// The Tools-page group that shows a feature-catalog category's
+    /// presets, or `nil` when the category is staged on its own
+    /// destination page instead of the Tools page. This is the
+    /// single mapping the catalog routing must agree with:
+    /// `FeatureCatalog.destination(for:)` returns `.advanced` for
+    /// every category that has a tool group here (screenLock,
+    /// personalization, launchArtwork, advancedTools); the
+    /// categories without one stage on their own page — except
+    /// `.systemSettings`, whose presets still stage on the tools
+    /// page, across three groups. The `nil` cases:
+    /// smartUnlock / appleIntelligence / esimRegion have their own
+    /// unlock-family pages; deviceDiagnostics and backupRestore
+    /// have the diagnostics / restore pages; modifiedRecords is
+    /// shown on the unlock page; systemSettings spans three groups
+    /// (chargingButtons, ipadMultitasking, advancedDiagnostics for
+    /// the model number), so no single group contains it.
+    init?(for category: FeatureCatalogCategory) {
+        switch category {
+        case .screenLock: self = .screenLock
+        case .personalization: self = .personalization
+        case .launchArtwork: self = .personalization
+        case .advancedTools: self = .advancedDiagnostics
+        case .smartUnlock, .appleIntelligence, .esimRegion,
+             .systemSettings, .deviceDiagnostics, .modifiedRecords,
+             .backupRestore:
+            return nil
         }
     }
 
@@ -1451,7 +1519,7 @@ private enum ToolGroup: String, CaseIterable, Identifiable {
     var showsExperimentalNote: Bool { self == .ipadMultitasking || self == .advancedDiagnostics }
 }
 
-private struct ToolGroupSection: Identifiable {
+struct ToolGroupSection: Identifiable {
     let title: String
     let capabilityIDs: [String]
     var id: String { title }

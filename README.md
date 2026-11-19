@@ -11,7 +11,7 @@
 > In-app version `3.0.0` (build `30000002`) · IPA file `LilaShift_3.0.0.ipa`.
 > **Real-device install, eSIM activation, Apple Intelligence activation and restore have NOT been verified for this build: no real-device evidence for this HEAD is in this repository.** See [What is verified](#what-is-verified-and-what-is-not) and `CHANGELOG.md` (Known gaps).
 
-[![Version](https://img.shields.io/badge/version-4.1.0-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.1.0)
+[![Version](https://img.shields.io/badge/version-4.2.0-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0)
 [![Build LilaShift IPA](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml)
 [![Run Swift Tests](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml)
 [![Check Licenses](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml)

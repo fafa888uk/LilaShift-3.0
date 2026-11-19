@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
-// LilaShift 3.0: a lightweight, task-oriented landing page.
+// LilaShift: a lightweight, task-oriented landing page.
 // All device readings remain sourced from GestaltManager, never placeholders.
 import SwiftUI
 
-/// A 3.0 navigation destination. `Hashable` so the catalog can
+/// A navigation destination. `Hashable` so the catalog can
 /// navigate by enum value (`NavigationLink(value:)` +
 /// `.navigationDestination(for:)`): the destination view is
 /// resolved by the NavigationStack, never by a closure passed
@@ -11,14 +11,24 @@ import SwiftUI
 /// ContentView — a closure that called `dashboardDestination`
 /// from inside `dashboardDestination` made its `some View`
 /// return type refer to itself and the build failed).
+///
+/// The four one-tap family groups each have their OWN
+/// destination (Stage 14): `.unlock` is the one-tap card only,
+/// `.aiOnly` the AI-only card, `.siriAIMode` the Siri AI Mode
+/// card, `.esimRegion` the eSIM & region card. Before Stage 14
+/// all four opened `.unlock`, so every home tile led to the same
+/// long page.
 enum DashboardV3Destination: String, CaseIterable, Identifiable, Hashable {
-    case unlock, diagnostics, restore, presets, advanced
+    case unlock, aiOnly, siriAIMode, esimRegion, diagnostics, restore, presets, advanced
 
     var id: String { rawValue }
 
     var title: String {
         switch self {
         case .unlock: return L("One-Tap Unlock")
+        case .aiOnly: return L("AI Only")
+        case .siriAIMode: return L("Siri AI Mode")
+        case .esimRegion: return L("eSIM & Region")
         case .diagnostics: return L("Advanced & Diagnostics")
         case .restore: return L("Backups")
         case .presets: return L("Feature Categories")
@@ -29,6 +39,9 @@ enum DashboardV3Destination: String, CaseIterable, Identifiable, Hashable {
     var subtitle: String {
         switch self {
         case .unlock: return L("Apple Intelligence & Region")
+        case .aiOnly: return L("Region and generative model capabilities")
+        case .siriAIMode: return L("Experimental")
+        case .esimRegion: return L("eSIM options, WAPI and call audio.")
         case .diagnostics: return L("Compatibility")
         case .restore: return L("Restore pre-unlock state")
         case .presets: return L("Personalization")
@@ -39,6 +52,9 @@ enum DashboardV3Destination: String, CaseIterable, Identifiable, Hashable {
     var symbol: String {
         switch self {
         case .unlock: return "lock.open.fill"
+        case .aiOnly: return "sparkles"
+        case .siriAIMode: return "waveform"
+        case .esimRegion: return "simcard.fill"
         case .diagnostics: return "stethoscope"
         case .restore: return "clock.arrow.circlepath"
         case .presets: return "square.grid.2x2"
@@ -57,7 +73,7 @@ enum DashboardV3Destination: String, CaseIterable, Identifiable, Hashable {
     }
 }
 
-/// The 3.0 home, restructured (Phase D) into eight sections that show
+/// The home, restructured (Phase D) into eight sections that show
 /// summaries only — the full cards live on the destination pages:
 ///
 /// 1. Device overview — the read / re-read card (inline, unchanged).
@@ -67,8 +83,8 @@ enum DashboardV3Destination: String, CaseIterable, Identifiable, Hashable {
 /// 3. China one-tap unlock — eSIM / region / AI summary, opens the
 ///    unlock page.
 /// 4. Apple Intelligence & eSIM — AI readiness summary, opens the
-///    unlock page (that page holds both the one-tap card and the
-///    AI / eSIM cards).
+///    AI-only page (Stage 14: that page holds the AI-only card and
+///    the readiness checkup, not the unlock page any more).
 /// 5. Security diagnosis — health score and simulation summary,
 ///    opens the diagnostics page.
 /// 6. Backup & restore — backup count, opens the restore page.
@@ -162,7 +178,11 @@ struct DashboardV3Home<DestinationView: View>: View {
             .padding(GlassTokens.pageMargin)
         }
         .background(HomeBackgroundView(image: homeBackground.image))
-        .navigationTitle("LilaShift 3.0")
+        // Stage 14: the title reads the real bundle version instead
+        // of a hardcoded string — the home used to say "LilaShift
+        // 3.0" while the package was already 4.1.0 (real-device
+        // report, 2026-11-19).
+        .navigationTitle("LilaShift \(GestaltBrand.version)")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {

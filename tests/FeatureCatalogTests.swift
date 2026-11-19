@@ -353,7 +353,7 @@ final class FeatureCatalogTests: XCTestCase {
         XCTAssertNil(HomeSectionID.deviceOverview.destination)
         XCTAssertNil(HomeSectionID.commonFeatures.destination)
         XCTAssertEqual(HomeSectionID.chinaUnlock.destination, .unlock)
-        XCTAssertEqual(HomeSectionID.appleIntelligenceEsim.destination, .unlock)
+        XCTAssertEqual(HomeSectionID.appleIntelligenceEsim.destination, .aiOnly)
         XCTAssertEqual(HomeSectionID.securityDiagnosis.destination, .diagnostics)
         XCTAssertEqual(HomeSectionID.backupRestore.destination, .restore)
         XCTAssertEqual(HomeSectionID.presetManagement.destination, .presets)

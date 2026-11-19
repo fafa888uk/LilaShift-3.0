@@ -2,6 +2,20 @@
 
 English | [简体中文](CHANGELOG_ZH-CN.md)
 
+## [4.2.0] - 2026-11-19
+
+Navigation recategorization (Stage 14). Built from the 4.1.0 release (branch `feature/lilashift-4.0-quality-upgrade`, commit `4dbc674`) plus the Stage 14 recategorization batch. In-app version `4.2.0`, build `42000001`; IPA file `LilaShift_4.2.0.ipa` (bundle `com.huami.gestultx`, minimum iOS `26.0`).
+
+### Changed (vs 4.1.0)
+- The four home cards (One-Tap Unlock, AI Only, Siri AI Mode, eSIM & Region) now each open their own dedicated page instead of all opening the same long unlock page.
+- The Tools tab no longer inlines the unlock-family cards; it keeps the category grid, the diagnostics summary and the actions.
+- Classification is unified on the Tools page's seven groups; the FeatureCatalog destination mapping and the ToolGroup mapping now agree (one mapping table, covered by tests).
+- The home title now reads the real bundle version instead of the hardcoded "LilaShift 3.0".
+
+### Notes
+- No preset or catalog items were added or removed (46 presets / 59 catalog items). The two new pages (Siri AI Mode, eSIM & Region) are reached from the home's common-features tiles and the catalog, not from a home section — the home keeps its eight sections.
+- Snapshot baselines for the home, unlock and tools pages were deleted for re-recording on CI; three new destination snapshots are recorded on first run.
+
 ## [4.1.0] - 2026-11-18
 
 Formal release. Built from branch `feature/lilashift-4.0-quality-upgrade` at the 4.0.0 baseline commit `6c8c4aba` plus the Stage 13 feature batch. In-app version `4.1.0`, build `41000001`; IPA file `LilaShift_4.1.0.ipa` (bundle `com.huami.gestultx`, minimum iOS `26.0`).
