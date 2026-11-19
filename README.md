@@ -1,6 +1,6 @@
 [![LilaShift](GestaltX/Assets.xcassets/AppIcon.appiconset/AppIcon.png)](GestaltX/Assets.xcassets/AppIcon.appiconset/AppIcon.png)
 
-# LilaShift 3.0 · 紫序
+# LilaShift 4.2.0 · 紫序
 
 **Smart device detection · Feature management · Safe backups · Traceable restore**
 

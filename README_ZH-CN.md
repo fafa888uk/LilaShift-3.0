@@ -1,6 +1,6 @@
 [![LilaShift](GestaltX/Assets.xcassets/AppIcon.appiconset/AppIcon.png)](GestaltX/Assets.xcassets/AppIcon.appiconset/AppIcon.png)
 
-# LilaShift 3.0 · 紫序
+# LilaShift 4.2.0 · 紫序
 
 **智能设备检测 · 功能管理 · 安全备份 · 可追溯恢复**
 
