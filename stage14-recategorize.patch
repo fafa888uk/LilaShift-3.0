@@ -1,0 +1,967 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index fdc3c53708f4828b2d9fff25c8c7be25bb1591d5..4d9e15c18957581870b8cf0ca83eb5cd5cccebb9 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -2,6 +2,20 @@
+ 
+ English | [简体中文](CHANGELOG_ZH-CN.md)
+ 
++## [4.2.0] - 2026-11-19
++
++Navigation recategorization (Stage 14). Built from the 4.1.0 release (branch `feature/lilashift-4.0-quality-upgrade`, commit `4dbc674`) plus the Stage 14 recategorization batch. In-app version `4.2.0`, build `42000001`; IPA file `LilaShift_4.2.0.ipa` (bundle `com.huami.gestultx`, minimum iOS `26.0`).
++
++### Changed (vs 4.1.0)
++- The four home cards (One-Tap Unlock, AI Only, Siri AI Mode, eSIM & Region) now each open their own dedicated page instead of all opening the same long unlock page.
++- The Tools tab no longer inlines the unlock-family cards; it keeps the category grid, the diagnostics summary and the actions.
++- Classification is unified on the Tools page's seven groups; the FeatureCatalog destination mapping and the ToolGroup mapping now agree (one mapping table, covered by tests).
++- The home title now reads the real bundle version instead of the hardcoded "LilaShift 3.0".
++
++### Notes
++- No preset or catalog items were added or removed (46 presets / 59 catalog items). The two new pages (Siri AI Mode, eSIM & Region) are reached from the home's common-features tiles and the catalog, not from a home section — the home keeps its eight sections.
++- Snapshot baselines for the home, unlock and tools pages were deleted for re-recording on CI; three new destination snapshots are recorded on first run.
++
+ ## [4.1.0] - 2026-11-18
+ 
+ Formal release. Built from branch `feature/lilashift-4.0-quality-upgrade` at the 4.0.0 baseline commit `6c8c4aba` plus the Stage 13 feature batch. In-app version `4.1.0`, build `41000001`; IPA file `LilaShift_4.1.0.ipa` (bundle `com.huami.gestultx`, minimum iOS `26.0`).
+diff --git a/CHANGELOG_ZH-CN.md b/CHANGELOG_ZH-CN.md
+index f1de10a4e2959ee14082440c4b92b3ce50c1878e..61cb1c405e8d4f3e36b677db1fb572b5801980f2 100644
+--- a/CHANGELOG_ZH-CN.md
++++ b/CHANGELOG_ZH-CN.md
+@@ -2,6 +2,20 @@
+ 
+ [English](CHANGELOG.md) | 简体中文
+ 
++## [4.2.0] - 2026-11-19
++
++导航归类重构（Stage 14）。基于 4.1.0 正式版（分支 `feature/lilashift-4.0-quality-upgrade`，提交 `4dbc674`）加 Stage 14 归类重构批构建。应用内版本 `4.2.0`，构建号 `42000001`；IPA 文件 `LilaShift_4.2.0.ipa`（bundle `com.huami.gestultx`，最低 iOS `26.0`）。
++
++### 变更（相对 4.1.0）
++- 首页四张卡（一键解锁、仅开启 AI、仅 Siri AI 模式、eSIM 与地区）现在各进各的专属页，不再全部打开同一个长长的一键解锁页。
++- 工具 Tab 不再内联一键解锁族的卡片，只保留分类网格、诊断摘要与操作区。
++- 归类统一到工具页的 7 组；FeatureCatalog 目的地映射与 ToolGroup 映射现已一致（同一张映射表，有测试覆盖）。
++- 首页标题改为读真实 bundle 版本，不再是写死的“LilaShift 3.0”。
++
++### 注意
++- 预设与目录条目没有增减（46 预设 / 59 目录项）。两个新页面（Siri AI 模式、eSIM 与地区）从首页常用功能磁贴与目录进入，不占首页 section——首页仍为 8 个 section。
++- 首页、一键解锁页、工具页的快照基线已删除，待 CI 重录；三个新目的地快照在首次运行时录制。
++
+ ## [4.1.0] - 2026-11-18
+ 
+ 正式版。基于分支 `feature/lilashift-4.0-quality-upgrade` 的 4.0.0 基线提交 `6c8c4aba` 加 Stage 13 功能批构建。应用内版本 `4.1.0`，构建号 `41000001`；IPA 文件 `LilaShift_4.1.0.ipa`（bundle `com.huami.gestultx`，最低 iOS `26.0`）。
+diff --git a/GestaltX.xcodeproj/project.pbxproj b/GestaltX.xcodeproj/project.pbxproj
+index ec4de431a6eeee894c70a9c6f64afa17acd44362..53aed055b34dfb1b5a358e89d285a45059b57598 100644
+--- a/GestaltX.xcodeproj/project.pbxproj
++++ b/GestaltX.xcodeproj/project.pbxproj
+@@ -960,7 +960,7 @@
+ 				CLANG_ENABLE_MODULES = YES;
+ 				CODE_SIGN_ENTITLEMENTS = GestaltX/GestaltX.entitlements;
+ 				CODE_SIGN_STYLE = Automatic;
+-				CURRENT_PROJECT_VERSION = 41000001;
++				CURRENT_PROJECT_VERSION = 42000001;
+ 				DEVELOPMENT_TEAM = "";
+ 				ENABLE_PREVIEWS = YES;
+ 				GENERATE_INFOPLIST_FILE = YES;
+@@ -977,7 +977,7 @@
+ 					"$(inherited)",
+ 					"@executable_path/Frameworks",
+ 				);
+-				MARKETING_VERSION = 4.1.0;
++				MARKETING_VERSION = 4.2.0;
+ 				PRODUCT_BUNDLE_IDENTIFIER = com.huami.gestultx;
+ 				PRODUCT_NAME = GestaltX;
+ 				REGISTER_APP_GROUPS = YES;
+@@ -1004,7 +1004,7 @@
+ 				CLANG_ENABLE_MODULES = YES;
+ 				CODE_SIGN_ENTITLEMENTS = GestaltX/GestaltX.entitlements;
+ 				CODE_SIGN_STYLE = Automatic;
+-				CURRENT_PROJECT_VERSION = 41000001;
++				CURRENT_PROJECT_VERSION = 42000001;
+ 				DEVELOPMENT_TEAM = "";
+ 				ENABLE_PREVIEWS = YES;
+ 				GENERATE_INFOPLIST_FILE = YES;
+@@ -1021,7 +1021,7 @@
+ 					"$(inherited)",
+ 					"@executable_path/Frameworks",
+ 				);
+-				MARKETING_VERSION = 4.1.0;
++				MARKETING_VERSION = 4.2.0;
+ 				PRODUCT_BUNDLE_IDENTIFIER = com.huami.gestultx;
+ 				PRODUCT_NAME = GestaltX;
+ 				REGISTER_APP_GROUPS = YES;
+@@ -1047,7 +1047,7 @@
+ 				CLANG_ENABLE_OBJC_WEAK = NO;
+ 				CODE_SIGN_ENTITLEMENTS = ShareExtension/GestaltXShare.entitlements;
+ 				CODE_SIGN_STYLE = Automatic;
+-				CURRENT_PROJECT_VERSION = 41000001;
++				CURRENT_PROJECT_VERSION = 42000001;
+ 				DEVELOPMENT_TEAM = "";
+ 				GENERATE_INFOPLIST_FILE = NO;
+ 				INFOPLIST_FILE = ShareExtension/Info.plist;
+@@ -1057,7 +1057,7 @@
+ 					"@executable_path/Frameworks",
+ 					"@executable_path/../../Frameworks",
+ 				);
+-				MARKETING_VERSION = 4.1.0;
++				MARKETING_VERSION = 4.2.0;
+ 				PRODUCT_BUNDLE_IDENTIFIER = com.huami.gestultx.ShareExtension;
+ 				PRODUCT_NAME = GestaltXShare;
+ 				SDKROOT = iphoneos;
+@@ -1079,7 +1079,7 @@
+ 				CLANG_ENABLE_OBJC_WEAK = NO;
+ 				CODE_SIGN_ENTITLEMENTS = ShareExtension/GestaltXShare.entitlements;
+ 				CODE_SIGN_STYLE = Automatic;
+-				CURRENT_PROJECT_VERSION = 41000001;
++				CURRENT_PROJECT_VERSION = 42000001;
+ 				DEVELOPMENT_TEAM = "";
+ 				GENERATE_INFOPLIST_FILE = NO;
+ 				INFOPLIST_FILE = ShareExtension/Info.plist;
+@@ -1089,7 +1089,7 @@
+ 					"@executable_path/Frameworks",
+ 					"@executable_path/../../Frameworks",
+ 				);
+-				MARKETING_VERSION = 4.1.0;
++				MARKETING_VERSION = 4.2.0;
+ 				PRODUCT_BUNDLE_IDENTIFIER = com.huami.gestultx.ShareExtension;
+ 				PRODUCT_NAME = GestaltXShare;
+ 				SDKROOT = iphoneos;
+@@ -1107,7 +1107,7 @@
+ 			buildSettings = {
+ 				BUNDLE_LOADER = "$(TEST_HOST)";
+ 				CODE_SIGN_STYLE = Automatic;
+-				CURRENT_PROJECT_VERSION = 41000001;
++				CURRENT_PROJECT_VERSION = 42000001;
+ 				DEVELOPMENT_TEAM = "";
+ 				GENERATE_INFOPLIST_FILE = YES;
+ 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+@@ -1116,7 +1116,7 @@
+ 					"@executable_path/Frameworks",
+ 					"@loader_path/Frameworks",
+ 				);
+-				MARKETING_VERSION = 4.1.0;
++				MARKETING_VERSION = 4.2.0;
+ 				PRODUCT_BUNDLE_IDENTIFIER = com.huami.gestultx.GestaltXTests;
+ 				PRODUCT_NAME = GestaltXTests;
+ 				SDKROOT = iphoneos;
+@@ -1133,7 +1133,7 @@
+ 			buildSettings = {
+ 				BUNDLE_LOADER = "$(TEST_HOST)";
+ 				CODE_SIGN_STYLE = Automatic;
+-				CURRENT_PROJECT_VERSION = 41000001;
++				CURRENT_PROJECT_VERSION = 42000001;
+ 				DEVELOPMENT_TEAM = "";
+ 				GENERATE_INFOPLIST_FILE = YES;
+ 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+@@ -1142,7 +1142,7 @@
+ 					"@executable_path/Frameworks",
+ 					"@loader_path/Frameworks",
+ 				);
+-				MARKETING_VERSION = 4.1.0;
++				MARKETING_VERSION = 4.2.0;
+ 				PRODUCT_BUNDLE_IDENTIFIER = com.huami.gestultx.GestaltXTests;
+ 				PRODUCT_NAME = GestaltXTests;
+ 				SDKROOT = iphoneos;
+diff --git a/GestaltX/ContentView.swift b/GestaltX/ContentView.swift
+index a71b16f2518fc60646317fca87656912c78fa426..d1566c4bfbde4859f3e7af21ceec74d0660d9199 100644
+--- a/GestaltX/ContentView.swift
++++ b/GestaltX/ContentView.swift
+@@ -407,14 +407,47 @@ struct ContentView: View {
+     func dashboardDestination(_ section: DashboardV3Destination) -> some View {
+         switch section {
+         case .unlock:
++            // Stage 14: the unlock page holds the one-tap card
++            // only, plus the modified-values list as its restore
++            // entry. The AI, Siri AI Mode and eSIM cards each have
++            // their own page now — before Stage 14 all four home
++            // tiles opened this same page.
+             ScrollView {
+                 LazyVStack(alignment: .leading, spacing: 16) {
+                     ChinaUnlockCard { showsChanges = true }
++                    ModifiedValuesCard()
++                }
++                .padding()
++            }
++            .background(GlassBackground())
++            .navigationTitle(section.title)
++        case .aiOnly:
++            // Stage 14: the AI-only card plus the AI readiness
++            // checkup as its status row.
++            ScrollView {
++                LazyVStack(alignment: .leading, spacing: 16) {
+                     ChinaAIOnlyCard { showsChanges = true }
++                    AppleIntelligenceCheckupCard { showsChanges = true }
++                }
++                .padding()
++            }
++            .background(GlassBackground())
++            .navigationTitle(section.title)
++        case .siriAIMode:
++            // Stage 14: the Siri AI Mode card only.
++            ScrollView {
++                LazyVStack(alignment: .leading, spacing: 16) {
+                     ChinaSiriAIModeCard { showsChanges = true }
++                }
++                .padding()
++            }
++            .background(GlassBackground())
++            .navigationTitle(section.title)
++        case .esimRegion:
++            // Stage 14: the eSIM & region card only.
++            ScrollView {
++                LazyVStack(alignment: .leading, spacing: 16) {
+                     ChinaESIMRegionCard { showsChanges = true }
+-                    AppleIntelligenceCheckupCard { showsChanges = true }
+-                    ModifiedValuesCard()
+                 }
+                 .padding()
+             }
+@@ -502,18 +535,12 @@ struct ContentView: View {
+                     }
+                 }
+ 
+-                ChinaUnlockCard { showsChanges = true }
+-
+-                ChinaAIOnlyCard { showsChanges = true }
+-
+-                ChinaSiriAIModeCard { showsChanges = true }
+-
+-                ChinaESIMRegionCard { showsChanges = true }
+-
+-                AppleIntelligenceCheckupCard { showsChanges = true }
+-
+-                ModifiedValuesCard()
+-
++                // Stage 14: the unlock-family cards are NOT inlined
++                // here any more — each has its own destination page
++                // (unlock / AI-only / Siri AI Mode / eSIM & region)
++                // and the home tiles already link to those pages.
++                // The tools page keeps only the category grid, the
++                // diagnostics summary and the actions below.
+                 // Diagnostics summary + one row per diagnostic area.
+                 // The full cards live on secondary pages behind a
+                 // NavigationLink (see HomeDiagnosticsSection): the
+@@ -1336,7 +1363,12 @@ private struct ModifiedValuesCard: View {
+ /// iPad, personalization, diagnostics) without changing any preset
+ /// behavior: each group only filters `Capability.all` and reuses the
+ /// same staging, restore and review flow.
+-private enum ToolGroup: String, CaseIterable, Identifiable {
++/// The seven user-visible tool groups on the Tools page (Stage 14:
++/// the single user-facing classification). Internal, not private:
++/// the mapping tests assert the group routing, and
++/// `FeatureCatalog.destination(for:)` must agree with it — see
++/// `init(for: FeatureCatalogCategory)` below.
++enum ToolGroup: String, CaseIterable, Identifiable {
+     case screenLock, networkEsim, intelligenceRegion, chargingButtons, ipadMultitasking, personalization, advancedDiagnostics
+     var id: String { rawValue }
+ 
+@@ -1345,16 +1377,52 @@ private enum ToolGroup: String, CaseIterable, Identifiable {
+ 
+     /// Maps the upstream preset category used by the simulator preview
+     /// launch argument to the matching presentation group.
++    /// Stage 14 fix: `.device` used to map to `.networkEsim`, but
++    /// that group only holds the two call-audio capabilities
++    /// (audioMix, spatialFaceTimeAudio). Six of the eleven `.device`
++    /// capabilities live in `.chargingButtons`, which is the
++    /// majority group; the remaining three (spatialAudioRecording,
++    /// responsiveShutter, hypertensionNotifications) have no group
++    /// section at all and stage from the catalog / MG Control only.
+     init(for category: CapabilityCategory) {
+         switch category {
+         case .display: self = .screenLock
+-        case .device: self = .networkEsim
++        case .device: self = .chargingButtons
+         case .intelligence: self = .intelligenceRegion
+         case .ipad: self = .ipadMultitasking
+         case .advanced: self = .advancedDiagnostics
+         }
+     }
+ 
++    /// The Tools-page group that shows a feature-catalog category's
++    /// presets, or `nil` when the category is staged on its own
++    /// destination page instead of the Tools page. This is the
++    /// single mapping the catalog routing must agree with:
++    /// `FeatureCatalog.destination(for:)` returns `.advanced` for
++    /// every category that has a tool group here (screenLock,
++    /// personalization, launchArtwork, advancedTools); the
++    /// categories without one stage on their own page — except
++    /// `.systemSettings`, whose presets still stage on the tools
++    /// page, across three groups. The `nil` cases:
++    /// smartUnlock / appleIntelligence / esimRegion have their own
++    /// unlock-family pages; deviceDiagnostics and backupRestore
++    /// have the diagnostics / restore pages; modifiedRecords is
++    /// shown on the unlock page; systemSettings spans three groups
++    /// (chargingButtons, ipadMultitasking, advancedDiagnostics for
++    /// the model number), so no single group contains it.
++    init?(for category: FeatureCatalogCategory) {
++        switch category {
++        case .screenLock: self = .screenLock
++        case .personalization: self = .personalization
++        case .launchArtwork: self = .personalization
++        case .advancedTools: self = .advancedDiagnostics
++        case .smartUnlock, .appleIntelligence, .esimRegion,
++             .systemSettings, .deviceDiagnostics, .modifiedRecords,
++             .backupRestore:
++            return nil
++        }
++    }
++
+     var title: String {
+         switch self {
+         case .screenLock: L("Screen & Lock Screen")
+@@ -1451,7 +1519,7 @@ private enum ToolGroup: String, CaseIterable, Identifiable {
+     var showsExperimentalNote: Bool { self == .ipadMultitasking || self == .advancedDiagnostics }
+ }
+ 
+-private struct ToolGroupSection: Identifiable {
++struct ToolGroupSection: Identifiable {
+     let title: String
+     let capabilityIDs: [String]
+     var id: String { title }
+diff --git a/GestaltX/DashboardV3.swift b/GestaltX/DashboardV3.swift
+index 0f31e2b86f182c5c487904fd78ef5e656a244887..3fe08b53e9bd0c4b935510528871445b8b9e46e2 100644
+--- a/GestaltX/DashboardV3.swift
++++ b/GestaltX/DashboardV3.swift
+@@ -1,9 +1,9 @@
+ // SPDX-License-Identifier: GPL-3.0-only
+-// LilaShift 3.0: a lightweight, task-oriented landing page.
++// LilaShift: a lightweight, task-oriented landing page.
+ // All device readings remain sourced from GestaltManager, never placeholders.
+ import SwiftUI
+ 
+-/// A 3.0 navigation destination. `Hashable` so the catalog can
++/// A navigation destination. `Hashable` so the catalog can
+ /// navigate by enum value (`NavigationLink(value:)` +
+ /// `.navigationDestination(for:)`): the destination view is
+ /// resolved by the NavigationStack, never by a closure passed
+@@ -11,14 +11,24 @@ import SwiftUI
+ /// ContentView — a closure that called `dashboardDestination`
+ /// from inside `dashboardDestination` made its `some View`
+ /// return type refer to itself and the build failed).
++///
++/// The four one-tap family groups each have their OWN
++/// destination (Stage 14): `.unlock` is the one-tap card only,
++/// `.aiOnly` the AI-only card, `.siriAIMode` the Siri AI Mode
++/// card, `.esimRegion` the eSIM & region card. Before Stage 14
++/// all four opened `.unlock`, so every home tile led to the same
++/// long page.
+ enum DashboardV3Destination: String, CaseIterable, Identifiable, Hashable {
+-    case unlock, diagnostics, restore, presets, advanced
++    case unlock, aiOnly, siriAIMode, esimRegion, diagnostics, restore, presets, advanced
+ 
+     var id: String { rawValue }
+ 
+     var title: String {
+         switch self {
+         case .unlock: return L("One-Tap Unlock")
++        case .aiOnly: return L("AI Only")
++        case .siriAIMode: return L("Siri AI Mode")
++        case .esimRegion: return L("eSIM & Region")
+         case .diagnostics: return L("Advanced & Diagnostics")
+         case .restore: return L("Backups")
+         case .presets: return L("Feature Categories")
+@@ -29,6 +39,9 @@ enum DashboardV3Destination: String, CaseIterable, Identifiable, Hashable {
+     var subtitle: String {
+         switch self {
+         case .unlock: return L("Apple Intelligence & Region")
++        case .aiOnly: return L("Region and generative model capabilities")
++        case .siriAIMode: return L("Experimental")
++        case .esimRegion: return L("eSIM options, WAPI and call audio.")
+         case .diagnostics: return L("Compatibility")
+         case .restore: return L("Restore pre-unlock state")
+         case .presets: return L("Personalization")
+@@ -39,6 +52,9 @@ enum DashboardV3Destination: String, CaseIterable, Identifiable, Hashable {
+     var symbol: String {
+         switch self {
+         case .unlock: return "lock.open.fill"
++        case .aiOnly: return "sparkles"
++        case .siriAIMode: return "waveform"
++        case .esimRegion: return "simcard.fill"
+         case .diagnostics: return "stethoscope"
+         case .restore: return "clock.arrow.circlepath"
+         case .presets: return "square.grid.2x2"
+@@ -57,7 +73,7 @@ enum DashboardV3Destination: String, CaseIterable, Identifiable, Hashable {
+     }
+ }
+ 
+-/// The 3.0 home, restructured (Phase D) into eight sections that show
++/// The home, restructured (Phase D) into eight sections that show
+ /// summaries only — the full cards live on the destination pages:
+ ///
+ /// 1. Device overview — the read / re-read card (inline, unchanged).
+@@ -67,8 +83,8 @@ enum DashboardV3Destination: String, CaseIterable, Identifiable, Hashable {
+ /// 3. China one-tap unlock — eSIM / region / AI summary, opens the
+ ///    unlock page.
+ /// 4. Apple Intelligence & eSIM — AI readiness summary, opens the
+-///    unlock page (that page holds both the one-tap card and the
+-///    AI / eSIM cards).
++///    AI-only page (Stage 14: that page holds the AI-only card and
++///    the readiness checkup, not the unlock page any more).
+ /// 5. Security diagnosis — health score and simulation summary,
+ ///    opens the diagnostics page.
+ /// 6. Backup & restore — backup count, opens the restore page.
+@@ -162,7 +178,11 @@ struct DashboardV3Home<DestinationView: View>: View {
+             .padding(GlassTokens.pageMargin)
+         }
+         .background(HomeBackgroundView(image: homeBackground.image))
+-        .navigationTitle("LilaShift 3.0")
++        // Stage 14: the title reads the real bundle version instead
++        // of a hardcoded string — the home used to say "LilaShift
++        // 3.0" while the package was already 4.1.0 (real-device
++        // report, 2026-11-19).
++        .navigationTitle("LilaShift \(GestaltBrand.version)")
+         .navigationBarTitleDisplayMode(.large)
+         .toolbar {
+             ToolbarItem(placement: .topBarTrailing) {
+diff --git a/GestaltX/FeatureCatalog.swift b/GestaltX/FeatureCatalog.swift
+index 8694f229256d4b778e5845aae0b854f679766058..6513fdfd88ae9e331d2d6eb07532f169963288c4 100644
+--- a/GestaltX/FeatureCatalog.swift
++++ b/GestaltX/FeatureCatalog.swift
+@@ -217,15 +217,48 @@ enum FeatureCatalog {
+         }
+     }
+ 
+-    /// The dashboard page where a preset can be staged: the unlock
+-    /// page for the one-tap family (unlock, AI, eSIM & region), the
+-    /// tools page for everything else (its category groups).
++    /// The dashboard page where a preset can be staged. Each of
++    /// the four one-tap family groups has its own page (Stage 14):
++    /// one-tap on `.unlock`, AI-only on `.aiOnly`, Siri AI Mode on
++    /// `.siriAIMode`, eSIM & region on `.esimRegion`. Individual AI
++    /// capabilities stage on the AI page (Siri AI Mode on its own
++    /// page); eSIM / region / WAPI on the eSIM page. Backup &
++    /// restore presets stage on `.restore`, diagnostics on
++    /// `.diagnostics`, and the rest on the tools page (`.advanced`),
++    /// where their ToolGroup lives — see
++    /// `ToolGroup.init(for: FeatureCatalogCategory)`, which must
++    /// agree with this mapping: a category with a tool group always
++    /// stages on `.advanced`, and a category without one stages on
++    /// its own page (for `.systemSettings` that is still the tools
++    /// page, since its presets live across three groups there).
++    /// The group feature id wins over the category, so
++    /// a group never lands on another group's page.
+     static func destination(for entry: PresetEntry) -> DashboardV3Destination {
+-        switch category(for: entry) {
+-        case .smartUnlock, .appleIntelligence, .esimRegion: return .unlock
++        switch entry.featureID {
++        case "preset.oneTap": return .unlock
++        case "preset.aiOnly": return .aiOnly
++        case "preset.siriAIMode": return .siriAIMode
++        case "preset.esimRegion": return .esimRegion
++        default: break
++        }
++        let category = category(for: entry)
++        // Categories with a Tools-page group stage on the tools
++        // page — this is the single mapping, shared with
++        // `ToolGroup.init(for:)` (see the agreement test in
++        // ToolGroupMappingTests). The rest stage on their own page.
++        if ToolGroup(for: category) != nil { return .advanced }
++        switch category {
++        case .smartUnlock: return .unlock
++        case .appleIntelligence:
++            return entry.featureID == "siriAIMode" ? .siriAIMode : .aiOnly
++        case .esimRegion: return .esimRegion
++        case .deviceDiagnostics: return .diagnostics
++        case .modifiedRecords: return .unlock
++        case .backupRestore: return .restore
+         case .screenLock, .systemSettings, .personalization,
+-             .launchArtwork, .deviceDiagnostics, .modifiedRecords,
+-             .backupRestore, .advancedTools:
++             .launchArtwork, .advancedTools:
++            // Unreachable: every one of these has a tool group
++            // (see the check above). Kept for exhaustiveness.
+             return .advanced
+         }
+     }
+@@ -570,14 +603,17 @@ enum HomeSectionID: String, CaseIterable, Identifiable, Sendable {
+     }
+ 
+     /// The dashboard page this section opens, or `nil` for the two
+-    /// inline summary sections. One-tap unlock and Apple
+-    /// Intelligence & eSIM share the unlock page: that page holds
+-    /// both the one-tap card and the AI / eSIM cards, so the two
+-    /// sections are summaries of different parts of one page.
++    /// inline summary sections. One-tap unlock opens the unlock
++    /// page; Apple Intelligence & eSIM opens the AI-only page
++    /// (Stage 14: the AI readiness checkup lives there now, not on
++    /// the unlock page). The eSIM & Siri AI Mode groups have no
++    /// home section of their own — they are reached from the
++    /// common-features tiles and the catalog.
+     var destination: DashboardV3Destination? {
+         switch self {
+         case .deviceOverview, .commonFeatures: return nil
+-        case .chinaUnlock, .appleIntelligenceEsim: return .unlock
++        case .chinaUnlock: return .unlock
++        case .appleIntelligenceEsim: return .aiOnly
+         case .securityDiagnosis: return .diagnostics
+         case .backupRestore: return .restore
+         case .presetManagement: return .presets
+@@ -593,7 +629,11 @@ enum HomeSectionID: String, CaseIterable, Identifiable, Sendable {
+         for destination in destinations {
+             switch destination {
+             case .unlock:
+-                sections += [.chinaUnlock, .appleIntelligenceEsim]
++                sections.append(.chinaUnlock)
++            case .aiOnly:
++                sections.append(.appleIntelligenceEsim)
++            case .siriAIMode, .esimRegion:
++                break
+             case .diagnostics:
+                 sections.append(.securityDiagnosis)
+             case .restore:
+diff --git a/README.md b/README.md
+index cd8486b2999fba12e1fe2264958f7f571c1e2e94..950b5c744b9af4b95934c9c400ddb65124a876c2 100644
+--- a/README.md
++++ b/README.md
+@@ -11,7 +11,7 @@
+ > In-app version `3.0.0` (build `30000002`) · IPA file `LilaShift_3.0.0.ipa`.
+ > **Real-device install, eSIM activation, Apple Intelligence activation and restore have NOT been verified for this build: no real-device evidence for this HEAD is in this repository.** See [What is verified](#what-is-verified-and-what-is-not) and `CHANGELOG.md` (Known gaps).
+ 
+-[![Version](https://img.shields.io/badge/version-4.1.0-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.1.0)
++[![Version](https://img.shields.io/badge/version-4.2.0-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0)
+ [![Build LilaShift IPA](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml)
+ [![Run Swift Tests](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml)
+ [![Check Licenses](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml)
+diff --git a/README_JA.md b/README_JA.md
+index f5f20d0ee1abf18cd500a9875070935c4b480efb..e369c301fc18ef443c0e3d8d82a3436d03c39950 100644
+--- a/README_JA.md
++++ b/README_JA.md
+@@ -1,6 +1,6 @@
+ [![LilaShift](GestaltX/Assets.xcassets/AppIcon.appiconset/AppIcon.png)](GestaltX/Assets.xcassets/AppIcon.appiconset/AppIcon.png)
+ 
+-# LilaShift 4.1.0 · 紫序
++# LilaShift 4.2.0 · 紫序
+ 
+ **スマートなデバイス検出 · 機能管理 · 安全なバックアップ · 追跡可能な復元**
+ 
+@@ -11,7 +11,7 @@
+ > アプリ内バージョン `3.0.0`（ビルド `30000002`）· IPA ファイル `LilaShift_3.0.0.ipa`。
+ > **このビルドでは、実機へのインストール、eSIM の有効化、Apple Intelligence の有効化、復元は検証されていません。この HEAD に対する実機の証拠はこのリポジトリにありません。**[検証済みの内容と未検証の内容](#検証済みの内容と未検証の内容)と `CHANGELOG.md`（既知の不足）を参照してください。
+ 
+-[![Version](https://img.shields.io/badge/version-4.1.0-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.1.0)
++[![Version](https://img.shields.io/badge/version-4.2.0-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0)
+ [![Build LilaShift IPA](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml)
+ [![Run Swift Tests](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml)
+ [![Check Licenses](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml)
+@@ -39,6 +39,7 @@
+ - [このリポジトリについて](#このリポジトリについて)
+ - [3.0.0-rc.1 の新機能](#300-rc1-の新機能)
+ - [4.1.0 の新機能](#410-の新機能)
++- [4.2.0 の新機能](#420-の新機能)
+ - [機能](#機能)
+ - [互換性](#互換性)
+ - [ダウンロード](#ダウンロード)
+@@ -93,6 +94,12 @@ MobileGestalt のフラグを変更することと、その機能が実際に動
+ - **ライセンス上の理由によりリスプリングを削除** — NeoSpring / Ketamine のリスプリング実装は 2026-11-14 に削除されました（NeoSpring はライセンスを明記していません）。このビルドにはリスプリングのコードはありません。代わりにアプリは手動でのデバイス再起動を促します。[docs/OPEN_SOURCE_REFERENCES.md](docs/OPEN_SOURCE_REFERENCES.md) §3–§4 を参照してください。
+ - **LilaShift のアイデンティティ** — アプリ名は **LilaShift**（中文：紫序）で、猫の写真がアプリアイコンです。
+ 
++## 4.2.0 の新機能
++
++- **ナビゲーションの再分類** — ホームの 4 枚のカード（ワンタップアンロック / AI のみ / Siri AI モード / eSIM と地域）が、それぞれ専用のページを開くようになりました。以前は 4 枚とも同じワンタップの長いページを開いていました。ツールタブの重複カードも削除されました。
++- **ホームのタイトルが動的に** — ホームのタイトルがバンドルの実際のバージョンを読むようになりました（以前は "LilaShift 3.0" とハードコードされていました）。
++- 分類はツールページの 7 グループに統一されました。プリセット 46 項目 / カタログ 59 項目は変わりません。
++
+ ## 4.1.0 の新機能
+ 
+ - **App Audio Library（フェーズ 1: ライブラリのみ）** — アプリの通知音を自分の音声に置き換えます。上流 GestaltX v1.1.1 から 1:1 で移植（GPL-3.0、帰属表示あり）。コンテナ内に通知音をすでに公開しているアプリが対象です。キャプチャガイド（バンドル内に音声があるアプリ向け）は Pairing & Device Connection が必要なため、後のステージに延期されました。詳細は Stage 13 の実装記録を参照してください。
+diff --git a/README_ZH-CN.md b/README_ZH-CN.md
+index bd98d8e67f175a2970a7a97e8d9f8ea5b68b2273..62a9aefe15dc587e247f678dc31554a32d7f5e79 100644
+--- a/README_ZH-CN.md
++++ b/README_ZH-CN.md
+@@ -11,7 +11,7 @@
+ > App 内版本号 `3.0.0`（构建号 `30000002`），IPA 文件名 `LilaShift_3.0.0.ipa`。
+ > **真机安装、eSIM 激活、Apple Intelligence 激活与恢复，本版本均未验证：仓库中没有针对此 HEAD 的真机证据。** 详见[已验证内容与未验证内容](#已验证内容与未验证内容)与 `CHANGELOG_ZH-CN.md`（本 HEAD 已知缺口）。
+ 
+-[![版本](https://img.shields.io/badge/version-4.1.0-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.1.0)
++[![版本](https://img.shields.io/badge/version-4.2.0-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0)
+ [![Build LilaShift IPA](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml)
+ [![Run Swift Tests](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml)
+ [![Check Licenses](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml)
+diff --git a/tests/DashboardV3NavigationTests.swift b/tests/DashboardV3NavigationTests.swift
+index fd142dfeac46b94a9b38578a3505676efa40f371..29ff2ec266dae608d4232896c4510c322bff4259 100644
+--- a/tests/DashboardV3NavigationTests.swift
++++ b/tests/DashboardV3NavigationTests.swift
+@@ -1,17 +1,19 @@
+ // SPDX-License-Identifier: GPL-3.0-only
+ //
+ // DashboardV3NavigationTests.swift — navigation / reachability
+-// tests for the 3.0 home and the unified feature catalog
++// tests for the home and the unified feature catalog
+ // (Phase H, gap 7). A data test: no UI is needed, because
+ // reachability is a property of the section and catalog tables.
+ //
+ // What is proven here (and NOT already covered elsewhere):
+-//   - Every dashboard destination is reached by at least one
+-//     home section (the inverse of the per-section mapping,
+-//     which FeatureCatalogTests
+-//     .testHomeSectionsHaveTitlesSubtitlesAndDestinations
+-//     already asserts — that test is not duplicated here).
+-//   - Every one of the 53 catalog items is reachable: it has a
++//   - Every dashboard destination is reached from the home:
++//     by a home section, or — Stage 14 — by one of the four
++//     preset-group tiles in the common-features section. The
++//     Siri AI Mode and eSIM & region pages have no home section
++//     of their own (the home keeps its eight sections); they are
++//     reached from their group tiles and from the catalog, so
++//     they are not orphans — the test asserts exactly that.
++//   - Every one of the 59 catalog items is reachable: it has a
+ //     non-empty id, names and symbol, and a destination that is
+ //     a real dashboard destination.
+ //   - Every dashboard destination is reached by at least one
+@@ -20,23 +22,41 @@
+ //     rule for its PresetEntry (`FeatureCatalog.destination`),
+ //     so the catalog never sends a preset to a page where it
+ //     cannot be staged.
+-//   - The home sections and the catalog agree on the
+-//     destinations: both surfaces reach exactly the five
+-//     dashboard destinations, so no destination is reachable
+-//     from one surface but missing from the other.
++//   - The home sections, the group tiles and the catalog agree
++//     on the destinations: the sections reach six destinations,
++//     the group tiles add the remaining two (Siri AI Mode,
++//     eSIM & region), and together with the catalog they reach
++//     exactly the eight dashboard destinations, so no
++//     destination is reachable from one surface but missing
++//     from the other.
+ import XCTest
+ 
+ @testable import GestaltX
+ 
+ final class DashboardV3NavigationTests: XCTestCase {
+ 
+-    func testEveryDestinationIsReachedByAtLeastOneHomeSection() {
++    /// The destinations the four preset-group tiles open from the
++    /// home's common-features section (the no-favorites tiles, or
++    /// the favorites the user chose — either way the tiles navigate
++    /// by `FeatureCatalogItem.destination`).
++    private var groupTileDestinations: Set<DashboardV3Destination> {
++        Set(FeatureCatalog.presetItems
++            .filter { PresetCatalog.entry(for: $0.id)?.kind == .group }
++            .map(\.destination))
++    }
++
++    func testEveryDestinationIsReachedFromTheHome() {
++        let sectionDestinations = Set(HomeSectionID.allCases.compactMap(\.destination))
+         for destination in DashboardV3Destination.allCases {
+-            let sections = HomeSectionID.allCases.filter { $0.destination == destination }
+-            XCTAssertFalse(
+-                sections.isEmpty,
+-                "No home section opens \(destination.rawValue)")
++            XCTAssertTrue(
++                sectionDestinations.contains(destination)
++                    || groupTileDestinations.contains(destination),
++                "No home section or group tile opens \(destination.rawValue)")
+         }
++        XCTAssertEqual(
++            groupTileDestinations,
++            [.unlock, .aiOnly, .siriAIMode, .esimRegion],
++            "The four preset-group tiles must open the four unlock-family pages")
+     }
+ 
+     func testEveryCatalogItemIsReachable() {
+@@ -90,11 +110,16 @@ final class DashboardV3NavigationTests: XCTestCase {
+         }
+     }
+ 
+-    func testHomeSectionsAndCatalogAgreeOnDestinations() {
++    func testHomeSectionsGroupTilesAndCatalogAgreeOnDestinations() {
+         let sectionDestinations = Set(HomeSectionID.allCases.compactMap(\.destination))
+         let catalogDestinations = Set(FeatureCatalog.allItems.map(\.destination))
+-        XCTAssertEqual(sectionDestinations, Set(DashboardV3Destination.allCases))
++        // Six destinations have a home section; the other two
++        // (Siri AI Mode, eSIM & region) are reached from the group
++        // tiles instead — see testEveryDestinationIsReachedFromTheHome.
++        XCTAssertEqual(
++            sectionDestinations,
++            [.unlock, .aiOnly, .diagnostics, .restore, .presets, .advanced])
+         XCTAssertEqual(catalogDestinations, Set(DashboardV3Destination.allCases))
+-        XCTAssertEqual(sectionDestinations, catalogDestinations)
++        XCTAssertEqual(sectionDestinations.union(groupTileDestinations), catalogDestinations)
+     }
+ }
+diff --git a/tests/DashboardV3SnapshotTests.swift b/tests/DashboardV3SnapshotTests.swift
+index 674020ec4faf3a4ff022a608502afd342e24dec5..56038aa358fe62e8aed0184b5edfbe791c9e591c 100644
+--- a/tests/DashboardV3SnapshotTests.swift
++++ b/tests/DashboardV3SnapshotTests.swift
+@@ -1,10 +1,10 @@
+ // SPDX-License-Identifier: GPL-3.0-only
+ //
+ // DashboardV3SnapshotTests.swift — SnapshotTesting UI regression
+-// tests for the LilaShift 3.0 home and its secondary navigation
++// tests for the LilaShift home and its secondary navigation
+ // destinations (Phase H, gaps 1, 4, 6).
+ //
+-// What is snapshotted (9 image snapshots, all `record: .missing`
++// What is snapshotted (12 image snapshots, all `record: .missing`
+ // for first-run recording on CI — see ViewSnapshotTests for how
+ // references are created and committed):
+ //   - DashboardV3Home (the 8-section home, summaries only):
+@@ -12,10 +12,11 @@
+ //   - One snapshot per secondary destination, rendered through
+ //     the REAL navigation builder (`ContentView.dashboardDestination`,
+ //     made internal for this purpose — see its comment): unlock,
+-//     diagnostics, restore, presets, tools. Populated manager,
+-//     light, 390x844. The destination views are ScrollViews, so a
+-//     fixed-size snapshot captures the top of the page only; that is
+-//     still a regression guard for the page's header and first cards.
++//     AI-only, Siri AI Mode, eSIM & region, diagnostics, restore,
++//     presets, tools. Populated manager, light, 390x844. The
++//     destination views are ScrollViews, so a fixed-size snapshot
++//     captures the top of the page only; that is still a regression
++//     guard for the page's header and first cards.
+ //   - Small screen (gap 6): the populated home at 320pt wide —
+ //     the home's summary tiles must wrap, not truncate, the status
+ //     text at that width.
+@@ -88,7 +89,7 @@ final class DashboardV3SnapshotTests: XCTestCase {
+ 
+     // MARK: - Snapshot helper
+ 
+-    /// Asserts an image snapshot of a 3.0 surface with the fixed
++    /// Asserts an image snapshot of a home surface with the fixed
+     /// P5 layout (light traits, display scale 2, `record: .missing`)
+     /// and `drawHierarchyInKeyWindow: true` (required for Liquid
+     /// Glass — see ViewSnapshotTests). `width` defaults to the
+@@ -179,7 +180,7 @@ final class DashboardV3SnapshotTests: XCTestCase {
+         )
+     }
+ 
+-    /// The 3.0 home in a NavigationStack, with a placeholder
++    /// The home in a NavigationStack, with a placeholder
+     /// destination: the home only shows NavigationLinks, so the
+     /// destination content is never rendered here.
+     private func home(_ manager: GestaltManager) -> some View {
+@@ -198,7 +199,7 @@ final class DashboardV3SnapshotTests: XCTestCase {
+         .environmentObject(manager)
+     }
+ 
+-    // MARK: - Gap 1: the 3.0 home
++    // MARK: - Gap 1: the home
+ 
+     func testV3HomeUnreadSnapshot() {
+         assertV3Snapshot(home(unreadManager()), named: "v3-home-unread")
+@@ -216,6 +217,29 @@ final class DashboardV3SnapshotTests: XCTestCase {
+             named: "v3-unlock-populated")
+     }
+ 
++    // Stage 14: the three new one-tap family pages, each with only
++    // its own card. No committed reference exists yet — `record:
++    // .missing` records the first run on CI. The unlock and tools
++    // references below are re-recorded for the same reason (their
++    // content changed); see the Stage 14 implementation record.
++    func testV3AIOnlyDestinationSnapshot() throws {
++        assertV3Snapshot(
++            destination(.aiOnly, try populatedManager()),
++            named: "v3-aionly-populated")
++    }
++
++    func testV3SiriAIModeDestinationSnapshot() throws {
++        assertV3Snapshot(
++            destination(.siriAIMode, try populatedManager()),
++            named: "v3-siriaimode-populated")
++    }
++
++    func testV3ESIMRegionDestinationSnapshot() throws {
++        assertV3Snapshot(
++            destination(.esimRegion, try populatedManager()),
++            named: "v3-esimregion-populated")
++    }
++
+     func testV3DiagnosticsDestinationSnapshot() throws {
+         assertV3Snapshot(
+             destination(.diagnostics, try populatedManager()),
+diff --git a/tests/DashboardV3Tests.swift b/tests/DashboardV3Tests.swift
+index d9fb23b2be37bcdfd8ff38ad8cc71c9b6fba4a9a..fdd105914fd548e73e75660dbb15b860f6b7e53b 100644
+--- a/tests/DashboardV3Tests.swift
++++ b/tests/DashboardV3Tests.swift
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: GPL-3.0-only
+-// LilaShift 3.0 landing page ordering and compatibility migration tests.
++// LilaShift landing page ordering and compatibility migration tests.
+ import XCTest
+ @testable import GestaltX
+ 
+@@ -9,8 +9,13 @@ final class DashboardV3Tests: XCTestCase {
+     }
+ 
+     func testCustomOrderingSurvivesReload() {
+-        let original = DashboardV3Destination.allCases
+-        let desired = [original[2], original[0], original[1], original[4], original[3]]
++        // Stage 14: eight destinations now — the stored order must
++        // cover all of them for the round-trip to be exact.
++        let desired: [DashboardV3Destination] = [
++            .esimRegion, .unlock, .aiOnly, .advanced,
++            .siriAIMode, .diagnostics, .restore, .presets,
++        ]
++        XCTAssertEqual(desired.count, DashboardV3Destination.allCases.count)
+         let stored = desired.map(\.rawValue).joined(separator: ",")
+         XCTAssertEqual(DashboardV3Destination.resolvedOrder(stored), desired)
+     }
+diff --git a/tests/FeatureCatalogTests.swift b/tests/FeatureCatalogTests.swift
+index 0de7ea33d24d59ab9d73176269871fbe37614a73..f4e0595128b8cfcffc2a9fc9b7a6b7aea8a76fe6 100644
+--- a/tests/FeatureCatalogTests.swift
++++ b/tests/FeatureCatalogTests.swift
+@@ -353,7 +353,7 @@ final class FeatureCatalogTests: XCTestCase {
+         XCTAssertNil(HomeSectionID.deviceOverview.destination)
+         XCTAssertNil(HomeSectionID.commonFeatures.destination)
+         XCTAssertEqual(HomeSectionID.chinaUnlock.destination, .unlock)
+-        XCTAssertEqual(HomeSectionID.appleIntelligenceEsim.destination, .unlock)
++        XCTAssertEqual(HomeSectionID.appleIntelligenceEsim.destination, .aiOnly)
+         XCTAssertEqual(HomeSectionID.securityDiagnosis.destination, .diagnostics)
+         XCTAssertEqual(HomeSectionID.backupRestore.destination, .restore)
+         XCTAssertEqual(HomeSectionID.presetManagement.destination, .presets)
+diff --git a/tests/ToolGroupMappingTests.swift b/tests/ToolGroupMappingTests.swift
+new file mode 100644
+index 0000000000000000000000000000000000000000..d94315f9814044fb4f786a7aa9589d38c4f99eda
+--- /dev/null
++++ b/tests/ToolGroupMappingTests.swift
+@@ -0,0 +1,128 @@
++// SPDX-License-Identifier: GPL-3.0-only
++// Tests for the Stage 14 navigation recategorization: the four
++// one-tap family groups open four different pages, the
++// FeatureCatalog destination mapping agrees with the ToolGroup
++// mapping, and the ToolGroup sections cover the capabilities they
++// claim (with the three known ungrouped device capabilities
++// documented, not silently dropped).
++import XCTest
++@testable import GestaltX
++
++final class ToolGroupMappingTests: XCTestCase {
++    private func destination(of featureID: String) -> DashboardV3Destination? {
++        guard let entry = PresetCatalog.entry(for: featureID) else {
++            XCTFail("Missing catalog entry \(featureID)")
++            return nil
++        }
++        return FeatureCatalog.destination(for: entry)
++    }
++
++    // MARK: - The four one-tap family groups
++
++    func testFourPresetGroupsHaveDistinctDestinations() {
++        XCTAssertEqual(destination(of: "preset.oneTap"), .unlock)
++        XCTAssertEqual(destination(of: "preset.aiOnly"), .aiOnly)
++        XCTAssertEqual(destination(of: "preset.siriAIMode"), .siriAIMode)
++        XCTAssertEqual(destination(of: "preset.esimRegion"), .esimRegion)
++        let destinations: Set<DashboardV3Destination> = [.unlock, .aiOnly, .siriAIMode, .esimRegion]
++        XCTAssertEqual(destinations.count, 4, "The four group pages must be four different destinations")
++    }
++
++    // MARK: - Destination for every preset entry
++
++    func testDestinationForEveryPresetEntry() {
++        for entry in PresetCatalog.all {
++            let destination = FeatureCatalog.destination(for: entry)
++            switch entry.featureID {
++            case "preset.oneTap":
++                XCTAssertEqual(destination, .unlock, "One-tap stages on the unlock page")
++            case "preset.aiOnly":
++                XCTAssertEqual(destination, .aiOnly, "AI-only stages on the AI page")
++            case "preset.siriAIMode":
++                XCTAssertEqual(destination, .siriAIMode, "Siri AI Mode stages on its own page")
++            case "preset.esimRegion":
++                XCTAssertEqual(destination, .esimRegion, "eSIM & region stages on the eSIM page")
++            case "siriAIMode":
++                XCTAssertEqual(destination, .siriAIMode, "The Siri AI Mode capability stages on its own page")
++            default:
++                switch FeatureCatalog.category(for: entry) {
++                case .smartUnlock:
++                    XCTAssertEqual(destination, .unlock, "Entry \(entry.featureID)")
++                case .appleIntelligence:
++                    XCTAssertEqual(destination, .aiOnly, "Entry \(entry.featureID)")
++                case .esimRegion:
++                    XCTAssertEqual(destination, .esimRegion, "Entry \(entry.featureID)")
++                case .screenLock, .systemSettings, .personalization,
++                     .launchArtwork, .advancedTools:
++                    XCTAssertEqual(destination, .advanced, "Entry \(entry.featureID)")
++                case .deviceDiagnostics:
++                    XCTAssertEqual(destination, .diagnostics, "Entry \(entry.featureID)")
++                case .modifiedRecords:
++                    XCTAssertEqual(destination, .unlock, "Entry \(entry.featureID)")
++                case .backupRestore:
++                    XCTAssertEqual(destination, .restore, "Entry \(entry.featureID)")
++                }
++            }
++        }
++    }
++
++    // MARK: - ToolGroup mapping (CapabilityCategory)
++
++    func testToolGroupForCapabilityCategory() {
++        XCTAssertEqual(ToolGroup(for: .display), .screenLock)
++        XCTAssertEqual(ToolGroup(for: .device), .chargingButtons)
++        XCTAssertEqual(ToolGroup(for: .intelligence), .intelligenceRegion)
++        XCTAssertEqual(ToolGroup(for: .ipad), .ipadMultitasking)
++        XCTAssertEqual(ToolGroup(for: .advanced), .advancedDiagnostics)
++    }
++
++    func testChargingButtonsHoldsTheDeviceCapabilities() {
++        let ids = Set(ToolGroup.chargingButtons.sections.flatMap(\.capabilityIDs))
++        for id in ["chargeLimit", "tapToWake", "cameraControl",
++                   "actionButton", "bootChime", "collisionSOS"] {
++            XCTAssertTrue(ids.contains(id), "chargingButtons must list \(id)")
++        }
++    }
++
++    // MARK: - ToolGroup mapping (FeatureCatalogCategory)
++
++    func testToolGroupForFeatureCatalogCategory() {
++        XCTAssertEqual(ToolGroup(for: .screenLock), .screenLock)
++        XCTAssertEqual(ToolGroup(for: .personalization), .personalization)
++        XCTAssertEqual(ToolGroup(for: .launchArtwork), .personalization)
++        XCTAssertEqual(ToolGroup(for: .advancedTools), .advancedDiagnostics)
++        for category in [FeatureCatalogCategory.smartUnlock, .appleIntelligence,
++                         .esimRegion, .systemSettings, .deviceDiagnostics,
++                         .modifiedRecords, .backupRestore] {
++            XCTAssertNil(
++                ToolGroup(for: category),
++                "Category \(category) must have no single tool group — it stages on its own page or spans several groups")
++        }
++    }
++
++    // MARK: - The two mappings agree
++
++    func testToolGroupAndDestinationAgree() {
++        for entry in PresetCatalog.all {
++            let destination = FeatureCatalog.destination(for: entry)
++            if let group = ToolGroup(for: FeatureCatalog.category(for: entry)) {
++                XCTAssertEqual(
++                    destination, .advanced,
++                    "Entry \(entry.featureID) has tool group \(group), so it must stage on the tools page")
++            }
++        }
++    }
++
++    // MARK: - Section coverage
++
++    func testGroupedCapabilityIDsCoverAllButThreeDocumentedCapabilities() {
++        let grouped = Set(ToolGroup.allCases.flatMap { $0.sections.flatMap(\.capabilityIDs) })
++        let all = Set(Capability.all.map(\.id))
++        XCTAssertTrue(grouped.isSubset(of: all), "ToolGroup sections must only list real capabilities")
++        XCTAssertEqual(grouped.count, 33)
++        XCTAssertEqual(
++            all.subtracting(grouped),
++            ["spatialAudioRecording", "responsiveShutter", "hypertensionNotifications"],
++            "Only these three device capabilities have no ToolGroup section — they stage from the catalog / MG Control")
++    }
++}
+diff --git a/tests/__Snapshots__/DashboardV3SnapshotTests/testV3HomePopulatedAccessibilitySnapshot.v3-home-populated-accessibility.png b/tests/__Snapshots__/DashboardV3SnapshotTests/testV3HomePopulatedAccessibilitySnapshot.v3-home-populated-accessibility.png
+deleted file mode 100644
+index 4a746a90223a985787959ac447d97badfe7ad7f1..0000000000000000000000000000000000000000
+Binary files a/tests/__Snapshots__/DashboardV3SnapshotTests/testV3HomePopulatedAccessibilitySnapshot.v3-home-populated-accessibility.png and /dev/null differ
+diff --git a/tests/__Snapshots__/DashboardV3SnapshotTests/testV3HomePopulatedNarrowSnapshot.v3-home-populated-narrow-320.png b/tests/__Snapshots__/DashboardV3SnapshotTests/testV3HomePopulatedNarrowSnapshot.v3-home-populated-narrow-320.png
+deleted file mode 100644
+index d8ad480acba60e4fdc9941d7c9947b26b58eef45..0000000000000000000000000000000000000000
+Binary files a/tests/__Snapshots__/DashboardV3SnapshotTests/testV3HomePopulatedNarrowSnapshot.v3-home-populated-narrow-320.png and /dev/null differ
+diff --git a/tests/__Snapshots__/DashboardV3SnapshotTests/testV3HomePopulatedSnapshot.v3-home-populated.png b/tests/__Snapshots__/DashboardV3SnapshotTests/testV3HomePopulatedSnapshot.v3-home-populated.png
+deleted file mode 100644
+index 0cb90ebb24f1636fa569483c3ff0f62db788a00a..0000000000000000000000000000000000000000
+Binary files a/tests/__Snapshots__/DashboardV3SnapshotTests/testV3HomePopulatedSnapshot.v3-home-populated.png and /dev/null differ
+diff --git a/tests/__Snapshots__/DashboardV3SnapshotTests/testV3HomeUnreadSnapshot.v3-home-unread.png b/tests/__Snapshots__/DashboardV3SnapshotTests/testV3HomeUnreadSnapshot.v3-home-unread.png
+deleted file mode 100644
+index 3970b656aa3c2075e3ecac968619dbed711ee306..0000000000000000000000000000000000000000
+Binary files a/tests/__Snapshots__/DashboardV3SnapshotTests/testV3HomeUnreadSnapshot.v3-home-unread.png and /dev/null differ
+diff --git a/tests/__Snapshots__/DashboardV3SnapshotTests/testV3ToolsDestinationSnapshot.v3-tools-populated.png b/tests/__Snapshots__/DashboardV3SnapshotTests/testV3ToolsDestinationSnapshot.v3-tools-populated.png
+deleted file mode 100644
+index 6516891074d83719ae1dea67e151828e9d7d4e95..0000000000000000000000000000000000000000
+Binary files a/tests/__Snapshots__/DashboardV3SnapshotTests/testV3ToolsDestinationSnapshot.v3-tools-populated.png and /dev/null differ
+diff --git a/tests/__Snapshots__/DashboardV3SnapshotTests/testV3UnlockDestinationSnapshot.v3-unlock-populated.png b/tests/__Snapshots__/DashboardV3SnapshotTests/testV3UnlockDestinationSnapshot.v3-unlock-populated.png
+deleted file mode 100644
+index b61edffc02d88accb0d0a2696f20c3ba8cb6606d..0000000000000000000000000000000000000000
+Binary files a/tests/__Snapshots__/DashboardV3SnapshotTests/testV3UnlockDestinationSnapshot.v3-unlock-populated.png and /dev/null differ
