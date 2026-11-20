@@ -4,7 +4,7 @@
 
 **智能设备检测 · 功能管理 · 安全备份 · 可追溯恢复**
 
-[English](README.md) · [简体中文](README_ZH-CN.md)
+[English](README.md) · [简体中文](README_ZH-CN.md) · [加入 Telegram 更新频道](https://t.me/+U-e7tGOvoJU3ODE1)
 
 > **预发布版本：LilaShift 3.0.0-rc.1** —— 这是**预发布版，不是正式稳定版**。
 > 基于 `feature/lilashift-3.0-dashboard` 分支构建，提交 `37c4a368c73ec80654c8b395387abea9a24915f6`（包含 fix 提交 `7020964`）。

@@ -4,7 +4,7 @@
 
 **Smart device detection · Feature management · Safe backups · Traceable restore**
 
-[English](README.md) · [简体中文](README_ZH-CN.md)
+[English](README.md) · [简体中文](README_ZH-CN.md) · [Join the Telegram updates channel](https://t.me/+U-e7tGOvoJU3ODE1)
 
 > **Pre-release: LilaShift 3.0.0-rc.1** — this is a **pre-release, not a stable release**.
 > Built from `feature/lilashift-3.0-dashboard` at commit `37c4a368c73ec80654c8b395387abea9a24915f6` (includes fix commit `7020964`).
