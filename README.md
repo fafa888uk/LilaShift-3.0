@@ -6,6 +6,8 @@
 
 [English](README.md) · [简体中文](README_ZH-CN.md)
 
+> **Release and branch status (2026-11-26):** The latest published release is [v4.2.0](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0). This default-branch source still carries version 3.0.0; its historical release notes below are not documentation or verification evidence for v4.2.0. See the [repository governance checklist](docs/REPOSITORY_GOVERNANCE_ZH-CN.md) for the proposed reconciliation. A published release is not a guarantee of device safety.
+
 > **Pre-release: LilaShift 3.0.0-rc.1** — this is a **pre-release, not a stable release**.
 > Built from `feature/lilashift-3.0-dashboard` at commit `37c4a368c73ec80654c8b395387abea9a24915f6` (includes fix commit `7020964`).
 > In-app version `3.0.0` (build `30000002`) · IPA file `LilaShift_3.0.0.ipa`.
