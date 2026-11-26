@@ -23,10 +23,19 @@ import Foundation
 /// (unknown), never a guessed value. `digest` is a SHA-256 over the
 /// canonical encoding of the fields — it is computed, never stored,
 /// so a stored fingerprint can always be re-verified.
+///
+/// `deviceID` is the SHA-256 hex of the device UDID, never the UDID
+/// itself (Stage 5, audit R-4): ownership is proven by comparing
+/// hashes, so no plaintext device identifier is stored in the
+/// fingerprint file. Version 2 is the first hashed version; a
+/// version-1 fingerprint (plaintext UDID) is treated as stale and
+/// re-captured, never trusted.
 struct DeviceFingerprint: Equatable, Codable, Sendable {
-    static let currentVersion = 1
+    static let currentVersion = 2
 
     let version: Int
+    /// SHA-256 hex of the device UDID. Empty when the device was
+    /// never identified (the store refuses to save that).
     let deviceID: String
     let productType: String?
     let modelNumber: String?
@@ -149,9 +158,15 @@ enum DeviceFingerprintCapture {
         let document = snapshot.document
         let layout = profile.cacheLayout.value
         let flags = try? DeviceCacheOptions.flags(in: document, using: layout)
+        // The UDID is hashed, never stored in plaintext (Stage 5,
+        // audit R-4): the fingerprint proves device ownership by
+        // hash comparison. An unidentified device still captures as
+        // an empty deviceID, which the store refuses to save.
+        let udid = document.extra["UniqueDeviceID"] as? String ?? ""
+        let deviceID = udid.isEmpty ? "" : BackupEngine.sha256Hex(of: Data(udid.utf8))
         return DeviceFingerprint(
             version: DeviceFingerprint.currentVersion,
-            deviceID: document.extra["UniqueDeviceID"] as? String ?? "",
+            deviceID: deviceID,
             productType: profile.productType.value,
             modelNumber: profile.modelNumber.value,
             osVersion: profile.osVersion.value,
@@ -269,7 +284,10 @@ struct DeviceFingerprintStore: Sendable {
     /// `nil` (no fingerprint yet — the device has never been
     /// recorded). A digest mismatch, an undecodable file, an
     /// envelope newer than this version, or an envelope for
-    /// another device throws.
+    /// another device throws. A version-1 fingerprint (plaintext
+    /// UDID, pre-Stage-5) is stale, never trusted: it loads as
+    /// `nil` so the next capture re-records it hashed and the next
+    /// save overwrites the file.
     func load() throws -> DeviceFingerprint? {
         guard FileManager.default.fileExists(atPath: fileURL.path) else { return nil }
         do {
@@ -281,7 +299,9 @@ struct DeviceFingerprintStore: Sendable {
             guard envelope.deviceID == deviceID else {
                 throw GestaltFailure("This history belongs to a different device.")
             }
-            return envelope.records.first
+            guard let fingerprint = envelope.records.first,
+                  fingerprint.version >= DeviceFingerprint.currentVersion else { return nil }
+            return fingerprint
         } catch let error as HistoryJournalError {
             switch error {
             case .fileNotFound:

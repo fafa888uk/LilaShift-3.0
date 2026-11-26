@@ -13,14 +13,14 @@
 // natively FALSE on iPhone/iPad, and forcing the *slot* to 1 breaks Photos
 // high-quality Clean Up. Erosion-CN therefore treats any presence of the
 // CacheExtra key as a conflict and strips it on native-AI hardware.
-// The 9-item unlock used to set CacheExtra `audioIntelligence` = 1 on
+// The 10-item unlock used to set CacheExtra `audioIntelligence` = 1 on
 // every device, including native-AI iPhones. The CacheData slot and the
 // CacheExtra key are two different layers, and neither codebase establishes
 // from source alone whether setting the *CacheExtra key* to 1 on a
 // native-AI iPhone is harmless, redundant, or harmful — that question is
 // still open for a device already carrying the key from an earlier
 // session. The user decided on 2026-11-15 that native-AI hardware skips
-// all six AI keys instead of staging them (the one-tap stages only eSIM
+// all seven AI keys instead of staging them (the one-tap stages only eSIM
 // + region code there), so the unlock no longer stages the key on native
 // hardware. The guards in this file stay SLOT-ONLY: they repair a slot
 // that reads 1, and they never flag, strip, or change a CacheExtra key.
@@ -140,6 +140,14 @@ struct AIStagingRequest: Equatable {
     var personalTranslatorSlotIndex: Int? = nil
     /// Live on-device probe of the `ai` CacheExtra key; `nil` = probe could not answer.
     var liveAIEnabled: Bool? = nil
+    /// Live on-device probe of DeviceSupportsSiriHub
+    /// (`waGD2UTpntjbDXD1r3oALQ`); `nil` = probe could not answer.
+    /// `true` blocks staging on any hardware: SiriHub routing on
+    /// can hang Siri AI setup at "Adding Siri support"
+    /// (Erosion-CN gate conflict). `nil` does not gate — the guard
+    /// only blocks on positive evidence, mirroring Erosion-CN's
+    /// resolver falling through to no-conflict when unresolvable.
+    var siriHubLive: Bool? = nil
     /// The user explicitly confirmed an unverified (warned) combination
     /// after reading its reason. Never set by the guard itself.
     var userConfirmedUnverifiedCombination: Bool = false
@@ -185,6 +193,14 @@ enum AIStagingGuard {
     static func decide(_ request: AIStagingRequest) -> AIStagingDecision {
         let native = DeviceAIEligibility.isNativeAppleIntelligence(productType: request.productType)
         let confirmed = request.userConfirmedUnverifiedCombination
+
+        // SiriHub routing on blocks staging on any hardware: it can
+        // hang Siri AI setup at "Adding Siri support" (Erosion-CN
+        // gate conflict). The live probe is the authority; an
+        // unanswered probe does not gate.
+        if request.siriHubLive == true {
+            return .init(outcome: .block, reason: SiriHubGuard.conflictReason)
+        }
 
         if native {
             // Hard slot conflicts first: a CacheData slot that disagrees
@@ -358,7 +374,7 @@ struct AIReadinessCheckup: Equatable {
             isLiveActive: nil)
 
         // `aiEnabledCount` counts staged CacheExtra keys (how many of the
-        // six AI presets are staged as 1), not CacheData slot values and
+        // seven AI presets are staged as 1), not CacheData slot values and
         // not live AI state. Live state is `isLiveActive` only; a staged
         // CacheExtra key saying "enabled" is never presented as proof the
         // device's AI is actually on.

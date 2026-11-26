@@ -53,7 +53,7 @@ Apple Intelligence 能不能出现、能不能用，取决于**四件事同时�
   `Audio Intelligence` 槽位 #178 = `false`。强开实验性的 Audio Intelligence
   槽位可能让 ModelCatalog 资产校验断路，导致照片高质量消除 / 扩图延伸 /
   重构报错。关掉它、恢复基线再试。
-- AI 显示 1/6（或不到 6）：说明 6 项 AI 能力里只有这么多项是开着的，
+- AI 显示 1/7（或不到 7）：说明 7 项 AI 能力里只有这么多项是开着的，
   点进 Apple 智能页看是哪几项。
 - 模型下载需要 Wi-Fi + 充电、静置一段时间；Siri 相关域名须直连
   （见 [TROUBLESHOOTING_ZH-CN.md](TROUBLESHOOTING_ZH-CN.md)）。

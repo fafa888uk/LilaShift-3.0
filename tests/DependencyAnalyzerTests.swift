@@ -8,7 +8,7 @@ import XCTest
 @testable import GestaltX
 
 final class DependencyAnalyzerTests: XCTestCase {
-    /// The 9-item one-tap on a known non-native CH device: every
+    /// The 10-item one-tap on a known non-native CH device: every
     /// dependency is satisfied, no conflicts, no duplicates.
     func testOneTapSafeToStage() throws {
         let document = try CoreModuleFixtures.document()

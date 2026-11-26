@@ -5,12 +5,13 @@ import XCTest
 final class ChinaUnlockTests: XCTestCase {
     struct Failure: Error { let message: String }
 
-    /// The six Apple Intelligence keys staged by China Unlock, in the same
+    /// The seven Apple Intelligence keys staged by China Unlock, in the same
     /// order as `ChinaUnlock.aiCapabilityIDs`:
-    /// ai, audioIntelligence, personalTranslator, photosCleanUp,
+    /// ai, siriAIMode, audioIntelligence, personalTranslator, photosCleanUp,
     /// handwritingSynthesis, alwaysListeningSiri.
     static let aiKeys = [
         "A62OafQ85EJAiiqKn4agtg",
+        "a3n5T9sFtlyQ74NEp9ESxg",
         "rb2tKZxlj0Gm2tBmUQSLqQ",
         "M1n2sAqf33NAOgZRGxQYBA",
         "XNCjqOupLM/S8fNyxRNQTA",
@@ -23,7 +24,7 @@ final class ChinaUnlockTests: XCTestCase {
     /// with CH/A sales suffixes, no AI keys, a device-specific Siri
     /// value (2) and an Air model number. The default product type is
     /// the native iPhone18,1; pass a non-native product type (for
-    /// example iPhone14,7) for the full 9-item unlock.
+    /// example iPhone14,7) for the full 10-item unlock.
     static func fixture(cacheUUID: String? = nil, productType: String = "iPhone18,1") throws -> GestaltDocument {
         let layout = MobileGestaltCacheLayout.originalProfile
         var cache = Data(count: layout.byteCount)
@@ -94,7 +95,7 @@ final class ChinaUnlockTests: XCTestCase {
 
         // One tap stages the unlock. The fixture is native Apple
         // Intelligence hardware (iPhone18,1), so only the 3 non-AI
-        // items are staged (eSIM + region code) and the six AI keys
+        // items are staged (eSIM + region code) and the seven AI keys
         // are skipped, never staged.
         manager.stageChinaUnlock()
         XCTAssert(manager.isChinaUnlockStaged, "Staged flag is set after one tap")
@@ -201,10 +202,14 @@ final class ChinaUnlockTests: XCTestCase {
                    && preview.extra[GestaltKeys.legacyRegionInfo] as? String == "CH/A",
                    "Sales-region suffixes stay CH/A")
         for key in Self.aiKeys {
-            XCTAssert((preview.extra[key] as? NSNumber)?.intValue == 1,
-                       "Preview enables AI key \(key)")
+            // Each AI key stages its capability's own value: boolean
+            // true for six keys, SiriMode=2 for the siriAIMode key.
+            let expected = ChinaUnlock.aiCapabilities
+                .first { $0.keys.contains(key) }?.values[key] as? NSNumber
+            XCTAssert((preview.extra[key] as? NSNumber)?.intValue == (expected?.intValue ?? 1),
+                       "Preview enables AI key \(key) to its staged value")
         }
-        XCTAssert(manager.chinaUnlockAIEnabledCount == 6, "All six AI presets read as enabled")
+        XCTAssert(manager.chinaUnlockAIEnabledCount == 7, "All seven AI presets read as enabled")
         XCTAssert((preview.extra[Self.siriKey] as? NSNumber)?.intValue == 2,
                    "siriOnDevice keeps its device-specific value")
         XCTAssert((manager.choices["siriOnDevice"] ?? .keep) == .keep,
@@ -213,8 +218,8 @@ final class ChinaUnlockTests: XCTestCase {
                    && manager.modelID == "keep",
                    "Model number is untouched")
         XCTAssert(manager.regionID == "keep", "Sales Region stays keep")
-        // Boundary: staging touches exactly the seven CacheExtra keys of
-        // the nine-item scope (region code + six AI keys) and no other
+        // Boundary: staging touches exactly the eight CacheExtra keys of
+        // the ten-item scope (region code + seven AI keys) and no other
         // field, added or removed.
         let changedKeys = Set(original.extra.keys).union(preview.extra.keys).filter { key in
             let before = original.extra[key] as? NSObject
@@ -222,14 +227,14 @@ final class ChinaUnlockTests: XCTestCase {
             return (before?.isEqual(after) ?? (after == nil)) == false
         }
         XCTAssert(changedKeys == Set([GestaltKeys.regionCode] + Self.aiKeys),
-                   "Staging changes exactly region + six AI keys, got \(changedKeys.sorted())")
-        // 7 CacheExtra keys (region code + 6 AI keys) + 2 cache bytes.
-        XCTAssert(manager.changeCount == 9,
-                   "Staged change count is 9, got \(manager.changeCount)")
+                   "Staging changes exactly region + seven AI keys, got \(changedKeys.sorted())")
+        // 8 CacheExtra keys (region code + 7 AI keys) + 2 cache bytes.
+        XCTAssert(manager.changeCount == 10,
+                   "Staged change count is 10, got \(manager.changeCount)")
 
         // Staging twice is idempotent.
         manager.stageChinaUnlock()
-        XCTAssert(manager.changeCount == 9, "Staging the unlock twice does not duplicate changes")
+        XCTAssert(manager.changeCount == 10, "Staging the unlock twice does not duplicate changes")
 
         // One-tap restore returns all three groups to their originals.
         manager.restoreChinaUnlock()
@@ -252,7 +257,31 @@ final class ChinaUnlockTests: XCTestCase {
 
         // The unlock can be staged again after a restore.
         manager.stageChinaUnlock()
-        XCTAssert(manager.isChinaUnlockStaged && manager.changeCount == 9,
+        XCTAssert(manager.isChinaUnlockStaged && manager.changeCount == 10,
                    "Unlock stages again after a restore")
+    }
+
+    @MainActor
+    func testChangeCountMatchesItsParts() throws {
+        // The region mode is a persisted user setting; pin the default
+        // here so this test never inherits another run's opt-in Full US mode.
+        ChinaUnlockRegionMode.stored = .regionCodeOnly
+        let manager = GestaltManager()
+        XCTAssertEqual(manager.changeCount, 0, "No document: nothing is staged")
+        let original = try Self.fixture(productType: "iPhone14,7")
+        let snapshot = DocumentSnapshot(data: try original.encoded(), document: original, source: .local, name: "changeCount fixture")
+        manager.loadSnapshotForTests(snapshot)
+        XCTAssertEqual(manager.changeCount, 0, "Loaded, nothing staged: the count is 0")
+        XCTAssert(manager.stageChinaUnlock(), "Staging the full unlock succeeds")
+        // changeCount builds the preview once now (Stage 3), but the
+        // value is still exactly the staged CacheExtra keys plus the
+        // staged CacheData changes — the two parts it used to sum from
+        // two separate preview builds.
+        XCTAssertEqual(manager.changeCount, manager.changeKeys.count + manager.cacheDataChanges.count,
+                       "changeCount equals staged keys plus staged cache changes")
+        XCTAssertGreaterThan(manager.changeCount, 0, "Staging the unlock changes something")
+        XCTAssertEqual(manager.changeCount, 10, "The full unlock stages exactly 10 items")
+        XCTAssertEqual(manager.changeKeys.count, 8, "Eight CacheExtra keys change (region + seven AI keys)")
+        XCTAssertEqual(manager.cacheDataChanges.count, 2, "Two CacheData bytes change (the eSIM flags)")
     }
 }

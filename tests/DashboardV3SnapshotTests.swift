@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 //
 // DashboardV3SnapshotTests.swift — SnapshotTesting UI regression
-// tests for the LilaShift 3.0 home and its secondary navigation
-// destinations (Phase H, gaps 1, 4, 5, 6).
+// tests for the LilaShift home and its secondary navigation
+// destinations (Phase H, gaps 1, 4, 6).
 //
-// What is snapshotted (10 image snapshots, all `record: .missing`
+// What is snapshotted (12 image snapshots, all `record: .missing`
 // for first-run recording on CI — see ViewSnapshotTests for how
 // references are created and committed):
 //   - DashboardV3Home (the 8-section home, summaries only):
@@ -12,11 +12,11 @@
 //   - One snapshot per secondary destination, rendered through
 //     the REAL navigation builder (`ContentView.dashboardDestination`,
 //     made internal for this purpose — see its comment): unlock,
-//     diagnostics, restore, presets, tools. Populated manager,
-//     light, 390x844. The destination views are ScrollViews, so a
-//     fixed-size snapshot captures the top of the page only; that is
-//     still a regression guard for the page's header and first cards.
-//   - Dark mode (gap 5): the populated home with dark traits.
+//     AI-only, Siri AI Mode, eSIM & region, diagnostics, restore,
+//     presets, tools. Populated manager, light, 390x844. The
+//     destination views are ScrollViews, so a fixed-size snapshot
+//     captures the top of the page only; that is still a regression
+//     guard for the page's header and first cards.
 //   - Small screen (gap 6): the populated home at 320pt wide —
 //     the home's summary tiles must wrap, not truncate, the status
 //     text at that width.
@@ -89,7 +89,7 @@ final class DashboardV3SnapshotTests: XCTestCase {
 
     // MARK: - Snapshot helper
 
-    /// Asserts an image snapshot of a 3.0 surface with the fixed
+    /// Asserts an image snapshot of a home surface with the fixed
     /// P5 layout (light traits, display scale 2, `record: .missing`)
     /// and `drawHierarchyInKeyWindow: true` (required for Liquid
     /// Glass — see ViewSnapshotTests). `width` defaults to the
@@ -147,14 +147,13 @@ final class DashboardV3SnapshotTests: XCTestCase {
     private func assertV3Snapshot<V: View>(
         _ view: V, named name: String,
         width: CGFloat = 390,
-        userInterfaceStyle: UIUserInterfaceStyle = .light,
         contentSize: UIContentSizeCategory? = nil,
         file: StaticString = #filePath,
         testName: String = #function,
         line: UInt = #line
     ) {
         var traits: [UITraitCollection] = [
-            UITraitCollection(userInterfaceStyle: userInterfaceStyle),
+            UITraitCollection(userInterfaceStyle: .light),
             UITraitCollection(displayScale: 2),
         ]
         if let contentSize {
@@ -181,7 +180,7 @@ final class DashboardV3SnapshotTests: XCTestCase {
         )
     }
 
-    /// The 3.0 home in a NavigationStack, with a placeholder
+    /// The home in a NavigationStack, with a placeholder
     /// destination: the home only shows NavigationLinks, so the
     /// destination content is never rendered here.
     private func home(_ manager: GestaltManager) -> some View {
@@ -200,7 +199,7 @@ final class DashboardV3SnapshotTests: XCTestCase {
         .environmentObject(manager)
     }
 
-    // MARK: - Gap 1: the 3.0 home
+    // MARK: - Gap 1: the home
 
     func testV3HomeUnreadSnapshot() {
         assertV3Snapshot(home(unreadManager()), named: "v3-home-unread")
@@ -216,6 +215,29 @@ final class DashboardV3SnapshotTests: XCTestCase {
         assertV3Snapshot(
             destination(.unlock, try populatedManager()),
             named: "v3-unlock-populated")
+    }
+
+    // Stage 14: the three new one-tap family pages, each with only
+    // its own card. No committed reference exists yet — `record:
+    // .missing` records the first run on CI. The unlock and tools
+    // references below are re-recorded for the same reason (their
+    // content changed); see the Stage 14 implementation record.
+    func testV3AIOnlyDestinationSnapshot() throws {
+        assertV3Snapshot(
+            destination(.aiOnly, try populatedManager()),
+            named: "v3-aionly-populated")
+    }
+
+    func testV3SiriAIModeDestinationSnapshot() throws {
+        assertV3Snapshot(
+            destination(.siriAIMode, try populatedManager()),
+            named: "v3-siriaimode-populated")
+    }
+
+    func testV3ESIMRegionDestinationSnapshot() throws {
+        assertV3Snapshot(
+            destination(.esimRegion, try populatedManager()),
+            named: "v3-esimregion-populated")
     }
 
     func testV3DiagnosticsDestinationSnapshot() throws {
@@ -241,15 +263,6 @@ final class DashboardV3SnapshotTests: XCTestCase {
         assertV3Snapshot(
             destination(.advanced, try populatedManager()),
             named: "v3-tools-populated")
-    }
-
-    // MARK: - Gap 5: dark mode
-
-    func testV3HomePopulatedDarkSnapshot() throws {
-        assertV3Snapshot(
-            home(try populatedManager()),
-            named: "v3-home-populated-dark",
-            userInterfaceStyle: .dark)
     }
 
     // MARK: - Gap 6: small screen (320pt wide)

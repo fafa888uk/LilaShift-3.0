@@ -1,17 +1,16 @@
 [![LilaShift](GestaltX/Assets.xcassets/AppIcon.appiconset/AppIcon.png)](GestaltX/Assets.xcassets/AppIcon.appiconset/AppIcon.png)
 
-# LilaShift 3.0 · 紫序
+# LilaShift 4.2.1 · 紫序
 
 **Smart device detection · Feature management · Safe backups · Traceable restore**
 
-[English](README.md) · [简体中文](README_ZH-CN.md)
+[English](README.md) · [简体中文](README_ZH-CN.md) · [日本語](README_JA.md)
 
-> **Pre-release: LilaShift 3.0.0-rc.1** — this is a **pre-release, not a stable release**.
-> Built from `feature/lilashift-3.0-dashboard` at commit `37c4a368c73ec80654c8b395387abea9a24915f6` (includes fix commit `7020964`).
-> In-app version `3.0.0` (build `30000002`) · IPA file `LilaShift_3.0.0.ipa`.
-> **Real-device install, eSIM activation, Apple Intelligence activation and restore have been verified on a real iPhone Air (iPhone18,4, iOS 27.0.1) for this build.** See [What is verified](#what-is-verified-and-what-is-not).
+> **Current source: LilaShift 4.2.1** — build `42000002`, maintenance update prepared on 2026-11-27. See the [4.2.1 change and verification record](docs/RELEASE_4_2_1.md); CI results and an IPA must be matched to the exact source commit.
+> **Previous published release: [4.2.0](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0)** — 2026-11-19, commit `3152fc7c49ccb00f80f97da90666a65fb66a6d89`, build `42000001`. Preparing 4.2.1 does not publish a new release.
+> Real-device installation, eSIM, Apple Intelligence and restoration are unverified for 4.2.1. Sections about 3.0.0-rc.1 below are historical records.
 
-[![Version](https://img.shields.io/badge/version-3.0.0--rc.1%20pre--release-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v3.0.0-rc.1)
+[![Source 4.2.1](https://img.shields.io/badge/version-4.2.1-purple)](docs/RELEASE_4_2_1.md)
 [![Build LilaShift IPA](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml)
 [![Run Swift Tests](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml)
 [![Check Licenses](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml)
@@ -23,13 +22,14 @@
 
 ### Quick links
 
-- **Download:** [3.0.0-rc.1 release](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v3.0.0-rc.1) · [all releases](https://github.com/fafa888uk/LilaShift-3.0/releases)
+- **4.2.1 update:** [changes, source review and verification](docs/RELEASE_4_2_1.md) · [IPA workflow runs](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml)
+- **Release history:** [all releases](https://github.com/fafa888uk/LilaShift-3.0/releases) (check the exact version and its release notes).
 - **Install guide:** [docs/INSTALL_ZH-CN.md](docs/INSTALL_ZH-CN.md) (Simplified Chinese)
 - **User guide:** [docs/USER_GUIDE_ZH-CN.md](docs/USER_GUIDE_ZH-CN.md) · **Compatibility:** [docs/COMPATIBILITY_ZH-CN.md](docs/COMPATIBILITY_ZH-CN.md) · **Backup & restore:** [docs/BACKUP_RESTORE_ZH-CN.md](docs/BACKUP_RESTORE_ZH-CN.md) · **Troubleshooting:** [docs/TROUBLESHOOTING_ZH-CN.md](docs/TROUBLESHOOTING_ZH-CN.md) · **FAQ:** [docs/FAQ_ZH-CN.md](docs/FAQ_ZH-CN.md)
 - **Announcements:** [Telegram channel](https://t.me/LilaShiftUpdates) (announcements only — a channel, not a discussion group)
 - **Bug reports:** [GitHub Issues](https://github.com/fafa888uk/LilaShift-3.0/issues) — see [COMMUNITY.md](COMMUNITY.md). **Never post serial numbers, UDIDs, account keys, or other personal data in an issue.**
 
-One-tap eSIM, region code, and Apple Intelligence setup for China-model iPhones — the full-source LilaShift 3.0 project, based on upstream [GestaltX](https://github.com/huamidev/GestaltX) v1.0.7.
+One-tap eSIM, region code, and Apple Intelligence setup for China-model iPhones — the complete LilaShift 4.x source, retaining the original GestaltX lineage and reviewed upstream updates. The repository name remains `LilaShift-3.0`.
 
 ---
 
@@ -37,7 +37,8 @@ One-tap eSIM, region code, and Apple Intelligence setup for China-model iPhones 
 
 - [What is verified, and what is not](#what-is-verified-and-what-is-not)
 - [What this repository is](#what-this-repository-is)
-- [What's new in 3.0.0-rc.1](#whats-new-in-300-rc1)
+- [What's new in 4.2.1](#whats-new-in-421)
+- [Historical 3.0.0-rc.1 changes](#whats-new-in-300-rc1)
 - [Features](#features)
 - [Compatibility](#compatibility)
 - [Download](#download)
@@ -56,38 +57,50 @@ One-tap eSIM, region code, and Apple Intelligence setup for China-model iPhones 
 
 ## What is verified, and what is not
 
-| Area | Status at this pre-release |
+| Area | Verification status |
 |---|---|
-| Source builds in CI (`Build LilaShift IPA`) | ✅ Verified by GitHub Actions — see badge above |
-| Swift unit tests (`Run Swift Tests`) | ✅ Verified by GitHub Actions — see badge above |
-| License / attribution check (`Check Licenses`) | ✅ Verified by GitHub Actions |
-| Real-device install of this exact IPA | ✅ **Verified** on iPhone Air (iPhone18,4), iOS 27.0.1 |
-| eSIM activation after unlocking | ✅ **Verified** on iPhone Air — eSIM active (China Unicom, roaming) after one-tap unlock |
-| Apple Intelligence actually appearing / working | ✅ **Verified** on iPhone Air — region code `LL` persisted after reboot; Apple Intelligence recognized |
-| Restore returning a device to its exact prior state | ✅ **Verified** on iPhone Air — restore returns the recorded original values |
+| Source builds in CI (`Build LilaShift IPA`) | Refer to the exact release's recorded CI runs; branch badges are not proof for an individual artifact. |
+| Swift unit tests (`Run Swift Tests`) | Refer to the exact release's recorded CI runs; branch badges are not proof for an individual artifact. |
+| License / attribution check (`Check Licenses`) | Refer to the exact release's recorded CI runs; branch badges are not proof for an individual artifact. |
+| Code style (`SwiftLint`) | Match the completed run to the same source commit; cancelled or unstarted jobs are not passes. |
+| Real-device install of this exact IPA | ⚠️ **Not verified for this build** — no real-device evidence for this HEAD in this repository (see `CHANGELOG.md`, Known gaps) |
+| eSIM activation after unlocking | ⚠️ **Not verified for this build** — no real-device evidence for this HEAD in this repository |
+| Apple Intelligence actually appearing / working | ⚠️ **Not verified for this build** — no real-device evidence for this HEAD in this repository |
+| Restore returning a device to its exact prior state | ⚠️ **Not verified for this build** — no real-device evidence for this HEAD in this repository |
 
 Changing a MobileGestalt flag is **not** the same as the feature working: a flag can read as "on" while the hardware, OS version, or Apple services still say no. Nothing in this README claims every device can unlock everything.
 
 ## What this repository is
 
-This is the **full-source project** for LilaShift 3.0 (紫序), the China Unlock enhanced version of GestaltX. The complete modified source lives in this repository — there is no separate patch step; CI builds the IPA straight from this source.
+This is the **full-source project** for LilaShift 4.x (紫序), the China Unlock enhanced version of GestaltX. The complete modified source lives in this repository — there is no separate patch step; CI builds the IPA straight from this source.
 
-- Based on upstream [huamidev/GestaltX](https://github.com/huamidev/GestaltX) `v1.0.7` (commit `dfd4a7e`, build `11130112`), plus the upstream wallpaper-delete fix in PR #126 (commit `c60519c`).
+- Based on upstream [huamidev/GestaltX](https://github.com/huami1314/GestaltX) `v1.0.7` (commit `dfd4a7e`, build `11130112`), plus the upstream wallpaper-delete fix in PR #126 (commit `c60519c`).
 - The previous patch-based build repository ([fafa888uk/LilaShift](https://github.com/fafa888uk/LilaShift)) is kept as-is and not actively developed.
 - LilaShift enhancements maintained by **`@steam8871`**. Upstream GestaltX work remains the work of huamidev.
 
+## What's new in 4.2.1
+
+- Updates ZIPFoundation from 0.9.20 to [0.9.21](https://github.com/weichsel/ZIPFoundation/releases/tag/0.9.21), including upstream fixes for malformed archives and symlink containment. Existing import path, size and integrity checks remain in place.
+- Completes missing translations in the 4.x interfaces, including restore warnings, monitoring and archive messages; localization validation remains part of the acceptance checks.
+- Integrates the reviewed governance, trilingual documentation, CI permission and About-page changes from PRs #20–#25. The 30 retired one-shot workflows are not reintroduced from the old `main` history.
+- Uses standard free GitHub runners, a fixed SwiftLint 0.65.1 binary with checksum verification, and per-build IPA checksum and source metadata. Ordinary CI uploads artifacts; the separate manual release workflow creates a draft for the checked-out commit.
+- Reviews the current GestaltX and Erosion-CN sources. Existing 4.x features are retained; unrelated ad-blocking and pairing/capture features are not claimed as added. See the [source review](docs/RELEASE_4_2_1.md#开源更新核查).
+
+The 4.2.0 navigation changes and 4.1.0 App Audio Library / lock-screen text integration remain part of the 4.x baseline. Full details are in [CHANGELOG.md](CHANGELOG.md).
+
 ## What's new in 3.0.0-rc.1
 
-- **LilaShift 3.0 dashboard** — a lightweight home screen with real device read and staged-change status, a 53-item feature catalog across 11 categories (40 preset items + 13 page items), a unified 8-state compatibility model, a history/restore view with confirmation steps, and diagnostic caching that moves file reads and SHA-256 hashing off the render path. See [CHANGELOG.md](CHANGELOG.md).
-- **One-tap China Unlock (9 items; 3 on native Apple Intelligence models)** — eSIM switches (`green-tea` off, `not-green-tea` on), region code set to US (`LL`, sales region untouched), and six Apple Intelligence capabilities, all staged in one tap and reviewed before applying.
+- **LilaShift 3.0 dashboard** — a lightweight home screen with real device read and staged-change status, a 58-item feature catalog across 11 categories (45 preset items + 13 page items), a unified 8-state compatibility model, a history/restore view with confirmation steps, and diagnostic caching that moves file reads and SHA-256 hashing off the render path. See [CHANGELOG.md](CHANGELOG.md).
+- **One-tap China Unlock (10 items; 3 on native Apple Intelligence models)** — eSIM switches (`green-tea` off, `not-green-tea` on), region code set to US (`LL`, sales region untouched), and seven Apple Intelligence capabilities, all staged in one tap and reviewed before applying.
   - The eSIM cache layout is verified before staging; if it cannot be verified, the whole eSIM group stops and shows the reason. Region and AI flags can still be set individually.
-  - On models with native Apple Intelligence (e.g. iPhone Air), the six AI items are skipped — the device already has them — so one-tap stages only the 2 eSIM switches + region code.
+  - On models with native Apple Intelligence (e.g. iPhone Air), the seven AI items are skipped — the device already has them — so one-tap stages only the 2 eSIM switches + region code.
   - Every apply is automatically backed up and read-back verified. One-tap restore reverts all staged items from the recorded originals.
+- **Standalone Siri AI Mode preset** — a single-item toggle that stages only SiriMode = 2, with its own card next to the China AI and eSIM + region presets. Unlike the China AI preset, it is available on native Apple Intelligence models too (an explicit opt-in); it is experimental and usually unnecessary there, since Siri AI already works natively. Unknown models are refused (fail-closed).
 - **Light-lavender Liquid Glass redesign** — page background `#F6F3FF`, primary purple `#8652DC`; no large dark backgrounds.
 - **Purpose description under every feature** — all presets show a one-line Simplified Chinese purpose description; device requirements and effect details live in the detail view.
 - **Author badge and live progress cards** — maintainer `@steam8871` credited in the header and About page; reading/applying show real progress (backup / write / verify / done) driven by the actual operation, never simulated.
 - **Open-source compliance** — the About page is a contributor center listing every used or referenced project with author, relationship, technology, license, and source link. Full GPL v3.0 text is bundled in the app. See [docs/OPEN_SOURCE_REFERENCES.md](docs/OPEN_SOURCE_REFERENCES.md) and [docs/FEATURE_ORIGIN_MATRIX.md](docs/FEATURE_ORIGIN_MATRIX.md).
-- **Hardened writes** (design informed by Erosion-CN, no code copied) — in-place writes (never pre-truncate, `F_FULLFSYNC`, full read-back, in-place rollback on failure), runtime dynamic resolution of the eSIM cache layout, a diff preview before applying, a dual-vault backup (including a factory vault that survives uninstall/reinstall), a region-mode choice (region code only, or full US `LL` + `LL/A`), and a 4-factor Apple Intelligence checkup with conflict guards.
+- **Hardened MobileGestalt writes** (design informed by Erosion-CN, no code copied) — in-place writes (never pre-truncate, `F_FULLFSYNC`, full read-back, in-place rollback on failure), runtime dynamic resolution of the eSIM cache layout, a diff preview before applying, a dual-vault backup (including a factory vault that survives uninstall/reinstall), a region-mode choice (region code only, or full US `LL` + `LL/A`), and a 4-factor Apple Intelligence checkup with conflict guards.
 - **Respring removed for licensing reasons** — the NeoSpring/Ketamine respring implementation was removed on 2026-11-14 (NeoSpring states no license anywhere). This build has no respring code; the app shows a manual device-restart prompt instead. See `docs/OPEN_SOURCE_REFERENCES.md` §3–§4.
 - **LilaShift identity** — the app is named **LilaShift** (中文：紫序), with a cat photo as the app icon.
 
@@ -95,11 +108,11 @@ This is the **full-source project** for LilaShift 3.0 (紫序), the China Unlock
 
 | Category | Presets and tools |
 |---|---|
-| China Unlock | One-tap staging of 9 items (3 on native Apple Intelligence models, where the 6 AI items are skipped): eSIM switches, region code US (`LL`), and six Apple Intelligence capabilities — reviewed before applying, with eSIM cache-layout verification, automatic backup, read-back verification, and one-tap restore |
+| China Unlock | One-tap staging of 10 items (3 on native Apple Intelligence models, where the 7 AI items are skipped): eSIM switches, region code US (`LL`), and seven Apple Intelligence capabilities — reviewed before applying, with eSIM cache-layout verification, automatic backup, read-back verification, and one-tap restore |
 | Display | Dynamic Island capability and layout, Always-On Display, AOD Vibrancy, high-luminance AOD, AOD flipbook, HDR photo display, wallpaper parallax, Liquid Glass low-power rendering, experimental PWM and DisplayPort flags |
 | Device | Model name, boot/shutdown chime, charge limit, tap to wake, Camera Control settings, Action Button settings, Collision SOS, Audio Mix, Spatial FaceTime audio |
 | iPad | Apple Pencil settings, Stage Manager capability, iPad app compatibility |
-| Intelligence | Independent region-code options, Apple Intelligence capability flag, on-device Siri, Audio Intelligence, Personal Translator, Photos Clean Up, Handwriting Synthesis, always-listening Hey Siri, sales-region options for activation attempts on China-mainland devices |
+| Intelligence | Independent region-code options, Apple Intelligence capability flag, on-device Siri, Audio Intelligence, Personal Translator, Photos Clean Up, Handwriting Synthesis, always-listening Hey Siri, Siri AI Mode (standalone single-item toggle, also on native Apple Intelligence models), sales-region options for activation attempts on China-mainland devices |
 | Advanced | Apple internal feature flags, system-wide InternalBuild flag with explicit confirmation, internal settings bundle, Security Research Device flag |
 | Field editor | Read, search, add, edit, and remove `CacheExtra` fields; local plist import/export; String, Integer, Real, Boolean, Data, Date, Array, and Dictionary values |
 | Changes | Automatic reading and manual re-read, staged before/after review, verified writes, per-preset restore |
@@ -128,9 +141,15 @@ Full compatibility table: [docs/COMPATIBILITY_ZH-CN.md](docs/COMPATIBILITY_ZH-CN
 
 ## Download
 
-Download the IPA from the [3.0.0-rc.1 release](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v3.0.0-rc.1) — `LilaShift_3.0.0.ipa` (bundle `com.huami.gestultx`, version `3.0.0`, build `30000002`, minimum iOS `26.0`). The IPA file name comes from the build script (`.github/scripts/build-ipa.sh`): `LilaShift_<version>.ipa`.
+For 4.2.1, open a successful [Build LilaShift IPA run](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml) for the update's exact commit, then download its `LilaShift-4.2.1-<run_id>-<run_attempt>` artifact. GitHub may require sign-in for workflow-artifact downloads. Unzip the artifact to obtain:
 
-> Some users report incomplete downloads with Safari on iOS 27. If the file shows as damaged or cannot be extracted, download it again — several attempts may be needed. Try another browser if it persists. The cause has not been confirmed.
+- `LilaShift_4.2.1.ipa`
+- `LilaShift_4.2.1.ipa.sha256`
+- `build-manifest.json` (source commit, version, build, toolchain and IPA hash)
+
+Check the checksum and confirm that the manifest records version `4.2.1`, build `42000002`, and the intended source commit. Workflow artifacts are retained for 14 days. A downloadable workflow artifact is separate from a published release; published versions remain listed in [Releases](https://github.com/fafa888uk/LilaShift-3.0/releases).
+
+The previous published artifact is [LilaShift 4.2.0](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0). The historical `LilaShift_3.0.0.ipa` is not a 4.x package. If a download is incomplete or its checksum differs, download it again before installing.
 
 ## Install
 
@@ -138,7 +157,7 @@ Full step-by-step tutorial (Chinese): [docs/INSTALL_ZH-CN.md](docs/INSTALL_ZH-CN
 
 1. Install the IPA with [LiveContainer](https://github.com/khanhduytran0/LiveContainer) (no re-signing needed), or re-sign it with AltStore / SideStore / Sideloadly / a developer certificate — see the tutorial for the differences.
 2. Open LilaShift and tap **Read Device** first.
-3. Open **China Unlock**, review the staged items (9 on most models; 3 on native Apple Intelligence models), then apply.
+3. Open **China Unlock**, review the staged items (10 on most models; 3 on native Apple Intelligence models), then apply.
 4. **Restart the device** after applying — power fully off and back on; a SpringBoard refresh is not enough for eSIM. Then check eSIM and Apple Intelligence in system Settings.
 5. To undo everything, use the one-tap restore — it reverts all staged items from the backup.
 
@@ -156,7 +175,7 @@ Full step-by-step tutorial (Chinese): [docs/INSTALL_ZH-CN.md](docs/INSTALL_ZH-CN
 
 ## Screenshots
 
-No screenshots are included in this pre-release yet. Real screenshots will be added from the actual 3.0.0-rc.1 build on a real device once available — none are fabricated here, and earlier simulator screenshots (showing a "Not read yet" state, not the 9-item China Unlock summary) are not presented as this release.
+No real-device screenshots for 4.2.1 are recorded here. Simulator snapshot references are test fixtures, not evidence that installation or device features work on this release.
 
 ## Frequently asked questions
 
@@ -173,9 +192,9 @@ No screenshots are included in this pre-release yet. Real screenshots will be ad
 
 MG Control shows the live `CacheExtra` values; the preset page shows the last read. Tap **Re-read** on the home page first. If they still disagree, the values were written directly (bypassing the preset) — apply the one-tap unlock once to normalize them.
 
-### AI shows 1/6 (or fewer than 6)
+### AI shows 1/7 (or fewer than 7)
 
-Only that many of the 6 AI capability flags are currently on. Open the Apple Intelligence page to see which ones. A change made by an older version persists in the cache until reverted; if it was made before this app's first backup, the backup already contains it.
+Only that many of the 7 AI capability flags are currently on. Open the Apple Intelligence page to see which ones. A change made by an older version persists in the cache until reverted; if it was made before this app's first backup, the backup already contains it.
 
 ### I want to restore the original state, but there is no backup
 
@@ -187,7 +206,11 @@ Restore can only return values the app recorded. Check the Backups page for any 
 
 ### The AI menu doesn't appear, or Siri says "something went wrong"
 
-Check that the region code is `LL`, the 6 AI flags are on, and the device has finished downloading the AI models (Wi-Fi + charging, idle for a while). Proxy rules matter: Siri domains (`guzzoni.apple.com`, `*.siri.apple.com`, `dejavu.apple.com`, `sequoia.apple.com`) must go **DIRECT** with a real IP, not through a proxy; AI / Private Cloud Compute domains go through a clean US node. Do not set the system region to United States if you want to keep China Mandarin call screening — set it to Taiwan instead.
+Check that the region code is `LL`, the 7 AI flags are on, and the device has finished downloading the AI models (Wi-Fi + charging, idle for a while). Proxy rules matter: Siri domains (`guzzoni.apple.com`, `*.siri.apple.com`, `dejavu.apple.com`, `sequoia.apple.com`) must go **DIRECT** with a real IP, not through a proxy; AI / Private Cloud Compute domains go through a clean US node. Do not set the system region to United States if you want to keep China Mandarin call screening — set it to Taiwan instead.
+
+If you use a proxy: Siri's core domains must go DIRECT with a real IP, never through a proxy or Fake-IP — `guzzoni.apple.com`, `*.siri.apple.com`, `dejavu.apple.com`, `sequoia.apple.com`, `*.smoot.apple.com` (in Surge, also add `guzzoni.apple.com`, `*.guzzoni.apple.com` and `*.siri.apple.com` to skip-proxy and always-real-ip). AI admission and Private Cloud Compute domains go through a clean US node that supports UDP/QUIC — `gspe1-ssl.ls.apple.com`, `*.issuer.apple.com`, `ropes.apple.com`, `mask-api.icloud.com`, `mask.icloud.com`, `mask-h2.icloud.com`, `*.app.apple.com`, `apple-relay.*`. Do not enable MitM decryption for `gspe1-ssl.ls.apple.com` or `*.smoot.apple.com`. If a generative feature fails with a network error (e.g. Code=32033 or Code=1009), check these rules first. Ready-made rule sets: AppleFlow (github.com/Kianuni/AppleFlow). Source: Erosion-CN FAQ Q3/Q6.
+
+iOS 27.3 limitation: on China-hardware devices (CH/A), iOS 27.3 added an eligibility check that reads the hardware directly (log: `Eligibility returned no CN region policy on a CH region code device`). Even with the region code at LL and all AI flags on, Siri AI and some generative features can be blocked on 27.3; changing MobileGestalt cannot bypass it (Erosion-CN FAQ Q6, situation C). The workaround is to stay on or downgrade to iOS 27.2.x.
 
 ### Photos Clean Up works, but high-quality cleanup / extend / reimagine fails
 
@@ -209,10 +232,13 @@ Shared files are checked at launch and on return to the foreground. Pending edit
 
 ## Build it yourself
 
-- **Build LilaShift IPA** (`.github/workflows/build.yml`) — builds the IPA straight from this source on every push to `main` and `feature/lilashift-3.0-dashboard`, pull request, version tag, release, and manual dispatch. The IPA is uploaded as a workflow artifact named `LilaShift-<version>`; tag and release runs also attach it to the matching GitHub release.
-- **Run Swift Tests** (`.github/workflows/run-swift-tests.yml`) — runs the XCTest suite on the iOS simulator.
-- **Check Licenses** (`.github/workflows/check-licenses.yml`) — runs `scripts/check-licenses.py` on every push that can build an IPA.
-- **Prepare Draft Release** (`.github/workflows/prepare-release.yml`, manual dispatch only) — builds the IPA and creates a **draft** GitHub Release; it never publishes automatically.
+- **Build LilaShift IPA** (`.github/workflows/build.yml`) builds the selected source on the configured branch, pull-request, tag, release and manual triggers. It uses the standard `xcode-27` runner and uploads the IPA, SHA-256 file and build manifest in `LilaShift-<version>-<run_id>-<run_attempt>`. Ordinary builds have read-only repository permissions and do not create or overwrite release assets.
+- **Run Swift Tests** (`.github/workflows/run-swift-tests.yml`) runs the XCTest suite on an iOS simulator using `xcode-27`. Snapshot artifacts are retained for seven days.
+- **SwiftLint** (`.github/workflows/swiftlint.yml`) uses `xcode-27` and verifies the checksum of the pinned 0.65.1 tool. Existing lint rules remain enabled.
+- **Check Licenses** (`.github/workflows/check-licenses.yml`) runs `scripts/check-licenses.py` on the standard `ubuntu-latest` runner.
+- **Prepare Draft Release** (`.github/workflows/prepare-release.yml`, manual dispatch only) builds the selected branch and creates a **draft** release targeted at the actual checked-out source commit. It rejects an existing version tag or release and does not publish automatically.
+
+The configured runners are [standard GitHub-hosted runners, free for public repositories](https://docs.github.com/en/actions/how-tos/write-workflows/choose-where-workflows-run/choose-the-runner-for-a-job). No paid runner fallback is configured. Build manifests identify the compiled source and toolchain; they do not certify real-device behavior.
 
 ## Language support
 
@@ -235,10 +261,10 @@ GestaltX follows your iOS language settings, with English as the default and fal
 
 This project is distributed under the **GNU General Public License v3.0** — see [LICENSE](LICENSE) (byte-identical to upstream v1.0.7).
 
-- Upstream project: [huamidev/GestaltX](https://github.com/huamidev/GestaltX) (`v1.0.7`, commit `dfd4a7e`, plus PR #126, commit `c60519c`)
+- Upstream project: [huamidev/GestaltX](https://github.com/huami1314/GestaltX) (original `v1.0.7`, commit `dfd4a7e`, plus PR #126, commit `c60519c`)
 - Enhanced version maintainer: `@steam8871`
-- Modifications in this build: the China Unlock preset (9 items; 3 on native Apple Intelligence models) and its safety checks, the light-lavender Liquid Glass redesign, one-line purpose descriptions, the author badge and progress cards, the in-app source-repository link, the open-source compliance section, the Erosion-CN-inspired hardening (write path, dynamic layout resolution, diff preview, dual-vault backup, region mode, AI checkup), the LilaShift rebrand, and the cat app icon.
-- LilaShift 3.0 additions: the lightweight dashboard, the 53-item feature catalog, the unified compatibility model, the history/restore view, diagnostic caching, and the open-source contributor center (About page) with the per-project source record in `docs/OPEN_SOURCE_REFERENCES.md`.
+- Modifications in this build: the China Unlock preset (10 items; 3 on native Apple Intelligence models) and its safety checks, the light-lavender Liquid Glass redesign, one-line purpose descriptions, the author badge and progress cards, the in-app source-repository link, the open-source compliance section, the Erosion-CN-inspired hardening (write path, dynamic layout resolution, diff preview, dual-vault backup, region mode, AI checkup), the LilaShift rebrand, and the cat app icon.
+- LilaShift 3.0 additions: the lightweight dashboard, the 58-item feature catalog, the unified compatibility model, the history/restore view, diagnostic caching, and the open-source contributor center (About page) with the per-project source record in `docs/OPEN_SOURCE_REFERENCES.md`. Also: Face ID recovery (restore only the four hardware-identity fields from a verified same-device backup, upstream GestaltX #128/#146, extended to iPhone 16/17/Air), clear-and-rebuild MobileGestalt cache (Erosion-CN mechanism, reimplemented; backup taken first), and a one-click AI baseline fix in the one-tap flow (Personal Translator slot #266 = 1, Audio Intelligence slot #178 = 0, absent AI keys filled).
 - The complete corresponding source is in this repository (full source, no patch step).
 
 ## Credits

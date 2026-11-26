@@ -25,7 +25,9 @@ final class LocalRestoreProvenanceTests: XCTestCase {
         var verified = try await store.loadLocal(data: initialBytes, name: "verified-export.plist")
         verified.ownershipVerified = true
         var edit = verified.document
-        edit.set("local edit", for: "setting")
+        // "setting" is not a staged key (Stage 5 §3.4 allowlist
+        // gate); the region code is staged.
+        edit.set("local edit", for: GestaltKeys.regionCode)
         let savedEdit = try await store.commit(edit, expected: verified)
         XCTAssert(savedEdit.ownershipVerified, "Ordinary edits preserve a verified import's ownership")
 
@@ -46,7 +48,7 @@ final class LocalRestoreProvenanceTests: XCTestCase {
         XCTAssert(try Data(contentsOf: device) == initialBytes, "Local replacement never writes the device")
 
         var anotherEdit = restored.document
-        anotherEdit.set("further edit", for: "setting")
+        anotherEdit.set("further edit", for: GestaltKeys.regionCode)
         let stillUnverified = try await store.commit(anotherEdit, expected: restored)
         XCTAssert(!stillUnverified.ownershipVerified, "Later edits cannot regain the discarded ownership")
         let identical = try await store.commit(verified.document, expected: verified, restoring: record)
@@ -71,7 +73,7 @@ final class LocalRestoreProvenanceTests: XCTestCase {
         // A pre-write backup records pre-modification provenance, and it
         // survives the JSON round-trip through the backup listing.
         var deviceEdit = liveSnapshot.document
-        deviceEdit.set("edited", for: "setting")
+        deviceEdit.set("edited", for: GestaltKeys.regionCode)
         _ = try await writingStore.commit(deviceEdit, expected: liveSnapshot)
         let writtenBackups = try await writingStore.backups()
         XCTAssert(writtenBackups.first { $0.reason == "Before applying" }?.provenance == .preModification,

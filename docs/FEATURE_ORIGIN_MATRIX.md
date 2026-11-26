@@ -1,6 +1,6 @@
-# LilaShift 3.0 — 功能来源映射表（Feature Origin Matrix）
+# LilaShift 4.x — 功能来源映射表（Feature Origin Matrix）
 
-> 核实日期：2026-11-14。每一项功能按来源分为三类：
+> 本次来源复核：2026-11-27；保留 3.0 阶段的来源记录，修正已在 4.x 落地的状态。每一项功能按来源分为三类：
 > - **原始代码**：上游 GestaltX（huamidev）已有，LilaShift 继承。
 > - **第三方参考成果**：参考第三方项目的设计、数据或代码改编而来（来源见
 >   `docs/OPEN_SOURCE_REFERENCES.md`，文件头亦有注明）。
@@ -27,10 +27,10 @@
 
 | 方面 | 来源 |
 |---|---|
-| 一键暂存 9 项（eSIM 两开关、地区码 US、6 项 AI 能力） | **LilaShift 新增实现**（P0–P1；9 项的定义为 LilaShift 产品规则） |
+| 一键暂存 10 项（eSIM 两开关、地区码 US、7 项 AI 能力） | **LilaShift 新增实现**（P0–P1；10 项的定义为 LilaShift 产品规则） |
 | 暂存模型、预览、应用流程 | **原始代码**（上游 GestaltX 的暂存/事务模型）+ **LilaShift 新增实现**（一键解锁规则、守卫） |
 | eSIM 缓存布局校验（无法验证则整组停止并说明原因） | **LilaShift 新增实现** |
-| 地区模式选择 | **第三方参考成果**：Erosion-CN 的地区模式思路，**设计参考**；已收敛为"一键解锁只改 9 项"，不采用其完整美版模式 |
+| 地区模式选择 | **第三方参考成果**：Erosion-CN 的地区模式思路，**设计参考**；已收敛为"一键解锁只改 10 项"，不采用其完整美版模式 |
 
 ## 3. Apple Intelligence 检测
 
@@ -44,7 +44,7 @@
 
 | 方面 | 来源 |
 |---|---|
-| eSIM 开关（green-tea / not-green-tea）与地区码 | **LilaShift 新增实现**（一键解锁 9 项的一部分；槽位为运行时动态解析） |
+| eSIM 开关（green-tea / not-green-tea）与地区码 | **LilaShift 新增实现**（一键解锁 10 项的一部分；槽位为运行时动态解析） |
 | 美国监管机型 A-number 对照表 | **第三方参考成果**：Erosion-CN 的 `usRegulatoryModelNumber`，**复用数据**（逐值转录，`GestaltX/USRegulatoryModelMapping.swift`） |
 | 国行双实体卡 + eSIM 硬件冲突警告 | **第三方参考成果**：Erosion-CN 的说明，**设计参考**（Full US 保留为明确的可选模式，`GestaltX/Capabilities.swift`） |
 
@@ -72,7 +72,7 @@
 | 方面 | 来源 |
 |---|---|
 | 设备能力指纹（v1 + SHA-256；变化使已记录的支持范围失效） | **LilaShift 新增实现**（P1） |
-| 键名与版本覆盖数据 | **第三方参考成果**：MGKeys，**研究参考**（计划中的 Tier 1 数据库将复用其键名表与版本覆盖表，MIT，需署名；当前版本尚未生成该表——**未实现**，见下） |
+| 键名与版本覆盖数据 | **第三方参考成果**：MGKeys，**复用数据**（`MGDatabaseSeed.swift` 已包含 77 个已用键的名称与版本范围，来源 `db9cf77f`，MIT；不等同于完整逐机型实测兼容性表） |
 | 逐机型/逐 iOS 版本兼容性矩阵、slot=-1 键清单、纯物理硬件限制清单 | **计划中，未实现**（Erosion-CN FAQ 的兼容性知识，**设计参考**，Tier 1 待做） |
 
 ## 8. 智能兼容性诊断
@@ -89,13 +89,13 @@
 | 方面 | 来源 |
 |---|---|
 | 系统健康评分（4 个维度；总分上限 99，永不 100；未读取时全未知） | **LilaShift 新增实现**（P1） |
-| 电池健康/循环/温度（仅公开 UIDevice；健康/循环/容量明确报不可用） | **LilaShift 新增实现**（P4 诊断扩展；Erosion-CN 的电池诊断为 Tier 2 待移植项，**未实现**） |
+| 电池健康/循环/温度 | **LilaShift 新增实现**（`PowerTelemetry.swift`，参考 Erosion-CN 后重新实现，只读 powerlog 快照；无法访问或没有字段时报告不可用，不生成猜测值） |
 
 ## 10. 智能预设
 
 | 方面 | 来源 |
 |---|---|
-| 预设目录（40 项：35 个能力项 + WAPI + 机型编号 + 3 个组合） | **LilaShift 新增实现**（P3；每项含中文名、说明、适用范围、最低系统、风险等级与具体机制、恢复方式、可追溯证据） |
+| 预设目录（42 项：36 个能力项 + WAPI + 机型编号 + 4 个组合） | **LilaShift 新增实现**（P3；每项含中文名、说明、适用范围、最低系统、风险等级与具体机制、恢复方式、可追溯证据） |
 | 智能计划（仅作计划，不连接应用） | **LilaShift 新增实现**（P3；组合为计划，应用路径 deliberately 未连接） |
 | 自定义预设（创建/编辑/删除） | **LilaShift 新增实现**（P4；同样仅作计划） |
 | 键映射对照 | **第三方参考成果**：MGKeys / Nugget / mond，**研究参考**（仅对照，未复制代码或数据） |
@@ -107,7 +107,7 @@
 | 方面 | 来源 |
 |---|---|
 | 启动图预览（图片校验、裁剪、圆角预览、名称编辑、撤销、SHA-256 本地草稿） | **LilaShift 新增实现**（PR #3 App Appearance；明确为"仅预览"，能力恒为 unknown） |
-| 个性化基础设施（容器访问、文件导入） | **原始代码**（上游 GestaltX 的个性化基础设施）+ **LilaShift 新增实现**（导入/验证/应用/备份/恢复流程；`launchImage` / `lockScreenText` 的应用处理器须先补上——**已知缺口，未实现**） |
+| 个性化基础设施（容器访问、文件导入） | **原始代码**（上游 GestaltX 的个性化基础设施）+ **LilaShift 新增实现**（导入/验证/应用/备份/恢复流程；`launchImage` / `lockScreenText` 的应用处理器须先补上——**已知缺口，未实现**，指 CustomizationStore/PersonalizationCenter 的应用路径）。独立的锁屏文字功能（`SystemSettingsStore`，上游 v1.0.6 移植）有暂存、写前备份、回读验证及底层恢复方法，但当前「系统设置」UI 尚无独立 Restore/Revert（还原）按钮；底层方法存在不等于已有可点击入口。备份页全局恢复不覆盖锁屏文字、通知文本或铃声。 |
 
 ## 12. 壁纸个性化
 
@@ -115,7 +115,7 @@
 |---|---|
 | 壁纸描述符布局与 PosterBoard 目标（`.tendies`） | **第三方参考成果**：Erosion，**设计参考**（`GestaltX/CustomizationThemes.swift`、`GXCustomizationAccess.m`）；Gester，**设计参考**（描述符提供者、标识符再生、刷新标志） |
 | 壁纸导入/验证/应用/备份/恢复 | **原始代码**（上游 GestaltX）+ **LilaShift 新增实现**（有界压缩包校验、运行时容器身份检查、隔离的壁纸归属记录、已验证写入与原始文件恢复） |
-| ZIP 压缩包读取 | **第三方参考成果**：ZIPFoundation 0.9.20，**直接集成**（MIT，Swift Package 链接，`GestaltX/CustomizationFiles.swift`） |
+| ZIP 压缩包读取 | **第三方参考成果**：ZIPFoundation 0.9.21，**直接集成**（MIT，Swift Package 链接，`GestaltX/CustomizationFiles.swift`） |
 
 ## 13. Respring
 
@@ -134,7 +134,8 @@
 | 运行时授权读取（App Group 容器解析） | **原始代码**（上游 GestaltX 的 `GXEntitlementsReader`，LilaShift 继承） |
 | 授权读取思路 | **第三方参考成果**：LCSign 的 `LCEntitlementsReader`，**设计参考**（重新实现；LCSign 无公开许可证，不复制其代码） |
 | 签名健康检查（TeamID、扩展 App Group、共享容器解析） | **LilaShift 新增实现**（Phase F `SigningHealthChecker` 结构；Gester 的动态 App Group 读取为**设计参考**，用于改善报错信息） |
-| 铃声管理（App Audio Library）与设备配对 | **未实现**：在上游 GestaltX 1.0.8 中，LilaShift 的 1.0.8 rebase 被阻塞（20 个冲突），**暂未引入** |
+| 铃声管理（App Audio Library） | **已实现**：4.1.0 已选择移植 GestaltX v1.1.1 的 `AppSoundCodec` / `AppSoundFiles` / `AppSoundStore` / `AppSoundViews`，并保留 LilaShift 的容器与备份安全检查 |
+| 设备配对与通知声音捕获 | **未实现**：依赖 idevice / Native DeviceConsole 的配对、通知捕获栈仍未引入；不能将铃声库已存在写成这些功能也已完成 |
 
 ## 15. SwiftUI 玻璃界面
 
@@ -149,7 +150,7 @@
 | 模块 | 来源 | 说明 |
 |---|---|---|
 | `GestaltX/DashboardV3.swift` | **LilaShift 新增实现** | 轻量可配置首页 + 稳定快捷排序（3.0 分支提交 `493d71c`） |
-| `GestaltX/FeatureCatalog.swift`、`FeatureCatalogViews.swift` | **LilaShift 新增实现** | 53 项、11 分类的功能目录；单一排序规则；版本化 JSON + SHA-256 sidecar |
+| `GestaltX/FeatureCatalog.swift`、`FeatureCatalogViews.swift` | **LilaShift 新增实现** | 58 项、11 分类的功能目录；单一排序规则；版本化 JSON + SHA-256 sidecar |
 | `GestaltX/CompatibilityStatus.swift` | **LilaShift 新增实现** | 8 状态兼容性模型；`isOffered()` 仅对 `.modifiable` 返回真 |
 | `GestaltX/HistoryRestoreSummary.swift` | **LilaShift 新增实现** | 统一历史与恢复视图；恢复预览清单；二次确认 |
 | `GestaltX/HomeDiagnosticsCache.swift`、`HomeDiagnosticsSection.swift` | **LilaShift 新增实现** | 诊断计算缓存（后台算一次、只发变化值）+ 11 张诊断卡的二级页 |
@@ -159,16 +160,24 @@
 
 ---
 
-## 未实现的功能（明确列出，防止误认）
+## 4.x 实现进度与未实现的功能
 
 | 功能 | 状态 | 来源/备注 |
 |---|---|---|
-| MGKeys 键名表与版本覆盖表（Swift 表） | 未实现（Tier 1） | MGKeys，MIT，需署名；只纳入已用键子集 |
+| MGKeys 已用键与版本元数据（Swift 表） | 已实现 77 个已用键的子集 | `MGKeysTable.swift` / `MGDatabaseSeed.swift`；名称与版本来自 MGKeys `db9cf77f`（MIT），布局键来自 Erosion-CN；其余安全策略与验证状态为本项目实现 |
 | 完整兼容性矩阵（逐机型/逐版本） | 未实现（Tier 1） | Erosion-CN FAQ，设计参考 |
-| 清除并重建缓存（纯净原厂基线） | 未实现（Tier 1） | Erosion-CN，GPL-3.0，需先有可信原厂备份 |
-| 电池与崩溃诊断（真实读数） | 未实现（Tier 2） | Erosion-CN，GPL-3.0 |
+| 清除并重建缓存（纯净原厂基线） | 已实现（Erosion-CN 机制，重新实现；先备份再删缓存，重启后由系统重建） | Erosion-CN，GPL-3.0；`GestaltX/GestaltDocument.swift:1116` `rebuildCache(expected:)` + `GestaltX/GestaltManager.swift:1345` 包装，测试 `tests/CacheRebuildTests.swift` |
+| 电池与崩溃诊断（真实读数） | 已实现（MEDIUM 轮 A7/A8，重新实现；真实读数，无法访问时报 unavailable 而非编造） | Erosion-CN，GPL-3.0；电池/温度 `GestaltX/PowerTelemetry.swift`，崩溃报告 `GestaltX/CrashDiagnostics.swift` |
 | 应用存档备份、跨容器写操作 | 未实现（Tier 2，须单独评估权限与风险） | Erosion-CN，GPL-3.0 |
-| 铃声管理、设备配对、桌面助手 | 未实现（Tier 2，依赖 1.0.8 rebase） | 上游 GestaltX 1.0.8 + idevice（MIT）/ libimobiledevice（LGPL-2.1） |
+| 铃声管理 / 设备配对 / 桌面助手 | 铃声库已实现；配对、通知捕获和桌面助手未实现 | GestaltX v1.1.1 的 App Audio Library 已选择移植；idevice 与 libimobiledevice 未打包 |
 | iOS 27.2 逃逸（Gester class 7 symlink） | 研究中，未实现 | Gester，MIT；须先真机验证；class-2 无 App Group 回退保持默认关闭 |
-| 自定义预设编辑器（Preset Lab 模式） | 未实现（Tier 3） | WorkPlot，设计参考；写实现用 LilaShift 自己的，不用 WorkPlot 的 beta-only 实现 |
+| 自定义预设编辑器（Preset Lab 模式） | 计划与编辑界面已实现；不替代受控写入事务 | `PresetLab.swift` / `PresetLabViews.swift` 为本项目实现；WorkPlot 仅作设计参考，其 beta-only 写实现未移植 |
 | 完整中文功能数据库 | 未实现（Tier 3） | MGKeys 数据 + 人工编写中文条目 |
+
+
+## 4.2.1 来源更新
+
+- ZIPFoundation 精确更新到 [0.9.21](https://github.com/weichsel/ZIPFoundation/releases/tag/0.9.21) / `e7048f0569f0ba37df26f8357f560b9d25e9a284`。升级库本身，保留 `CustomizationArchive` 的符号链接、路径、总大小、重复名称与 CRC 检查。
+- `tests/CustomizationTests.swift` 使用自包含 ZIP 数据覆盖正常解压、路径穿越、符号链接、大小写冲突和错误 CRC 后清理；移除该测试对缺失外部夹具的依赖。通过与否以此提交实际 CI 为准。
+- Erosion-CN 最新 [v1.0.7](https://github.com/Kianuni/Erosion-CN/releases/tag/v1.0.7) 的开屏广告路径/白名单等能力不属于当前已移植模块，未标记为已集成。对应来源与版本记录见 [开源来源清单](OPEN_SOURCE_REFERENCES.md)。
+- 保留原生 AI、设备身份、备份来源、系统版本和受控写入策略；本次不引入新的系统写入方式，不恢复已移除的 Respring 实现。

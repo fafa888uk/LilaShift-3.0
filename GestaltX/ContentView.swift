@@ -11,6 +11,7 @@ struct ContentView: View {
     @StateObject private var model = GestaltManager()
     @StateObject private var systemSettings = SystemSettingsModel()
     @StateObject private var customizations = CustomizationModel()
+    @StateObject private var wallpaperLibrary = WallpaperLibraryModel()
     @StateObject private var launchCatalog = LaunchArtworkCatalogModel()
     /// The shared home-diagnostics cache (see HomeDiagnosticsCache):
     /// it computes the device report, backup verifications, SafePatch
@@ -31,6 +32,9 @@ struct ContentView: View {
     @State private var activeExport: TemporaryExport?
     @State private var showsChanges = false
     @State private var showsRestartHelp = false
+    /// The export warning (Stage 6, audit R-3): shown before any
+    /// full plist export, offering the de-identified export.
+    @State private var showsExportWarning = false
     @State private var asksImportedRestore = false
     @State private var showsShareNotice = false
     @AppStorage("GestaltX.sharedImportNotice.v1") private var sharedImportNoticeShown = false
@@ -80,7 +84,7 @@ struct ContentView: View {
         #if targetEnvironment(simulator)
         .sheet(item: $previewCategory) { category in
             NavigationStack {
-                ToolGroupView(group: ToolGroup(for: category), systemSettings: systemSettings, customizations: customizations, launchCatalog: launchCatalog)
+                ToolGroupView(group: ToolGroup(for: category), systemSettings: systemSettings, customizations: customizations, wallpaperLibrary: wallpaperLibrary, launchCatalog: launchCatalog, share: presentShare)
             }.environmentObject(model)
         }
         #endif
@@ -104,6 +108,14 @@ struct ContentView: View {
         .alert(L("Restart Your Device"), isPresented: $showsRestartHelp) {
             Button(L("OK"), role: .cancel) {}
         } message: { Text(L("Some changes need a device restart to take effect. LilaShift cannot restart SpringBoard itself. Please restart your device manually: hold the side button and a volume button, then slide to power off, or use Settings → General → Shut Down.")) }
+        // Export warning (Stage 6, audit R-3): the full file
+        // contains this device's UDID and serial number. The
+        // de-identified export removes them and cannot be restored.
+        .alert(L("Export this plist?"), isPresented: $showsExportWarning) {
+            Button(L("Cancel"), role: .cancel) {}
+            Button(L("Export De-identified")) { if let export = model.exportDocumentDeidentified() { presentShare(export) } }
+            Button(L("Export Full")) { if let export = model.exportDocument() { presentShare(export) } }
+        } message: { Text(L("The full file contains this device's UDID and serial number. Anyone with the file can identify this device. De-identified removes the UDID, serial number and chip ID; the de-identified file cannot be restored.")) }
         .alert(L("Import Plist"), isPresented: $showsImportConfirmation) {
             Button(L("Cancel"), role: .cancel) {
                 if let offer = importOffer { model.discardImport(offer) }
@@ -275,7 +287,9 @@ struct ContentView: View {
     private func refreshDiagnostics() {
         diagnostics.refresh(
             snapshot: model.snapshot, working: model.working,
-            backups: model.backups)
+            backups: model.backups,
+            monitorRows: model.monitorRows, monitorSentinel: model.monitorSentinel,
+            readAt: model.lastReadAt ?? model.monitorReadAt)
     }
 
     private var canPresentSharedImport: Bool {
@@ -393,13 +407,47 @@ struct ContentView: View {
     func dashboardDestination(_ section: DashboardV3Destination) -> some View {
         switch section {
         case .unlock:
+            // Stage 14: the unlock page holds the one-tap card
+            // only, plus the modified-values list as its restore
+            // entry. The AI, Siri AI Mode and eSIM cards each have
+            // their own page now — before Stage 14 all four home
+            // tiles opened this same page.
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 16) {
                     ChinaUnlockCard { showsChanges = true }
-                    ChinaAIOnlyCard { showsChanges = true }
-                    ChinaESIMRegionCard { showsChanges = true }
-                    AppleIntelligenceCheckupCard { showsChanges = true }
                     ModifiedValuesCard()
+                }
+                .padding()
+            }
+            .background(GlassBackground())
+            .navigationTitle(section.title)
+        case .aiOnly:
+            // Stage 14: the AI-only card plus the AI readiness
+            // checkup as its status row.
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 16) {
+                    ChinaAIOnlyCard { showsChanges = true }
+                    AppleIntelligenceCheckupCard { showsChanges = true }
+                }
+                .padding()
+            }
+            .background(GlassBackground())
+            .navigationTitle(section.title)
+        case .siriAIMode:
+            // Stage 14: the Siri AI Mode card only.
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 16) {
+                    ChinaSiriAIModeCard { showsChanges = true }
+                }
+                .padding()
+            }
+            .background(GlassBackground())
+            .navigationTitle(section.title)
+        case .esimRegion:
+            // Stage 14: the eSIM & region card only.
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 16) {
+                    ChinaESIMRegionCard { showsChanges = true }
                 }
                 .padding()
             }
@@ -487,16 +535,12 @@ struct ContentView: View {
                     }
                 }
 
-                ChinaUnlockCard { showsChanges = true }
-
-                ChinaAIOnlyCard { showsChanges = true }
-
-                ChinaESIMRegionCard { showsChanges = true }
-
-                AppleIntelligenceCheckupCard { showsChanges = true }
-
-                ModifiedValuesCard()
-
+                // Stage 14: the unlock-family cards are NOT inlined
+                // here any more — each has its own destination page
+                // (unlock / AI-only / Siri AI Mode / eSIM & region)
+                // and the home tiles already link to those pages.
+                // The tools page keeps only the category grid, the
+                // diagnostics summary and the actions below.
                 // Diagnostics summary + one row per diagnostic area.
                 // The full cards live on secondary pages behind a
                 // NavigationLink (see HomeDiagnosticsSection): the
@@ -511,14 +555,14 @@ struct ContentView: View {
                     GlassReadProgressCard(title: L("Reading device data…"))
                 }
 
-                VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: GlassTokens.rowSpacing) {
                     Text(L("Feature Categories"))
                         .font(.headline)
-                    GlassEffectContainer(spacing: 12) {
-                        LazyVGrid(columns: gridColumns, spacing: 12) {
+                    GlassEffectContainer(spacing: GlassTokens.gridSpacing) {
+                        LazyVGrid(columns: gridColumns, spacing: GlassTokens.gridSpacing) {
                             ForEach(visibleToolGroups) { group in
                                 NavigationLink {
-                                    ToolGroupView(group: group, systemSettings: systemSettings, customizations: customizations, launchCatalog: launchCatalog)
+                                    ToolGroupView(group: group, systemSettings: systemSettings, customizations: customizations, wallpaperLibrary: wallpaperLibrary, launchCatalog: launchCatalog, share: presentShare)
                                 } label: {
                                     GlassCard(cornerRadius: GlassTokens.tileRadius) {
                                         GlassCategoryTile(
@@ -541,7 +585,7 @@ struct ContentView: View {
                             .foregroundStyle(.secondary)
                     }
                     NavigationLink {
-                        ToolGroupView(group: .advancedDiagnostics, systemSettings: systemSettings, customizations: customizations, launchCatalog: launchCatalog)
+                        ToolGroupView(group: .advancedDiagnostics, systemSettings: systemSettings, customizations: customizations, wallpaperLibrary: wallpaperLibrary, launchCatalog: launchCatalog, share: presentShare)
                     } label: {
                         GlassCard(cornerRadius: GlassTokens.tileRadius) {
                             GlassCategoryTile(
@@ -557,7 +601,7 @@ struct ContentView: View {
                     .disabled(!model.hasDocument || model.isBusy)
                 }
 
-                VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: GlassTokens.rowSpacing) {
                     Text(L("Actions"))
                         .font(.headline)
                     GlassCard(cornerRadius: GlassTokens.smallRadius) {
@@ -573,7 +617,7 @@ struct ContentView: View {
                         actionButton(label: L("Create Backup"), systemImage: "externaldrive.badge.plus", enabled: model.hasDocument && !model.isBusy) { Task { await model.backup() } }
                         Divider()
                         actionButton(label: L("Export Plist"), systemImage: "square.and.arrow.up", enabled: model.hasDocument && !model.isBusy) {
-                            if let export = model.exportDocument() { presentShare(export) }
+                            showsExportWarning = true
                         }
                         Divider()
                         actionButton(label: L("Restart Device"), systemImage: "power", enabled: !model.isBusy) { showsRestartHelp = true }
@@ -623,9 +667,9 @@ struct ContentView: View {
     /// accessibility Dynamic Type sizes so text never overlaps or clips.
     private var gridColumns: [GridItem] {
         if dynamicTypeSize.isAccessibilitySize {
-            [GridItem(.flexible(), spacing: 12)]
+            [GridItem(.flexible(), spacing: GlassTokens.gridSpacing)]
         } else {
-            [GridItem(.adaptive(minimum: 160), spacing: 12)]
+            [GridItem(.adaptive(minimum: 160), spacing: GlassTokens.gridSpacing)]
         }
     }
 
@@ -689,22 +733,12 @@ struct ContentView: View {
 private struct ChinaUnlockCard: View {
     let onReviewChanges: () -> Void
     @EnvironmentObject private var model: GestaltManager
-    @Environment(\.colorScheme) private var colorScheme
-
-    /// Light-purple glass tint for the hero card (#EAE1FF in light mode,
-    /// a deep plum in dark mode). Text on the card uses the adaptive
-    /// primary/secondary styles so contrast holds in both modes.
-    private var heroTint: Color {
-        colorScheme == .dark
-            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
-            : Color.lavenderGlass.opacity(0.65)
-    }
 
     var body: some View {
         let enabledAI = model.chinaUnlockEnabledAICapabilityIDs
-        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: heroTint) {
+        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: GlassTokens.heroTint) {
             VStack(alignment: GlassTokens.cardAlignment, spacing: GlassTokens.cardSpacing) {
-            HStack(spacing: 12) {
+            HStack(spacing: GlassTokens.rowSpacing) {
                 GlassIconPedestal(systemImage: "lock.open.fill", tint: .gestaltAccent, size: GlassTokens.iconSize)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(L("China Unlock"))
@@ -717,7 +751,7 @@ private struct ChinaUnlockCard: View {
             }
 
             // Native Apple Intelligence hardware already enables the
-            // six AI presets: one-tap stages eSIM and region code
+            // seven AI presets: one-tap stages eSIM and region code
             // only, and the AI column below reads Native.
             if model.isNativeAppleIntelligence {
                 Text(L("Apple Intelligence is already enabled natively — one-tap stages eSIM and region code only."))
@@ -807,8 +841,8 @@ private struct ChinaUnlockCard: View {
     }
 
     /// The Apple Intelligence status: Native on hardware that
-    /// natively supports it (the six presets are skipped, not
-    /// staged), otherwise the enabled count out of six.
+    /// natively supports it (the seven presets are skipped, not
+    /// staged), otherwise the enabled count out of seven.
     private var aiStatusText: String {
         guard model.hasDocument else { return L("Not read yet") }
         if model.isNativeAppleIntelligence { return L("Native") }
@@ -834,30 +868,23 @@ private struct ChinaUnlockCard: View {
     }
 }
 
-/// Standalone AI-only preset: stages only the six Apple Intelligence
+/// Standalone AI-only preset: stages only the seven Apple Intelligence
 /// presets (the AI part of the one-tap unlock), without eSIM or region.
 /// Not blocked by the eSIM cache layout. Mirrors the one-tap card.
 private struct ChinaAIOnlyCard: View {
     let onReviewChanges: () -> Void
     @EnvironmentObject private var model: GestaltManager
-    @Environment(\.colorScheme) private var colorScheme
-
-    private var heroTint: Color {
-        colorScheme == .dark
-            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
-            : Color.lavenderGlass.opacity(0.65)
-    }
 
     var body: some View {
-        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: heroTint) {
+        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: GlassTokens.heroTint) {
             VStack(alignment: GlassTokens.cardAlignment, spacing: GlassTokens.cardSpacing) {
-            HStack(spacing: 12) {
+            HStack(spacing: GlassTokens.rowSpacing) {
                 GlassIconPedestal(systemImage: "sparkles", tint: .gestaltAccent, size: GlassTokens.iconSize)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(L("China AI"))
                         .font(.headline)
                         .foregroundStyle(.primary)
-                    Text(L("Enable the six Apple Intelligence features on a China-model iPhone."))
+                    Text(L("Enable the seven Apple Intelligence features on a China-model iPhone."))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
@@ -869,7 +896,7 @@ private struct ChinaAIOnlyCard: View {
 
             if model.hasDocument {
                 if model.isNativeAppleIntelligence {
-                    // Native hardware already enables all six presets:
+                    // Native hardware already enables all seven presets:
                     // there is nothing to stage, so no Enable button.
                     // Restore stays available when anything reads as
                     // enabled, to undo a change applied earlier.
@@ -922,7 +949,7 @@ private struct ChinaAIOnlyCard: View {
 
     /// The Apple Intelligence status: Native on hardware that
     /// natively supports it (there is nothing to stage), otherwise
-    /// the enabled count out of six.
+    /// the enabled count out of seven.
     private var aiStatusText: String {
         guard model.hasDocument else { return L("Not read yet") }
         if model.isNativeAppleIntelligence { return L("Native") }
@@ -948,25 +975,123 @@ private struct ChinaAIOnlyCard: View {
     }
 }
 
+/// Standalone Siri AI Mode preset: stages only SiriMode=2 — the
+/// single-item switch — without eSIM, region, or the other AI keys.
+/// Unlike the AI-only preset this one is allowed on hardware that
+/// natively supports Apple Intelligence: an explicit single-item
+/// opt-in, with the experimental warning shown on the card.
+/// Not blocked by the eSIM cache layout. Mirrors the AI-only card.
+private struct ChinaSiriAIModeCard: View {
+    let onReviewChanges: () -> Void
+    @EnvironmentObject private var model: GestaltManager
+
+    var body: some View {
+        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: GlassTokens.heroTint) {
+            VStack(alignment: GlassTokens.cardAlignment, spacing: GlassTokens.cardSpacing) {
+            HStack(spacing: GlassTokens.rowSpacing) {
+                GlassIconPedestal(systemImage: "waveform", tint: .gestaltAccent, size: GlassTokens.iconSize)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(L("Siri AI Mode"))
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                    Text(L("Switch Siri to AI mode alone — no eSIM, region, or other AI changes."))
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            HStack(spacing: 0) {
+                statusColumn(title: L("Siri AI Mode"), value: siriAIModeStatusText)
+            }
+
+            if model.hasDocument {
+                if model.isNativeAppleIntelligence {
+                    // Native hardware already runs Siri AI: this
+                    // switch is experimental and usually unnecessary
+                    // here — but it stays available as an explicit
+                    // single-item opt-in, unlike the AI-only preset.
+                    Text(L("Apple Intelligence is already enabled natively on this device — Siri AI Mode is experimental and usually unnecessary here."))
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+                if model.isChinaSiriAIModeStaged && model.changeCount > 0 {
+                    Button(L("Review Changes")) { onReviewChanges() }
+                        .buttonStyle(GlassPrimaryButtonStyle())
+                    Button(L("Restore Siri AI Mode")) { stageChanges(restoring: true) }
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Color.gestaltAccent)
+                        .frame(maxWidth: .infinity)
+                        .disabled(model.isBusy)
+                        .opacity(model.isBusy ? 0.5 : 1)
+                } else {
+                    let restoring = model.isChinaSiriAIModeApplied
+                    Button(L(restoring ? "Restore Siri AI Mode" : "Enable Siri AI Mode")) { stageChanges(restoring: restoring) }
+                        .buttonStyle(GlassPrimaryButtonStyle())
+                        .disabled(model.isBusy)
+                        .opacity(model.isBusy ? 0.5 : 1)
+                }
+
+                Text(L(model.sourceIsDevice
+                       ? "Review the changes, apply them, then restart the device."
+                       : "This edits the opened file in LilaShift. Export it to save a copy; the system file is not changed."))
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            } else {
+                Button(L(model.isBusy ? "Reading…" : "Read Device")) {
+                    Task { await model.connect() }
+                }
+                .buttonStyle(GlassPrimaryButtonStyle())
+                .disabled(model.isBusy)
+                .opacity(model.isBusy ? 0.5 : 1)
+                Text(L("Read the device before choosing a preset."))
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+        }
+            .padding(GlassTokens.cardPadding)
+        }
+    }
+
+    /// The SiriMode key state: On when the preview already shows
+    /// SiriMode set to 2, Off otherwise. This reports the key, not
+    /// whether Siri itself works — on native hardware Siri AI works
+    /// with the key absent.
+    private var siriAIModeStatusText: String {
+        guard model.hasDocument else { return L("Not read yet") }
+        return model.isChinaSiriAIModeApplied ? L("On") : L("Off")
+    }
+
+    private func statusColumn(title: String, value: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Text(value)
+                .font(.headline)
+                .foregroundStyle(.primary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 4)
+    }
+
+    private func stageChanges(restoring: Bool) {
+        let staged = restoring ? model.restoreChinaSiriAIMode() : model.stageChinaSiriAIMode()
+        if staged && model.changeCount > 0 { onReviewChanges() }
+    }
+}
+
 /// Standalone eSIM+region preset: stages only the eSIM cache flags and
 /// the region code US (LL) — the eSIM+region part of the one-tap unlock,
-/// without the six AI presets. Blocked by the eSIM cache layout, exactly
+/// without the seven AI presets. Blocked by the eSIM cache layout, exactly
 /// like the one-tap. Mirrors the one-tap card.
 private struct ChinaESIMRegionCard: View {
     let onReviewChanges: () -> Void
     @EnvironmentObject private var model: GestaltManager
-    @Environment(\.colorScheme) private var colorScheme
-
-    private var heroTint: Color {
-        colorScheme == .dark
-            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
-            : Color.lavenderGlass.opacity(0.65)
-    }
 
     var body: some View {
-        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: heroTint) {
+        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: GlassTokens.heroTint) {
             VStack(alignment: GlassTokens.cardAlignment, spacing: GlassTokens.cardSpacing) {
-            HStack(spacing: 12) {
+            HStack(spacing: GlassTokens.rowSpacing) {
                 GlassIconPedestal(systemImage: "simcard.fill", tint: .gestaltAccent, size: GlassTokens.iconSize)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(L("eSIM & Region"))
@@ -1067,8 +1192,8 @@ private struct AppleIntelligenceCheckupCard: View {
         Group {
             if let checkup = model.aiReadinessCheckup {
                 GlassCard(cornerRadius: GlassTokens.cardRadius) {
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack(spacing: 12) {
+                    VStack(alignment: .leading, spacing: GlassTokens.rowSpacing) {
+                        HStack(spacing: GlassTokens.rowSpacing) {
                             GlassIconPedestal(systemImage: "sparkles", tint: .gestaltAccent, size: GlassTokens.iconSize)
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(L("Apple Intelligence readiness"))
@@ -1079,8 +1204,8 @@ private struct AppleIntelligenceCheckupCard: View {
                                     .foregroundStyle(.secondary)
                             }
                         }
-                        ForEach(checkup.factors.indices, id: \.self) { index in
-                            factorRow(checkup.factors[index])
+                        ForEach(checkup.factors, id: \.title) { factor in
+                            factorRow(factor)
                         }
                         if !model.aiConflicts.isEmpty {
                             ForEach(model.aiConflicts) { conflict in
@@ -1104,7 +1229,7 @@ private struct AppleIntelligenceCheckupCard: View {
                     }
                     .padding(GlassTokens.cardPadding)
                 }
-                .onAppear { model.refreshLiveProbe() }
+                .task { await model.refreshLiveProbe() }
             }
         }
     }
@@ -1152,18 +1277,11 @@ private struct AppleIntelligenceCheckupCard: View {
 /// that nothing was modified.
 private struct ModifiedValuesCard: View {
     @EnvironmentObject private var model: GestaltManager
-    @Environment(\.colorScheme) private var colorScheme
-
-    private var heroTint: Color {
-        colorScheme == .dark
-            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
-            : Color.lavenderGlass.opacity(0.65)
-    }
 
     var body: some View {
-        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: heroTint) {
+        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: GlassTokens.heroTint) {
             VStack(alignment: GlassTokens.cardAlignment, spacing: GlassTokens.cardSpacing) {
-                HStack(spacing: 12) {
+                HStack(spacing: GlassTokens.rowSpacing) {
                     GlassIconPedestal(systemImage: "list.bullet", tint: .gestaltAccent, size: GlassTokens.iconSize)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(L("Modified Values"))
@@ -1245,7 +1363,12 @@ private struct ModifiedValuesCard: View {
 /// iPad, personalization, diagnostics) without changing any preset
 /// behavior: each group only filters `Capability.all` and reuses the
 /// same staging, restore and review flow.
-private enum ToolGroup: String, CaseIterable, Identifiable {
+/// The seven user-visible tool groups on the Tools page (Stage 14:
+/// the single user-facing classification). Internal, not private:
+/// the mapping tests assert the group routing, and
+/// `FeatureCatalog.destination(for:)` must agree with it — see
+/// `init(for: FeatureCatalogCategory)` below.
+enum ToolGroup: String, CaseIterable, Identifiable {
     case screenLock, networkEsim, intelligenceRegion, chargingButtons, ipadMultitasking, personalization, advancedDiagnostics
     var id: String { rawValue }
 
@@ -1254,13 +1377,49 @@ private enum ToolGroup: String, CaseIterable, Identifiable {
 
     /// Maps the upstream preset category used by the simulator preview
     /// launch argument to the matching presentation group.
+    /// Stage 14 fix: `.device` used to map to `.networkEsim`, but
+    /// that group only holds the two call-audio capabilities
+    /// (audioMix, spatialFaceTimeAudio). Six of the eleven `.device`
+    /// capabilities live in `.chargingButtons`, which is the
+    /// majority group; the remaining three (spatialAudioRecording,
+    /// responsiveShutter, hypertensionNotifications) have no group
+    /// section at all and stage from the catalog / MG Control only.
     init(for category: CapabilityCategory) {
         switch category {
         case .display: self = .screenLock
-        case .device: self = .networkEsim
+        case .device: self = .chargingButtons
         case .intelligence: self = .intelligenceRegion
         case .ipad: self = .ipadMultitasking
         case .advanced: self = .advancedDiagnostics
+        }
+    }
+
+    /// The Tools-page group that shows a feature-catalog category's
+    /// presets, or `nil` when the category is staged on its own
+    /// destination page instead of the Tools page. This is the
+    /// single mapping the catalog routing must agree with:
+    /// `FeatureCatalog.destination(for:)` returns `.advanced` for
+    /// every category that has a tool group here (screenLock,
+    /// personalization, launchArtwork, advancedTools); the
+    /// categories without one stage on their own page — except
+    /// `.systemSettings`, whose presets still stage on the tools
+    /// page, across three groups. The `nil` cases:
+    /// smartUnlock / appleIntelligence / esimRegion have their own
+    /// unlock-family pages; deviceDiagnostics and backupRestore
+    /// have the diagnostics / restore pages; modifiedRecords is
+    /// shown on the unlock page; systemSettings spans three groups
+    /// (chargingButtons, ipadMultitasking, advancedDiagnostics for
+    /// the model number), so no single group contains it.
+    init?(for category: FeatureCatalogCategory) {
+        switch category {
+        case .screenLock: self = .screenLock
+        case .personalization: self = .personalization
+        case .launchArtwork: self = .personalization
+        case .advancedTools: self = .advancedDiagnostics
+        case .smartUnlock, .appleIntelligence, .esimRegion,
+             .systemSettings, .deviceDiagnostics, .modifiedRecords,
+             .backupRestore:
+            return nil
         }
     }
 
@@ -1360,7 +1519,7 @@ private enum ToolGroup: String, CaseIterable, Identifiable {
     var showsExperimentalNote: Bool { self == .ipadMultitasking || self == .advancedDiagnostics }
 }
 
-private struct ToolGroupSection: Identifiable {
+struct ToolGroupSection: Identifiable {
     let title: String
     let capabilityIDs: [String]
     var id: String { title }
@@ -1373,7 +1532,14 @@ struct ToolGroupView: View {
     fileprivate let group: ToolGroup
     let systemSettings: SystemSettingsModel
     let customizations: CustomizationModel
+    let wallpaperLibrary: WallpaperLibraryModel
     let launchCatalog: LaunchArtworkCatalogModel
+    /// Shares an export sheet (Stage 6 fix, Stage 9 first commit):
+    /// `presentShare` is a private method of `ContentView`, out of
+    /// scope inside this struct, so the closure is threaded in from
+    /// the instantiation site — the same shape as
+    /// `BackupsView(share: presentShare)`.
+    let share: (TemporaryExport) -> Void
     @EnvironmentObject private var model: GestaltManager
     @State private var asksInternalBuild = false
 
@@ -1433,6 +1599,182 @@ struct ToolGroupView: View {
                                 }
                             }
                             .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { BatteryTelemetryView() } label: {
+                                HStack {
+                                    Label(L("Battery Telemetry"), systemImage: "battery.100.bolt")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { CrashDiagnosticsView() } label: {
+                                HStack {
+                                    Label(L("Crash Diagnostics"), systemImage: "exclamationmark.triangle")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { DiagnosticsCentreView(share: share) } label: {
+                                HStack {
+                                    Label(L("Diagnostics Centre"), systemImage: "stethoscope")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { AppArchiveView(share: share) } label: {
+                                HStack {
+                                    Label(L("App Archive & Cache"), systemImage: "archivebox")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { SupervisionAuditView() } label: {
+                                HStack {
+                                    Label(L("Supervision Audit"), systemImage: "shield.checkered")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { ProxyRulesView() } label: {
+                                HStack {
+                                    Label(L("Proxy Rules"), systemImage: "network")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { AppGroupBrowserView() } label: {
+                                HStack {
+                                    Label(L("AppGroup Browser"), systemImage: "folder.badge.gearshape")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { VoiceMemoExportView() } label: {
+                                HStack {
+                                    Label(L("Voice Memo Export"), systemImage: "mic")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { ModelCacheProbeView() } label: {
+                                HStack {
+                                    Label(L("Model Cache Probe"), systemImage: "cpu")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { AssetTagView() } label: {
+                                HStack {
+                                    Label(L("Asset Tag"), systemImage: "tag")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { DialerSkinView() } label: {
+                                HStack {
+                                    Label(L("Dialer Skin"), systemImage: "phone")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { SiriHubGuardView() } label: {
+                                HStack {
+                                    Label(L("SiriHub Guard"), systemImage: "shield.lefthalf.filled")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { MGKeysTableView() } label: {
+                                HStack {
+                                    Label(L("MobileGestalt Keys"), systemImage: "key")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { MGMonitorView() } label: {
+                                HStack {
+                                    Label(L("MG Monitor"), systemImage: "waveform.path.ecg")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { CompatibilityMatrixView() } label: {
+                                HStack {
+                                    Label(L("Compatibility"), systemImage: "checklist")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            Divider()
+                            NavigationLink { PresetLabView() } label: {
+                                HStack {
+                                    Label(L("Preset Lab"), systemImage: "flask")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
                 }
@@ -1461,6 +1803,17 @@ struct ToolGroupView: View {
                         .buttonStyle(.plain)
                         .disabled(model.isBusy)
                         Divider()
+                        NavigationLink { WallpaperLibraryView(model: wallpaperLibrary) } label: {
+                            GlassCategoryTile(
+                                title: L("Wallpaper Library"),
+                                detail: L("Your own images: crop, convert, save to Photos."),
+                                symbol: "photo",
+                                tint: .purple
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(model.isBusy)
+                        Divider()
                         NavigationLink { LaunchArtworkApplicationsView(customizations: customizations, catalog: launchCatalog) } label: {
                             GlassCategoryTile(
                                 title: L("App Launch Images"),
@@ -1470,6 +1823,25 @@ struct ToolGroupView: View {
                             )
                         }
                         .buttonStyle(.plain)
+                        Divider()
+                        NavigationLink { AppSoundApplicationsView(customizations: customizations) } label: {
+                            GlassCategoryTile(
+                                title: L("App Audio Library"),
+                                detail: L("Replace an app's notification sounds with your own audio."),
+                                symbol: "bell.badge",
+                                tint: .orange
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(model.isBusy || AppSoundAvailability.unavailableReason(forBuild: SystemDeviceIdentitySource().osBuild) != nil)
+                        // Sound replacement goes through the worse_query lease,
+                        // so it is blocked wherever the version sentinel says
+                        // the mechanism is blocked. The tile stays visible
+                        // with the reason instead of opening an empty list.
+                        if let audioGuidance = AppSoundAvailability.unavailableReason(forBuild: SystemDeviceIdentitySource().osBuild) {
+                            Text(audioGuidance)
+                                .font(.footnote).foregroundStyle(.secondary)
+                        }
                     }
                 }
 
@@ -1507,7 +1879,7 @@ struct ToolGroupView: View {
 
     private func sectionCard<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
         GlassCard(cornerRadius: GlassTokens.smallRadius) {
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: GlassTokens.rowSpacing) {
                 Text(title).font(.headline)
                 content()
             }
@@ -1634,7 +2006,7 @@ private struct PresetRow: View {
             actionTitle: status == .unconfigured ? L("Enable") : nil,
             actionEnabled: model.hasDocument,
             onAction: { stage(.enable, for: capability) },
-            menu: AnyView(optionsMenu)
+            menu: optionsMenu
         )
     }
 
@@ -1734,7 +2106,6 @@ private struct PresetRow: View {
     }
 }
 
-
 struct AdditionalOptionsRow: View {
     @EnvironmentObject private var model: GestaltManager
 
@@ -1802,615 +2173,6 @@ struct WAPIPresetRow: View {
         } else {
             LabeledContent("WAPI") { Text(L("Unsupported")).foregroundStyle(.secondary) }
         }
-    }
-}
-
-struct FieldsView: View {
-    @EnvironmentObject private var model: GestaltManager
-    @State private var search = ""
-    @State private var draft: FieldDraft?
-    @State private var deletesKey: String?
-    private var keys: [String] {
-        // Preview applies staged presets. Reuse one snapshot while filtering so each value
-        // lookup does not rebuild the complete document on the main actor.
-        let extra = model.preview?.extra ?? [:]
-        return extra.keys.sorted().filter { key in
-            search.isEmpty || key.localizedCaseInsensitiveContains(search) || valueText(key, in: extra).localizedCaseInsensitiveContains(search)
-        }
-    }
-    private func valueText(_ key: String, in extra: [String: Any]? = nil) -> String {
-        guard let value = (extra ?? model.preview?.extra)?[key] else { return "" }
-        let type = PlistValueKind.detect(value)
-        if type == .data { return String(format: L("%lld bytes"), Int64((value as? Data)?.count ?? 0)) }
-        return type.text(for: value)
-    }
-    var body: some View {
-        List {
-            if !model.hasDocument {
-                ContentUnavailableView(L("No Document Open"), systemImage: "doc.text.magnifyingglass", description: Text(L("Read MobileGestalt in Tools, or share this device's plist to LilaShift.")))
-            } else {
-                Section {
-                    ForEach(keys, id: \.self) { key in
-                        Button {
-                            guard let value = model.preview?.extra[key] else { return }
-                            let kind = PlistValueKind.detect(value)
-                            draft = FieldDraft(originalKey: key, key: key, kind: kind, text: kind.text(for: value), originalValue: value)
-                        } label: {
-                            VStack(alignment: .leading, spacing: 6) {
-                                HStack(alignment: .firstTextBaseline) {
-                                    Text(key).font(.system(.subheadline, design: .monospaced)).foregroundStyle(.primary).lineLimit(2)
-                                    Spacer(minLength: 4)
-                                    if let value = model.preview?.extra[key] {
-                                        Text(L(PlistValueKind.detect(value).rawValue)).font(.caption2).foregroundStyle(Color.gestaltAccent)
-                                    }
-                                }
-                                Text(valueText(key)).font(.caption).foregroundStyle(.secondary).lineLimit(2)
-                            }.padding(.vertical, 5)
-                        }
-                        .swipeActions(allowsFullSwipe: false) { Button(L("Delete")) { deletesKey = key }.tint(.red) }
-                    }
-                } header: { Text("CacheExtra") }
-                if keys.isEmpty { ContentUnavailableView.search(text: search) }
-            }
-        }
-        .navigationTitle(L("MG Control"))
-        .searchable(text: $search, prompt: L("Search keys and values"))
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button { draft = FieldDraft() } label: { Image(systemName: "plus").accessibilityLabel(L("Add Field")) }
-                    .disabled(!model.hasDocument || model.isBusy)
-            }
-        }
-        .sheet(item: $draft) { FieldEditorView(draft: $0).environmentObject(model) }.disabled(model.isBusy)
-        .alert(L("Delete this field?"), isPresented: Binding(get: { deletesKey != nil }, set: { if !$0 { deletesKey = nil } })) {
-            Button(L("Cancel"), role: .cancel) { deletesKey = nil }
-            Button(L("Delete"), role: .destructive) { if let key = deletesKey { model.removeField(key) }; deletesKey = nil }
-        } message: { Text(L("The deletion is staged. The device file changes only after you apply.")) }
-    }
-}
-
-struct FieldEditorView: View {
-    @State var draft: FieldDraft
-    @State private var error: String?
-    @EnvironmentObject private var model: GestaltManager
-    @Environment(\.dismiss) private var dismiss
-    var body: some View {
-        NavigationStack {
-            Form {
-                Section(L("Key")) {
-                    TextField(L("Field Key"), text: $draft.key).font(.system(.subheadline, design: .monospaced))
-                        .textInputAutocapitalization(.never).autocorrectionDisabled()
-                }
-                Section(L("Value")) {
-                    Picker(L("Type"), selection: $draft.kind) { ForEach(PlistValueKind.allCases) { Text(L($0.rawValue)).tag($0) } }
-                    TextEditor(text: $draft.text).font(.system(.subheadline, design: .monospaced))
-                        .frame(minHeight: 150).textInputAutocapitalization(.never).autocorrectionDisabled()
-                }
-                if draft.kind == .array || draft.kind == .dictionary {
-                    Section { Text(L("Use an XML plist fragment, including the array or dict tags. Nested data and numeric types are preserved.")).font(.footnote).foregroundStyle(.secondary) }
-                } else if draft.kind == .data {
-                    Section { Text(L("Data values use Base64 encoding.")).font(.footnote).foregroundStyle(.secondary) }
-                }
-                if let error { Section { Text(error).foregroundStyle(.red).font(.footnote) } }
-            }
-            .navigationTitle(L(draft.originalKey == nil ? "Add Field" : "Edit Field"))
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button(L("Cancel")) { dismiss() } }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button(L("Stage")) {
-                        do { try model.stage(draft); dismiss() } catch { self.error = error.localizedDescription }
-                    }.fontWeight(.semibold)
-                }
-            }
-        }
-    }
-}
-
-struct ChangeReviewView: View {
-    var isSheet = true
-    @EnvironmentObject private var model: GestaltManager
-    @Environment(\.dismiss) private var dismiss
-    @State private var asksApply = false
-    /// True from the moment the user confirms Apply until `apply()`
-    /// returns. While true, the bottom bar shows the apply-progress card
-    /// instead of the Apply button.
-    @State private var applying = false
-    var body: some View {
-        Group {
-            if isSheet { NavigationStack { contents } } else { contents }
-        }
-    }
-    private var contents: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                Text(L("Check which settings this will update."))
-                    .font(.subheadline).foregroundStyle(.secondary)
-                GlassCard(cornerRadius: GlassTokens.smallRadius) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Label(L(model.sourceIsDevice ? "Write to this device" : "Save local document"), systemImage: model.sourceIsDevice ? "iphone" : "doc.text")
-                            .font(.headline)
-                        Text(L(model.sourceIsDevice ? "Backed up before writing, verified after writing." : "This edits the opened file in LilaShift. Export it to save a copy; the system file is not changed."))
-                            .font(.footnote).foregroundStyle(.secondary)
-                    }
-                    .padding(14)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                if let message = model.message {
-                    GlassCard(cornerRadius: GlassTokens.smallRadius, tint: Color.red.opacity(0.18)) {
-                        Text(message)
-                            .font(.footnote)
-                            .foregroundStyle(.red)
-                            .padding(14)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                }
-                if let validationError = model.previewValidationError {
-                    GlassCard(cornerRadius: GlassTokens.smallRadius, tint: Color.red.opacity(0.18)) {
-                        Text(validationError)
-                            .font(.footnote)
-                            .foregroundStyle(.red)
-                            .padding(14)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                }
-                if model.isChinaUnlockStaged { chinaUnlockSummary }
-                fieldChanges
-                cacheChanges
-                GlassCard(cornerRadius: GlassTokens.smallRadius) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Button(L("Back to adjust")) { dismiss() }.disabled(model.isBusy)
-                        Divider()
-                        Button(L("Discard Changes"), role: .destructive) { model.clearStaged(); dismiss() }.disabled(model.isBusy)
-                    }
-                    .padding(14)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                Text(L("After applying, restart, then check the related entries in system Settings."))
-                    .font(.footnote).foregroundStyle(.secondary)
-            }
-            .padding()
-        }
-        .background(GlassBackground())
-        .navigationTitle(L("Confirm Changes")).navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            if isSheet { ToolbarItem(placement: .cancellationAction) { Button(L("Done")) { dismiss() }.disabled(model.isBusy) } }
-            ToolbarItem(placement: .topBarTrailing) { if model.isBusy { ProgressView() } }
-        }
-        .safeAreaInset(edge: .bottom) { reviewBottomBar }
-        .onChange(of: model.isBusy) { _, busy in if applying && !busy { applying = false } }
-        .alert(L("Apply these changes?"), isPresented: $asksApply) {
-            Button(L("Cancel"), role: .cancel) {}
-            Button(L("Apply")) { applying = true; Task { await model.apply(); applying = false; if model.changeCount == 0 { dismiss() } } }
-        } message: { Text(L(model.sourceIsDevice ? "Incorrect system values can affect device behavior. A verified backup will be kept. No restart is triggered automatically." : "The current local document will be backed up before saving your edits.")) }
-    }
-
-    /// Fixed glass action bar: change count, data source and backup status
-    /// above the apply button. The button label follows the data source
-    /// (device vs local file); the official backup / confirm / write /
-    /// verify flow behind it is unchanged, and a failed write reports its
-    /// error through `model.message` instead of claiming success.
-    /// While a write is in progress, the button is replaced by the
-    /// apply-progress card (backup → write → verify → done), driven by
-    /// the real write flow (see `applyProgressSteps`).
-    private var reviewBottomBar: some View {
-        GlassBottomBar {
-            VStack(alignment: .leading, spacing: 10) {
-                HStack(spacing: 6) {
-                    Text(String(format: L("%lld fields changed"), model.changeCount))
-                    Text("•").foregroundStyle(.secondary)
-                    Text(L(model.sourceIsDevice ? "On Device" : "Local Document"))
-                    Text("•").foregroundStyle(.secondary)
-                    backupStatusText
-                }
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                if applying {
-                    GlassApplyProgressCard(
-                        title: applyProgressTitle,
-                        progress: applyProgressFraction,
-                        steps: applyProgressSteps
-                    )
-                } else {
-                    Button(L(model.sourceIsDevice ? "Apply to Device" : "Save Local Changes")) { asksApply = true }
-                        .buttonStyle(GlassPrimaryButtonStyle())
-                        .disabled(model.changeCount == 0 || model.isBusy || model.previewValidationError != nil)
-                }
-            }
-        }
-    }
-
-    /// Apply progress derived from the real write flow, observed through
-    /// the session log. `apply()` logs "[apply]" first; the commit then
-    /// emits, in order, "Backup: … saved and verified", "Write: …",
-    /// "Readback: comparing …" and "Readback: verified". No step is
-    /// shown as done before its marker appears, and a failed step is
-    /// shown as failed. Local files have no device write/readback, so
-    /// their write and verify steps complete together when the save
-    /// returns; nothing here invents a percentage.
-    private var applyLogLines: [String] {
-        guard let anchor = model.logs.lastIndex(where: { $0.contains("[apply]") }) else { return [] }
-        return Array(model.logs[anchor...])
-    }
-    private var applyBackupDone: Bool {
-        applyLogLines.contains { $0.contains("Backup: ") && $0.contains("saved and verified") }
-    }
-    private var applyVerifyStarted: Bool { applyLogLines.contains { $0.contains("Readback: comparing") } }
-    private var applyVerifyDone: Bool { applyLogLines.contains { $0.contains("Readback: verified") } }
-    private var applyFailed: Bool {
-        applyLogLines.contains { $0.contains("Write/readback failed") || $0.contains("Recovery: restoring") }
-    }
-    private var applyFinishedOK: Bool { !model.isBusy && model.changeCount == 0 && applying }
-
-    private var applyProgressSteps: [GlassApplyStep] {
-        let backupDone = applyBackupDone
-        let writeDone = applyVerifyStarted || applyVerifyDone || (applyFinishedOK && !model.sourceIsDevice)
-        let verifyDone = applyVerifyDone || (applyFinishedOK && !model.sourceIsDevice)
-        let allDone = applyFinishedOK
-        func state(done: Bool, isCurrent: Bool) -> ApplyStepState {
-            if applyFailed && isCurrent { return .failed }
-            if done { return .done }
-            return isCurrent ? .current : .pending
-        }
-        return [
-            GlassApplyStep(title: L("Back Up"), state: state(done: backupDone, isCurrent: !backupDone)),
-            GlassApplyStep(title: L("Write"), state: state(done: writeDone, isCurrent: backupDone && !writeDone)),
-            GlassApplyStep(title: L("Verify"), state: state(done: verifyDone, isCurrent: writeDone && !verifyDone)),
-            GlassApplyStep(title: L("Done"), state: state(done: allDone, isCurrent: verifyDone && !allDone)),
-        ]
-    }
-
-    private var applyProgressFraction: Double {
-        Double(applyProgressSteps.filter { $0.state == .done }.count) / 4.0
-    }
-
-    private var applyProgressTitle: String {
-        let steps = applyProgressSteps
-        if steps.allSatisfy({ $0.state == .done }) {
-            return String(format: L("Apply Progress (Done %lld/4)"), 4)
-        }
-        let current = (steps.firstIndex { $0.state != .done } ?? 0) + 1
-        return String(format: L("Apply Progress (Writing %lld/4)"), current)
-    }
-
-    private var backupStatusText: some View {
-        Group {
-            if let latest = model.backups.max(by: { $0.date < $1.date }) {
-                Text(L("Latest backup")) + Text(" ") + Text(latest.date, style: .date)
-            } else {
-                Text(L("A backup is created before writing."))
-            }
-        }
-    }
-
-    /// The field keys written by the China Unlock group: the region code
-    /// plus the six AI capability keys.
-    private var chinaUnlockFieldKeys: Set<String> {
-        var keys = Set(ChinaUnlock.aiCapabilities.flatMap(\.keys))
-        keys.insert(GestaltKeys.regionCode)
-        return keys
-    }
-
-    private var chinaUnlockSummary: some View {
-        GlassCard(cornerRadius: GlassTokens.smallRadius) {
-            VStack(alignment: .leading, spacing: 12) {
-                Text(L("China Unlock")).font(.headline)
-                summaryRow(
-                icon: "simcard", tint: .teal,
-                title: "eSIM",
-                before: esimBeforeText,
-                after: L("Will configure"),
-                detail: L("Add a digital SIM in Settings.")
-            )
-            Divider()
-            summaryRow(
-                icon: "globe", tint: .lavenderBlue,
-                title: L("Region Code"),
-                before: regionDisplay(code: model.snapshot?.document.extra[GestaltKeys.regionCode] as? String),
-                after: regionAfterText,
-                detail: L("Set the device region code for region-locked features.")
-            )
-            Divider()
-            summaryRow(
-                icon: "sparkles", tint: .purple,
-                title: L("Apple Intelligence"),
-                before: "\(aiBeforeCount)/\(ChinaUnlock.aiCapabilities.count)",
-                after: L("Configure 6 items"),
-                detail: L("Enable six Apple Intelligence features, including translation, Clean Up and always-listening Hey Siri.")
-            )
-            DisclosureGroup(L("Technical Details")) {
-                ForEach(chinaUnlockFieldKeys.sorted(), id: \.self) { key in
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(verbatim: key).font(.system(.caption, design: .monospaced)).textSelection(.enabled)
-                        valueRow("Before", value: model.snapshot?.document.extra[key])
-                        valueRow("After", value: model.preview?.extra[key])
-                    }
-                    .padding(.vertical, 6)
-                }
-                ForEach(model.cacheDataChanges.filter { $0.name != "wapi" }) { change in
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(verbatim: change.name).font(.system(.caption, design: .monospaced)).textSelection(.enabled)
-                        Text(verbatim: change.keyPathText).font(.system(.caption, design: .monospaced)).foregroundStyle(.secondary)
-                        valueRow("Before", value: NSNumber(value: change.before))
-                        valueRow("After", value: NSNumber(value: change.after))
-                    }
-                    .padding(.vertical, 6)
-                }
-                unexplainedCacheBytesRow
-                Text(L("eSIM requires eSIM hardware.")).font(.caption).foregroundStyle(.secondary)
-            }
-            }
-            .padding(14)
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-
-    private func summaryRow(icon: String, tint: Color, title: String, before: String, after: String, detail: String?) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 12) {
-                GlassIconPedestal(systemImage: icon, tint: tint, size: 36)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(title).font(.body.weight(.semibold))
-                    HStack(spacing: 6) {
-                        Text(before).foregroundStyle(.secondary)
-                        Text("→").foregroundStyle(.secondary)
-                        newValuePill(after)
-                    }
-                    .font(.subheadline)
-                }
-            }
-            if let detail {
-                Text(detail).font(.subheadline).foregroundStyle(.secondary)
-            }
-        }
-        .padding(.vertical, 4)
-    }
-
-    private func newValuePill(_ text: String) -> some View {
-        Text(text)
-            .font(.caption.weight(.semibold))
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
-            .background(Color.gestaltAccent.opacity(0.12), in: Capsule())
-            .foregroundStyle(Color.gestaltAccent)
-    }
-
-    private var esimBeforeText: String {
-        guard let snapshot = model.snapshot else { return L("Not present") }
-        guard let flags = try? DeviceCacheOptions.flags(in: snapshot.document) else { return L("Unsupported") }
-        return L(flags == .enabled ? "Configured" : "Not Configured")
-    }
-
-    private var aiBeforeCount: Int {
-        guard let fields = model.snapshot?.document.extra else { return 0 }
-        return ChinaUnlock.aiCapabilities.filter { capability in
-            capability.keys.allSatisfy { (fields[$0] as? NSNumber)?.intValue == 1 }
-        }.count
-    }
-
-    private func regionDisplay(code: String?) -> String {
-        guard let code, !code.isEmpty else { return L("Not present") }
-        if let preset = RegionPreset.all.first(where: { $0.code == code }) {
-            return "\(L(preset.title))（\(code)）"
-        }
-        return code
-    }
-
-    /// Region row's after-value: the one-tap unlock stages the region
-    /// code only, so the after-value is just the LL display string.
-    private var regionAfterText: String {
-        regionDisplay(code: "LL")
-    }
-
-    private var fieldChanges: some View {
-        let keys = model.changeKeys.filter { !(model.isChinaUnlockStaged && chinaUnlockFieldKeys.contains($0)) }
-        let fieldGroups = Dictionary(grouping: keys, by: reviewTitle)
-        let before = model.snapshot?.document.extra
-        let after = model.preview?.extra
-        return ForEach(fieldGroups.keys.sorted { L($0).localizedStandardCompare(L($1)) == .orderedAscending }, id: \.self) { title in
-            let keys = fieldGroups[title, default: []]
-            GlassCard(cornerRadius: GlassTokens.smallRadius) {
-                VStack(alignment: .leading, spacing: 10) {
-                    Text(L(title)).font(.headline)
-                    if let capability = Capability.all.first(where: { $0.title == title }) {
-                    if let choice = model.choices[capability.id], choice != .keep {
-                        Text(L(choice.title)).fontWeight(.medium)
-                    }
-                    Text(L(capability.detail)).font(.subheadline).foregroundStyle(.secondary)
-                }
-                if title == "Region Code" {
-                    LabeledContent(L("Before"), value: before?[GestaltKeys.regionCode] as? String ?? L("Not present"))
-                    LabeledContent(L("After"), value: after?[GestaltKeys.regionCode] as? String ?? L("Not present"))
-                }
-                DisclosureGroup(L("Technical Details")) {
-                    ForEach(keys, id: \.self) { key in
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text(verbatim: key).font(.system(.caption, design: .monospaced)).textSelection(.enabled)
-                            valueRow("Before", value: before?[key])
-                            valueRow("After", value: after?[key])
-                        }
-                        .padding(.vertical, 6)
-                    }
-                }
-                }
-                .padding(14)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-        }
-    }
-
-    private var cacheChanges: some View {
-        let changes = model.cacheDataChanges.filter { !(model.isChinaUnlockStaged && $0.name != "wapi") }
-        let cacheGroups = Dictionary(grouping: changes) { $0.name == "wapi" ? "WAPI" : "eSIM" }
-        return ForEach(cacheGroups.keys.sorted(), id: \.self) { title in
-            GlassCard(cornerRadius: GlassTokens.smallRadius) {
-                VStack(alignment: .leading, spacing: 10) {
-                    Text(verbatim: title).font(.headline)
-                    if title == "eSIM" {
-                    Text(L(model.isESIMUnlockedInPreview ? "Configured" : "Not Configured")).fontWeight(.medium)
-                    Text(L("Add a digital SIM in Settings."))
-                        .font(.subheadline).foregroundStyle(.secondary)
-                }
-                if title == "WAPI" {
-                    Text(L("Use the WAPI wireless security standard."))
-                        .font(.subheadline).foregroundStyle(.secondary)
-                }
-                DisclosureGroup(L("Technical Details")) {
-                    ForEach(cacheGroups[title, default: []]) { change in
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text(verbatim: change.name).font(.system(.caption, design: .monospaced)).textSelection(.enabled)
-                            Text(verbatim: change.keyPathText).font(.system(.caption, design: .monospaced)).foregroundStyle(.secondary)
-                            valueRow("Before", value: NSNumber(value: change.before))
-                            valueRow("After", value: NSNumber(value: change.after))
-                        }
-                        .padding(.vertical, 6)
-                    }
-                    unexplainedCacheBytesRow
-                    if title == "eSIM" {
-                        Text(L("eSIM requires eSIM hardware.")).font(.caption).foregroundStyle(.secondary)
-                    }
-                }
-                }
-                .padding(14)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-        }
-    }
-
-    private func reviewTitle(for key: String) -> String {
-        switch key {
-        case GestaltKeys.regionCode: "Region Code"
-        case GestaltKeys.regionInfo, GestaltKeys.legacyRegionInfo: "Sales Region"
-        case GestaltKeys.modelNumber: "Model Number"
-        default: Capability.all.first { $0.keys.contains(key) }?.title ?? "Other Fields"
-        }
-    }
-
-    /// Red "other bytes" row for the review sheet: changed CacheData bytes
-    /// outside the known slots, with their hex offsets. Visible even
-    /// though the write will be refused — that is the point (diagnosis
-    /// before Apply). The existing commit auto-rollback is unchanged and
-    /// is not duplicated here.
-    private var unexplainedCacheBytesRow: some View {
-        Group {
-            if let diff = model.cacheDataDiff, diff.hasUnexplained {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(L("Other CacheData bytes changed"))
-                        .font(.caption.weight(.semibold)).foregroundStyle(.red)
-                    Text(verbatim: diff.unexplainedOffsets.map { String(format: "0x%X", $0) }.joined(separator: ", "))
-                        .font(.system(.caption, design: .monospaced)).foregroundStyle(.red)
-                    Text(L("Unrelated cache bytes changed — apply will be refused."))
-                        .font(.caption).foregroundStyle(.red)
-                }
-                .padding(.vertical, 6)
-            }
-        }
-    }
-
-    private func valueRow(_ title: String, value: Any?) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(L(title)).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
-            Text(value.map { PlistValueKind.detect($0).text(for: $0) } ?? L("Not present"))
-                .font(.system(.caption, design: .monospaced)).lineLimit(6).textSelection(.enabled)
-        }
-    }
-}
-
-
-struct BackupsView: View {
-    let share: (TemporaryExport) -> Void
-    @EnvironmentObject private var model: GestaltManager
-    @State private var restores: BackupRecord?
-    @State private var deletes: BackupRecord?
-    var body: some View {
-        List {
-            Section {
-                Button { Task { await model.backup() } } label: { Label(L("Create Backup"), systemImage: "plus.circle.fill") }
-                    .disabled(!model.hasDocument || model.isBusy)
-            } footer: {
-                if model.changeCount > 0 {
-                    Text(L("Save or discard your current changes before opening another plist."))
-                }
-            }
-            if model.backups.isEmpty {
-                ContentUnavailableView(L("No Backups"), systemImage: "externaldrive.badge.timemachine", description: Text(L("A backup is created before each write.")))
-            }
-            ForEach(model.backups) { record in
-                Section {
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Image(systemName: record.source == .device ? "iphone" : "doc.text").foregroundStyle(Color.gestaltAccent)
-                            Text(L(record.reason)).fontWeight(.medium)
-                            Spacer()
-                        }
-                        Text(record.date, format: .dateTime.year().month().day().hour().minute().second()).font(.subheadline)
-                        Text(record.provenanceLabel).font(.caption).foregroundStyle(.secondary)
-                        Text(L(record.source == .device ? "Device Backup" : "Local File Backup") + " · " + ByteCountFormatter.string(fromByteCount: Int64(record.byteCount), countStyle: .file))
-                            .font(.caption).foregroundStyle(.secondary)
-                        HStack {
-                            Button(L("Open")) { Task { await model.openBackup(record) } }
-                                .disabled(model.changeCount > 0)
-                            Spacer()
-                            Button(L("Export")) { Task { if let url = await model.exportBackup(record) { share(url) } } }
-                            Spacer()
-                            Button(L("Restore")) { restores = record }
-                                .disabled(model.changeCount > 0 || !model.hasDocument || (model.sourceIsDevice && record.source != .device))
-                        }.font(.subheadline).buttonStyle(.borderless).padding(.top, 6)
-                    }.padding(.vertical, 6)
-                }.swipeActions(allowsFullSwipe: false) { Button(L("Delete")) { deletes = record }.tint(.red) }
-            }
-        }
-        .navigationTitle(L("Backups")).disabled(model.isBusy)
-        .task { await model.reloadBackups() }
-        .refreshable { await model.reloadBackups() }
-        .alert(L("Restore this backup?"), isPresented: Binding(get: { restores != nil }, set: { if !$0 { restores = nil } })) {
-            Button(L("Cancel"), role: .cancel) { restores = nil }
-            Button(L("Restore")) { if let record = restores { Task { await model.restore(record) } }; restores = nil }
-                .disabled(model.isBusy || model.changeCount > 0)
-        } message: {
-            if let record = restores {
-                Text(record.provenanceLabel + "\n" + L("The current document is backed up first. Device restores are verified after writing."))
-            } else {
-                Text(L("The current document is backed up first. Device restores are verified after writing."))
-            }
-        }
-        .alert(L("Delete this backup?"), isPresented: Binding(get: { deletes != nil }, set: { if !$0 { deletes = nil } })) {
-            Button(L("Cancel"), role: .cancel) { deletes = nil }
-            Button(L("Delete"), role: .destructive) { if let record = deletes { Task { await model.deleteBackup(record) } }; deletes = nil }
-        } message: { Text(L("This removes the local backup permanently. It does not change the device file.")) }
-    }
-}
-
-struct SessionLogView: View {
-    @EnvironmentObject private var model: GestaltManager
-    @State private var export: TemporaryExport?
-
-    private func shareLog() {
-        let text = model.logs.joined(separator: "\n") + "\n"
-        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
-        let name = "GestaltX-session-\(Int(Date.now.timeIntervalSince1970)).log"
-        export = try? TemporaryExport(data: Data(text.utf8), name: name)
-    }
-
-    var body: some View {
-        ScrollView {
-            Text(model.logs.isEmpty ? L("No activity yet.") : model.logs.joined(separator: "\n"))
-                .font(.system(.caption, design: .monospaced)).textSelection(.enabled)
-                .frame(maxWidth: .infinity, alignment: .leading).padding()
-                .environment(\.layoutDirection, .leftToRight)
-        }
-        .navigationTitle(L("Session Log"))
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button { shareLog() } label: { Image(systemName: "square.and.arrow.up") }
-                    .disabled(model.logs.isEmpty)
-                    .accessibilityLabel(L("Share Log"))
-            }
-            ToolbarItem(placement: .topBarTrailing) {
-                Button(L("Clear")) { model.clearLog() }
-            }
-        }
-        .sheet(item: $export) { ShareSheet(export: $0) }
     }
 }
 

@@ -20,7 +20,6 @@ import SwiftUI
 struct RestoreIntelligenceCard: View {
     @EnvironmentObject private var model: GestaltManager
     @Environment(\.homeDiagnosticsCache) private var diagnostics: HomeDiagnosticsCache?
-    @Environment(\.colorScheme) private var colorScheme
     @State private var records: [RecordedChange] = []
     @State private var logCount = 0
     @State private var historyError: String?
@@ -28,12 +27,6 @@ struct RestoreIntelligenceCard: View {
     @State private var selectedEntry: RestoreTimelineEntry?
     @State private var selectedBackup: BackupRecord?
     @State private var showingAll = false
-
-    private var heroTint: Color {
-        colorScheme == .dark
-            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
-            : Color.lavenderGlass.opacity(0.65)
-    }
 
     /// The records to use: the cache's, when the cache is present
     /// (it loads the history on a background task), else this card's
@@ -59,7 +52,7 @@ struct RestoreIntelligenceCard: View {
 
     private var timeline: [RestoreTimelineEntry] {
         guard let document = model.working else { return [] }
-        let layout = try? MobileGestaltCacheLayout.resolve(in: document)
+        let layout = try? LayoutResolver.resolve(cacheUUID: document.cacheUUID, cacheData: document.cacheData)
         return RestoreIntelligence.timeline(
             records: effectiveRecords, snapshot: model.snapshot?.document,
             current: document, layout: layout)
@@ -72,7 +65,7 @@ struct RestoreIntelligenceCard: View {
     /// order.
     private var unifiedEntriesByID: [UUID: UnifiedHistoryEntry] {
         guard let document = model.working else { return [:] }
-        let layout = try? MobileGestaltCacheLayout.resolve(in: document)
+        let layout = try? LayoutResolver.resolve(cacheUUID: document.cacheUUID, cacheData: document.cacheData)
         var map: [UUID: UnifiedHistoryEntry] = [:]
         for entry in HistoryRestoreSummary.unifiedEntries(
             timeline: timeline, records: effectiveRecords,
@@ -88,10 +81,10 @@ struct RestoreIntelligenceCard: View {
     }
 
     var body: some View {
-        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: heroTint) {
-            VStack(alignment: .leading, spacing: 14) {
-                HStack(spacing: 12) {
-                    GlassIconPedestal(systemImage: "clock.arrow.circlepath", tint: .gestaltAccent, size: 44)
+        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: GlassTokens.heroTint) {
+            VStack(alignment: .leading, spacing: GlassTokens.cardSpacing) {
+                HStack(spacing: GlassTokens.rowSpacing) {
+                    GlassIconPedestal(systemImage: "clock.arrow.circlepath", tint: .gestaltAccent, size: GlassTokens.iconSize)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(L("Restore Intelligence"))
                             .font(.headline)
@@ -277,9 +270,8 @@ struct RestoreIntelligenceCard: View {
             } else {
                 ForEach(effectiveVerifications, id: \.record.id) { verification in
                     HStack(spacing: 8) {
-                        Image(systemName: verification.status == .verified
-                              ? "checkmark.circle.fill" : "xmark.circle.fill")
-                            .foregroundStyle(verification.status == .verified ? .green : .red)
+                        Image(systemName: backupStatusIcon(verification.status))
+                            .foregroundStyle(backupStatusColor(verification.status))
                         VStack(alignment: .leading, spacing: 1) {
                             Text(verification.record.filename)
                                 .font(.subheadline.weight(.medium))
@@ -289,7 +281,7 @@ struct RestoreIntelligenceCard: View {
                                 .foregroundStyle(.secondary)
                         }
                         Spacer()
-                        if verification.status == .verified {
+                        if verification.status == .verified || verification.status == .legacyNoDigest {
                             Button(L("Restore")) {
                                 selectedBackup = verification.record
                             }
@@ -325,6 +317,22 @@ struct RestoreIntelligenceCard: View {
         }
     }
 
+    private func backupStatusIcon(_ status: BackupVerificationStatus) -> String {
+        switch status {
+        case .verified: return "checkmark.circle.fill"
+        case .legacyNoDigest: return "exclamationmark.triangle.fill"
+        case .failed, .notFound: return "xmark.circle.fill"
+        }
+    }
+
+    private func backupStatusColor(_ status: BackupVerificationStatus) -> Color {
+        switch status {
+        case .verified: return .green
+        case .legacyNoDigest: return .orange
+        case .failed, .notFound: return .red
+        }
+    }
+
     private func backupStatusText(_ verification: BackupVerification) -> String {
         switch verification.status {
         case .verified:
@@ -334,6 +342,8 @@ struct RestoreIntelligenceCard: View {
                     : L("Verified, but the cache layout differs from this device.")
             }
             return L("Verified.")
+        case .legacyNoDigest:
+            return L("Legacy backup — integrity not verified (no digest recorded).")
         case .failed(let reason):
             return reason
         case .notFound:
@@ -377,7 +387,7 @@ private struct RestoreEntryDetailView: View {
 
     private var preview: RestorePreview? {
         guard let document = model.working else { return nil }
-        let layout = try? MobileGestaltCacheLayout.resolve(in: document)
+        let layout = try? LayoutResolver.resolve(cacheUUID: document.cacheUUID, cacheData: document.cacheData)
         return RestorePreviewBuilder.build(
             changes: [change], records: [:], current: document, layout: layout)
     }
@@ -390,7 +400,7 @@ private struct RestoreEntryDetailView: View {
     private var checklist: RestorePreviewChecklist? {
         guard let document = model.working,
               let item = preview?.items.first else { return nil }
-        let layout = try? MobileGestaltCacheLayout.resolve(in: document)
+        let layout = try? LayoutResolver.resolve(cacheUUID: document.cacheUUID, cacheData: document.cacheData)
         return RestorePreviewChecklistBuilder.build(
             change: change, item: item, verifications: verifications,
             deviceID: RestoreIntelligence.installationDeviceID,
@@ -656,7 +666,7 @@ private struct FullBackupRestoreView: View {
     /// current system compatibility. The diff is whole-file, so
     /// there is no single before/after value — the view says so.
     private var checklist: RestorePreviewChecklist {
-        let layout = model.working.flatMap { try? MobileGestaltCacheLayout.resolve(in: $0) }
+        let layout = model.working.flatMap { try? LayoutResolver.resolve(cacheUUID: $0.cacheUUID, cacheData: $0.cacheData) }
         return RestorePreviewChecklistBuilder.buildForBackup(
             record: record, verifications: verifications,
             deviceID: RestoreIntelligence.installationDeviceID,

@@ -13,7 +13,8 @@ final class CapabilityCatalogTests: XCTestCase {
             for key in capability.keys {
                 XCTAssert(key.count == 22 || key == "UIParallaxCapability",
                            "\(capability.id) uses a MobileGestalt key: \(key)")
-                if let values = capability.values {
+                let values = capability.values
+                if !values.isEmpty {
                     XCTAssert(values[key] != nil, "\(capability.id) has a value for \(key)")
                 }
             }
@@ -35,7 +36,7 @@ final class CapabilityCatalogTests: XCTestCase {
             var enabled = document
             capability.apply(.enable, to: &enabled, restoringFrom: snapshot)
             for key in capability.keys {
-                let expected = capability.values?[key] ?? capability.enabled
+                let expected = capability.values[key] ?? capability.enabled
                 let actual: Any = enabled.extra[key] ?? NSNull()
                 XCTAssert(GestaltDocument.valuesEqual(actual, expected),
                            "\(capability.id) enables \(key) with the catalog value")

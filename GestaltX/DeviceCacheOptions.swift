@@ -80,8 +80,8 @@ enum DeviceCacheOptions {
     static let personalTranslatorKey = "M1n2sAqf33NAOgZRGxQYBA"
 
     static func validatedData(in document: GestaltDocument, using resolvedLayout: MobileGestaltCacheLayout? = nil) throws -> Data {
-        let layout = try resolvedLayout ?? MobileGestaltCacheLayout.resolve(in: document)
-        guard layout.matches(document), let data = document.root["CacheData"] as? Data,
+        let layout = try resolvedLayout ?? LayoutResolver.resolve(cacheUUID: document.cacheUUID, cacheData: document.cacheData)
+        guard LayoutResolver.matches(layout, cacheUUID: document.cacheUUID, cacheData: document.cacheData), let data = document.root["CacheData"] as? Data,
               data[layout.validityOffset(for: layout.greenTeaIndex)] == 1,
               data[layout.validityOffset(for: layout.notGreenTeaIndex)] == 1,
               [layout.greenTeaOffset, layout.notGreenTeaOffset].allSatisfy({ offset in
@@ -94,7 +94,7 @@ enum DeviceCacheOptions {
     }
 
     static func flags(in document: GestaltDocument, using resolvedLayout: MobileGestaltCacheLayout? = nil) throws -> CachedOptionFlags {
-        let layout = try resolvedLayout ?? MobileGestaltCacheLayout.resolve(in: document)
+        let layout = try resolvedLayout ?? LayoutResolver.resolve(cacheUUID: document.cacheUUID, cacheData: document.cacheData)
         let data = try validatedData(in: document, using: layout)
         return CachedOptionFlags(greenTea: data[layout.greenTeaOffset] == 1,
                                   notGreenTea: data[layout.notGreenTeaOffset] == 1)
@@ -104,7 +104,7 @@ enum DeviceCacheOptions {
         guard let before = original.root["CacheData"] as? Data,
               let after = edited.root["CacheData"] as? Data,
               before != after,
-              let layout = try? MobileGestaltCacheLayout.resolve(in: original),
+              let layout = try? LayoutResolver.resolve(cacheUUID: original.cacheUUID, cacheData: original.cacheData),
               after.count == before.count else { return [] }
         var fields: [(String, Int)] = []
         if (try? validatedData(in: original)) != nil {
@@ -130,7 +130,7 @@ enum DeviceCacheOptions {
         guard let before = original.root["CacheData"] as? Data,
               let after = edited.root["CacheData"] as? Data,
               before != after, before.count == after.count,
-              let layout = try? MobileGestaltCacheLayout.resolve(in: original) else { return nil }
+              let layout = try? LayoutResolver.resolve(cacheUUID: original.cacheUUID, cacheData: original.cacheData) else { return nil }
         var known: Set<Int> = [layout.greenTeaOffset, layout.notGreenTeaOffset]
         for offset in [layout.wapiOffset, layout.audioIntellOffset, layout.personalTranslatorOffset].compactMap({ $0 }) {
             known.insert(offset)
@@ -144,8 +144,8 @@ enum DeviceCacheOptions {
     static func validateEdit(from original: GestaltDocument, to edited: GestaltDocument,
                              using resolvedLayout: MobileGestaltCacheLayout? = nil) throws {
         guard original.root["CacheData"] as? Data != edited.root["CacheData"] as? Data else { return }
-        let layout = try resolvedLayout ?? MobileGestaltCacheLayout.resolve(in: original)
-        guard layout.matches(original), layout.matches(edited),
+        let layout = try resolvedLayout ?? LayoutResolver.resolve(cacheUUID: original.cacheUUID, cacheData: original.cacheData)
+        guard LayoutResolver.matches(layout, cacheUUID: original.cacheUUID, cacheData: original.cacheData), LayoutResolver.matches(layout, cacheUUID: edited.cacheUUID, cacheData: edited.cacheData),
               let before = original.root["CacheData"] as? Data,
               let after = edited.root["CacheData"] as? Data else {
             throw GestaltFailure("The cache layout or values do not match this preset.")
@@ -178,8 +178,8 @@ enum DeviceCacheOptions {
     }
 
     static func wapi(in document: GestaltDocument, using resolvedLayout: MobileGestaltCacheLayout? = nil) throws -> Bool {
-        let layout = try resolvedLayout ?? MobileGestaltCacheLayout.resolve(in: document)
-        guard layout.matches(document), let index = layout.wapiIndex, let offset = layout.wapiOffset,
+        let layout = try resolvedLayout ?? LayoutResolver.resolve(cacheUUID: document.cacheUUID, cacheData: document.cacheData)
+        guard LayoutResolver.matches(layout, cacheUUID: document.cacheUUID, cacheData: document.cacheData), let index = layout.wapiIndex, let offset = layout.wapiOffset,
               let data = document.root["CacheData"] as? Data,
               data[layout.validityOffset(for: index)] == 1, data[offset] <= 1,
               data[(offset + 1)..<(offset + 8)].allSatisfy({ $0 == 0 }),
@@ -200,8 +200,8 @@ enum DeviceCacheOptions {
                                using resolvedLayout: MobileGestaltCacheLayout? = nil) -> Bool? {
         let layout: MobileGestaltCacheLayout?
         if let resolvedLayout { layout = resolvedLayout }
-        else { layout = try? MobileGestaltCacheLayout.resolve(in: document) }
-        guard let layout, layout.matches(document),
+        else { layout = try? LayoutResolver.resolve(cacheUUID: document.cacheUUID, cacheData: document.cacheData) }
+        guard let layout, LayoutResolver.matches(layout, cacheUUID: document.cacheUUID, cacheData: document.cacheData),
               let index = layout.slotIndex(forKey: key),
               key == audioIntelligenceKey || key == personalTranslatorKey,
               let data = document.root["CacheData"] as? Data else { return nil }

@@ -168,9 +168,11 @@ final class DevicePlistWriterTests: XCTestCase {
                                      acquire: { 1 }, release: { _ in })
         let snapshot = try await store.loadDevice()
         var edited = snapshot.document
-        edited.set("omega", for: "setting")
+        // "setting" is not a staged key (Stage 5 §3.4 allowlist
+        // gate), so the edit uses the staged region code.
+        edited.set("omega", for: GestaltKeys.regionCode)
         let result = try await store.commit(edited, expected: snapshot)
-        expect(result.document.extra["setting"] as? String == "omega",
+        expect(result.document.extra[GestaltKeys.regionCode] as? String == "omega",
                    "Device commit through the hardened writer applies")
         expect(try Data(contentsOf: device) == result.data,
                    "Device file matches the committed document after the hardened write")

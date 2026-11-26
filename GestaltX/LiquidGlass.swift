@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
-// Copyright (C) 2026 huamidev
+// Copyright (C) 2026 LilaShift
+// LilaShift original: light-lavender Liquid Glass design system.
+// Maintainer: @steam8871. Not derived from upstream GestaltX code.
 import SwiftUI
 
 /// Liquid Glass design system for the Tools home, preset groups and change
@@ -28,6 +30,16 @@ enum GlassTokens {
     static let cardRadius: CGFloat = 22
     /// The vertical spacing between sections inside a card.
     static let cardSpacing: CGFloat = 14
+    /// The spacing between items in a horizontal row, and between
+    /// blocks in a vertical stack that is not a card section (card
+    /// sections use `cardSpacing`). One source of truth so row
+    /// spacing does not drift per card.
+    static let rowSpacing: CGFloat = 12
+    /// Light-purple glass tint for hero cards (#EAE1FF at 65%
+    /// opacity). The app is light-only: there is no dark mode, so
+    /// this tint never changes. Every hero card uses this, not a
+    /// per-card copy.
+    static let heroTint: Color = Color.lavenderGlass.opacity(0.65)
     /// The inner padding of a card's content (the inset from the
     /// glass edge to the text). The cards apply this to their outer
     /// stack; the glass itself adds no padding, so the value lives
@@ -70,14 +82,10 @@ enum GlassTokens {
 }
 
 extension Color {
-    /// Primary lavender accent (#8652DC in light mode, a lighter
-    /// lavender in dark mode so text and icons stay readable). Used for
-    /// the tab bar, primary buttons, accent pills and the author badge.
-    static let gestaltAccent = Color(uiColor: UIColor { traits in
-        traits.userInterfaceStyle == .dark
-            ? UIColor(red: 0.66, green: 0.55, blue: 0.98, alpha: 1)
-            : UIColor(red: 0.53, green: 0.32, blue: 0.86, alpha: 1)
-    })
+    /// Primary lavender accent (#8652DC). The app is light-only: there
+    /// is no dark mode, so the accent never changes. Used for the tab
+    /// bar, primary buttons, accent pills and the author badge.
+    static let gestaltAccent = Color(red: 0.53, green: 0.32, blue: 0.86)
 
     /// Soft periwinkle for the two blue-ish category/preset tints, so
     /// icons keep a slight colour distinction without system blue.
@@ -91,44 +99,37 @@ extension Color {
 }
 
 /// Light-lavender page background (#F6F3FF family) with a few soft,
-/// static lavender light spots. Dark mode uses a deep-plum glass theme
-/// in the same lavender family (no midnight blue). No animation, no
+/// static lavender light spots. The app is light-only: there is no
+/// dark mode, so this background never changes. No animation, no
 /// strong glow. When Reduce Transparency is on, the spots disappear
-/// and the background is solid.
+/// and the background is solid light.
 struct GlassBackground: View {
-    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
     private var gradientColors: [Color] {
-        if colorScheme == .dark {
-            [Color(red: 0.09, green: 0.07, blue: 0.16),
-             Color(red: 0.12, green: 0.09, blue: 0.20),
-             Color(red: 0.16, green: 0.12, blue: 0.27)]
-        } else {
-            [Color(red: 0.96, green: 0.95, blue: 1.0),
-             Color(red: 0.94, green: 0.91, blue: 1.0),
-             Color(red: 0.92, green: 0.88, blue: 1.0)]
-        }
+        [Color(red: 0.96, green: 0.95, blue: 1.0),
+         Color(red: 0.94, green: 0.91, blue: 1.0),
+         Color(red: 0.92, green: 0.88, blue: 1.0)]
     }
 
     var body: some View {
         if reduceTransparency {
-            Color(uiColor: .systemGroupedBackground).ignoresSafeArea()
+            Color(red: 0.95, green: 0.95, blue: 0.97).ignoresSafeArea()
         } else {
             ZStack {
                 LinearGradient(colors: gradientColors, startPoint: .topLeading, endPoint: .bottomTrailing)
                 Circle()
-                    .fill(Color.purple.opacity(colorScheme == .dark ? 0.20 : 0.10))
+                    .fill(Color.purple.opacity(0.10))
                     .frame(width: 320, height: 320)
                     .blur(radius: 90)
                     .offset(x: -140, y: -260)
                 Circle()
-                    .fill(Color.gestaltAccent.opacity(colorScheme == .dark ? 0.16 : 0.08))
+                    .fill(Color.gestaltAccent.opacity(0.08))
                     .frame(width: 280, height: 280)
                     .blur(radius: 90)
                     .offset(x: 150, y: 180)
                 Circle()
-                    .fill(Color.purple.opacity(colorScheme == .dark ? 0.12 : 0.05))
+                    .fill(Color.purple.opacity(0.05))
                     .frame(width: 220, height: 220)
                     .blur(radius: 80)
                     .offset(x: 120, y: -80)
@@ -172,7 +173,7 @@ private struct GlassCardModifier: ViewModifier {
     func body(content: Content) -> some View {
         if reduceTransparency {
             content
-                .background(Color(uiColor: .secondarySystemGroupedBackground),
+                .background(Color.white,
                             in: RoundedRectangle(cornerRadius: cornerRadius))
         } else if #available(iOS 26.0, *) {
             // No .shadow() here on purpose: on iOS 26+ the glass effect
@@ -282,7 +283,7 @@ struct GlassCategoryTile: View {
     let tint: Color
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: GlassTokens.rowSpacing) {
             GlassIconPedestal(systemImage: symbol, tint: tint)
             VStack(alignment: .leading, spacing: 3) {
                 Text(title)
@@ -329,7 +330,12 @@ struct GlassBottomBar<Content: View>: View {
 /// purpose, current-status badge, an Enable/Pending action, and the "⋯"
 /// menu with conditions, compatibility notes and restore. The row itself
 /// only presents state; all staging logic stays in the caller.
-struct GlassFeatureRow: View {
+///
+/// The menu is generic over its view type (Stage 9, TASKBOOK §8.2):
+/// the row used to erase it to `AnyView`, the only `AnyView` in the
+/// app, which defeats SwiftUI's view-identity diffing on every
+/// rebuild of the row.
+struct GlassFeatureRow<Menu: View>: View {
     let symbol: String
     let tint: Color
     let title: String
@@ -341,12 +347,12 @@ struct GlassFeatureRow: View {
     let actionTitle: String?
     let actionEnabled: Bool
     let onAction: () -> Void
-    let menu: AnyView
+    let menu: Menu
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: GlassTokens.rowSpacing) {
             GlassIconPedestal(systemImage: symbol, tint: tint, size: GlassTokens.iconSizeSmall)
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 6) {
@@ -404,7 +410,7 @@ struct GlassReadProgressCard: View {
 
     var body: some View {
         GlassCard(cornerRadius: GlassTokens.smallRadius) {
-            HStack(spacing: 12) {
+            HStack(spacing: GlassTokens.rowSpacing) {
                 GlassIconPedestal(systemImage: "clock.arrow.circlepath", tint: .gestaltAccent, size: GlassTokens.iconSizeSmall)
                 VStack(alignment: .leading, spacing: 6) {
                     Text(title)

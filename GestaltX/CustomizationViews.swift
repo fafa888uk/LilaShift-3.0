@@ -8,6 +8,11 @@ import UniformTypeIdentifiers
 final class CustomizationModel: ObservableObject {
     @Published private(set) var packs: [WallpaperPack] = []
     @Published private(set) var previews: [UUID: Data] = [:]
+    /// Decoded preview images, one per pack (Stage 9, TASKBOOK
+    /// §8.2). The view reads from here and never calls
+    /// `UIImage(data:)` in its body; the decode runs once per pack
+    /// in `loadPreviews`, off the main thread.
+    private(set) var previewCache = PreviewImageCache()
     @Published private(set) var busy = false
     @Published private(set) var isPresenting = false
     private var presentationOwners = Set<UUID>()
@@ -18,9 +23,7 @@ final class CustomizationModel: ObservableObject {
     @Published var message: String?
     private let store: CustomizationStore
     init() {
-        let storage = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("GestaltX/Customization", isDirectory: true)
-        store = CustomizationStore(storage: storage, device: UIDevice.current.identifierForVendor?.uuidString ?? "local")
+        store = CustomizationStore(storage: AppDirectories.customizationStorage, device: UIDevice.current.identifierForVendor?.uuidString ?? "local")
     }
     private func run(_ operation: () async throws -> Void) async {
         guard !busy else { return }
@@ -28,14 +31,25 @@ final class CustomizationModel: ObservableObject {
         do { try await operation() } catch is CancellationError {} catch { message = error.localizedDescription }
     }
     private func loadPreviews() async {
-        for pack in packs where previews[pack.id] == nil { previews[pack.id] = try? await store.wallpaperPreview(pack.id) }
+        for pack in packs where previews[pack.id] == nil {
+            guard let data = try? await store.wallpaperPreview(pack.id) else { continue }
+            // Decode off the main thread (TASKBOOK §8.2) and store
+            // the decoded image; the view reads `previewCache` and
+            // never re-decodes on every render. The data is published
+            // after the image is stored, so the render that follows
+            // the publish always finds the image.
+            if let image = await Task.detached(priority: .userInitiated) { UIImage(data: data) }.value {
+                previewCache.store(image, for: pack.id)
+            }
+            previews[pack.id] = data
+        }
     }
     func loadWallpapers() async {
         await run { packs = try await store.listWallpapers(); await loadPreviews() }
     }
     @discardableResult
     func importWallpaper(_ url: URL, id: UUID = UUID()) async -> Bool {
-        defer { try? FileManager.default.removeItem(at: url.deletingLastPathComponent()) }
+        defer { CustomizationFiles.discardStagedDirectory(containing: url) }
         guard !busy else { return false }
         busy = true; defer { busy = false }
         do { packs = try await store.importWallpaper(url, id: id); await loadPreviews(); return true }
@@ -70,13 +84,14 @@ final class CustomizationModel: ObservableObject {
         }
     }
     func removeWallpaper(_ pack: WallpaperPack) async {
-        await run { packs = try await store.removeWallpaper(pack.id); previews.removeValue(forKey: pack.id) }
+        await run { packs = try await store.removeWallpaper(pack.id); previews.removeValue(forKey: pack.id); previewCache.remove(for: pack.id) }
     }
     func deleteImportedWallpaper(_ pack: WallpaperPack) async {
         await run {
             try await store.deleteImportedWallpaper(pack.id)
             packs.removeAll { $0.id == pack.id }
             previews.removeValue(forKey: pack.id)
+            previewCache.remove(for: pack.id)
         }
     }
     func open(_ identifier: String) {
@@ -106,20 +121,8 @@ struct CustomizationFilePicker: UIViewControllerRepresentable {
         func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
             guard let source = urls.first else { return }
             Task {
-                let result = await Task.detached(priority: .userInitiated) { () -> Result<URL, Error> in
-                    let scoped = source.startAccessingSecurityScopedResource()
-                    defer { if scoped { source.stopAccessingSecurityScopedResource() } }
-                    let directory = FileManager.default.temporaryDirectory.appendingPathComponent("GX-Import-\(UUID().uuidString)")
-                    do {
-                        let size = try source.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey])
-                        guard size.isRegularFile == true, (size.fileSize ?? Int.max) <= CustomizationFiles.maximumFile else {
-                            throw CustomizationFailure("The archive is invalid or exceeds the size limit.")
-                        }
-                        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: false)
-                        let target = directory.appendingPathComponent(source.lastPathComponent)
-                        try FileManager.default.copyItem(at: source, to: target)
-                        return .success(target)
-                    } catch { try? FileManager.default.removeItem(at: directory); return .failure(error) }
+                let result: Result<URL, Error> = await Task.detached(priority: .userInitiated) {
+                    Result { try CustomizationFiles.stagePickedFile(source) }
                 }.value
                 complete(result)
             }
@@ -198,7 +201,9 @@ struct WallpapersView: View {
         } message: { Text(model.message ?? "") }
     }
     @ViewBuilder private func preview(_ pack: WallpaperPack) -> some View {
-        if let data = model.previews[pack.id], let image = UIImage(data: data) {
+        // The decoded image comes from the cache (Stage 9): decoding
+        // `UIImage(data:)` here would re-decode on every render.
+        if let image = model.previewCache.image(for: pack.id) {
             Image(uiImage: image).resizable().scaledToFill().clipped()
         } else {
             RoundedRectangle(cornerRadius: 12).fill(Color(uiColor: .tertiarySystemFill))

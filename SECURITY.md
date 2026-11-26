@@ -1,16 +1,16 @@
 # Security Policy
 
-## Supported versions
+## Version and report scope
 
-| Version | Supported |
+**Status checked 2026-11-27:** the current source is 4.2.1, build `42000002`, prepared as a maintenance update. [v4.2.0](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0) is the most recent published release verified when this record was prepared. See the [4.2.1 verification record](docs/RELEASE_4_2_1.md) for the integrated source and build evidence. Preparing source or passing CI does not publish a release or establish real-device safety.
+
+| Version | Reporting context |
 | --- | --- |
-| 3.0.0-rc.1 (pre-release, `feature/lilashift-3.0-dashboard`) | Yes — security reports accepted, fixes land on the branch first |
-| 2.0 / 1.0.7 (LilaShift 2.0) | Yes — critical fixes only |
-| Older versions | No — please update |
+| 4.2.1 source / build `42000002` | Include the exact source commit and workflow/build-manifest evidence; integration and real-device verification must be distinguished. |
+| Published 4.2.0 / build `42000001` | Source commit `3152fc7c49ccb00f80f97da90666a65fb66a6d89`; include this version when reporting against the published IPA. |
+| 3.x and older | Historical versions; identify the exact version and commit. The old support declarations do not establish an ongoing maintenance commitment for these versions. |
 
-Pre-releases are supported for reporting, but they are **not stable**: do not
-treat a pre-release as production-safe, and do not use it on a device you
-cannot afford to restore.
+Security reports should identify the affected version even when it is not the latest source. This record does not promise a fix deadline or claim that an unverified build is production-safe.
 
 ## How to report a vulnerability
 
@@ -29,7 +29,7 @@ Include in the private report:
 - what the vulnerability is and what it affects (e.g. backup integrity,
   plist import, App Group handling, write path);
 - steps to reproduce (without personal data);
-- the LilaShift version / commit and the iOS version;
+- the LilaShift version, build number, exact source commit and iOS version; include the workflow URL or build manifest when available;
 - the impact you believe it has, and any suggested fix.
 
 ## What happens next
@@ -72,6 +72,12 @@ report them as security issues:
   device-only Keychain and is never included in the file.
 - License compliance is enforced by `scripts/check-licenses.py` and the
   Check Licenses workflow (`.github/workflows/check-licenses.yml`).
+
+## Dependency and build provenance
+
+4.2.1 pins ZIPFoundation 0.9.21 (`e7048f0569f0ba37df26f8357f560b9d25e9a284`) to incorporate upstream archive-handling fixes. The app retains its own containment, size and integrity validation. [Upstream release notes](https://github.com/weichsel/ZIPFoundation/releases/tag/0.9.21) describe the dependency changes; they do not substitute for testing this application's integration.
+
+An IPA is accompanied by its SHA-256 checksum and a build manifest recording the checked-out source commit, app/build versions, toolchain and package pins. Ordinary CI has read-only repository access. Draft publication is a separate manual workflow, targeted at the compiled source commit; existing tags and release assets are not overwritten.
 
 ## Secrets
 

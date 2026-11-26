@@ -23,7 +23,6 @@ import SwiftUI
 struct SmartFaultDiagnosisCard: View {
     @EnvironmentObject private var model: GestaltManager
     @Environment(\.homeDiagnosticsCache) private var diagnostics: HomeDiagnosticsCache?
-    @Environment(\.colorScheme) private var colorScheme
     @State private var records: [RecordedChange] = []
     @State private var historyError: String?
     @State private var storedFingerprint: DeviceFingerprint?
@@ -35,12 +34,6 @@ struct SmartFaultDiagnosisCard: View {
     /// yet — see `OperationEventRecorder` — so the report says so
     /// when none were recorded.
     @State private var recordedEvents: [OperationEvent] = []
-
-    private var heroTint: Color {
-        colorScheme == .dark
-            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
-            : Color.lavenderGlass.opacity(0.65)
-    }
 
     /// The records to use: the cache's, when the cache is present
     /// (it loads the history on a background task), else this card's
@@ -161,10 +154,10 @@ struct SmartFaultDiagnosisCard: View {
     }
 
     var body: some View {
-        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: heroTint) {
-            VStack(alignment: .leading, spacing: 14) {
-                HStack(spacing: 12) {
-                    GlassIconPedestal(systemImage: "stethoscope", tint: .gestaltAccent, size: 44)
+        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: GlassTokens.heroTint) {
+            VStack(alignment: .leading, spacing: GlassTokens.cardSpacing) {
+                HStack(spacing: GlassTokens.rowSpacing) {
+                    GlassIconPedestal(systemImage: "stethoscope", tint: .gestaltAccent, size: GlassTokens.iconSize)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(L("Smart Fault Diagnosis"))
                             .font(.headline)

@@ -83,4 +83,39 @@ final class SystemSettingsTests: XCTestCase {
         catch let error as Failure { XCTAssertEqual(error.message, "Injected failure after write", "Write error is preserved") }
         XCTAssert(!FileManager.default.fileExists(atPath: failedFile.path), "Failed writes roll back")
     }
+
+    /// Version-sentinel gate (Stage 13): on a blocked or unknown
+    /// build the model reports the stay/downgrade guidance and
+    /// never attempts a write. No device is needed: the build is
+    /// injected and only the message is asserted.
+    func testVersionSentinelGate() async {
+        let blocked = await SystemSettingsModel(osBuild: "24C5049d")
+        await blocked.load()
+        // await must not sit inside an XCTAssert autoclosure
+        // (and @MainActor properties cannot be read from one):
+        // hoist every awaited value first, then assert.
+        let blockedMessage = await blocked.message
+        let blockedSnapshot = await blocked.snapshot
+        XCTAssertEqual(blockedMessage,
+                       VersionSentinel.guidance(for: VersionSentinel.state(forBuild: "24C5049d")),
+                       "Blocked build must report the sentinel guidance, not the generic error")
+        XCTAssertNil(blockedSnapshot, "Blocked build must not load a snapshot")
+        let unknown = await SystemSettingsModel(osBuild: "not-a-build")
+        await unknown.load()
+        let unknownMessage = await unknown.message
+        let unknownSnapshot = await unknown.snapshot
+        XCTAssertEqual(unknownMessage,
+                       VersionSentinel.guidance(for: VersionSentinel.state(forBuild: "not-a-build")),
+                       "Unknown build must fail closed with the sentinel guidance")
+        XCTAssertNil(unknownSnapshot, "Unknown build must not load a snapshot")
+        // Supported build (27.3 beta 1): no sentinel message. On the
+        // simulator load then fails at acquire with the simulator
+        // error; on a device it would load. Either way the message
+        // must not be a sentinel guidance string.
+        let supported = await SystemSettingsModel(osBuild: "24C5037i")
+        await supported.load()
+        let supportedMessage = await supported.message
+        XCTAssertNotEqual(supportedMessage, VersionSentinel.guidance(for: .blocked(build: "24C5037i")),
+                          "Supported build must not report a blocked-build guidance")
+    }
 }

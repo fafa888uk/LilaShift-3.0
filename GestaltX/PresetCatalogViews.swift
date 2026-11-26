@@ -19,7 +19,6 @@ import SwiftUI
 
 struct PresetCatalogCard: View {
     @EnvironmentObject private var model: GestaltManager
-    @Environment(\.colorScheme) private var colorScheme
 
     @State private var searchText = ""
     @State private var selectedCategory: PresetCategory?
@@ -43,11 +42,10 @@ struct PresetCatalogCard: View {
     @State private var newCombinationMembers: Set<String> = []
     @State private var combinationFormError: String?
 
-    private var heroTint: Color {
-        colorScheme == .dark
-            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
-            : Color.lavenderGlass.opacity(0.65)
-    }
+    /// Debounced search text: the visible entries filter on the
+    /// published value, so fast typing runs the pipeline once per
+    /// pause instead of once per keystroke.
+    @StateObject private var searchDebouncer = SearchDebouncer()
 
     /// The per-device report (profile + eligibility evaluations), or
     /// `nil` when the device has not been read yet.
@@ -58,10 +56,13 @@ struct PresetCatalogCard: View {
             changeRecordCount: records.count)
     }
 
-    /// Eligibility by feature id, from the device report. Empty when
+    /// Eligibility by feature id, from one device report. Empty when
     /// the device has not been read — every entry is then unknown.
-    private var evaluations: [String: FeatureEligibility] {
-        guard let report = deviceReport else { return [:] }
+    /// Takes the report as a parameter so the body can build it once
+    /// per evaluation and share it between the list, the rows and the
+    /// combination checks, instead of rebuilding it per access.
+    private func evaluations(from report: LilaDeviceReport?) -> [String: FeatureEligibility] {
+        guard let report else { return [:] }
         var map: [String: FeatureEligibility] = [:]
         for evaluation in report.evaluations {
             map[evaluation.featureID] = evaluation.eligibility
@@ -69,15 +70,15 @@ struct PresetCatalogCard: View {
         return map
     }
 
-    /// The unified compatibility status by feature id, from the same
-    /// report evaluations plus the staged / restart-pending sets.
+    /// The unified compatibility status by feature id, from one
+    /// report's evaluations plus the staged / restart-pending sets.
     /// Empty when the device has not been read: rows then show the
     /// plain eligibility badge exactly as before, so the unread
     /// rendering is unchanged. Group entries have no single feature
     /// id, so they never get a status — they keep the eligibility
-    /// badge.
-    private var statusDetails: [String: CompatibilityStatusDetail] {
-        guard let report = deviceReport else { return [:] }
+    /// badge. Takes the report as a parameter; see `evaluations`.
+    private func statusDetails(from report: LilaDeviceReport?) -> [String: CompatibilityStatusDetail] {
+        guard let report else { return [:] }
         let staged = CompatibilityStatusResolver.stagedFeatureIDs(
             snapshot: model.snapshot, working: model.working)
         let pending = CompatibilityStatusResolver.pendingRestartFeatureIDs(records: records)
@@ -97,8 +98,10 @@ struct PresetCatalogCard: View {
     /// persisted catalog sort and favorites-first setting. The sort
     /// and the toggle live in the Personalization Center; this card
     /// applies them, so changing the setting takes effect here.
-    private var visibleEntries: [PresetEntry] {
-        let searched = PresetCatalog.search(searchText)
+    /// Takes the evaluations as a parameter; see `evaluations`. The
+    /// search runs on the debounced text, not on every keystroke.
+    private func visibleEntries(evaluations: [String: FeatureEligibility]) -> [PresetEntry] {
+        let searched = PresetCatalog.search(searchDebouncer.debounced)
         let filtered = PresetCatalog.filtered(
             searched, category: selectedCategory, riskLevel: selectedRisk,
             eligibility: selectedEligibility, evaluations: evaluations)
@@ -108,9 +111,10 @@ struct PresetCatalogCard: View {
     }
 
     /// The dependency + simulation check for each saved combination,
-    /// or empty when the device has not been read yet.
-    private var combinationChecks: [UUID: PresetCombinationCheck] {
-        guard let report = deviceReport else { return [:] }
+    /// or empty when the device has not been read yet. Takes the
+    /// report as a parameter; see `evaluations`.
+    private func combinationChecks(from report: LilaDeviceReport?) -> [UUID: PresetCombinationCheck] {
+        guard let report else { return [:] }
         var checks: [UUID: PresetCombinationCheck] = [:]
         for combination in combinations {
             checks[combination.id] = PresetCombinationChecker.check(
@@ -121,10 +125,18 @@ struct PresetCatalogCard: View {
     }
 
     var body: some View {
-        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: heroTint) {
-            VStack(alignment: .leading, spacing: 14) {
-                HStack(spacing: 12) {
-                    GlassIconPedestal(systemImage: "books.vertical", tint: .gestaltAccent, size: 44)
+        // One device report per body evaluation: the report feeds
+        // the list, every row and the combination checks, and each
+        // access used to rebuild it from scratch.
+        let report = deviceReport
+        let evals = evaluations(from: report)
+        let statuses = statusDetails(from: report)
+        let entries = visibleEntries(evaluations: evals)
+        let checks = combinationChecks(from: report)
+        return GlassCard(cornerRadius: GlassTokens.cardRadius, tint: GlassTokens.heroTint) {
+            LazyVStack(alignment: .leading, spacing: GlassTokens.cardSpacing) {
+                HStack(spacing: GlassTokens.rowSpacing) {
+                    GlassIconPedestal(systemImage: "books.vertical", tint: .gestaltAccent, size: GlassTokens.iconSize)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(L("Preset Catalog"))
                             .font(.headline)
@@ -137,6 +149,7 @@ struct PresetCatalogCard: View {
 
                 TextField(L("Search presets…"), text: $searchText)
                     .textFieldStyle(.roundedBorder)
+                    .onChange(of: searchText) { _, newValue in searchDebouncer.submit(newValue) }
 
                 HStack(spacing: 8) {
                     Picker(L("Category"), selection: $selectedCategory) {
@@ -184,16 +197,16 @@ struct PresetCatalogCard: View {
                         .foregroundStyle(.secondary)
                 }
 
-                if visibleEntries.isEmpty {
+                if entries.isEmpty {
                     Text(L("No presets match this search."))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 } else {
-                    ForEach(visibleEntries) { entry in
+                    ForEach(entries) { entry in
                         PresetEntryRow(
                             entry: entry,
-                            eligibility: PresetCatalog.eligibility(of: entry, evaluations: evaluations),
-                            status: entry.kind == .group ? nil : statusDetails[entry.featureID],
+                            eligibility: PresetCatalog.eligibility(of: entry, evaluations: evals),
+                            status: entry.kind == .group ? nil : statuses[entry.featureID],
                             isFavorite: favoriteIDs.contains(entry.featureID),
                             isExpanded: expandedEntryID == entry.featureID,
                             onToggleFavorite: { toggleFavorite(entry.featureID) },
@@ -207,7 +220,7 @@ struct PresetCatalogCard: View {
 
                 PresetCombinationsSection(
                     combinations: combinations,
-                    checks: combinationChecks,
+                    checks: checks,
                     deviceRead: model.snapshot != nil,
                     showingForm: $showingCombinationForm,
                     newName: $newCombinationName,

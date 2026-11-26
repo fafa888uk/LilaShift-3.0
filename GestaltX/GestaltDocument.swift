@@ -2,7 +2,6 @@
 // Copyright (C) 2026 huamidev
 import Foundation
 import CoreFoundation
-import CryptoKit
 
 struct GestaltFailure: LocalizedError, Sendable {
     let key: String
@@ -100,12 +99,26 @@ enum GestaltKeys {
     static let legacyRegionInfo = "yK+xavymRGZ3xWc1tb8XDg"
     static let productType = "h9jDsbgj7xIVeIQ8S3/X3Q"
     static let modelNumber = "97JDvERpVwO+GHtthIh7hA"
+    /// CacheExtra key for the hardware board (`hw.model`).
+    static let hardwareModel = "oYicEKzVTz4/CxxE05pEgQ"
+    /// CacheExtra key for the chip (CPU) identifier.
+    static let cpu = "5pYKlGnYYBzGvAlIU8RjEQ"
+    static let siriMode = "a3n5T9sFtlyQ74NEp9ESxg"
+    /// The four hardware-identity fields a hardware spoof can break
+    /// (Face ID, dictation). Restoring them — and only them — from a
+    /// verified same-device backup is the Face ID recovery
+    /// (upstream GestaltX #128/#146, huamidev/GestaltX).
+    static let hardwareIdentity = [productType, hardwareModel, cpu, modelNumber]
 }
 
 struct GestaltDocument: @unchecked Sendable {
     private(set) var root: [String: Any]
     var extra: [String: Any] { root["CacheExtra"] as? [String: Any] ?? [:] }
     var cacheUUID: String? { root["CacheUUID"] as? String }
+    /// Raw CacheData bytes (the layout resolver's second input).
+    /// Kept as a computed accessor so callers pass raw parts,
+    /// never the document, to `LayoutResolver` (ADR-2-11).
+    var cacheData: Data? { root["CacheData"] as? Data }
     func matchesCacheUUID(_ uuid: String) -> Bool { cacheUUID?.caseInsensitiveCompare(uuid) == .orderedSame }
     var artwork: [String: Any] { extra[GestaltKeys.artwork] as? [String: Any] ?? [:] }
     var canEditArtwork: Bool { extra[GestaltKeys.artwork] == nil || extra[GestaltKeys.artwork] is [String: Any] }
@@ -123,7 +136,7 @@ struct GestaltDocument: @unchecked Sendable {
     }
 
     mutating func setCacheOptions(_ flags: CachedOptionFlags, using resolvedLayout: MobileGestaltCacheLayout? = nil) throws {
-        let layout = try resolvedLayout ?? MobileGestaltCacheLayout.resolve(in: self)
+        let layout = try resolvedLayout ?? LayoutResolver.resolve(cacheUUID: cacheUUID, cacheData: cacheData)
         var data = try DeviceCacheOptions.validatedData(in: self, using: layout)
         data[layout.greenTeaOffset] = flags.greenTea ? 1 : 0
         data[layout.notGreenTeaOffset] = flags.notGreenTea ? 1 : 0
@@ -131,7 +144,7 @@ struct GestaltDocument: @unchecked Sendable {
     }
 
     mutating func setWAPI(_ enabled: Bool, using resolvedLayout: MobileGestaltCacheLayout? = nil) throws {
-        let layout = try resolvedLayout ?? MobileGestaltCacheLayout.resolve(in: self)
+        let layout = try resolvedLayout ?? LayoutResolver.resolve(cacheUUID: cacheUUID, cacheData: cacheData)
         _ = try DeviceCacheOptions.wapi(in: self, using: layout)
         guard let offset = layout.wapiOffset, var data = root["CacheData"] as? Data else { return }
         data[offset] = enabled ? 1 : 0
@@ -145,7 +158,7 @@ struct GestaltDocument: @unchecked Sendable {
     mutating func setAdvAISlot(_ key: String, value: Bool, using resolvedLayout: MobileGestaltCacheLayout? = nil) throws {
         guard key == DeviceCacheOptions.audioIntelligenceKey
                 || key == DeviceCacheOptions.personalTranslatorKey else { return }
-        let layout = try resolvedLayout ?? MobileGestaltCacheLayout.resolve(in: self)
+        let layout = try resolvedLayout ?? LayoutResolver.resolve(cacheUUID: cacheUUID, cacheData: cacheData)
         guard DeviceCacheOptions.advAISlotValue(key, in: self, using: layout) != nil,
               let offset = layout.slotIndex(forKey: key).map({ $0 * 8 }),
               var data = root["CacheData"] as? Data else { return }
@@ -247,7 +260,16 @@ struct GestaltDocument: @unchecked Sendable {
         return true
     }
 
-    func preservesDeviceIdentity(of original: Self) -> Bool {
+    /// True when this document agrees with `original` on the fields
+    /// that identify the device itself. Unlike upstream (GestaltX
+    /// #128), LilaShift's check also covers product type and model
+    /// number — which is exactly what a hardware spoof changes. The
+    /// Face ID recovery therefore passes
+    /// `excludingHardwareIdentity: true` when it verifies that a
+    /// backup belongs to the same device: it checks only the serial /
+    /// chip fields, while the four hardware-identity fields are the
+    /// ones being restored.
+    func preservesDeviceIdentity(of original: Self, excludingHardwareIdentity: Bool = false) -> Bool {
         // Keep each actual field and its plist type unchanged. Normalizing an
         // identifier here would also permit edits that invalidate saved history.
         // The product type and model number are hardware-identity fields too:
@@ -259,6 +281,7 @@ struct GestaltDocument: @unchecked Sendable {
                     "SerialNumber", "VasUgeSzVyHdB27g2XpN0g",
                     "UniqueChipID", "TF31PAB6aO8KAbPyNKSxKA"]
         for key in keys {
+            if excludingHardwareIdentity && (key == GestaltKeys.productType || key == GestaltKeys.modelNumber) { continue }
             switch (original.extra[key], extra[key]) {
             case (nil, nil): continue
             case (let before?, let after?) where Self.valuesEqual(before, after): continue
@@ -326,6 +349,10 @@ struct DocumentSnapshot: @unchecked Sendable {
     var originals: [String: OriginalField] = [:]
     var cachedOptionsOriginal: CachedOptionsOriginal?
     var wapiOriginal: WAPIOriginal?
+    /// Recorded originals of the two AdvAI CacheData slots (#178/#266),
+    /// keyed by obfuscated key. Mirrors `OriginalValues.advAISlots`;
+    /// see `recordingOriginals(to:)`. Stage 5 (ADR-2-02).
+    var advAISlotOriginals: [String: Bool] = [:]
     var ownershipVerified = false
     /// Where this snapshot's bytes came from. A live device snapshot is
     /// `.firstRead`, never factory state; a locally opened file is
@@ -354,7 +381,32 @@ struct DocumentSnapshot: @unchecked Sendable {
         var wapi = wapiOriginal
         if wapi == nil, let before = try? WAPIOriginal(document: document),
            let after = try? DeviceCacheOptions.wapi(in: edited), before.enabled != after { wapi = before }
-        return OriginalValues(fields: recordingChanges(to: edited), cachedOptions: audio, wapi: wapi)
+        return OriginalValues(fields: recordingChanges(to: edited), cachedOptions: audio, wapi: wapi,
+                              advAISlots: Self.slotOriginals(before: document, after: edited,
+                                                            previouslyRecorded: advAISlotOriginals))
+    }
+
+    /// Original values of the two AdvAI CacheData slots, read from the
+    /// `before` document's CacheData bytes (the snapshot retains the
+    /// original bytes — U-2-3, verified by `SlotRestoreTests`). A slot
+    /// is recorded only when both sides resolve and differ; an
+    /// unresolvable slot is skipped, never guessed, and an equal slot
+    /// is not a change. Previously recorded originals are kept: the
+    /// first recording wins, so a later edit cannot overwrite the
+    /// original. `layout` is the explicit layout for tests; production
+    /// passes `nil` and resolves it from the documents.
+    static func slotOriginals(before: GestaltDocument, after: GestaltDocument,
+                              previouslyRecorded: [String: Bool] = [:],
+                              using layout: MobileGestaltCacheLayout? = nil) -> [String: Bool] {
+        var recorded = previouslyRecorded
+        for key in [DeviceCacheOptions.audioIntelligenceKey, DeviceCacheOptions.personalTranslatorKey] {
+            guard recorded[key] == nil,
+                  let original = DeviceCacheOptions.advAISlotValue(key, in: before, using: layout),
+                  let current = DeviceCacheOptions.advAISlotValue(key, in: after, using: layout),
+                  original != current else { continue }
+            recorded[key] = original
+        }
+        return recorded
     }
 
     func originalValue(for key: String) -> Any? {
@@ -397,6 +449,34 @@ struct OriginalValues {
     // A failed legacy migration must not later use backups created after the
     // failure as evidence of the original values for this layout.
     var unavailableCacheOriginals: [String: Set<String>] = [:]
+    /// Original values of the two AdvAI CacheData slots (#178/#266),
+    /// keyed by obfuscated key. Present only when a slot value was
+    /// recorded as differing from its later state (see
+    /// `DocumentSnapshot.recordingOriginals`); an absent entry means
+    /// "no original recorded", never a guessed value. Stage 5 (ADR-2-02).
+    var advAISlots: [String: Bool] = [:]
+
+    /// The two slot keys whose originals may be recorded. Any other
+    /// key in a persisted slot-originals dict is corruption, never a
+    /// future slot: new slots are added here explicitly, not inferred.
+    static let advAISlotKeys: Set<String> = [
+        DeviceCacheOptions.audioIntelligenceKey,
+        DeviceCacheOptions.personalTranslatorKey,
+    ]
+
+    /// Validates a persisted slot-originals dict: every key must be a
+    /// known AdvAI slot key and every value a Bool. Throws on anything
+    /// else — a corrupt record must fail loudly, never guess.
+    static func decodeAdvAISlots(_ raw: Any?) throws -> [String: Bool] {
+        guard let raw else { return [:] }
+        guard let dict = raw as? [String: Bool] else {
+            throw GestaltFailure("Original values could not be read. No system changes were made.")
+        }
+        guard dict.keys.allSatisfy({ advAISlotKeys.contains($0) }) else {
+            throw GestaltFailure("Original values could not be read. No system changes were made.")
+        }
+        return dict
+    }
 }
 
 struct BackupRecord: Identifiable, Codable, Equatable, Sendable {
@@ -511,7 +591,11 @@ actor GestaltFileStore {
                         try baseline.setCacheOptions(flags)
                     }
                     if let wapi = originals.wapi, let value = try? wapi.value(in: baseline) { try baseline.setWAPI(value) }
+                    for (key, value) in originals.advAISlots {
+                        try? baseline.setAdvAISlot(key, value: value)
+                    }
                     let hasOriginals = !originals.fields.isEmpty || originals.cachedOptions != nil || originals.wapi != nil
+                        || !originals.advAISlots.isEmpty
                     let initialData = hasOriginals ? try baseline.encoded() : data
                     // A baseline rebuilt from recorded pre-write originals is
                     // pre-modification state; a plain first read is first-read
@@ -527,6 +611,7 @@ actor GestaltFileStore {
             }
             return DocumentSnapshot(data: data, document: document, source: .device, name: "MobileGestalt",
                                     originals: originals.fields, cachedOptionsOriginal: originals.cachedOptions, wapiOriginal: originals.wapi,
+                                    advAISlotOriginals: originals.advAISlots,
                                     provenance: .firstRead)
         }
     }
@@ -560,7 +645,8 @@ actor GestaltFileStore {
     private func loadOriginals(for document: GestaltDocument) throws -> OriginalValues {
         guard FileManager.default.fileExists(atPath: originalsURL.path) else {
             let recovered = try recoverOriginals(from: document)
-            if !recovered.fields.isEmpty || recovered.cachedOptions != nil || recovered.wapi != nil {
+            if !recovered.fields.isEmpty || recovered.cachedOptions != nil || recovered.wapi != nil
+                || !recovered.advAISlots.isEmpty {
                 try saveOriginals(recovered, for: document)
             }
             return recovered
@@ -599,6 +685,10 @@ actor GestaltFileStore {
             }
             wapi = decoded
         }
+        // AdvAI slot originals (Stage 5): only the two known slot keys
+        // are admitted; anything else is a corrupt record, never a
+        // guessed slot.
+        let advAISlots = try OriginalValues.decodeAdvAISlots(plist["advAISlots"])
         // Recover absent entries once for legacy journals, then migrate any
         // saved cache values that belong to a different system generation.
         let needsMigration = plist["cacheHistoryRecovered"] as? Bool != true
@@ -633,7 +723,7 @@ actor GestaltFileStore {
             // cache values or the fact that their original state is unavailable.
             try archiveOriginals(data)
         }
-        let state = OriginalValues(fields: originals, cachedOptions: audio, wapi: wapi, unavailableCacheOriginals: unavailable)
+        let state = OriginalValues(fields: originals, cachedOptions: audio, wapi: wapi, unavailableCacheOriginals: unavailable, advAISlots: advAISlots)
         if needsMigration || migrateAudio || migrateWAPI { try saveOriginals(state, for: document) }
         return state
     }
@@ -671,7 +761,8 @@ actor GestaltFileStore {
             guard let data = try? backupData(record), let document = try? GestaltDocument(data: data) else { return OriginalValues() }
             guard document.matchesIdentity(current), matchesCacheGeneration(document, current) else { continue }
             return OriginalValues(cachedOptions: try? CachedOptionsOriginal(document: document),
-                                  wapi: try? WAPIOriginal(document: document))
+                                  wapi: try? WAPIOriginal(document: document),
+                                  advAISlots: DocumentSnapshot.slotOriginals(before: document, after: current))
         }
         return OriginalValues()
     }
@@ -704,17 +795,20 @@ actor GestaltFileStore {
             guard document.matchesIdentity(current), matchesCacheGeneration(document, current) else { continue }
             if let previous {
                 originals = DocumentSnapshot(data: Data(), document: previous, source: .device, name: "",
-                                             originals: originals.fields, cachedOptionsOriginal: originals.cachedOptions, wapiOriginal: originals.wapi)
+                                             originals: originals.fields, cachedOptionsOriginal: originals.cachedOptions, wapiOriginal: originals.wapi,
+                                             advAISlotOriginals: originals.advAISlots)
                     .recordingOriginals(to: document)
             }
             previous = document
         }
         if let previous {
             originals = DocumentSnapshot(data: Data(), document: previous, source: .device, name: "",
-                                         originals: originals.fields, cachedOptionsOriginal: originals.cachedOptions, wapiOriginal: originals.wapi)
+                                         originals: originals.fields, cachedOptionsOriginal: originals.cachedOptions, wapiOriginal: originals.wapi,
+                                         advAISlotOriginals: originals.advAISlots)
                 .recordingOriginals(to: current)
         }
-        if !originals.fields.isEmpty || originals.cachedOptions != nil || originals.wapi != nil {
+        if !originals.fields.isEmpty || originals.cachedOptions != nil || originals.wapi != nil
+            || !originals.advAISlots.isEmpty {
             eventSink("Original values: recovered from device backups")
         }
         return originals
@@ -730,6 +824,7 @@ actor GestaltFileStore {
             }
             if let audio = originals.cachedOptions { plist["faceTimeAudio"] = try PropertyListEncoder().encode(audio) }
             if let wapi = originals.wapi { plist["wapi"] = try PropertyListEncoder().encode(wapi) }
+            if !originals.advAISlots.isEmpty { plist["advAISlots"] = originals.advAISlots }
             let data = try PropertyListSerialization.data(fromPropertyList: plist, format: .binary, options: 0)
             try data.write(to: originalsURL, options: .atomic)
             guard try Data(contentsOf: originalsURL) == data else {
@@ -757,6 +852,24 @@ actor GestaltFileStore {
         try JSONEncoder().encode(record).write(to: backupDirectory.appendingPathComponent(record.id.uuidString + ".json"), options: .atomic)
         eventSink("Backup: \(data.count) bytes saved and verified")
         return record
+    }
+
+    /// Creates a fresh pre-write backup of the snapshot's current
+    /// state (Stage 5, §3.4): the AppCore orchestration entry point
+    /// for "never write without a fresh backup first". For a device
+    /// snapshot the live bytes are re-read and saved with `reason`
+    /// ("Before applying" / "Before restoring") and
+    /// `.preModification` provenance; for a locally opened file the
+    /// file's own bytes are saved as "Before editing" with
+    /// `.importedHistory`, matching what `commit` used to do
+    /// internally. The store verifies the backup by read-back before
+    /// returning, so a returned record always covers bytes on disk.
+    func createPreWriteBackup(_ snapshot: DocumentSnapshot, reason: String) throws -> BackupRecord {
+        if snapshot.source == .device {
+            return try withAccess { try saveBackup(Data(contentsOf: deviceURL), source: .device, reason: reason, provenance: .preModification) }
+        } else {
+            return try saveBackup(snapshot.data, source: .local, reason: "Before editing", provenance: .importedHistory)
+        }
     }
 
     func backup(_ snapshot: DocumentSnapshot) throws {
@@ -793,7 +906,10 @@ actor GestaltFileStore {
     }
 
     static func sha256Hex(of data: Data) -> String {
-        SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+        // The single implementation lives in BackupEngine (Stage 5,
+        // ADR-2-08); this is only a delegate so older call sites
+        // keep compiling.
+        BackupEngine.sha256Hex(of: data)
     }
 
     /// The system vault lives next to the live plist in the shared
@@ -931,7 +1047,18 @@ actor GestaltFileStore {
         try removeBackupItem(backupDirectory.appendingPathComponent(record.id.uuidString + ".json"))
     }
 
-    private func validateRestoreLayout(_ document: GestaltDocument, against current: GestaltDocument) throws {
+    /// Validates that a document may be restored over the live cache:
+    /// same CacheUUID, same CacheData size, same CacheVersion, and —
+    /// unless `excludingHardwareIdentity` is set — the same product
+    /// type. The product-type check keeps a backup from another device
+    /// out of a whole-document restore. The Face ID recovery passes
+    /// `excludingHardwareIdentity: true`: the live product type is
+    /// the spoofed value being repaired, so it is expected to differ
+    /// from the backup's real one — and same-device is already proven
+    /// there by the kernel physical product/board, the CPU, the
+    /// device-identity keys and the shared CacheData.
+    private func validateRestoreLayout(_ document: GestaltDocument, against current: GestaltDocument,
+                                       excludingHardwareIdentity: Bool = false) throws {
         let failure = GestaltFailure("This plist uses a different system cache layout and cannot be restored.")
         guard let uuid = document.cacheUUID, !uuid.isEmpty,
               current.matchesCacheUUID(uuid),
@@ -947,7 +1074,8 @@ actor GestaltFileStore {
         // The factory baseline must belong to this exact hardware model:
         // a backup from another device must never be restored here.
         // Enforced whenever the live document carries a product type.
-        if let liveProduct = current.extra[GestaltKeys.productType] as? String,
+        if !excludingHardwareIdentity,
+           let liveProduct = current.extra[GestaltKeys.productType] as? String,
            document.extra[GestaltKeys.productType] as? String != liveProduct {
             throw failure
         }
@@ -969,18 +1097,169 @@ actor GestaltFileStore {
         return try commit(imported.document, expected: expected, restoring: record)
     }
 
+    /// Restores only the four hardware-identity fields (product type,
+    /// hardware board, CPU, model number) from a verified same-device
+    /// backup, keeping every other change — AI, Siri, region and all
+    /// unrelated settings. This is the Face ID recovery: enabling AI
+    /// by spoofing the hardware identity can break Face ID, and this
+    /// puts the real hardware back without losing the unlock.
+    /// Ported from upstream GestaltX #128/#146 (huamidev/GestaltX),
+    /// with the model table extended to iPhone 16/17/Air (see
+    /// `deviceCPU(for:)`).
+    ///
+    /// The restore is refused unless every check holds: the backup is
+    /// a device backup of this device with a recorded digest; the live
+    /// document is a device document; the backup's product type and
+    /// board match the kernel's physical hardware; its CPU matches the
+    /// expected chip for that product type; all four identity fields
+    /// are present; the backup and the live document agree on the
+    /// device-identity keys (serial / chip); and both share the same
+    /// CacheData / CacheUUID / cache version. Unknown models are
+    /// rejected rather than guessed.
+    func restoreHardwareIdentity(from record: BackupRecord, expected: DocumentSnapshot,
+                                 physicalProduct: String, physicalBoard: String) throws -> DocumentSnapshot {
+        guard record.source == .device, record.deviceID == deviceID, record.sha256 != nil else {
+            throw GestaltFailure("A verified original hardware backup matching this device and cache is required.")
+        }
+        let original = try GestaltDocument(data: backupData(record))
+        return try restoreHardwareIdentity(from: original, expected: expected,
+                                          physicalProduct: physicalProduct, physicalBoard: physicalBoard)
+    }
+
+    func restoreHardwareIdentity(from imported: DocumentSnapshot, expected: DocumentSnapshot,
+                                 physicalProduct: String, physicalBoard: String) throws -> DocumentSnapshot {
+        guard imported.source == .local, imported.ownershipVerified else {
+            throw GestaltFailure("This plist's device proof could not be verified on this device.")
+        }
+        return try restoreHardwareIdentity(from: imported.document, expected: expected,
+                                          physicalProduct: physicalProduct, physicalBoard: physicalBoard)
+    }
+
+    private func restoreHardwareIdentity(from original: GestaltDocument, expected: DocumentSnapshot,
+                                         physicalProduct: String, physicalBoard: String) throws -> DocumentSnapshot {
+        // Kernel identity and an ownership-verified backup are
+        // independent of the spoofed cache. The device-identity check
+        // excludes the hardware fields themselves — those are the
+        // fields being restored, so they are expected to differ.
+        guard expected.source == .device, !physicalProduct.isEmpty, !physicalBoard.isEmpty,
+              original.extra[GestaltKeys.productType] as? String == physicalProduct,
+              (original.extra[GestaltKeys.hardwareModel] as? String)?.lowercased() == physicalBoard.lowercased(),
+              let cpu = Self.deviceCPU(for: physicalProduct),
+              original.extra[GestaltKeys.cpu] as? String == cpu,
+              GestaltKeys.hardwareIdentity.allSatisfy({ (original.extra[$0] as? String)?.isEmpty == false }),
+              original.preservesDeviceIdentity(of: expected.document, excludingHardwareIdentity: true),
+              let originalCache = original.root["CacheData"] as? Data,
+              originalCache == expected.document.root["CacheData"] as? Data else {
+            throw GestaltFailure("A verified original hardware backup matching this device and cache is required.")
+        }
+        try validateRestoreLayout(original, against: expected.document, excludingHardwareIdentity: true)
+        var edited = expected.document
+        for key in GestaltKeys.hardwareIdentity { edited.set(original.extra[key], for: key) }
+        if edited.matches(expected.document) {
+            return try withAccess {
+                _ = try currentData(matching: expected)
+                eventSink("Hardware restore: original hardware identity already matches")
+                return expected
+            }
+        }
+        eventSink("Hardware restore: preserving AI, Siri, region and unrelated settings")
+        return try commit(edited, expected: expected, recordingRestoredHardware: true)
+    }
+
+    /// Expected CPU (chip) for a product type. Internal (not private)
+    /// so the table is directly verifiable by `FaceIDRecoveryTests`:
+    /// every entry and every rejection is a test case. Upstream
+    /// GestaltX #128 covers iPhone 11 through iPhone 15/15 Plus,
+    /// cross-checked with libirecovery; the table is extended here so
+    /// the recovery works on the user's iPhone Air (iPhone18,4,
+    /// A19 = t8150):
+    /// - A17 Pro t8130 (iPhone16,1/16,2; Apple Wiki, CPID T8130)
+    /// - A18 / A18 Pro t8140 Tahiti (iPhone17,1–17,5; MacRumors iOS 18
+    ///   code lists the whole iPhone 16 range as t8140)
+    /// - A19 / A19 Pro t8150 Tilos/Thera (iPhone18,1–18,5; AppleInsider
+    ///   leak, CPID T8150; The Apple Wiki lists the base A19 as T8150)
+    /// iPhone 19,x (A20 Pro) is deliberately absent: its CPID is not
+    /// verifiable from any public source (only the Borneo codenames),
+    /// so those models are rejected rather than guessed. Unknown
+    /// products return nil (fail closed).
+    static func deviceCPU(for product: String) -> String? {
+        switch product {
+        case "iPhone12,1", "iPhone12,3", "iPhone12,5", "iPhone12,8": "t8030"
+        case "iPhone13,1", "iPhone13,2", "iPhone13,3", "iPhone13,4": "t8101"
+        case "iPhone14,2", "iPhone14,3", "iPhone14,4", "iPhone14,5",
+             "iPhone14,6", "iPhone14,7", "iPhone14,8": "t8110"
+        case "iPhone15,2", "iPhone15,3", "iPhone15,4", "iPhone15,5": "t8120"
+        case "iPhone16,1", "iPhone16,2": "t8130"
+        case "iPhone17,1", "iPhone17,2", "iPhone17,3", "iPhone17,4",
+             "iPhone17,5": "t8140"
+        case "iPhone18,1", "iPhone18,2", "iPhone18,3", "iPhone18,4",
+             "iPhone18,5": "t8150"
+        default: nil
+        }
+    }
+
+    /// Clears and rebuilds the MobileGestalt cache to a clean factory
+    /// baseline. The mechanism is Erosion-CN's "清除并重建缓存"
+    /// (Kianuni, https://github.com/Kianuni/Erosion-CN, GPL-3.0),
+    /// reimplemented for LilaShift's backup model and credited in the
+    /// UI and docs: the current device file is backed up first
+    /// ("Before cache rebuild"), then the live cache file is deleted
+    /// so iOS regenerates it from the hardware on the next restart.
+    /// Only a live device document may be rebuilt, and only when the
+    /// file on disk still matches the loaded document. The caller
+    /// clears the loaded document afterwards: the file does not exist
+    /// again until the restart, so the user re-reads after restarting.
+    func rebuildCache(expected: DocumentSnapshot) throws -> BackupRecord {
+        guard expected.source == .device else {
+            throw GestaltFailure("Only a live device cache can be rebuilt. Read the device first.")
+        }
+        return try withAccess {
+            let current = try Data(contentsOf: deviceURL)
+            guard current == expected.data else {
+                throw GestaltFailure("MobileGestalt changed since it was loaded. Refresh before applying your edits.")
+            }
+            let record = try saveBackup(current, source: .device, reason: "Before cache rebuild", provenance: .preModification)
+            try FileManager.default.removeItem(at: deviceURL)
+            eventSink("Cache rebuild: live cache deleted; iOS regenerates it on restart")
+            return record
+        }
+    }
+
     private func currentData(matching expected: DocumentSnapshot) throws -> Data {
         let current = try Data(contentsOf: deviceURL)
         guard current == expected.data else { throw GestaltFailure("MobileGestalt changed since it was loaded. Refresh before applying your edits.") }
         return current
     }
 
+    /// Commits `edited` over `expected`. `recordingRestoredHardware`
+    /// is set only by the Face ID recovery
+    /// (`restoreHardwareIdentity`): the four hardware-identity fields
+    /// are restored from a verified same-device backup, so the commit
+    /// guard must not reject them — and the recorded originals must
+    /// be rewritten to the verified real hardware, so a future
+    /// Revert does not restore a spoofed value.
     func commit(_ edited: GestaltDocument, expected: DocumentSnapshot, restoring record: BackupRecord? = nil,
-                originallyAbsentKeys: Set<String> = []) throws -> DocumentSnapshot {
-        guard expected.source != .device || edited.preservesDeviceIdentity(of: expected.document) else {
+                originallyAbsentKeys: Set<String> = [], recordingRestoredHardware: Bool = false,
+                preWriteBackup: BackupRecord? = nil) throws -> DocumentSnapshot {
+        guard expected.source != .device || edited.preservesDeviceIdentity(of: expected.document, excludingHardwareIdentity: recordingRestoredHardware) else {
             throw GestaltFailure("Device identity fields cannot be changed in the system plist. Open a local file to edit these fields.")
         }
-        if record == nil { try DeviceCacheOptions.validateEdit(from: expected.document, to: edited) }
+        if record == nil && !recordingRestoredHardware {
+            try DeviceCacheOptions.validateEdit(from: expected.document, to: edited)
+            // §3.4 allowlist gate: the apply path may only change
+            // keys a feature stages (SecurityEngine). The Face ID
+            // hardware-identity restore path skips this gate: its
+            // keys are deliberately not allowlisted (see the doc
+            // comment on this function). Local files skip it too:
+            // the identity check above already exempts local sources
+            // ("Open a local file to edit these fields"), and a local
+            // file can never reach the device without passing this
+            // gate on the device path — so gating local edits only
+            // blocks legitimate local editing.
+            if expected.source == .device {
+                try SecurityEngine.authorizeWrite(from: expected.document, to: edited)
+            }
+        }
         guard originallyAbsentKeys.allSatisfy({ edited.extra[$0] == nil }) else {
             throw GestaltFailure("The selected added fields must be removed before applying.")
         }
@@ -988,14 +1267,22 @@ actor GestaltFileStore {
         guard expected.source == .device else {
             // The pre-edit state of a locally opened file is imported
             // history, even when the file was previously verified.
-            try saveBackup(expected.data, source: .local, reason: "Before editing", provenance: .importedHistory)
+            if let preWriteBackup {
+                // AppCore already created the pre-write backup; verify
+                // it covers the pre-write bytes instead of writing a
+                // second one.
+                try SecurityEngine.requirePreWriteBackup(preWriteBackup, covering: expected.data)
+            } else {
+                try saveBackup(expected.data, source: .local, reason: "Before editing", provenance: .importedHistory)
+            }
             var originals = expected.recordingOriginals(to: edited)
             for key in originallyAbsentKeys { originals.fields[key] = OriginalField(value: nil) }
             // A backup replaces the imported payload. Its ownership has not been
             // verified merely because the previously open document was verified.
             let ownershipVerified = record == nil && expected.ownershipVerified
             return DocumentSnapshot(data: output, document: edited, source: .local, name: expected.name,
-                                    originals: originals.fields, cachedOptionsOriginal: originals.cachedOptions, wapiOriginal: originals.wapi, ownershipVerified: ownershipVerified,
+                                    originals: originals.fields, cachedOptionsOriginal: originals.cachedOptions, wapiOriginal: originals.wapi,
+                                    advAISlotOriginals: originals.advAISlots, ownershipVerified: ownershipVerified,
                                     provenance: expected.provenance)
         }
         if let record {
@@ -1019,15 +1306,32 @@ actor GestaltFileStore {
             // Resolve old history before creating today's pre-write backup, so
             // this current (possibly already modified) state cannot migrate it.
             // The pre-write state is pre-modification state by definition.
-            try saveBackup(current, source: .device, reason: record == nil ? "Before applying" : "Before restoring", provenance: .preModification)
+            // When AppCore already created the pre-write backup (Stage 5
+            // orchestration), verify it covers these exact bytes instead
+            // of writing a second backup; otherwise create it here, so
+            // a write never proceeds without a fresh backup (§3.4).
+            if let preWriteBackup {
+                try SecurityEngine.requirePreWriteBackup(preWriteBackup, covering: current)
+            } else {
+                try saveBackup(current, source: .device, reason: record == nil ? "Before applying" : "Before restoring", provenance: .preModification)
+            }
             baseline.originals.merge(saved.fields) { _, saved in saved }
             if let audio = saved.cachedOptions { baseline.cachedOptionsOriginal = audio }
             if let wapi = saved.wapi { baseline.wapiOriginal = wapi }
+            baseline.advAISlotOriginals.merge(saved.advAISlots) { _, saved in saved }
             var originals = baseline.recordingOriginals(to: edited)
             originals.unavailableCacheOriginals = saved.unavailableCacheOriginals
             // Explicitly removing a user-confirmed added field also corrects
             // old zero/one residues whose earlier origin was not recorded.
             for key in originallyAbsentKeys { originals.fields[key] = OriginalField(value: nil) }
+            if recordingRestoredHardware {
+                // An external spoof may predate our history. Record the
+                // verified real hardware so a future Revert uses it, not
+                // the spoofed first read.
+                for key in GestaltKeys.hardwareIdentity {
+                    originals.fields[key] = OriginalField(value: edited.extra[key])
+                }
+            }
             // Persist absence as well as typed values before the system write.
             // This record is separate from deletable full-file backups.
             try saveOriginals(originals, for: expected.document)
@@ -1051,7 +1355,8 @@ actor GestaltFileStore {
             eventSink("Readback: verified")
             return DocumentSnapshot(data: readback, document: edited, source: .device, name: expected.name,
                                     originals: originals.fields, cachedOptionsOriginal: originals.cachedOptions,
-                                    wapiOriginal: originals.wapi, provenance: record?.provenance ?? .unknown)
+                                    wapiOriginal: originals.wapi, advAISlotOriginals: originals.advAISlots,
+                                    provenance: record?.provenance ?? .unknown)
         }
     }
 

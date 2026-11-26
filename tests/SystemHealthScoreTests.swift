@@ -23,9 +23,9 @@ final class SystemHealthScoreTests: XCTestCase {
     /// A known device with full evidence: layout resolved, CacheUUID
     /// present, originals recorded, document round-trips, model and
     /// build known, support scope recorded, a trusted verified
-    /// backup, and a one-tap simulation with 9 diffs. Cache,
-    /// compatibility and backup score 100; risk scores 90 (9 staged
-    /// fields deduct 10); the overall is the mean, capped at 99.
+    /// backup, and a one-tap simulation with 10 diffs. Cache,
+    /// compatibility and backup score 100; risk scores 80 (10 staged
+    /// fields deduct 20); the overall is the mean, capped at 99.
     func testKnownDeviceWithFullEvidenceScoresHealthy() throws {
         let document = try CoreModuleFixtures.document()
         let snapshot = CoreModuleFixtures.snapshot(
@@ -47,9 +47,9 @@ final class SystemHealthScoreTests: XCTestCase {
         XCTAssertEqual(score.dimension(.cacheIntegrity)?.score, 100)
         XCTAssertEqual(score.dimension(.compatibility)?.score, 100)
         XCTAssertEqual(score.dimension(.backup)?.score, 100)
-        XCTAssertEqual(score.dimension(.modificationRisk)?.score, 90,
-                       "9 staged fields deduct 10 from the risk dimension")
-        XCTAssertEqual(score.overallScore, 97, "Mean of 100, 100, 100 and 90")
+        XCTAssertEqual(score.dimension(.modificationRisk)?.score, 80,
+                       "10 staged fields deduct 20 from the risk dimension")
+        XCTAssertEqual(score.overallScore, 95, "Mean of 100, 100, 100 and 80")
         XCTAssertEqual(score.overallLevel, .healthy)
     }
 

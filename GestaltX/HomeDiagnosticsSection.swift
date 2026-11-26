@@ -43,14 +43,14 @@ enum HomeDiagnosticsSectionID: String, CaseIterable, Identifiable, Sendable {
     /// gets the missing sections appended in default order, so no
     /// section silently disappears. Unknown ids are ignored.
     static func orderedVisibleSections(_ settings: PersonalizationSettings) -> [HomeDiagnosticsSectionID] {
-        let hidden = settings.hiddenHomeSections ?? []
+        let hidden = settings.hiddenHomeSections
         let ordered: [HomeDiagnosticsSectionID]
-        if let stored = settings.homeSectionOrder {
-            let known = stored.compactMap { HomeDiagnosticsSectionID(rawValue: $0) }
+        if settings.homeSectionOrder.isEmpty {
+            ordered = defaultOrder
+        } else {
+            let known = settings.homeSectionOrder.compactMap { HomeDiagnosticsSectionID(rawValue: $0) }
             let missing = defaultOrder.filter { !known.contains($0) }
             ordered = known + missing
-        } else {
-            ordered = defaultOrder
         }
         return ordered.filter { !hidden.contains($0.rawValue) }
     }
@@ -146,9 +146,9 @@ struct DiagnosticsSummaryCard: View {
 
     var body: some View {
         GlassCard(cornerRadius: GlassTokens.cardRadius) {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack(spacing: 12) {
-                    GlassIconPedestal(systemImage: "heart.text.square", tint: .gestaltAccent, size: 44)
+            VStack(alignment: .leading, spacing: GlassTokens.rowSpacing) {
+                HStack(spacing: GlassTokens.rowSpacing) {
+                    GlassIconPedestal(systemImage: "heart.text.square", tint: .gestaltAccent, size: GlassTokens.iconSize)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(L("Diagnostics Summary"))
                             .font(.headline)
@@ -163,7 +163,7 @@ struct DiagnosticsSummaryCard: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 } else {
-                    HStack(spacing: 12) {
+                    HStack(spacing: GlassTokens.rowSpacing) {
                         summaryChip(
                             value: healthScoreText,
                             label: L("Health Score"),
@@ -229,7 +229,7 @@ struct HomeDiagnosticsSection: View {
     let order: [HomeDiagnosticsSectionID]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: GlassTokens.rowSpacing) {
             Text(L("Diagnostics"))
                 .font(.headline)
             ForEach(order) { section in

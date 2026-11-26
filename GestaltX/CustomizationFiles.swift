@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
-// ZIP archive reading via ZIPFoundation 0.9.20 (MIT, Thomas Zoechling,
+// ZIP archive reading via ZIPFoundation 0.9.21 (MIT, Thomas Zoechling,
 // https://github.com/weichsel/ZIPFoundation); linked as a Swift Package.
 // Full MIT text: Licenses/ZIPFoundation-MIT.txt.
 import Foundation
-import CryptoKit
 import ZIPFoundation
 
 struct CustomizationFailure: LocalizedError {
@@ -15,7 +14,42 @@ struct CustomizationFailure: LocalizedError {
 enum CustomizationFiles {
     static let maximumFile = 256 * 1024 * 1024
     static let maximumTotal = 768 * 1024 * 1024
-    static func digest(_ data: Data) -> String { SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined() }
+
+    /// Stages a document-picker file into a private temp directory
+    /// and returns the staged copy. The picker grants security-scoped
+    /// access for the copy; the caller owns the staged file and its
+    /// directory (see `discardStagedDirectory`). Throws when the
+    /// file is not a regular file or exceeds `maximumFile`.
+    static func stagePickedFile(_ source: URL) throws -> URL {
+        let scoped = source.startAccessingSecurityScopedResource()
+        defer { if scoped { source.stopAccessingSecurityScopedResource() } }
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("GX-Import-\(UUID().uuidString)")
+        do {
+            let size = try source.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey])
+            guard size.isRegularFile == true, (size.fileSize ?? Int.max) <= maximumFile else {
+                throw CustomizationFailure("The archive is invalid or exceeds the size limit.")
+            }
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: false)
+            let target = directory.appendingPathComponent(source.lastPathComponent)
+            try FileManager.default.copyItem(at: source, to: target)
+            return target
+        } catch {
+            try? FileManager.default.removeItem(at: directory)
+            throw error
+        }
+    }
+
+    /// Removes a staging directory created by `stagePickedFile` (the
+    /// GX-Import-<uuid> directory containing the staged file). Best
+    /// effort: a failure leaves the temp directory for the OS to
+    /// clean. Refuses any directory that is not a staging directory,
+    /// so a wrong URL can never delete user data.
+    static func discardStagedDirectory(containing file: URL) {
+        let directory = file.deletingLastPathComponent()
+        guard directory.lastPathComponent.hasPrefix("GX-Import-") else { return }
+        try? FileManager.default.removeItem(at: directory)
+    }
+    static func digest(_ data: Data) -> String { BackupEngine.sha256Hex(of: data) }
     static func relative(_ path: String) throws -> String {
         let parts = path.split(separator: "/", omittingEmptySubsequences: false)
         guard !path.isEmpty, !path.hasPrefix("/"), !path.contains("\\"), !path.contains("\0"),
@@ -50,6 +84,13 @@ enum CustomizationFiles {
         return next
     }
     static func read(_ url: URL) throws -> Data {
+        // URL caches resource values per URL object. The restore loop
+        // reads a target, replaces it with an atomic write, then reads
+        // it back through the same URL object: without invalidating,
+        // the read-back sees the pre-write size and fails the length
+        // check even though the bytes on disk are correct.
+        var url = url
+        url.removeAllCachedResourceValues()
         let values = try url.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey])
         guard values.isRegularFile == true, values.isSymbolicLink != true,
               let size = values.fileSize, size >= 0, size <= maximumFile else {
@@ -220,23 +261,23 @@ struct CustomizationFileTransaction {
         } else if FileManager.default.fileExists(atPath: url.path) { try FileManager.default.removeItem(at: url) }
         guard try current(path) == original else { throw CustomizationFailure("The files changed. Read again before applying.") }
     }
-    func replace(_ changes: [String: Data], expected: [String: CustomizationOriginal]? = nil) throws {
+    func replace(_ changes: [String: Data], expected: [String: CustomizationOriginal] = [:]) throws {
         try perform(changes.mapValues { CustomizationOriginal(data: $0) }, expected: expected, savingOriginals: true)
     }
     func restore() throws {
-        try perform(journal().originals, expected: nil, savingOriginals: false)
+        try perform(journal().originals, expected: [:], savingOriginals: false)
     }
     var hasOriginals: Bool { (try? journal().originals.isEmpty == false) ?? false }
     var hasChanges: Bool {
         guard let originals = try? journal().originals else { return false }
         return originals.contains { path, value in (try? current(path)) != value }
     }
-    private func perform(_ changes: [String: CustomizationOriginal], expected: [String: CustomizationOriginal]?, savingOriginals: Bool) throws {
+    private func perform(_ changes: [String: CustomizationOriginal], expected: [String: CustomizationOriginal] = [:], savingOriginals: Bool) throws {
         guard !changes.isEmpty else { return }
         var journal = try journal(), before: [String: CustomizationOriginal] = [:]
         for path in changes.keys.sorted() {
             before[path] = try current(path)
-            if let value = expected?[path], value != before[path] { throw CustomizationFailure("The files changed. Read again before applying.") }
+            if let value = expected[path], value != before[path] { throw CustomizationFailure("The files changed. Read again before applying.") }
             if savingOriginals, journal.originals[path] == nil { journal.originals[path] = before[path] }
         }
         try CustomizationFiles.saveVerified(before, to: storage.appendingPathComponent("Backups/\(UUID().uuidString).plist"))

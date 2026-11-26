@@ -69,9 +69,10 @@ enum CatalogSort: String, Codable, CaseIterable, Equatable, Hashable, Sendable {
 /// catalog card's visible entries; `visibleToolCards` filters the
 /// Tools page category grid in ContentView. `homeSectionOrder` and
 /// `hiddenHomeSections` order and filter the Tools home diagnostics
-/// sections (see `HomeDiagnosticsSectionID`); both are optional so
-/// a settings file written before they existed still decodes — nil
-/// means the default order with nothing hidden.
+/// sections (see `HomeDiagnosticsSectionID`); both default to
+/// empty so a settings file written before they existed still
+/// decodes — an empty order means the default order and an empty
+/// hidden set means nothing hidden.
 struct PersonalizationSettings: Codable, Equatable, Sendable {
     var catalogSort: CatalogSort
     var favoritesFirst: Bool
@@ -81,30 +82,38 @@ struct PersonalizationSettings: Codable, Equatable, Sendable {
     /// "personalization"). Unknown ids are ignored by the UI.
     var visibleToolCards: Set<String>
     /// Home diagnostics section ids in the user's preferred order
-    /// (`HomeDiagnosticsSectionID` raw values). `nil` means the
-    /// default order. Unknown ids are ignored; sections missing
-    /// from a stored order are appended in default order, so a
-    /// section added in a later version still appears.
-    var homeSectionOrder: [String]?
+    /// (`HomeDiagnosticsSectionID` raw values). An empty array
+    /// means the default order. Unknown ids are ignored; sections
+    /// missing from a stored order are appended in default order,
+    /// so a section added in a later version still appears.
+    var homeSectionOrder: [String] = []
     /// Home diagnostics section ids the user hid
-    /// (`HomeDiagnosticsSectionID` raw values). `nil` means nothing
-    /// hidden. Unknown ids are ignored.
-    var hiddenHomeSections: Set<String>?
+    /// (`HomeDiagnosticsSectionID` raw values). An empty set means
+    /// nothing hidden. Unknown ids are ignored.
+    var hiddenHomeSections: Set<String> = []
+    /// The personal-library wallpaper used as the in-app home
+    /// background (Stage 8, TASKBOOK §7.3). `nil` means the default
+    /// lavender gradient. This is in-app only: it never changes the
+    /// system wallpaper, which iOS gives no public API to set. An id
+    /// whose library entry is gone is treated as `nil` by the UI.
+    var homeWallpaperID: UUID? = nil
 
     static let defaults = PersonalizationSettings(
         catalogSort: .byCategory, favoritesFirst: false,
         visibleToolCards: Set(PersonalizationCenter.allToolCardIDs),
-        homeSectionOrder: nil, hiddenHomeSections: nil)
+        homeSectionOrder: [], hiddenHomeSections: [], homeWallpaperID: nil)
 
     init(catalogSort: CatalogSort = .byCategory, favoritesFirst: Bool = false,
          visibleToolCards: Set<String> = Set(PersonalizationCenter.allToolCardIDs),
-         homeSectionOrder: [String]? = nil,
-         hiddenHomeSections: Set<String>? = nil) {
+         homeSectionOrder: [String] = [],
+         hiddenHomeSections: Set<String> = [],
+         homeWallpaperID: UUID? = nil) {
         self.catalogSort = catalogSort
         self.favoritesFirst = favoritesFirst
         self.visibleToolCards = visibleToolCards
         self.homeSectionOrder = homeSectionOrder
         self.hiddenHomeSections = hiddenHomeSections
+        self.homeWallpaperID = homeWallpaperID
     }
 }
 
@@ -381,6 +390,42 @@ enum PersonalizationCenter {
         _ settings: PersonalizationSettings
     ) -> [String] {
         allToolCardIDs.filter { settings.visibleToolCards.contains($0) }
+    }
+
+    /// Reads the in-app home background wallpaper id (Stage 8).
+    /// Returns `nil` when the settings are unavailable or no
+    /// wallpaper is chosen; a missing library entry is also `nil`
+    /// to the caller — the home falls back to the lavender
+    /// gradient instead of showing a broken image.
+    static func loadHomeWallpaperID() -> UUID? {
+        guard let deviceID = RestoreIntelligence.installationDeviceID else { return nil }
+        let store = PersonalizationSettingsStore(
+            directory: RestoreIntelligence.historyDirectory, deviceID: deviceID)
+        return store.load().settings.homeWallpaperID
+    }
+
+    /// Sets the in-app home background wallpaper id (Stage 8).
+    /// `nil` restores the default lavender gradient. Returns an
+    /// error string when the settings could not be loaded or saved,
+    /// or `nil` on success. Saving posts
+    /// `.personalizationSettingsDidChange`, so the home reloads.
+    /// This only ever changes the in-app background — never the
+    /// system wallpaper.
+    @discardableResult
+    static func setHomeWallpaperID(_ id: UUID?) -> String? {
+        guard let deviceID = RestoreIntelligence.installationDeviceID else {
+            return L("History is unavailable: no installation ID has been recorded yet.")
+        }
+        let store = PersonalizationSettingsStore(
+            directory: RestoreIntelligence.historyDirectory, deviceID: deviceID)
+        var settings = store.load().settings
+        settings.homeWallpaperID = id
+        do {
+            try store.save(settings)
+            return nil
+        } catch {
+            return L("The settings could not be saved and verified. No system changes were made.")
+        }
     }
 
     /// Orders catalog entries under the user's settings: first by

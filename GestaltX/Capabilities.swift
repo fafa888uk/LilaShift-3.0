@@ -39,7 +39,7 @@ struct Capability: Identifiable, Equatable {
     var caution = false
     /// Per-key values for presets that are not a plain Boolean 1, such as the
     /// parallax switch (0) or the AOD flipbook count.
-    var values: [String: Any]? = nil
+    var values: [String: Any] = [:]
 
     /// Capabilities are compared by their Equatable fields. `values` is
     /// excluded: `[String: Any]` cannot be Equatable, and the catalog is
@@ -60,7 +60,7 @@ struct Capability: Identifiable, Equatable {
     var requiresEnableConfirmation: Bool { id == "storage" }
     var effectHint: String {
         switch id {
-        case "ai", "photosCleanUp", "alwaysListeningSiri":
+        case "ai", "siriAIMode", "photosCleanUp", "alwaysListeningSiri":
             "Restart required. Apple Intelligence also depends on device and region."
         case "personalTranslator":
             "Restart required. Apple Intelligence also depends on device and region. This stages the CacheExtra key; the CacheData slot is a separate value."
@@ -68,6 +68,12 @@ struct Capability: Identifiable, Equatable {
             "Restart required. Siri uses a device-specific capability type; changing it may affect the Apple Intelligence Siri interface. Keep the current value or restore the recorded original."
         case "audioIntelligence":
             "Restart required. Apple Intelligence also depends on device and region. The exact entry point depends on the device and OS version. This stages the CacheExtra key; the CacheData slot is a separate value."
+        case "spatialAudioRecording":
+            "Restart required. Requires the four-microphone array (iPhone 16 series and later). On older models enabling it can break the Voice Memos Studio recording mode. This stages the CacheExtra key; the CacheData slot is a separate value."
+        case "responsiveShutter":
+            "Restart required. Lowers the camera shutter-to-imaging latency for instant capture. This stages the CacheExtra key; the CacheData slot is a separate value."
+        case "hypertensionNotifications":
+            "Restart required. Enables hypertension trend evaluation and notifications in the Health app. This stages the CacheExtra key; the CacheData slot is a separate value."
         case "handwritingSynthesis":
             "Restart required. Apple Intelligence also depends on device and region. Results depend on the app and system support."
         case "pencil": "Restart the device, then reopen Settings. Pencil hardware support is still required."
@@ -114,7 +120,7 @@ struct Capability: Identifiable, Equatable {
         guard let fields = document?.extra else { return false }
         return keys.allSatisfy { key in
             guard let value = fields[key] else { return false }
-            return GestaltDocument.valuesEqual(value, values?[key] ?? enabled)
+            return GestaltDocument.valuesEqual(value, values[key] ?? enabled)
         }
     }
 
@@ -123,7 +129,7 @@ struct Capability: Identifiable, Equatable {
         for key in keys {
             switch choice {
             case .keep: break
-            case .enable: document.set(values?[key] ?? enabled, for: key)
+            case .enable: document.set(values[key] ?? enabled, for: key)
             case .disable: document.set(snapshot.originalValue(for: key), for: key)
             case .removeAdded: document.set(nil, for: key)
             }
@@ -162,10 +168,14 @@ struct Capability: Identifiable, Equatable {
         .init(id: "collisionSOS", category: .device, title: "Collision SOS", detail: "Show collision detection in Emergency SOS settings.", keys: ["HCzWusHQwZDea6nNhaKndw"]),
         .init(id: "audioMix", category: .device, title: "Audio Mix", detail: "Enable the audio mix capability for supported media.", keys: ["aVL5GE3tx0LSCI/ErfrJGA"]),
         .init(id: "spatialFaceTimeAudio", category: .device, title: "Spatial FaceTime Audio", detail: "Enable spatial audio playback for FaceTime.", keys: ["/EVOCjM/Nmb2roP5ebtEFA"]),
+        .init(id: "spatialAudioRecording", category: .device, title: "Spatial Audio Recording", detail: "Enable spatial audio recording in Voice Memos.", keys: ["X6NGcYcvHmbqlR8hLXASJA"], caution: true),
+        .init(id: "responsiveShutter", category: .device, title: "Responsive Shutter", detail: "Lower the camera shutter-to-imaging latency for instant capture.", keys: ["gQDt76Te0SPw7N8oTLrBFw"], caution: true),
+        .init(id: "hypertensionNotifications", category: .device, title: "Hypertension Notifications", detail: "Enable hypertension trend evaluation and notifications in the Health app.", keys: ["4fh9efw4o1yaFqkXNCXoeA"]),
         .init(id: "pencil", category: .ipad, title: "Apple Pencil", detail: "Expose Apple Pencil settings.", keys: ["yhHcB0iH0d1XzPO/CFd3ow"]),
         .init(id: "stageManager", category: .ipad, title: "Stage Manager", detail: "Expose Stage Manager support.", keys: ["qeaj75wk3HF4DwQ8qbIi7g"], caution: true),
         .init(id: "ipadApps", category: .ipad, title: "iPad App Compatibility", detail: "Allow iPad app compatibility types on iPhone.", keys: ["9MZ5AdH43csAUajl/dU+IQ"]),
         .init(id: "ai", category: .intelligence, title: "Apple Intelligence Capability", detail: "Enable Apple Intelligence generative models.", keys: ["A62OafQ85EJAiiqKn4agtg"]),
+        .init(id: "siriAIMode", category: .intelligence, title: "Siri AI Mode", detail: "Set SiriMode to 2 without spoofing hardware. Experimental; resource downloads and availability are not guaranteed.", keys: [GestaltKeys.siriMode], caution: true, values: [GestaltKeys.siriMode: NSNumber(value: 2)]),
         .init(id: "siriOnDevice", category: .intelligence, title: "On-Device Siri", detail: "Run Siri processing on the device.", keys: ["K/R1GfGfCkXvEhaPS2Vrng"], caution: true),
         .init(id: "audioIntelligence", category: .intelligence, title: "Audio Intelligence", detail: "Advertise the iOS 27 audio intelligence capability.", keys: ["rb2tKZxlj0Gm2tBmUQSLqQ"], caution: true),
         .init(id: "personalTranslator", category: .intelligence, title: "Personal Translator", detail: "Advertise the personal translator capability.", keys: ["M1n2sAqf33NAOgZRGxQYBA"], caution: true),
@@ -181,7 +191,7 @@ struct Capability: Identifiable, Equatable {
 
 /// One-tap "China Unlock" (full unlock) for China-mainland devices with
 /// eSIM hardware: the eSIM cache flags, region code US (`LL`, sales region
-/// untouched) and the six Apple Intelligence presets below.
+/// untouched) and the seven Apple Intelligence presets below.
 /// `siriOnDevice` is deliberately excluded: `Capability.availableChoices`
 /// for it is only `[.keep, .disable, .removeAdded]`, and 1.0.6 (#102)
 /// preserves its device-specific value, so forcing a generic value could
@@ -189,7 +199,11 @@ struct Capability: Identifiable, Equatable {
 /// are excluded as well; WAPI can still be disabled on its own.
 enum ChinaUnlock {
     static let regionCodeID = "US"
-    static let aiCapabilityIDs = ["ai", "audioIntelligence", "personalTranslator",
+    /// The single Siri AI Mode capability id, used by the standalone
+    /// Siri AI Mode preset (one item only — see `GestaltManager`
+    /// `stageChinaSiriAIMode`).
+    static let siriAIModeID = "siriAIMode"
+    static let aiCapabilityIDs = ["ai", "siriAIMode", "audioIntelligence", "personalTranslator",
                                   "photosCleanUp", "handwritingSynthesis", "alwaysListeningSiri"]
     static let aiCapabilities = aiCapabilityIDs.compactMap { id in
         Capability.all.first { $0.id == id }
@@ -215,9 +229,14 @@ enum ChinaUnlock {
 /// model-independent writes such as the region code, and it does not
 /// gate an explicit per-capability choice the user makes tap by tap in
 /// `Capability.apply` — that path has no model judgement to fail closed.
-/// Auto-staging paths (one-tap unlock, Fix) must consult this decision
-/// before staging anything model-dependent; see the cross-file note in
-/// the P0-4 report for the `GestaltManager` wiring.
+/// Auto-staging paths consult this decision only for writes that
+/// require a verified model entry (the Full US regulatory model
+/// number and SiriMode). The one-tap unlock's seven AI keys are
+/// outside this gate by the explicit #178 decision (2026-11-15):
+/// unlisted hardware defaults to non-native and stages the full
+/// proposal, because the AI keys do not assume any particular
+/// model — they assume non-nativeness, which is the availability
+/// default (see ADR-2-01).
 enum DeviceModelSupport {
     static func decision(for productType: String, originalRegModel: String?) -> DeviceModelDecision {
         if USRegulatoryModelMapping.usRegulatoryModel(originalRegModel: originalRegModel,
@@ -246,10 +265,10 @@ enum DeviceModelDecision: Equatable {
 }
 
 /// Region mode for China Unlock. The one-tap unlock always stages exactly
-/// the 9-item definition (eSIM + region code LL + six AI keys) in either
+/// the 10-item definition (eSIM + region code LL + seven AI keys) in either
 /// mode — except on hardware that natively supports Apple Intelligence,
 /// where it stages only the 3 non-AI items (eSIM + region code LL) and
-/// skips the six AI keys. The sales-region suffix and the regulatory
+/// skips the seven AI keys. The sales-region suffix and the regulatory
 /// model number are never staged by the one-tap, because a regulatory
 /// model that does not match the hardware makes the system discard the
 /// whole MobileGestalt cache at boot and rebuild it from factory data,

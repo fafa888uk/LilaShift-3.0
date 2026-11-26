@@ -62,12 +62,17 @@ struct FeatureCatalogView: View {
     @State private var expandedID: String?
     @State private var showingManage = false
 
+    /// Debounced search text: the visible items filter on the
+    /// published value, so fast typing runs the pipeline once per
+    /// pause instead of once per keystroke.
+    @StateObject private var searchDebouncer = SearchDebouncer()
+
     /// The visible items: the one pipeline (`FeatureCatalog.apply`)
     /// — hidden out, search, category and risk filters, then the
-    /// single ordering rule.
+    /// single ordering rule. The search runs on the debounced text.
     private var visibleItems: [FeatureCatalogItem] {
         FeatureCatalog.apply(
-            FeatureCatalog.allItems, query: searchText,
+            FeatureCatalog.allItems, query: searchDebouncer.debounced,
             category: selectedCategory, riskLevel: selectedRisk,
             settings: catalogSettings, catalogSort: settings.catalogSort,
             favoritesFirst: settings.favoritesFirst,
@@ -75,8 +80,11 @@ struct FeatureCatalogView: View {
     }
 
     var body: some View {
-        GlassCard(cornerRadius: GlassTokens.cardRadius) {
-            VStack(alignment: GlassTokens.cardAlignment, spacing: GlassTokens.cardSpacing) {
+        // One pipeline run per body evaluation: `visibleItems` is
+        // read for both the empty check and the list below.
+        let items = visibleItems
+        return GlassCard(cornerRadius: GlassTokens.cardRadius) {
+            LazyVStack(alignment: GlassTokens.cardAlignment, spacing: GlassTokens.cardSpacing) {
                 HStack(spacing: GlassTokens.gridSpacing) {
                     GlassIconPedestal(systemImage: "books.vertical", tint: .gestaltAccent, size: GlassTokens.iconSize)
                     VStack(alignment: .leading, spacing: 2) {
@@ -95,6 +103,7 @@ struct FeatureCatalogView: View {
 
                 TextField(L("Search features…"), text: $searchText)
                     .textFieldStyle(.roundedBorder)
+                    .onChange(of: searchText) { _, newValue in searchDebouncer.submit(newValue) }
 
                 HStack(spacing: 8) {
                     Picker(L("Category"), selection: $selectedCategory) {
@@ -129,12 +138,12 @@ struct FeatureCatalogView: View {
                 ))
                 .font(.subheadline)
 
-                if visibleItems.isEmpty {
+                if items.isEmpty {
                     Text(L("No features match this search."))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 } else {
-                    ForEach(visibleItems) { item in
+                    ForEach(items) { item in
                         catalogRow(item)
                     }
                 }

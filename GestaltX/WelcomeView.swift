@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // Copyright (C) 2026 huamidev
+// LilaShift modification: rebranded "Welcome to GestaltX" to LilaShift; iOS compatibility range updated.
+// Maintainer: @steam8871. Upstream GestaltX code remains huamidev's.
 import SwiftUI
 
 struct WelcomeView: View {

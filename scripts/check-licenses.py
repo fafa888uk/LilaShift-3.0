@@ -15,7 +15,7 @@ Verifies, with specific diagnostics:
      entry (name, url, license file where bundled) and shows the current
      repository URL, not the old patch-based repository.
   6. docs/OPEN_SOURCE_REFERENCES.md and docs/FEATURE_ORIGIN_MATRIX.md
-     exist and cover all 16 projects / 16 feature areas.
+     exist and cover all 17 projects / 16 feature areas.
   7. No stale "pristine v1.0.7 source plus the modification patch"
      distribution statement survives in any user-facing file.
   8. Version and changelog are consistent: MARKETING_VERSION in the
@@ -58,7 +58,7 @@ PBXPROJ = ROOT / "GestaltX.xcodeproj" / "project.pbxproj"
 CHANGELOG = ROOT / "CHANGELOG.md"
 README = ROOT / "README.md"
 
-# The 16 projects the audit covers (see docs/OPEN_SOURCE_REFERENCES.md).
+# The 17 projects the audit covers (see docs/OPEN_SOURCE_REFERENCES.md).
 PROJECTS = (
     "GestaltX",
     "worse_query",
@@ -74,6 +74,7 @@ PROJECTS = (
     "Nugget",
     "mond",
     "GestaltEdit",
+    "WQFiles",
     "SnapshotTesting",
     "SwiftLint",
 )
@@ -94,6 +95,7 @@ PROJECT_URLS = (
     "https://github.com/leminlimez/Nugget",
     "https://github.com/rooootdev/mond",
     "https://github.com/frs0n/GestaltEdit",
+    "https://github.com/kolbicz/WQFiles",
     "https://github.com/pointfreeco/swift-snapshot-testing",
     "https://github.com/realm/SwiftLint",
 )
@@ -202,7 +204,7 @@ def check_notices_carry_sources():
     for url in PROJECT_URLS:
         if url not in text:
             fail(f"THIRD_PARTY_NOTICES.md does not link {url}")
-    ok("notices name all 16 projects with their source URLs")
+    ok("notices name all 17 projects with their source URLs")
 
 
 def check_about_view():
@@ -211,12 +213,12 @@ def check_about_view():
         return
     text = ABOUT_VIEW.read_text(encoding="utf-8")
     entries = re.findall(r"OpenSourceProject\(", text)
-    if len(entries) != 16:
+    if len(entries) != 17:
         fail(f"AboutView lists {len(entries)} open-source projects, "
-             f"expected 16 (one entry per project)")
+             f"expected 17 (one entry per project)")
     urls = re.findall(r'url: "(https?://[^"]+)"', text)
-    if len(urls) != 16:
-        fail(f"AboutView has {len(urls)} project URLs, expected 16")
+    if len(urls) != 17:
+        fail(f"AboutView has {len(urls)} project URLs, expected 17")
     for name in PROJECTS:
         if name not in text:
             fail(f"AboutView does not list {name}")
@@ -233,7 +235,7 @@ def check_about_view():
             "fafa888uk/LilaShift-3.0" not in text:
         fail("AboutView does not show the current repository URL "
              "(GestaltBrand.lilashift / fafa888uk/LilaShift-3.0)")
-    ok("AboutView lists all 16 projects with URLs and bundled license files")
+    ok("AboutView lists all 17 projects with URLs and bundled license files")
 
 
 def check_reference_docs():
@@ -250,7 +252,7 @@ def check_reference_docs():
                 and "无许可证声明" not in text:
             fail("docs/OPEN_SOURCE_REFERENCES.md must record that "
                  "NeoSpring states no license (known issue)")
-        ok("docs/OPEN_SOURCE_REFERENCES.md covers all 16 projects")
+        ok("docs/OPEN_SOURCE_REFERENCES.md covers all 17 projects")
     if MATRIX.is_file():
         text = MATRIX.read_text(encoding="utf-8")
         # The matrix is written in Chinese; accept either language.

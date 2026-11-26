@@ -48,7 +48,7 @@ final class FeatureCatalogTests: XCTestCase {
         by sort: CatalogSort = .byCategory,
         favoritesFirst: Bool = false,
         favoriteIDs: Set<String> = [],
-        customOrder: [String]? = nil,
+        customOrder: [String] = [],
         recentIDs: [String] = []
     ) -> [String] {
         HomeSorting.sortCatalogItems(
@@ -60,10 +60,10 @@ final class FeatureCatalogTests: XCTestCase {
     // MARK: - Contents and mapping
 
     func testCatalogCounts() {
-        XCTAssertEqual(PresetCatalog.all.count, 40)
-        XCTAssertEqual(FeatureCatalog.presetItems.count, 40)
+        XCTAssertEqual(PresetCatalog.all.count, 46)
+        XCTAssertEqual(FeatureCatalog.presetItems.count, 46)
         XCTAssertEqual(FeatureCatalog.pageItems.count, 13)
-        XCTAssertEqual(FeatureCatalog.allItems.count, 53)
+        XCTAssertEqual(FeatureCatalog.allItems.count, 59)
     }
 
     func testCatalogHasNoDuplicateIDsAndCoversEveryPreset() {
@@ -77,10 +77,10 @@ final class FeatureCatalogTests: XCTestCase {
         let counts = Dictionary(grouping: FeatureCatalog.allItems, by: \.category)
             .mapValues(\.count)
         XCTAssertEqual(counts[.smartUnlock], 1)
-        XCTAssertEqual(counts[.appleIntelligence], 8)
+        XCTAssertEqual(counts[.appleIntelligence], 10)
         XCTAssertEqual(counts[.esimRegion], 4)
-        XCTAssertEqual(counts[.screenLock], 11)
-        XCTAssertEqual(counts[.systemSettings], 11)
+        XCTAssertEqual(counts[.screenLock], 12)
+        XCTAssertEqual(counts[.systemSettings], 14)
         XCTAssertEqual(counts[.personalization], 1)
         XCTAssertEqual(counts[.launchArtwork], 1)
         XCTAssertEqual(counts[.deviceDiagnostics], 8)
@@ -104,8 +104,10 @@ final class FeatureCatalogTests: XCTestCase {
         XCTAssertEqual(category(of: "modelNumber"), .advancedTools)
         XCTAssertEqual(category(of: "preset.oneTap"), .smartUnlock)
         XCTAssertEqual(category(of: "preset.aiOnly"), .appleIntelligence)
+        XCTAssertEqual(category(of: "preset.siriAIMode"), .appleIntelligence)
         XCTAssertEqual(category(of: "preset.esimRegion"), .esimRegion)
         XCTAssertEqual(category(of: "ai"), .appleIntelligence)
+        XCTAssertEqual(category(of: "siriAIMode"), .appleIntelligence)
         XCTAssertEqual(category(of: "dynamicIsland"), .screenLock)
         XCTAssertEqual(category(of: "storage"), .advancedTools)
         XCTAssertEqual(category(of: "pencil"), .systemSettings)
@@ -141,7 +143,7 @@ final class FeatureCatalogTests: XCTestCase {
 
     func testFilterByCategoryAndRisk() {
         XCTAssertEqual(
-            FeatureCatalog.filtered(FeatureCatalog.allItems, category: .screenLock).count, 11)
+            FeatureCatalog.filtered(FeatureCatalog.allItems, category: .screenLock).count, 12)
         XCTAssertEqual(
             FeatureCatalog.filtered(FeatureCatalog.allItems, category: .deviceDiagnostics).count, 8)
         // A risk filter excludes page items: they carry no risk.
@@ -265,7 +267,7 @@ final class FeatureCatalogTests: XCTestCase {
         let changed = FeatureCatalogSettings(
             customOrder: ["ai", "esim"], hiddenIDs: ["ai"], recentIDs: ["esim"])
         XCTAssertNotEqual(changed, .defaults)
-        XCTAssertEqual(FeatureCatalogSettings.defaults.customOrder, nil)
+        XCTAssertTrue(FeatureCatalogSettings.defaults.customOrder.isEmpty)
         XCTAssertTrue(FeatureCatalogSettings.defaults.hiddenIDs.isEmpty)
         XCTAssertTrue(FeatureCatalogSettings.defaults.recentIDs.isEmpty)
     }
@@ -273,7 +275,7 @@ final class FeatureCatalogTests: XCTestCase {
     // MARK: - Settings store
 
     func testSettingsDefaults() {
-        XCTAssertNil(FeatureCatalogSettings.defaults.customOrder)
+        XCTAssertTrue(FeatureCatalogSettings.defaults.customOrder.isEmpty)
         XCTAssertTrue(FeatureCatalogSettings.defaults.hiddenIDs.isEmpty)
         XCTAssertTrue(FeatureCatalogSettings.defaults.recentIDs.isEmpty)
     }
@@ -351,7 +353,7 @@ final class FeatureCatalogTests: XCTestCase {
         XCTAssertNil(HomeSectionID.deviceOverview.destination)
         XCTAssertNil(HomeSectionID.commonFeatures.destination)
         XCTAssertEqual(HomeSectionID.chinaUnlock.destination, .unlock)
-        XCTAssertEqual(HomeSectionID.appleIntelligenceEsim.destination, .unlock)
+        XCTAssertEqual(HomeSectionID.appleIntelligenceEsim.destination, .aiOnly)
         XCTAssertEqual(HomeSectionID.securityDiagnosis.destination, .diagnostics)
         XCTAssertEqual(HomeSectionID.backupRestore.destination, .restore)
         XCTAssertEqual(HomeSectionID.presetManagement.destination, .presets)

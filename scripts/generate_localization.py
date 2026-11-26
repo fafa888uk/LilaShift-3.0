@@ -405,7 +405,7 @@ China Unlock	国行一键解锁
 One-Tap Restore	一键还原
 One-Tap Unlock	一键解锁
 China AI	国行 AI
-Enable the six Apple Intelligence features on a China-model iPhone.	在国行 iPhone 上启用 6 项 Apple 智能功能。
+Enable the seven Apple Intelligence features on a China-model iPhone.	在国行 iPhone 上启用 7 项 Apple 智能功能。
 Enable China AI	启用国行 AI
 Restore AI	还原 AI
 eSIM & Region	eSIM 与地区
@@ -445,7 +445,7 @@ Charge limit, tap to wake	充电上限、轻点唤醒
 Charging & Buttons	充电与按键
 Charging limits, buttons and alerts.	充电上限、按键与提醒。
 Check which settings this will update.	检查这次操作会更新哪些设置。
-Configure 6 items	将配置 6 项
+Configure 7 items	将配置 7 项
 Confirm Changes	确认更改
 Device identity, internal features and diagnostics.	设备标识、内部功能与诊断。
 Diagnostics	诊断
@@ -540,7 +540,7 @@ Enable or disable the eSIM-related system options.	启用或停用与 eSIM 相�
 Use the WAPI wireless security standard.	使用 WAPI 无线安全标准。
 Add a digital SIM in Settings.	在“设置”中添加数字 SIM。
 eSIM requires eSIM hardware.	需要设备具备 eSIM 硬件。
-Enable six Apple Intelligence features, including translation, Clean Up and always-listening Hey Siri.	启用 6 项 Apple 智能功能，包括翻译、照片消除和常听 Hey Siri。
+Enable seven Apple Intelligence features, including translation, Clean Up and always-listening Hey Siri.	启用 7 项 Apple 智能功能，包括翻译、照片消除和常听 Hey Siri。
 CacheData[0x%X] · slot %d	CacheData[0x%X] · 槽位 %d
 Other CacheData bytes changed	其他 CacheData 字节已更改
 Unrelated cache bytes changed — apply will be refused.	存在无关缓存字节更改，将拒绝应用。
@@ -1102,7 +1102,7 @@ Manage	管理
 Custom Order	自定义顺序
 No features match this search.	没有符合此搜索的功能。
 Show	显示
-No favorites yet. The three preset groups are shown instead.	暂无收藏，改为显示三个预设组合。
+No favorites yet. The four preset groups are shown instead.	暂无收藏，改为显示四个预设组合。
 Natively supported	原生支持
 Modifiable	可修改
 Enabled	已启用
@@ -1162,6 +1162,499 @@ Manual Restart	手动重启
 LilaShift does not restart SpringBoard itself. After applying changes, restart your device manually if a feature does not appear.	紫序不会自行重启 SpringBoard。应用更改后，若某项功能未出现，请手动重启设备。
 Share LilaShift	分享 LilaShift
 Pre-release	预发布
+Siri AI Mode	Siri AI 模式
+Siri AI Mode Only	仅 Siri AI 模式
+Enable Siri AI Mode	启用 Siri AI 模式
+Restore Siri AI Mode	还原 Siri AI 模式
+Switch Siri to AI mode alone — no eSIM, region, or other AI changes.	单独开启 Siri AI 模式，不动 eSIM、地区与其他 AI 能力。
+Apple Intelligence is already enabled natively on this device — Siri AI Mode is experimental and usually unnecessary here.	本设备已原生支持 Apple Intelligence——Siri AI 模式是实验性的，通常不需要。
+Restore Hardware Identity	恢复硬件标识
+A verified original hardware backup matching this device and cache is required.	需要与此设备和缓存匹配的已验证原始硬件备份。
+This device's hardware identity could not be verified.	无法验证此设备的硬件标识。
+Restore only the original product, board, CPU and model number from this backup. AI and region settings are kept. Restart and test Face ID and dictation afterward.	仅从此备份恢复原始产品、主板、CPU 和型号。AI 与地区设置保持不变。之后请重启并测试面容 ID 与听写。
+Clear & Rebuild Cache	清除并重建缓存
+Deletes the system cache so iOS rebuilds it from the hardware on restart. A backup is taken first.	删除系统缓存，以便 iOS 在重启时根据硬件重新生成。会先创建备份。
+Cache rebuilt. Restart the device to finish.	缓存已重建。请重启设备以完成。
+Only a live device cache can be rebuilt. Read the device first.	只能重建实时设备缓存。请先读取设备。
+# 1. China Siri voice gateway and Mandarin call screening must use a real IP direct connection (never a proxy)	# 1. 国行 Siri 语音主网关与普通话来电询问必须真实 IP 直连（严禁走代理）
+# 2. Apple Intelligence region checks, PCC privacy compute relay and anonymous token issuance (pinned above GEOSITE,apple,DIRECT)	# 2. Apple Intelligence 区域定位校验、PCC 隐私计算中继与匿名令牌签发（置于 GEOSITE,apple,DIRECT 之上）
+# 2. Apple Intelligence region checks, PCC privacy compute relay and anonymous token issuance (use a low-concurrency clean US node that supports UDP/QUIC)	# 2. Apple Intelligence 区域定位校验、PCC 隐私计算中继与匿名令牌签发（请使用支持 UDP/QUIC 的低并发干净美区节点）
+# 3. Siri ChatGPT extension and visual intelligence (questions + Google image search)	# 3. Siri ChatGPT 扩展与视觉智能（提问 + Google 识图）
+A system-level restart record was detected (%@).	检测到一条系统级重启记录（%@）。
+Abnormal exit	异常退出
+Access was denied.	访问被拒绝。
+An app or daemon crashed abnormally.	某个 App 或守护进程异常崩溃。
+AppGroup Browser	AppGroup 浏览器
+Auditing supervision state…	正在审计监管状态…
+Battery Telemetry	电池遥测
+Battery health, cycle count and temperature are read from the system powerlog (read-only). They are not available through public iOS APIs. When the firmware does not grant the powerlog, the values are shown as unavailable — never guessed.	电池健康度、循环次数与温度取自系统 powerlog（只读）。公开 iOS API 不提供这些数据；若固件未授予 powerlog 访问权限，将显示为不可用，绝不凭空编造。
+Checks whether this device carries a genuine MDM supervision profile or only a leftover fake-supervision residue file. Genuine MDM is never touched. Cleanup deletes only the residue file.	检查本设备是否装有真正的 MDM 监管配置文件，或仅剩一个伪监管残留文件。真正的 MDM 绝不会被触碰；清理仅删除残留文件。
+Clean	清理
+Clean Fake Supervision Residue	清理伪监管残留
+Clean fake supervision residue?	清理伪监管残留？
+Copied to the clipboard.	已复制到剪贴板。
+Copy	复制
+Could not access the App Group.	无法访问 App Group。
+Could not create the query handle.	无法创建查询句柄。
+Could not create the read-only snapshot: %@	无法创建只读快照：%@
+Could not create the symbolic link.	无法创建符号链接。
+Could not get write access to the module directory.	无法获取模块目录的写入权限。
+Could not get write access to the proxy client's shared container.	无法获取代理客户端共享容器的写入权限。
+Could not open the database snapshot: %@	无法打开数据库快照：%@
+Could not resolve the system functions.	无法解析系统函数。
+Crash Diagnostics	崩溃诊断
+Crash, jetsam and panic reports already on this device, read-only. Cleaning deletes only the reports listed here; it never touches system logs.	本设备上已有的崩溃、Jetsam 与内核恐慌报告，只读。清理仅删除下方列出的报告，绝不触碰系统日志。
+Crashes	崩溃
+Cycle Count	循环次数
+Delete All Reports	删除全部报告
+Delete all diagnostic reports?	删除全部诊断报告？
+Deleted %lld report(s).	已删除 %lld 份报告。
+Design Capacity	设计容量
+Error code %d	错误代码 %d
+Fake Residue	伪监管残留
+Fake supervision residue removed. A genuine MDM profile was not touched.	伪监管残留已清除，未触碰真正的 MDM 配置文件。
+Format	格式
+Generated Rules	已生成的规则
+Generated by LilaShift: keeps China Siri and Mandarin call screening on a real-IP direct connection, while routing Apple Intelligence private cloud compute, region checks and visual intelligence to %@.	由 紫序 生成：保持国行 Siri 与普通话来电询问真实 IP 直连，同时将 Apple Intelligence 隐私云计算、区域校验与视觉智能分流至 %@。
+Generates routing rules that keep China Siri and Mandarin call screening on a real-IP direct connection, while routing Apple Intelligence private cloud compute, region checks and visual intelligence to your overseas policy group. Generating writes nothing; injection writes one .sgmodule file into the detected proxy client's own shared container.	生成分流规则：让国行 Siri 与普通话来电询问保持真实 IP 直连，同时将 Apple Intelligence 隐私云计算、区域校验与视觉智能分流到你的海外策略组。生成不写入任何内容；注入仅向检测到的代理客户端自有共享容器写入一个 .sgmodule 文件。
+Genuine MDM	真正的 MDM
+Heavy performance restriction and dimming (Heavy)	重度性能限制与降亮度（重度）
+Inject	注入
+Inject into Proxy Client	注入到代理客户端
+Inject module into this proxy client?	将模块注入此代理客户端？
+Injection is only available for the Surge (.sgmodule) format.	注入仅适用于 Surge（.sgmodule）格式。
+Jetsam	Jetsam
+Jetsam memory protection event	Jetsam 内存保护事件
+Keeps China Siri and Mandarin call screening on a real-IP direct connection, while routing Apple Intelligence private cloud compute, region checks and visual intelligence to %@ (make sure the selected US node has udp: true).	保持国行 Siri 与普通话来电询问真实 IP 直连，同时将 Apple Intelligence 隐私云计算、区域校验与视觉智能分流至 %@（请确保所选美区节点已开启 udp: true）。
+Kernel panic / watchdog restart	内核恐慌 / 看门狗重启
+Largest memory process: %@	占用内存最大的进程：%@
+Largest: %@ · Killed: %@	最大：%@ · 已终止：%@
+Latest Sample	最新采样
+Level	电量
+Light thermal intervention (Light / Fair)	轻度温控干预（轻微/一般）
+LilaShift China Apple Intelligence & Call Screening Routing	紫序 国行 Apple 智能与来电询问分流
+Max Capacity	最大容量
+Moderate throttling and frame limiting (Moderate / Serious)	中度降频与限帧（中度/严重）
+Module written: %@. Open %@ and enable it in the module list.	模块已写入：%@。请打开 %@ 并在模块列表中启用它。
+No CloudConfigurationDetails.plist exists. The device carries no supervision residue.	不存在 CloudConfigurationDetails.plist，本设备没有监管残留。
+No crash reports were found.	未找到崩溃报告。
+No powerlog samples were found.	未找到 powerlog 采样。
+No proxy client was detected. Install Surge, Shadowrocket, Quantumult X, Loon or Stash first.	未检测到代理客户端。请先安装 Surge、Shadowrocket、Quantumult X、Loon 或 Stash。
+No reports were deleted.	未删除任何报告。
+No shared AppGroup containers were found.	未找到共享 AppGroup 容器。
+No shared containers could be read on this device.	在本设备上无法读取任何共享容器。
+Nothing was removed. The residue may already be gone, or access was denied.	未删除任何内容。残留可能已不存在，或访问被拒绝。
+Only a fake-supervision residue file was found (%@, IsSupervised with no MDM certificate chain). Cleaning it is safe.	仅发现一个伪监管残留文件（%@，只有 IsSupervised，没有 MDM 证书链），清理是安全的。
+Only a fake-supervision residue file was found (IsSupervised with no MDM certificate chain). Cleaning it is safe.	仅发现一个伪监管残留文件（只有 IsSupervised，没有 MDM 证书链），清理是安全的。
+Organization	组织
+Overheat protection threshold triggered (Critical)	已触发过热保护阈值（危急）
+Policy Group	策略组
+Power	功率
+Process crash report (%@)	进程崩溃报告（%@）
+Proxy Rules	代理规则
+Reading powerlog…	正在读取 powerlog…
+Reports	报告
+Result	结果
+Safari Bookmarks	Safari 书签
+Sampled	采样时间
+Scan Again	重新扫描
+Scanning diagnostic reports…	正在扫描诊断报告…
+Scanning shared containers…	正在扫描共享容器…
+Share	分享
+Shared AppGroup containers on this device, read-only. A container is only listed when its group identity could be verified; browsing never writes or deletes anything.	本设备上的共享 AppGroup 容器，只读。只有能验证组身份的容器才会被列出；浏览绝不写入或删除任何内容。
+Stash override rules (.stoverride / YAML)	Stash 覆盖规则（.stoverride / YAML）
+State	状态
+Summary	摘要
+Supervision Audit	监管审计
+Surge / Loon / Shadowrocket (.sgmodule)	Surge / Loon / Shadowrocket（.sgmodule）
+System	系统
+System diagnostic event (%@)	系统诊断事件（%@）
+Target path is empty.	目标路径为空。
+Temperature	温度
+That path still cannot be read and written by this app.	此 App 仍无法读取和写入该路径。
+That path still cannot be read by this app.	此 App 仍无法读取该路径。
+The diagnostic reports container could not be opened on this system version.	在此系统版本上无法打开诊断报告容器。
+The generated module text is empty.	生成的模块文本为空。
+The kernel Jetsam mechanism cleared background processes after physical memory ran out.	物理内存耗尽后，内核 Jetsam 机制清理了后台进程。
+The kernel refused the sandbox extension token for this path.	内核拒绝了此路径的沙盒扩展令牌。
+The powerlog container could not be opened on this firmware.	在此固件上无法打开 powerlog 容器。
+The sandbox query was denied.	沙盒查询被拒绝。
+The target database does not exist or this app cannot read it: %@	目标数据库不存在，或此 App 无法读取它：%@
+The target path does not exist.	目标路径不存在。
+Thermal Events	散热事件
+Thermal recovered to normal (Nominal)	温度已恢复正常（正常）
+This AppGroup does not belong to a known proxy client.	此 AppGroup 不属于已知的代理客户端。
+This container is empty or cannot be read.	此容器为空或无法读取。
+This deletes only the leftover CloudConfigurationDetails.plist that contains nothing but IsSupervised and OrganizationName. A genuine MDM enrollment is never deleted, and the lock-screen footnote is untouched.	这仅删除那个只包含 IsSupervised 与 OrganizationName 的残留 CloudConfigurationDetails.plist。真正的 MDM 注册绝不会被删除，锁屏脚注也不受影响。
+This deletes the crash, jetsam and panic reports listed above. It does not affect system logs or any app data.	这将删除上方列出的崩溃、Jetsam 与内核恐慌报告，不影响系统日志或任何 App 数据。
+This device has a genuine MDM supervision profile (%@). It will never be deleted by this feature.	本设备装有真正的 MDM 监管配置文件（%@），本功能绝不会删除它。
+This device has a genuine MDM supervision profile. It will never be deleted by this feature.	本设备装有真正的 MDM 监管配置文件，本功能绝不会删除它。
+This writes one file (LilaShift-AppleIntelligence-CN.sgmodule) into the proxy client's own shared container. You still need to enable the module inside the proxy app. Removing the file fully reverses it.	这将向代理客户端自有共享容器写入一个文件（LilaShift-AppleIntelligence-CN.sgmodule）。你仍需在代理 App 内启用该模块；删除文件即可完全撤销。
+Total Size	总大小
+True Health	真实健康度
+Unknown process	未知进程
+Up	上一级
+The app replaced this file. Its existing backup was kept.	该 App 替换了此文件，已保留其现有备份。
+The original backup is invalid or belongs to another file. It was kept unchanged.	原始备份无效或属于其他文件，已保持原样。
+Asset Tag	资产标签
+Asset tag	资产标签
+Asset tag applied. Restart the device to see it on the Lock Screen.	资产标签已应用。重新启动设备后即可在锁定屏幕上看到。
+Asset tag removed. Restart the device to see the change.	资产标签已移除。重新启动设备后即可看到变化。
+Choice	选择
+Circular buttons	圆形按钮
+Conditional	有条件
+Containers with caches	含有缓存的容器
+Current Asset Tag	当前资产标签
+Custom images for the Phone app keypad buttons, staged the same way as launch images: every replaced file is backed up beside itself and can be restored. This is not a system-wide dialer theme — iOS has no public API for that — it replaces the cached button artwork the Phone app reads. After applying, toggle the appearance or restart the device; never force-quit the Phone app.	为电话 App 拨号盘按钮设置自定义图片，暂存方式与启动图相同：每个被替换的文件都会在旁边备份，之后可以还原。这不是系统级拨号盘主题——iOS 没有提供相关公开 API——它替换的是电话 App 自身读取的缓存按钮图片。应用后请切换外观或重新启动设备；切勿强制退出电话 App。
+DeviceSupportsSiriHub is the on-device Siri Hub intent-routing slot. When SiriHub routing is on, enabling Siri AI can hang at “Adding Siri support”, so the staging guard blocks AI staging until it is off. The status below is the live system answer, read-only.	DeviceSupportsSiriHub 是设备端 Siri Hub 意图路由槽位。SiriHub 路由开启时，启用 Siri AI 可能卡在“正在添加 Siri 支持内容”，因此暂存守卫会在关闭它之前阻止 AI 暂存。下方状态是实时系统答案，只读。
+Dialer Skin	拨号盘皮肤
+Dialer skin applied with some invalid images skipped.	拨号盘皮肤已应用，部分无效图片已跳过。
+Dialer skin applied. Toggle the appearance or restart the device to see it.	拨号盘皮肤已应用。请切换外观或重新启动设备查看。
+Enable storage preset?	启用存储预设？
+Enabling the storage preset can hide apps from the Home Screen. Only continue if you understand this.	启用存储预设可能会从主屏幕隐藏应用。只有理解这一点时才继续。
+Every MobileGestalt key the app knows about, with its meaning and the open-source source it was verified against. Nothing here is guessed.	本 App 已知的所有 MobileGestalt 键，附含义与核实过的开源来源。这里没有任何猜测内容。
+Export All	全部导出
+Export Bookmarks	导出书签
+Export Selected	导出所选
+Import Theme	导入主题
+Installation	安装方式
+Key: waGD2UTpntjbDXD1r3oALQ (Erosion-CN MGCacheLayout). Not present in upstream GestaltX 1.1.1.	键：waGD2UTpntjbDXD1r3oALQ（Erosion-CN MGCacheLayout）。上游 GestaltX 1.1.1 中没有。
+MobileGestalt Keys	MobileGestalt 键
+Model Cache Probe	模型缓存探测
+No Voice Memos recordings were found.	未找到语音备忘录录音。
+No backed-up keypad originals were found.	未找到已备份的拨号盘原始图片。
+No model caches found here.	此处未找到模型缓存。
+Only the readable system translation, voice-memo transcription and visual-analysis container caches are counted. The Apple Intelligence core model weights live in the MobileAsset read-only volume managed by protected daemons, so this probe does not and cannot report them.	仅统计可读的系统翻译、语音备忘录转录与视觉分析容器缓存。Apple Intelligence 核心模型权重位于受保护守护进程管理的 MobileAsset 只读卷中，因此本探测无法报告它们。
+Original keypad images restored. Toggle the appearance or restart the device to see them.	已还原原始拨号盘图片。请切换外观或重新启动设备查看。
+Preset Lab	预设实验室
+Probe Again	再次探测
+Probing model caches…	正在探测模型缓存…
+Restore Originals	还原原始图片
+Scanning recordings…	正在扫描录音…
+SiriHub Guard	SiriHub 守卫
+SiriHub Routing	SiriHub 路由
+SiriHub routing is off. Siri AI staging is not blocked by this guard.	SiriHub 路由已关闭。此守卫不会阻止 Siri AI 暂存。
+SiriHub routing is on. Enabling Siri AI while SiriHub is on can hang at “Adding Siri support”. Turn SiriHub off first, then try again.	SiriHub 路由已开启。SiriHub 开启时启用 Siri AI 可能卡在“正在添加 Siri 支持内容”。请先关闭 SiriHub，然后重试。
+Staged changes	已暂存的更改
+System Version	系统版本
+The Phone app container could not be opened on this device.	无法在此设备上打开电话 App 容器。
+The Voice Memos container could not be opened on this device.	无法在此设备上打开语音备忘录容器。
+The asset tag could not be applied on this device.	无法在此设备上应用资产标签。
+The asset tag could not be removed on this device.	无法在此设备上移除资产标签。
+The asset tag is the text shown at the bottom of the Lock Screen (for example an owner or organization label). It is stored in the device-configuration plist and can be removed again at any time.	资产标签是显示在锁定屏幕底部的文字（例如所有者或组织标识）。它保存在设备配置 plist 中，随时可以移除。
+The live SiriHub probe could not answer on this device, so SiriHub routing is unverified. Staging is not blocked on an unverified probe.	实时 SiriHub 探测无法在此设备上作答，因此 SiriHub 路由未验证。未验证的探测不会阻止暂存。
+Theme imported. Review the images, then tap Apply.	主题已导入。请检查图片，然后点击“应用”。
+Total files	文件总数
+Total size	总大小
+Try presets here before applying them. Staging a preset only marks it for the next apply; nothing is written until you tap Apply, which runs the same review, backup and readback as the main preset page. Groups and virtual entries are not listed here — they have their own apply paths.	先在这里试用预设，再应用。暂存预设只是为下一次应用做标记；在点击“应用”之前不会写入任何内容，应用时会执行与主预设页相同的检查、备份与回读。分组与虚拟条目不在此处列出——它们有各自的应用路径。
+Unknown duration	未知时长
+Voice Memo Export	语音备忘录导出
+Which Apple Intelligence model caches are actually present on this device, read-only. The probe reports only what it finds — it never guesses a model is present.	此设备上实际存在哪些 Apple Intelligence 模型缓存，只读。探测仅报告实际找到的内容——绝不会猜测某个模型存在。
+Your own Voice Memos recordings, read-only. Only the recordings the app can legitimately reach through the Voice Memos container are listed; nothing is deleted or modified. Export writes a ZIP of the selected recordings so you can share or back them up.	你自己的语音备忘录录音，只读。仅列出本 App 通过语音备忘录容器合法访问的录音；不会删除或修改任何内容。导出会将所选录音打包为 ZIP，方便分享或备份。
+This build was not verified device-by-device on real hardware. The matrix below states the designed support range from the repository source and documentation, not a per-device test result. Anything marked “unverified” has not been confirmed on a real device with this build.	本版未在真机上逐机型验证。下表是根据仓库源码与文档得出的设计支持范围，不是逐机型测试结果。标为“未验证”的项表示尚未用本版在真机上确认。
+Spatial Audio Recording	空间音频录制
+Enable spatial audio recording in Voice Memos.	在语音备忘录中启用空间音频录制。
+Responsive Shutter	灵敏快门
+Lower the camera shutter-to-imaging latency for instant capture.	降低相机快门到成像的延迟，实现即时拍摄。
+Hypertension Notifications	高血压通知
+Enable hypertension trend evaluation and notifications in the Health app.	在健康 App 中启用高血压趋势评估与通知。
+Could not read any recording audio file.	无法读取任何录音音频文件。
+Files	文件
+Size	大小
+Remove	移除
+Search keys	搜索键名
+Search presets	搜索预设
+Light	浅色
+Dark	深色
+Keypad appearance	拨号盘外观
+App Audio Library	应用音频库
+Apps that already have notification sounds or audio files	这里列出包含通知音或音频文件的 App
+Existing Audio	已有音频
+No Notification Sounds	未找到通知音
+Play Current Audio	试听当前音频
+Play Replacement	试听替换音频
+Choose Audio	选择音频
+Restore Original Audio	还原原始音频
+Restore Audio	还原音频
+Original audio restored.	已恢复原始音频。
+Audio replaced.	已替换音频。
+Not every sound listed is the current notification sound. Preview the sounds before replacing one.	列表中的音频不一定是当前通知音，可先试听，确认后再替换。
+Some folders could not be read or the scan limit was reached.	部分目录无法读取，或已达到扫描上限。
+Choose notification audio shorter than 30 seconds and smaller than 32 MB.	请选择短于 30 秒且小于 32 MB 的通知音频。
+This audio format is not supported.	不支持此音频格式。
+This format cannot be converted. Import audio with the same format, sample rate and channel count.	此格式暂不支持转换，请导入格式、采样率及声道数相同的音频。
+Enter the notification sound's exact filename, including its extension.	请输入通知铃声的完整文件名，包含扩展名。
+A file with this name already exists. Select it from the list to replace it.	同名文件已存在，请从列表中选择后替换。
+No saved original was found for this sound. The app may have replaced it after the last edit.	找不到这个音频的原始备份，App 可能在编辑后替换了它。
+Replace an app's notification sounds with your own audio.	用自己的音频替换 App 的通知音。
+Nature	自然
+City	城市
+Abstract	抽象
+Minimal	极简
+Gradient	渐变
+Other	其他
+Portrait	竖向
+Landscape	横向
+Wallpaper	壁纸
+This wallpaper already exists. Import it again to make a copy.	此壁纸已存在。再次导入可创建副本。
+The wallpaper could not be saved and verified. Try again.	无法保存并验证此壁纸。请重试。
+This wallpaper is damaged. Delete it and import it again.	此壁纸已损坏。请删除后重新导入。
+Give the wallpaper a name of 1–64 characters.	请为壁纸设置一个 1–64 个字符的名称。
+This iOS version blocks the mechanism. Stay on iOS 27.2.1 or below, or downgrade to 27.2.1 while Apple still signs it. Do not upgrade.	此 iOS 版本已封堵该机制。请停留在 iOS 27.2.1 或更早版本，或在 Apple 仍提供签名时降级到 27.2.1。请勿升级。
+The iOS build could not be confirmed, so the monitor cannot tell whether the mechanism is granted on this version.	无法确认 iOS 构建版本，因此监控器无法判断此版本是否允许使用该机制。
+Supported: iOS 27.3 beta 1 and earlier (builds before 24C5049d).	支持：iOS 27.3 beta 1 及更早版本（早于 24C5049d 的构建）。
+Builds from 24C5049d on are blocked; newer trains are blocked until the threshold is reviewed.	从 24C5049d 开始的构建已被阻止；在重新审查阈值之前，更高版本分支也会被阻止。
+Build %@: blocked fail-closed — it is from a newer train than the reviewed threshold (24C5049d, iOS 27.3 beta 2), and support for this train has not been reviewed. %@	构建 %@：为安全起见已阻止——它属于比已审查阈值（24C5049d，iOS 27.3 beta 2）更新的版本分支，此分支的支持情况尚未审查。%@
+Build %@: blocked — it is at or past 24C5049d (iOS 27.3 beta 2), where Apple blocked the mechanism. %@	构建 %@：已阻止——它等于或晚于 24C5049d（iOS 27.3 beta 2），Apple 已从该版本起封堵此机制。%@
+The supported range could not be confirmed for this build.	无法确认此构建是否在支持范围内。
+Verify integrity	验证完整性
+Verify device identity	验证设备身份
+Check iOS version	检查 iOS 版本
+Preview changes	预览更改
+Back up first	先备份
+Write changes	写入更改
+Read back and verify	回读并验证
+Report	报告
+Not run:	未执行：
+integrity verification failed	完整性验证失败
+This is a legacy backup with no recorded digest, so its integrity cannot be verified. No system changes were made.	这是未记录摘要的旧版备份，因此无法验证其完整性。未对系统进行任何更改。
+legacy backup without explicit confirmation	旧版备份未经明确确认
+Legacy backup — integrity not verified (no digest recorded).	旧版备份——完整性未经验证（未记录摘要）。
+backup file not found	未找到备份文件
+cache layout differs from this device	缓存布局与此设备不一致
+This backup does not belong to this device.	此备份不属于本设备。
+device identity mismatch	设备身份不匹配
+This device.	本设备。
+This iOS version blocks the mechanism.	此 iOS 版本已封堵该机制。
+iOS version blocks the mechanism	iOS 版本已封堵该机制
+iOS build could not be confirmed	无法确认 iOS 构建版本
+restore preview has a failed check	恢复预览中有检查未通过
+Restore preview checked.	恢复预览已检查。
+pre-write backup failed	写入前备份失败
+Backup saved.	备份已保存。
+Pre-write backup missing. No system changes were made.	缺少写入前备份。未对系统进行任何更改。
+pre-write backup missing	缺少写入前备份
+restore execution failed	恢复执行失败
+read-back mismatch	回读结果不一致
+read-back failed	回读失败
+Readback: verified.	回读：已验证。
+Restore complete.	恢复完成。
+Every database key, live: the first-read value, the staged value, and the live system answer side by side. A difference means a change is staged, or the live answer disagrees with it.	实时查看数据库中的每个键：并排显示首次读取值、暂存值和系统实时返回值。有差异表示更改已暂存，或系统实时返回值与其不一致。
+Differences only	仅显示差异
+Live values read at	实时值读取时间
+stale	已过期
+No monitor data yet — tap Refresh.	暂无监控数据——请点击刷新。
+No keys match this filter.	没有符合此筛选条件的键。
+MG Monitor	MG 监控
+Not granted on this iOS version.	此 iOS 版本不允许使用。
+build	构建
+The iOS build could not be confirmed.	无法确认 iOS 构建版本。
+Absent	不存在
+Live	实时
+Slot	槽位
+Native baseline	原生基线
+The live answer disagrees with the native baseline.	实时返回值与原生基线不一致。
+Export this plist?	导出此 plist？
+Export De-identified	去标识化导出
+Export Full	完整导出
+The full file contains this device's UDID and serial number. Anyone with the file can identify this device. De-identified removes the UDID, serial number and chip ID; the de-identified file cannot be restored.	完整文件包含本设备的 UDID 和序列号。任何持有该文件的人都能识别本设备。去标识化会移除 UDID、序列号和芯片 ID；去标识化后的文件不能用于恢复。
+Diagnostics Centre	诊断中心
+App Archive & Cache	应用存档与缓存
+Wallpaper Library	壁纸库
+Your own images: crop, convert, save to Photos.	处理自己的图片：裁剪、转换并保存到相册。
+The export is not a dictionary plist.	导出内容不是字典类型的 plist。
+Legacy backup on file — integrity not verified (no digest recorded).	已保存旧版备份——完整性未经验证（未记录摘要）。
+Own Documents	本应用文稿
+Own Cache	本应用缓存
+App Group Data	App Group 数据
+Shared Inbox	共享收件箱
+Picked File	所选文件
+The archive manifest does not match its contents.	存档清单与其内容不一致。
+The archive entry does not match its recorded digest.	存档条目与其记录的摘要不一致。
+The restored file could not be verified.	无法验证恢复后的文件。
+Only archive files inside the archives directory can be deleted.	只能删除存档目录内的存档文件。
+This archive version is not supported.	不支持此存档版本。
+The picked file could not be archived.	无法将所选文件存档。
+The archive is missing an entry.	存档中缺少一个条目。
+Last Restore Report	上次恢复报告
+This is a legacy backup with no recorded digest, so its integrity cannot be proven. Restore only if you trust this file.	这是没有记录摘要的旧版备份，无法证明其完整性。只有在信任此文件时才还原。
+Export this backup?	导出此备份？
+No issues found.	未发现问题。
+Findings	检查结果
+Export Report (JSON)	导出报告（JSON）
+Export Report (Text)	导出报告（文本）
+Exports contain no UDID, serial number or chip ID: the report redacts device identity at construction.	导出内容不含 UDID、序列号或芯片 ID；报告在生成时已移除设备身份信息。
+No measurements yet. Durations appear here after a backup, restore, monitor refresh or apply.	暂无测量记录。执行备份、还原、监测刷新或应用更改后，此处会显示耗时。
+Performance	性能
+Real measured durations of operations on this device. Nothing here is estimated; an operation with no runs has no row.	这里显示本设备上各项操作的实际耗时，不包含估算值；从未执行的操作不会列出。
+This report covers the iOS version sentinel, the device read state, the Apple Intelligence chain, monitor differences, the slot baseline, backups, restore reports, the device fingerprint, operation events and monitor staleness. Operation events and restore reports come from this session; the fingerprint comparison needs a stored fingerprint.	本报告涵盖 iOS 版本检查、设备读取状态、Apple 智能链路、监测差异、插槽基线、备份、还原报告、设备指纹、操作事件和监测数据时效性。操作事件与还原报告来自本次会话；指纹比较需要已有保存的指纹。
+What This Report Covers	报告涵盖范围
+Computing diagnostics…	正在计算诊断结果…
+Diagnostics Not Available	诊断不可用
+The report could not be computed.	无法生成报告。
+Export Failed	导出失败
+Runs	执行次数
+Last	上次
+Mean	平均
+Read	读取
+Anomaly	异常
+The device model is unknown, so scope cannot be checked.	设备型号未知，无法检查适用范围。
+This key does not apply to this device model.	此键不适用于此设备型号。
+This key is not present in this iOS version.	此 iOS 版本中不存在此键。
+This key cannot be read with MGCopyAnswer (it is an IODeviceTree query key).	无法通过 MGCopyAnswer 读取此键；它属于 IODeviceTree 查询键。
+No live value: the key may be absent on this device, or the probe returned nothing.	没有实时值：此设备上可能不存在此键，或者探测未返回结果。
+Live value is on.	实时值为开启。
+Live value is off; this key may be staged.	实时值为关闭；此键可以暂存更改。
+Live value is off; this key is read-only.	实时值为关闭；此键为只读。
+Live value matches the native default.	实时值与原生默认值一致。
+Informational key: the live value is shown, no enabled state applies.	信息键：显示实时值，不适用开启或关闭状态。
+The restore did not complete. No system changes were made.	还原未完成，未对系统进行任何更改。
+This image could not be converted. Choose another image.	无法转换此图片，请选择其他图片。
+This image could not be cropped. Choose another image.	无法裁剪此图片，请选择其他图片。
+Home background set. This only changes the background inside LilaShift.	已设置首页背景。这只会更改紫序应用内的背景。
+Home background	首页背景
+Use Default	使用默认值
+Home background: Default lavender	首页背景：默认淡紫色
+In-App Home Background	应用内首页背景
+The home background only changes LilaShift itself. It never changes the system wallpaper.	首页背景只会更改紫序自身，不会更改系统壁纸。
+Import from Photos	从照片导入
+Import an Image File	导入图片文件
+Category for new imports	新导入项目的分类
+PNG, JPEG, or HEIC, up to 5 MB and 4096 pixels on the longest side.	支持 PNG、JPEG 或 HEIC，最大 5 MB，最长边不超过 4096 像素。
+Favorites only	仅显示收藏
+Import an image to start your library.	导入图片，开始建立你的图库。
+LilaShift cannot set the system wallpaper directly. Save an image to Photos, then set it from Photos (Use as Wallpaper) or with the Shortcuts Set Wallpaper action.	紫序无法直接设置系统壁纸。请先将图片保存到照片，再从照片中选择“用作壁纸”，或使用快捷指令的“设定壁纸”操作。
+This Device	此设备
+Wallpaper not found	未找到壁纸
+Name	名称
+Favorite	收藏
+Details	详情
+Orientation	方向
+Crop: %d × %d from %d × %d	裁剪：%d × %d，原图 %d × %d
+This image is smaller than the device screen. The cropped copy will be upscaled and may look soft.	此图片小于设备屏幕。裁剪副本将被放大，可能略显模糊。
+Save Cropped Copy (PNG)	保存裁剪副本（PNG）
+Save Cropped Copy (JPEG)	保存裁剪副本（JPEG）
+Crop for a Device	按设备裁剪
+The crop fills the screen without stretching. The original is kept.	裁剪结果会填满屏幕而不拉伸，原图会保留。
+Convert to PNG	转换为 PNG
+Convert to JPEG	转换为 JPEG
+Use as Home Background	用作首页背景
+Save to Photos does not set the system wallpaper. Set it from Photos (Use as Wallpaper) or with the Shortcuts Set Wallpaper action. Home Background only changes LilaShift itself.	保存到照片不会设置系统壁纸。请从照片中选择“用作壁纸”，或使用快捷指令的“设定壁纸”操作。首页背景只会更改紫序自身。
+Delete Wallpaper	删除壁纸
+This only deletes the image from the LilaShift library.	这只会从紫序图库中删除此图片。
+Delete this wallpaper?	删除此壁纸？
+The cache layout changed under this edit. No system changes were made.	编辑期间缓存布局发生了变化，未对系统进行任何更改。
+The pre-write backup has no recorded digest, so it cannot prove it covers the current device state. No system changes were made.	写入前备份没有记录摘要，无法证明它与设备当前状态一致。未对系统进行任何更改。
+The pre-write backup does not match the current device state. No system changes were made.	写入前备份与设备当前状态不匹配，未对系统进行任何更改。
+Application Support data is not cache.	Application Support 目录中的数据不是缓存。
+Protected: looks like chat, login or account data.	已保护：疑似聊天、登录或账户数据。
+The file cannot be deleted.	无法删除此文件。
+This permanently deletes the crash, jetsam and panic reports listed above. The deletion cannot be undone — the files are removed, not moved to a recycle bin. iOS will regenerate new reports as crashes happen; deleted reports cannot be recovered. It does not affect any app data.	这会永久删除上方列出的崩溃、jetsam 和 panic 报告。删除操作无法撤销，文件会直接移除，不会进入回收站。iOS 会在以后发生崩溃时生成新报告，但已删除的报告无法恢复。此操作不会影响任何应用数据。
+Can be fixed automatically	可以自动修复
+Needs confirmation	需要确认
+Needs a fresh backup	需要新建备份
+Needs a device restart	需要重启设备
+Not supported on this system	此系统不支持
+Cannot confirm	无法确认
+Diagnostics Report	诊断报告
+Generated: %@	生成时间：%@
+Device: %@	设备：%@
+Supported range: %@	支持范围：%@
+Summary: %@	摘要：%@
+live read at %@	实时读取时间：%@
+read failed:	读取失败：
+not read yet	尚未读取
+This iOS version blocks the mechanism	此 iOS 版本阻止了该机制
+Build %@: %@	构建 %@：%@
+unknown	未知
+MobileGestalt read failed	MobileGestalt 读取失败
+The read failed. Re-read the device.	读取失败，请重新读取设备。
+Apple Intelligence keys are not staged	Apple 智能键尚未暂存
+None of the 7 AI keys is staged, and the live answers show them off.	7 个 AI 键均未暂存，设备的实时回报也显示它们处于关闭状态。
+Stage the AI preset (one-tap unlock or AI Only) so the 7 AI keys are staged.	暂存 AI 预设（一键解锁或仅 AI），使 7 个 AI 键进入暂存状态。
+Staged AI values are not live yet	暂存的 AI 值尚未在设备上生效
+%@: staged %@, live %@	%@: 暂存 %@，实时 %@
+absent	不存在
+unreadable	无法读取
+Restart the device, then re-read: the staged AI values are not what the device reports live.	请重启设备后重新读取：暂存的 AI 值与设备的实时回报不一致。
+An Apple Intelligence write did not verify	一次 Apple 智能写入未通过验证
+Create a fresh backup, then retry the AI write.	请创建新备份，再重试 AI 写入。
+Apple Intelligence changes await a restart check	Apple 智能更改待重启后检查
+Applied but not yet verified after a restart: %@	已应用，但尚未在重启后验证：%@
+Restart the device: the AI changes are applied but not yet verified after a restart.	请重启设备：AI 更改已应用，但尚未在重启后验证。
+Apple Intelligence needs region LL	Apple 智能需要 LL 地区代码
+Region code is %@, not LL.	地区代码为 %@，不是 LL。
+Change the region code to LL: Apple Intelligence depends on it on non-native hardware.	请将地区代码改为 LL：非原生支持 Apple 智能的硬件依赖此设置。
+%@: original %@, staged %@, live %@	%@: 原始 %@，暂存 %@，实时 %@
+And %d more differing keys.	另有 %d 个键不一致。
+Live values differ from the staged values	实时值与暂存值不一致
+Restart the device, then re-read: the live values still differ from the staged values.	请重启设备后重新读取：实时值仍与暂存值不一致。
+Apply or discard the staged changes, then re-read.	请应用或放弃暂存的更改，再重新读取。
+%@: live %@, native baseline %@	%@: 实时 %@，原生基准 %@
+An Apple Intelligence slot disagrees with its native baseline	一个 Apple 智能槽位与其原生基准不一致
+Restore the slot to its native value from a verified backup.	请从已验证的备份中将该槽位恢复为原生值。
+A backup could not be verified	一个备份未能通过验证
+Create a fresh backup. A failed backup cannot be used to restore.	请创建新备份。验证失败的备份不能用于恢复。
+Backups have no recorded digest	备份未记录校验摘要
+Every verified backup is a legacy backup with no recorded digest, so integrity cannot be proven.	所有已验证的备份都是未记录校验摘要的旧版备份，因此无法证明其完整性。
+Create a fresh backup with a recorded digest. Restore from a legacy backup only after explicit confirmation.	请创建带有校验摘要记录的新备份。只有在明确确认后，才从旧版备份恢复。
+Verify the backups before relying on one.	请先验证备份，再依赖它进行操作。
+Create a fresh backup before retrying the restore.	请先创建新备份，再重试恢复。
+This iOS version blocks the mechanism. Stay on iOS 27.2.1 or below.	此 iOS 版本阻止了该机制。请保持在 iOS 27.2.1 或更低版本。
+Review the restore preview: a check failed.	请检查恢复预览：有一项检查未通过。
+The restore step failed. Check the restore report for the detail.	恢复步骤失败。请查看恢复报告了解详情。
+The restore did not complete. Check the restore report for the failed step.	恢复未完成。请查看恢复报告，确认失败的步骤。
+Backup “%@”: %@ — %@	备份“%@”：%@ — %@
+A restore did not complete	一次恢复未完成
+The stored fingerprint is from a different device	保存的指纹来自另一台设备
+The stored fingerprint belongs to a different device, so the recorded support scope does not apply here.	保存的指纹属于另一台设备，因此记录的支持范围不适用于此设备。
+The device fingerprint changed	设备指纹已更改
+Review the changed fields. If the change is expected, re-capture the fingerprint.	请检查发生变化的字段。如果变化符合预期，请重新采集指纹。
+Create a fresh backup, then retry the write.	请创建新备份，再重试写入。
+The cache layout could not be resolved on this model and OS build.	无法解析此机型及系统构建版本的缓存布局。
+The proposal touched a hardware-identity field. Remove it from the proposal.	方案涉及硬件身份字段，请将该项从方案中移除。
+On native Apple Intelligence hardware, skip this item: the native slot stays off.	在原生支持 Apple 智能的硬件上，请跳过此项：原生槽位保持关闭。
+The CacheData slot could not be located on this device's layout.	无法在此设备的布局中定位 CacheData 槽位。
+Create a fresh backup. This record cannot be used to restore.	请创建新备份。此记录不能用于恢复。
+If the region keeps reverting, restore from a verified backup.	如果地区设置持续回退，请从已验证的备份恢复。
+Monitor values are stale	监控值已过期
+The live values were read more than five minutes ago.	实时值的读取时间已超过五分钟。
+Refresh the monitor to re-read the live values.	请刷新监控，重新读取实时值。
+iOS offers no public API for an app to change the system wallpaper or another app's launch image. Save an image to Photos and set it manually. The Wallpaper Library can use one of your images as the background inside LilaShift.	iOS 未提供公开接口供应用更改系统壁纸或其他应用的启动图。请将图片保存到“照片”，然后手动设置。壁纸库可将你的某张图片用作 LilaShift 内部的背景。
+Deleted	已删除
+Freed	已释放
+Skipped (protected)	已跳过（受保护）
+Failed	失败
+App Archive only archives this app's own data: its Documents, its cache, files you pick, data you share into the app, and authorized App Group data. It cannot read or delete another app's private data.	应用归档仅归档本应用自身的数据：Documents 目录、缓存、你选择的文件、你共享到本应用的数据，以及已授权的 App Group 数据。它无法读取或删除其他应用的私有数据。
+Scope	范围
+Archive Source	归档来源
+Create Archive	创建归档
+Archive created.	归档已创建。
+Skipped symbolic links:	已跳过的符号链接：
+Export Manifest	导出清单
+No archives yet.	暂无归档。
+Corrupt archive (manifest unreadable):	归档损坏（无法读取清单）：
+Restore finished.	恢复已完成。
+Pre-restore backup:	恢复前备份：
+Archives	归档
+Restoring first verifies the archive, then backs up the current state, so a failed restore can go back.	恢复时会先验证归档，再备份当前状态，以便在恢复失败时回退。
+Measure Cache	统计缓存大小
+Safe to delete	可安全删除
+Showing the 25 largest files.	显示最大的 25 个文件。
+Delete Selected	删除所选项
+Clear App Caches	清除应用缓存
+Cache Analysis	缓存分析
+Only files this analysis lists as safe to delete can be selected. Documents, chat libraries and login state are never listed as deletable.	只能选择此分析列为可安全删除的文件。文档、聊天资料库和登录状态绝不会被列为可删除项。
+Restore This Archive?	恢复此归档？
+The archive will be verified first, then the current state is backed up before anything is written. Files:	将先验证归档，然后在写入任何内容前备份当前状态。文件：
+Delete This Archive?	删除此归档？
+The archive file will be deleted. This cannot be undone.	归档文件将被删除，此操作无法撤销。
+Delete Selected Cache Files?	删除所选缓存文件？
+Last access unknown	上次访问时间未知
+The archive source could not be resolved.	无法确定归档来源。
+Staging picked file…	正在暂存所选文件…
+Creating archive…	正在创建归档…
+Restoring archive…	正在恢复归档…
 '''
 entries = {}
 for line in TRANSLATIONS.strip().splitlines():

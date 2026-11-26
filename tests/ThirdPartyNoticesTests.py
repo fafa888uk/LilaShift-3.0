@@ -11,7 +11,7 @@ REFERENCES = ROOT / "docs" / "OPEN_SOURCE_REFERENCES.md"
 MATRIX = ROOT / "docs" / "FEATURE_ORIGIN_MATRIX.md"
 GENERATE_LOCALIZATION = ROOT / "scripts" / "generate_localization.py"
 
-# The 16 projects the audit covers (see docs/OPEN_SOURCE_REFERENCES.md).
+# The 17 projects the audit covers (see docs/OPEN_SOURCE_REFERENCES.md).
 AUDIT_PROJECTS = (
     "GestaltX",
     "worse_query",
@@ -27,6 +27,7 @@ AUDIT_PROJECTS = (
     "Nugget",
     "mond",
     "GestaltEdit",
+    "WQFiles",
     "SnapshotTesting",
     "SwiftLint",
 )

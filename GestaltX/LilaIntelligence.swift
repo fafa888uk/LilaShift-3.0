@@ -171,7 +171,7 @@ struct DeviceProfiler {
         let cacheReadState: CacheReadState
         if let document {
             do {
-                cacheLayout = .known(try MobileGestaltCacheLayout.resolve(in: document))
+                cacheLayout = .known(try LayoutResolver.resolve(cacheUUID: document.cacheUUID, cacheData: document.cacheData))
             } catch {
                 // The lock reason: why the layout cannot be resolved,
                 // shown instead of any borrowed layout.
@@ -275,6 +275,18 @@ enum FeatureEligibilityEvaluator {
     /// Virtual feature id for WAPI disable (the only WAPI action the
     /// app supports): staging sets the CacheData WAPI slot to false.
     static let wapiFeatureID = "wapi"
+
+    /// The verified four-microphone models for spatial audio
+    /// recording (Erosion-CN `GestaltHelpers.fourMicPhones`,
+    /// Kianuni, GPL-3.0): iPhone 16 series (iPhone17,1–5) and the
+    /// iPhone 18 models with four mics (iPhone18,1/2/3/5). iPhone
+    /// Air (iPhone18,4) is NOT in the list — it has three mics, and
+    /// forcing spatial recording on it can break the Voice Memos
+    /// Studio recording mode.
+    static let spatialAudioScope = PresetScope.verifiedModels([
+        "iPhone17,1", "iPhone17,2", "iPhone17,3", "iPhone17,4", "iPhone17,5",
+        "iPhone18,1", "iPhone18,2", "iPhone18,3", "iPhone18,5",
+    ])
 
     /// Every feature id this evaluator understands.
     static let knownFeatureIDs: [String] =
@@ -387,7 +399,7 @@ enum FeatureEligibilityEvaluator {
         // re-resolve it from a cached profile or the document — that
         // would defeat fail-closed.
         guard let resolvedLayout = layout else {
-            let lockReason = document.flatMap { MobileGestaltCacheLayout.lockReason(in: $0.document) }
+            let lockReason = document.flatMap { LayoutResolver.lockReason(cacheUUID: $0.document.cacheUUID, cacheData: $0.document.cacheData) }
                 ?? L("Unable to resolve this device's MobileGestalt cache layout.")
             return (.unknown, lockReason)
         }
@@ -545,6 +557,7 @@ enum FeatureEligibilityEvaluator {
             audioIntelligenceSlotIndex: layout?.slotIndex(forKey: DeviceCacheOptions.audioIntelligenceKey),
             personalTranslatorSlotIndex: layout?.slotIndex(forKey: DeviceCacheOptions.personalTranslatorKey),
             liveAIEnabled: liveAIEnabled,
+            siriHubLive: LiveGestaltProbe.queryBool(SiriHubGuard.siriHubKey),
             userConfirmedUnverifiedCombination: userConfirmed)
     }
 
@@ -626,7 +639,7 @@ struct CapabilityEntry: Sendable {
     /// verification steps instead of here.
     let dependencies: [String]
     /// Feature ids this entry conflicts with. Only conflicts grounded in
-    /// existing code: `siriOnDevice` is excluded from the 9-item unlock
+    /// existing code: `siriOnDevice` is excluded from the 10-item unlock
     /// because forcing it could revert the Apple Intelligence Siri
     /// interface, so it conflicts with the AI set and vice versa.
     let conflicts: [String]
@@ -691,7 +704,8 @@ struct CapabilityEntry: Sendable {
 
     private static func underlyingKeyOrSlot(for capability: Capability) -> String {
         switch capability.id {
-        case "audioIntelligence", "personalTranslator":
+        case "audioIntelligence", "personalTranslator",
+             "spatialAudioRecording", "responsiveShutter", "hypertensionNotifications":
             return (capability.keys.first ?? "")
                 + " (CacheExtra key; CacheData slot resolved dynamically)"
         default:
@@ -701,6 +715,9 @@ struct CapabilityEntry: Sendable {
 
     private static func sources(for capability: Capability) -> [String] {
         var sources = ["GestaltX/Capabilities.swift"]
+        if ["spatialAudioRecording", "responsiveShutter", "hypertensionNotifications"].contains(capability.id) {
+            sources += ["Erosion-CN MGCacheLayout.swift (Kianuni, GPL-3.0)"]
+        }
         if ChinaUnlock.aiCapabilityIDs.contains(capability.id) || capability.id == "siriOnDevice" {
             sources += ["GestaltX/AIReadinessCheckup.swift (AIStagingGuard)",
                         "GestaltX/DeviceAIEligibility.swift"]
@@ -995,7 +1012,7 @@ enum DependencyResolver {
         if requested.contains(FeatureEligibilityEvaluator.esimFeatureID)
             || requested.contains(FeatureEligibilityEvaluator.wapiFeatureID) {
             if layout == nil {
-                let reason = MobileGestaltCacheLayout.lockReason(in: document)
+                let reason = LayoutResolver.lockReason(cacheUUID: document.cacheUUID, cacheData: document.cacheData)
                     ?? L("Unable to resolve this device's MobileGestalt cache layout.")
                 for id in [FeatureEligibilityEvaluator.esimFeatureID, FeatureEligibilityEvaluator.wapiFeatureID]
                 where requested.contains(id) {
@@ -1005,7 +1022,12 @@ enum DependencyResolver {
         }
 
         let aiRequested = ChinaUnlock.aiCapabilityIDs.filter { requested.contains($0) }
-        if !aiRequested.isEmpty, !requested.contains(FeatureEligibilityEvaluator.regionCodeFeatureID),
+        // The standalone Siri AI Mode preset stages only siriAIMode as
+        // an explicit single-item opt-in; it bypasses the missing-region
+        // guard (its own gating — native-allowed, unknown fail-closed —
+        // already applies, and the user deliberately chose just this key).
+        let isStandaloneSiriAIMode = aiRequested == [ChinaUnlock.siriAIModeID]
+        if !aiRequested.isEmpty, !isStandaloneSiriAIMode, !requested.contains(FeatureEligibilityEvaluator.regionCodeFeatureID),
            // The stored region code is "LL" (`ChinaUnlock.regionCodeID`
            // is "US", the preset id — not the stored code).
            document.extra[GestaltKeys.regionCode] as? String != "LL" {
@@ -1052,7 +1074,7 @@ enum LilaRecommendationBuilder {
     /// `nil` when it did not resolve — the profile's cached layout is
     /// used as a fallback. `regionMode` selects region-code-only (LL,
     /// sales suffix kept) or Full US (LL + LL/A). The model number is
-    /// never staged by this builder: it is outside the 9-item scope
+    /// never staged by this builder: it is outside the 10-item scope
     /// and needs the `DeviceModelSupport` gate, which belongs to the
     /// integration that owns Full US model staging.
     static func build(featureIDs: [String],
@@ -1103,7 +1125,7 @@ enum LilaRecommendationBuilder {
                       (try? DeviceCacheOptions.flags(in: document, using: layout)) != nil else {
                     blockers.append(PlanBlocker(
                         featureID: id, code: "layout-unresolved",
-                        reason: MobileGestaltCacheLayout.lockReason(in: document)
+                        reason: LayoutResolver.lockReason(cacheUUID: document.cacheUUID, cacheData: document.cacheData)
                             ?? L("Unable to resolve this device's MobileGestalt cache layout.")))
                     continue
                 }
@@ -1141,7 +1163,7 @@ enum LilaRecommendationBuilder {
                     verification: L("WAPI flag reads back as disabled — this verifies the staged flag, not network hardware.")))
             case "siriOnDevice":
                 // Deliberately excluded from every auto-plan: Siri uses a
-                // device-specific capability type, and the 9-item unlock
+                // device-specific capability type, and the 10-item unlock
                 // preserves its recorded value. Even an "eligible"
                 // evaluation must not stage it.
                 let reason = Capability.all.first { $0.id == id }?.effectHint
@@ -1159,7 +1181,7 @@ enum LilaRecommendationBuilder {
                     continue
                 }
                 let key = capability.keys.first
-                let value = key.flatMap { capability.values?[$0] } ?? capability.enabled
+                let value = key.flatMap { capability.values[$0] } ?? capability.enabled
                 steps.append(PlanStep(
                     featureID: id, title: capability.title, kind: .cacheExtraKey,
                     key: key, layer: .cacheExtra,
@@ -1225,7 +1247,7 @@ enum LilaRecommendationBuilder {
         func cacheExtraStep(for id: String) -> PlanStep? {
             guard let capability = Capability.all.first(where: { $0.id == id }),
                   let key = capability.keys.first else { return nil }
-            let value = capability.values?[key] ?? capability.enabled
+            let value = capability.values[key] ?? capability.enabled
             return PlanStep(
                 featureID: id, title: capability.title, kind: .cacheExtraKey,
                 key: key, layer: .cacheExtra,
@@ -1325,7 +1347,7 @@ struct LilaDeviceReport: Equatable, Sendable {
     let profile: DeviceProfile
     let evaluations: [LilaFeatureEvaluation]
     /// The recommendation for the China Unlock set (eSIM + region +
-    /// the six AI capabilities), built from the evaluations. Other
+    /// the seven AI capabilities), built from the evaluations. Other
     /// features are evaluated but not recommended here: the caller
     /// builds a recommendation for them with
     /// `LilaRecommendationBuilder.build` when the user asks for one.

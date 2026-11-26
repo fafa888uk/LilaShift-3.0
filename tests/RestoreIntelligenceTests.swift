@@ -398,9 +398,9 @@ final class RestoreIntelligenceTests: XCTestCase {
 
     /// A legacy record with no recorded digest is checked by byte
     /// count and parse only — there is no digest to compare against —
-    /// and a valid file still verifies. This documents the current
-    /// behavior for digest-less records; it is not a claim that the
-    /// file was integrity-checked against a digest.
+    /// and a valid file is honestly reported as `.legacyNoDigest`,
+    /// never `.verified`: its bytes and parse were checked, but
+    /// integrity was not proven (Stage 5, ADR-2-08).
     func testBackupVerificationWithoutDigestUsesByteCountAndParse() throws {
         let directory = try tempDirectory()
         let data = try backupData()
@@ -408,7 +408,7 @@ final class RestoreIntelligenceTests: XCTestCase {
         try writeBackupFile(data, id: id, in: directory)
         let record = backupRecord(id: id, byteCount: data.count, sha256: nil)
         let results = RestoreIntelligence.verifyBackups([record], against: nil, directory: directory)
-        XCTAssertEqual(results[0].status, .verified)
+        XCTAssertEqual(results[0].status, .legacyNoDigest)
     }
 
     func testProvenanceLabelsNeverClaimFactory() {

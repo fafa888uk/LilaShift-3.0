@@ -39,75 +39,17 @@ struct MobileGestaltCacheLayout: Codable, Equatable, Sendable {
 
     // Retain offline editing of the previously verified layout. Other layouts
     // are resolved from the device's own library, never selected by model/OS.
-    // Simulator/offline fixtures ONLY: on a device build `resolve(in:)`
-    // never consults this profile (see the `#if` in `resolve(in:)`), so an
-    // unknown device can never silently borrow it. Do not use it as a
+    // Simulator/offline fixtures ONLY: on a device build `LayoutResolver`
+    // never consults this profile (see the `#if` in `LayoutResolver.resolve`),
+    // so an unknown device can never silently borrow it. Do not use it as a
     // fallback anywhere else.
     static let originalProfile = Self(uuid: "7F1DF278-18B7-4E5A-8425-09E8830DE9AF",
                                       slotCount: 720, greenTeaIndex: 383, notGreenTeaIndex: 506, wapiIndex: 694)
-    private static let runtimeProfile: Self? = {
-        #if os(iOS) && !targetEnvironment(simulator)
-        guard let image = GXCopyMobileGestaltImage() else { return nil }
-        return try? scan(image: image)
-        #else
-        return nil
-        #endif
-    }()
-
-    func matches(_ document: GestaltDocument) -> Bool {
-        guard (1...16384).contains(slotCount), (0..<slotCount).contains(greenTeaIndex),
-              (0..<slotCount).contains(notGreenTeaIndex), greenTeaIndex != notGreenTeaIndex,
-              let uuid = document.root["CacheUUID"] as? String,
-              let data = document.root["CacheData"] as? Data else { return false }
-        if let wapiIndex, (!(0..<slotCount).contains(wapiIndex) || wapiIndex == greenTeaIndex || wapiIndex == notGreenTeaIndex) { return false }
-        for index in [audioIntellIndex, personalTranslatorIndex].compactMap({ $0 }) {
-            guard (0..<slotCount).contains(index), index != greenTeaIndex, index != notGreenTeaIndex,
-                  index != wapiIndex else { return false }
-        }
-        return self.uuid.caseInsensitiveCompare(uuid) == .orderedSame && data.count == byteCount
-    }
 
     /// The runtime layout resolved from this launch's loaded library, if
     /// the scan succeeded. Exposed only so diagnostics can name which
-    /// profile matched; resolution itself goes through `resolve(in:)`.
-    static func runtimeLayout() -> Self? { runtimeProfile }
-
-    /// The reason the cache layout cannot be resolved for this document,
-    /// or `nil` when it resolves. This is the lock reason for the eSIM /
-    /// WAPI switches: when it is non-nil the switches stay locked and
-    /// this string is shown, rather than falling back to any layout.
-    /// On a device build a failed runtime scan lands here; the hardcoded
-    /// offline profile is never substituted.
-    static func lockReason(in document: GestaltDocument) -> String? {
-        do {
-            _ = try resolve(in: document)
-            return nil
-        } catch {
-            return error.localizedDescription
-        }
-    }
-
-    static func resolve(in document: GestaltDocument) throws -> Self {
-        #if os(iOS) && !targetEnvironment(simulator)
-        // On device the hardcoded layout is never silently used. If the
-        // runtime scan failed, the eSIM switches lock and the reason is
-        // shown instead of guessing a layout that may not match this iOS
-        // build. The offline profile below exists only for the simulator
-        // and the offline test fixtures, where no library can be scanned.
-        guard let runtime = runtimeProfile else {
-            throw GestaltFailure("Unable to resolve this device's MobileGestalt cache layout.")
-        }
-        guard runtime.matches(document) else {
-            throw GestaltFailure("Unable to resolve this device's MobileGestalt cache layout.")
-        }
-        return runtime
-        #else
-        for layout in [runtimeProfile, originalProfile].compactMap({ $0 }) {
-            if layout.matches(document) { return layout }
-        }
-        throw GestaltFailure("Unable to resolve this device's MobileGestalt cache layout.")
-        #endif
-    }
+    /// profile matched; resolution itself goes through `LayoutResolver`.
+    static func runtimeLayout() -> Self? { LayoutResolver.runtimeLayout() }
 
     static func scan(image: [String: Any]) throws -> Self {
         guard let strings = image["strings"] as? Data,

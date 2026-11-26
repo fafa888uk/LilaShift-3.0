@@ -123,7 +123,7 @@ enum PostModificationAcceptance {
         liveValues: [String: ChangeValue] = [:],
         restartConfirmed: Bool = false
     ) -> AcceptanceReport {
-        let layout = current.flatMap { try? MobileGestaltCacheLayout.resolve(in: $0) }
+        let layout = current.flatMap { try? LayoutResolver.resolve(cacheUUID: $0.cacheUUID, cacheData: $0.cacheData) }
         var items: [AcceptanceItem] = []
         for record in records {
             let currentValue = current.flatMap { readCurrent(record, in: $0, using: layout) }

@@ -6,6 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic,copy) NSDictionary<NSString *,NSString *> *names;
 @property(nonatomic,copy) NSDictionary<NSString *,NSString *> *containers;
 @property(nonatomic,copy) NSDictionary<NSString *,NSString *> *bundles;
+@property(nonatomic,copy) NSDictionary<NSString *,NSDictionary<NSString *,NSString *> *> *groupContainers;
 @property(nonatomic,copy) NSDictionary<NSString *,NSData *> *records;
 @end
 @interface GXLaunchServicesParser : NSObject
