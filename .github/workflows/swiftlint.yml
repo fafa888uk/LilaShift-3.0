@@ -17,6 +17,9 @@ on:
     branches: [main, feature/lila-siri-ai-mode, feature/lilashift-4.0-quality-upgrade]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   lint:
     runs-on: macos-latest
@@ -24,6 +27,8 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Install SwiftLint
         run: brew install swiftlint

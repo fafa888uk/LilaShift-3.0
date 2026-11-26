@@ -5,9 +5,8 @@ name: Build LilaShift IPA
 # of the app and its share extension, so AltStore and SideStore can register
 # the group when they re-sign it.
 #
-# Every run uploads the IPA as a workflow artifact. Tag and release runs also
-# attach it to the matching GitHub release, replacing an asset with the same
-# name.
+# Every run uploads an artifact only. A maintainer manages releases separately.
+# Ordinary CI must never create or replace release assets.
 
 on:
   release:
@@ -26,7 +25,7 @@ on:
         default: main
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: build-ipa-${{ github.event.pull_request.number || github.ref }}
@@ -45,6 +44,7 @@ jobs:
         with:
           ref: ${{ env.REF }}
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Select Xcode
         uses: maxim-lobanov/setup-xcode@v1
@@ -57,8 +57,10 @@ jobs:
         env:
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
-          git fetch --depth=1 origin "$DEFAULT_BRANCH"
-          git checkout FETCH_HEAD -- .github/scripts/build-ipa.sh
+          if [ ! -f .github/scripts/build-ipa.sh ]; then
+            git fetch --depth=1 origin "$DEFAULT_BRANCH"
+            git checkout FETCH_HEAD -- .github/scripts/build-ipa.sh
+          fi
 
       - name: Build LilaShift IPA
         id: build
@@ -73,35 +75,6 @@ jobs:
           path: ${{ steps.build.outputs.ipa }}
           if-no-files-found: error
           retention-days: 14
-
-      - name: Publish release assets
-        if: env.TAG != ''
-        env:
-          GH_TOKEN: ${{ github.token }}
-          IPA: ${{ steps.build.outputs.ipa }}
-        run: |
-          version="${TAG#v}"
-          notes="$RUNNER_TEMP/release-notes.md"
-          : > "$notes"
-          printf 'English | [简体中文](https://github.com/fafa920q-hue/LilaShift-2.0/blob/%s/CHANGELOG_ZH-CN.md)\n\n' "$TAG" > "$notes"
-          if [[ -f CHANGELOG.md ]]; then
-            awk -v ver="$version" '
-              $0 ~ "^## \\[" ver "\\]" { found = 1; next }
-              found && /^## \[/ { exit }
-              found { if (!started && $0 == "") next; started = 1; print }
-            ' CHANGELOG.md >> "$notes"
-          fi
-          if ! grep -q '^### ' "$notes"; then
-            printf 'LilaShift %s\n' "$TAG" >> "$notes"
-          fi
-          if ! gh release view "$TAG" >/dev/null 2>&1; then
-            gh release create "$TAG" --verify-tag \
-              --title "LilaShift $TAG" --notes-file "$notes"
-          fi
-          assets=("$IPA")
-          [[ -f CHANGELOG.md ]] && assets+=("CHANGELOG.md")
-          [[ -f CHANGELOG_ZH-CN.md ]] && assets+=("CHANGELOG_ZH-CN.md")
-          gh release upload "$TAG" "${assets[@]}" --clobber
 
       - name: Publish job summary
         # Writes a short summary (SHA, version, artifact) to the run
