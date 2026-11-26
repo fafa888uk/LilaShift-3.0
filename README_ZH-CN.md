@@ -6,6 +6,8 @@
 
 [English](README.md) · [简体中文](README_ZH-CN.md)
 
+> **发布与分支状态（2026-11-26）：** 最新正式发布为 [v4.2.0](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0)。当前默认分支源码的项目版本仍为 3.0.0，下方历史版本说明不能作为 v4.2.0 的文档或验证证据。主线整合提案见[仓库维护与发布治理](docs/REPOSITORY_GOVERNANCE_ZH-CN.md)。正式发布不代表设备操作无风险。
+
 > **预发布版本：LilaShift 3.0.0-rc.1** —— 这是**预发布版，不是正式稳定版**。
 > 基于 `feature/lilashift-3.0-dashboard` 分支构建，提交 `37c4a368c73ec80654c8b395387abea9a24915f6`（包含 fix 提交 `7020964`）。
 > App 内版本号 `3.0.0`（构建号 `30000002`），IPA 文件名 `LilaShift_3.0.0.ipa`。
