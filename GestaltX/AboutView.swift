@@ -44,7 +44,6 @@ let openSourceProjects: [OpenSourceProject] = [
 ]
 
 struct AboutView: View {
-    @EnvironmentObject private var model: GestaltManager
     var body: some View {
         List {
             Section {
@@ -196,8 +195,14 @@ struct OpenSourceProjectDetailView: View {
                 LabeledContent(L("Shipped in IPA"), value: project.shippedInIPA ? L("Yes") : L("No"))
             }
             Section(L("GitHub Repository")) {
-                Link(project.url, destination: URL(string: project.url)!)
-                    .font(.subheadline)
+                if let url = URL(string: project.url), url.scheme == "https", url.host != nil {
+                    Link(project.url, destination: url)
+                        .font(.subheadline)
+                } else {
+                    Text(project.url)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
             }
         }
         .navigationTitle(project.name)
