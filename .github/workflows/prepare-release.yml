@@ -45,6 +45,8 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Select Xcode
         uses: maxim-lobanov/setup-xcode@v1
@@ -81,7 +83,9 @@ jobs:
 
       - name: Build LilaShift IPA
         id: build
-        run: .github/scripts/build-ipa.sh "$RUNNER_TEMP/ipa"
+        run: |
+          export BUILD_DATE="$(date -u +%F)"
+          .github/scripts/build-ipa.sh "$RUNNER_TEMP/ipa"
 
       - name: Generate release notes and manifest
         env:
@@ -104,10 +108,17 @@ jobs:
           TAG: ${{ steps.version.outputs.tag }}
           VERSION: ${{ steps.version.outputs.version }}
           BUILD: ${{ steps.version.outputs.build }}
+          SOURCE_COMMIT: ${{ steps.build.outputs.source_commit }}
+          IPA: ${{ steps.build.outputs.ipa }}
+          CHECKSUM: ${{ steps.build.outputs.checksum }}
+          MANIFEST: ${{ steps.build.outputs.manifest }}
         run: |
+          test -n "$SOURCE_COMMIT"
+          test "$SOURCE_COMMIT" = "$(git rev-parse HEAD)"
           gh release create "$TAG" --draft \
+            --target "$SOURCE_COMMIT" \
             --title "LilaShift $VERSION (Build $BUILD)" \
             --notes-file "$RUNNER_TEMP/release-notes.md" \
-            "${{ steps.build.outputs.ipa }}" \
+            "$IPA" "$CHECKSUM" "$MANIFEST" \
             "$RUNNER_TEMP/release-notes.md" \
             "$RUNNER_TEMP/release-manifest.json"

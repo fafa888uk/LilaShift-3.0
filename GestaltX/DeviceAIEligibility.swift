@@ -5,9 +5,10 @@
 // https://github.com/Kianuni/Erosion-CN, GPL-3.0; same device identifiers,
 // reimplemented as a pure lookup). Review the list on
 // every new iPhone/iPad generation; unknown future models default to NOT
-// native (fail closed: the unlock still works, the checkup just reports
-// the hardware as not natively eligible). List current as of 2026-11-13
-// (iPhone 18 series).
+// native, so the unlock still works and the checkup reports the hardware
+// as not natively eligible. This default is availability-first, not
+// fail-closed — see the #178 decision (2026-11-15) and ADR-2-01. List
+// current as of 2026-11-13 (iPhone 18 series).
 import Foundation
 
 enum DeviceAIEligibility {

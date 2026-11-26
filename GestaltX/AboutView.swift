@@ -24,7 +24,7 @@ struct OpenSourceProject: Identifiable {
 }
 
 let openSourceProjects: [OpenSourceProject] = [
-    OpenSourceProject(name: "GestaltX", author: "huamidev", relationshipKey: "Original code base", tech: "Application baseline", license: "GPL-3.0", licenseFile: "GestaltX-GPL-3.0", url: "https://github.com/huamidev/GestaltX", shippedInIPA: true),
+    OpenSourceProject(name: "GestaltX", author: "huamidev", relationshipKey: "Original code base", tech: "Application baseline · Selected v1.1.1 ports", license: "GPL-3.0", licenseFile: "GestaltX-GPL-3.0", url: "https://github.com/huami1314/GestaltX", shippedInIPA: true),
     OpenSourceProject(name: "worse_query", author: "Taj C (forcequitOS)", relationshipKey: "Bundled code", tech: "Sandbox escape", license: "GPL-3.0-or-later", licenseFile: "GestaltX-GPL-3.0", url: "https://github.com/forcequitOS/worse_query", shippedInIPA: true),
     OpenSourceProject(name: "Ketamine", author: "Nouvborne", relationshipKey: "Suspended", tech: "Respring", license: "GPL-3.0", licenseFile: "GestaltX-GPL-3.0", url: "https://github.com/Nouvborne/Ketamine", shippedInIPA: false),
     OpenSourceProject(name: "NeoSpring", author: "rooootdev", relationshipKey: "Suspended", tech: "Respring", license: nil, licenseFile: nil, url: "https://github.com/rooootdev/neospring", shippedInIPA: false),
@@ -32,22 +32,22 @@ let openSourceProjects: [OpenSourceProject] = [
     OpenSourceProject(name: "Erosion-CN", author: "Kianuni", relationshipKey: "Reused data", tech: "AI checkup · Safe write · Device data", license: "GPL-3.0", licenseFile: "Erosion-GPL-3.0", url: "https://github.com/Kianuni/Erosion-CN", shippedInIPA: true),
     OpenSourceProject(name: "Erosion", author: "lunginspector · jailbreak.party", relationshipKey: "Design reference", tech: "Wallpaper descriptors", license: "GPL-3.0", licenseFile: "Erosion-GPL-3.0", url: "https://github.com/jailbreakdotparty/Erosion", shippedInIPA: false),
     OpenSourceProject(name: "Gester", author: "sasobhabha · KAMUI contributors", relationshipKey: "Design reference", tech: "PosterBoard descriptors", license: "MIT", licenseFile: "Gester-MIT", url: "https://github.com/sasobhabha/Gester", shippedInIPA: false),
-    OpenSourceProject(name: "ZIPFoundation", author: "Thomas Zoechling", relationshipKey: "Bundled code", tech: "ZIP archives", license: "MIT", licenseFile: "ZIPFoundation-MIT", url: "https://github.com/weichsel/ZIPFoundation", shippedInIPA: true),
+    OpenSourceProject(name: "ZIPFoundation", author: "Thomas Zoechling", relationshipKey: "Bundled code", tech: "ZIP archives · 0.9.21", license: "MIT", licenseFile: "ZIPFoundation-MIT", url: "https://github.com/weichsel/ZIPFoundation", shippedInIPA: true),
     OpenSourceProject(name: "Primer Octicons", author: "GitHub Inc.", relationshipKey: "Bundled code", tech: "GitHub icon", license: "MIT", licenseFile: "Primer-Octicons-MIT", url: "https://github.com/primer/octicons", shippedInIPA: true),
-    OpenSourceProject(name: "MGKeys", author: "PoomSmart", relationshipKey: "Research reference", tech: "Key mappings", license: "MIT", licenseFile: nil, url: "https://github.com/PoomSmart/MGKeys", shippedInIPA: false),
+    OpenSourceProject(name: "MGKeys", author: "PoomSmart", relationshipKey: "Reused data", tech: "Key names · Version ranges", license: "MIT", licenseFile: "ThirdPartyNotices", url: "https://github.com/PoomSmart/MGKeys", shippedInIPA: true),
     OpenSourceProject(name: "Nugget", author: "leminlimez", relationshipKey: "Research reference", tech: "Key mappings · Feature grouping", license: "AGPL-3.0", licenseFile: nil, url: "https://github.com/leminlimez/Nugget", shippedInIPA: false),
     OpenSourceProject(name: "mond", author: "rooootdev", relationshipKey: "Research reference", tech: "Key mappings", license: "AGPL-3.0", licenseFile: nil, url: "https://github.com/rooootdev/mond", shippedInIPA: false),
     OpenSourceProject(name: "GestaltEdit", author: "frs0n", relationshipKey: "Research reference", tech: "Workflow reference", license: "GPL-3.0-or-later", licenseFile: nil, url: "https://github.com/frs0n/GestaltEdit", shippedInIPA: false),
-    OpenSourceProject(name: "SnapshotTesting", author: "Point-Free, Inc.", relationshipKey: "Test tool", tech: "Snapshot tests", license: "MIT", licenseFile: nil, url: "https://github.com/pointfreeco/swift-snapshot-testing", shippedInIPA: false),
+    OpenSourceProject(name: "WQFiles", author: "kolbicz", relationshipKey: "Research reference", tech: "LaunchServices discovery", license: "GPL-3.0", licenseFile: "GestaltX-GPL-3.0", url: "https://github.com/kolbicz/WQFiles", shippedInIPA: false),
+    OpenSourceProject(name: "SnapshotTesting", author: "Point-Free, Inc.", relationshipKey: "Test tool", tech: "Snapshot tests · 1.19.7", license: "MIT", licenseFile: nil, url: "https://github.com/pointfreeco/swift-snapshot-testing", shippedInIPA: false),
     OpenSourceProject(name: "SwiftLint", author: "Realm Inc.", relationshipKey: "Build tool", tech: "Code style checks", license: "MIT", licenseFile: nil, url: "https://github.com/realm/SwiftLint", shippedInIPA: false),
 ]
 
 struct AboutView: View {
-    @EnvironmentObject private var model: GestaltManager
     var body: some View {
         List {
             Section {
-                HStack(spacing: 12) {
+                HStack(spacing: GlassTokens.rowSpacing) {
                     BrandMark(size: 44)
                     VStack(alignment: .leading, spacing: 3) {
                         Text(L("LilaShift")).font(.headline)
@@ -123,7 +123,7 @@ struct AboutView: View {
             Section(L("Full Source Code")) {
                 VStack(alignment: .leading, spacing: 3) {
                     Text(L("Original Project URL")).font(.caption).foregroundStyle(.secondary)
-                    Link("https://github.com/huamidev/GestaltX", destination: GestaltBrand.projects)
+                    Link("https://github.com/huami1314/GestaltX", destination: GestaltBrand.projects)
                         .font(.subheadline)
                 }
                 .padding(.vertical, 4)
@@ -195,8 +195,14 @@ struct OpenSourceProjectDetailView: View {
                 LabeledContent(L("Shipped in IPA"), value: project.shippedInIPA ? L("Yes") : L("No"))
             }
             Section(L("GitHub Repository")) {
-                Link(project.url, destination: URL(string: project.url)!)
-                    .font(.subheadline)
+                if let url = URL(string: project.url), url.scheme == "https", url.host != nil {
+                    Link(project.url, destination: url)
+                        .font(.subheadline)
+                } else {
+                    Text(project.url)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
             }
         }
         .navigationTitle(project.name)
@@ -224,10 +230,18 @@ struct LicenseTextView: View {
     let name: String
     let title: String
     var source: URL? = nil
-    private var paragraphs: [String] {
+    /// The license paragraphs, loaded once in `.task`. The old
+    /// computed property re-read the bundle file on every body
+    /// evaluation; the file is small and local, but there is no
+    /// reason to read it more than once.
+    @State private var paragraphs: [String] = []
+    /// Reads and reflows a bundled license text for a phone screen.
+    /// GPL's source text is wrapped at fixed columns, so paragraphs
+    /// are rejoined on whitespace. Returns a fallback paragraph when
+    /// the file cannot be loaded.
+    private static func loadParagraphs(name: String) -> [String] {
         guard let url = Bundle.main.url(forResource: name, withExtension: "txt"),
               let text = try? String(contentsOf: url, encoding: .utf8) else { return [L("License text could not be loaded.")] }
-        // GPL's source text is wrapped at fixed columns. Reflow paragraphs for a phone screen.
         return text.components(separatedBy: "\n\n").map { paragraph in
             paragraph.split(whereSeparator: { $0.isWhitespace }).joined(separator: " ")
         }.filter { !$0.isEmpty }
@@ -253,6 +267,7 @@ struct LicenseTextView: View {
             .padding(20).frame(maxWidth: 720).frame(maxWidth: .infinity)
         }
         .navigationTitle(title).navigationBarTitleDisplayMode(.inline)
+        .task { paragraphs = Self.loadParagraphs(name: name) }
         .toolbar {
             if let source {
                 ToolbarItem(placement: .topBarTrailing) {

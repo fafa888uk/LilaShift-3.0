@@ -167,6 +167,9 @@ final class HomeSortingTests: XCTestCase {
             modifiedRow(key: aiKeys[1]),
             modifiedRow(key: aiKeys[4]),
             modifiedRow(key: aiKeys[2]),
+            // The seventh AI key (siriAIMode) must be in the input
+            // for it to appear in the output.
+            modifiedRow(key: aiKeys[6]),
         ]
         let expected = ["esim-green-tea", "esim-not-green-tea"] + aiKeys
         XCTAssertEqual(HomeSorting.sortModifiedValues(shuffled).map(\.key), expected)

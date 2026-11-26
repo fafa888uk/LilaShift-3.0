@@ -13,14 +13,14 @@
 //   `sorted(by:)` is stable, so entries with equal dates keep
 //   their input order.
 // - Modified fields: the fixed one-tap order (eSIM green-tea,
-//   eSIM not-green-tea, then the six AI capabilities in staging
+//   eSIM not-green-tea, then the seven AI capabilities in staging
 //   order); fields that are not one-tap fields sort after all of
 //   them, alphabetically by key.
 import Foundation
 
 enum HomeSorting {
     /// The fixed one-tap order, as feature ids, from the one-tap
-    /// proposal: eSIM, region code, then the six AI capabilities in
+    /// proposal: eSIM, region code, then the seven AI capabilities in
     /// staging order. The region code is a CacheData slot and never
     /// appears in a Modified Values row; it is kept here so this
     /// order is the same single source of truth as the proposal
@@ -204,11 +204,11 @@ enum HomeSorting {
         by sort: CatalogSort,
         favoritesFirst: Bool,
         favoriteIDs: Set<String>,
-        customOrder: [String]?,
+        customOrder: [String],
         recentIDs: [String]
     ) -> [FeatureCatalogItem] {
         var customRank: [String: Int] = [:]
-        for (index, id) in (customOrder ?? []).enumerated() where customRank[id] == nil {
+        for (index, id) in customOrder.enumerated() where customRank[id] == nil {
             customRank[id] = index
         }
         var recentRank: [String: Int] = [:]

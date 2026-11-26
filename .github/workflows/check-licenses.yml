@@ -17,11 +17,11 @@ on:
   release:
     types: [published]
   push:
-    branches: [main, feature/lilashift-3.0-dashboard]
+    branches: [main, feature/lilashift-3.0-dashboard, feature/lila-siri-ai-mode, feature/lilashift-4.0-quality-upgrade]
     tags:
       - "v*"
   pull_request:
-    branches: [main]
+    branches: [main, feature/lila-siri-ai-mode, feature/lilashift-4.0-quality-upgrade]
   workflow_dispatch:
 
 permissions:
@@ -34,9 +34,16 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Run license compliance check
         run: python3 scripts/check-licenses.py
 
-      - name: Run license consistency tests
-        run: python3 -X utf8 tests/ThirdPartyNoticesTests.py
+      - name: Verify generated localization catalog
+        run: |
+          python3 -X utf8 scripts/generate_localization.py
+          git diff --exit-code -- GestaltX/Localizable.xcstrings
+
+      - name: Run repository consistency tests
+        run: python3 -X utf8 -m unittest discover -s tests -p '*Tests.py'

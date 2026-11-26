@@ -33,7 +33,9 @@ final class OriginalHistoryMigrationTests: XCTestCase {
         let store = makeStore()
         let initial = try await store.loadDevice()
         var edited = initial.document
-        edited.set("changed", for: "setting")
+        // "setting" is not a staged key (Stage 5 §3.4 allowlist
+        // gate); the region code is staged.
+        edited.set("changed", for: GestaltKeys.regionCode)
         if cacheEdits { try edited.setCacheOptions(.enabled); try edited.setWAPI(false) }
         _ = try await store.commit(edited, expected: initial)
         let record = try await store.backups().first { $0.reason == "Before applying" }!
@@ -69,7 +71,7 @@ final class OriginalHistoryMigrationTests: XCTestCase {
         let again = try await makeStore().loadDevice()
         XCTAssert(trace.backupReads == 0, "Reopening does not rescan a now-corrupt backup after migration")
         var laterEdit = again.document
-        laterEdit.set("another edit", for: "later")
+        laterEdit.set("another edit", for: GestaltKeys.regionCode)
         _ = try await reopened.commit(laterEdit, expected: again)
         XCTAssert(trace.backupReads == 0 && trace.writes == 2, "A complete journal allows subsequent verified device writes without reading corrupt history")
     }

@@ -12,10 +12,13 @@ name: Run Swift Tests
 
 on:
   push:
-    branches: [main, dev/p0-security-fixes, feature/lilashift-3.0-dashboard]
+    branches: [main, dev/p0-security-fixes, feature/lilashift-3.0-dashboard, feature/lila-siri-ai-mode, feature/lilashift-4.0-quality-upgrade]
   pull_request:
-    branches: [main]
+    branches: [main, feature/lila-siri-ai-mode, feature/lilashift-4.0-quality-upgrade]
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 concurrency:
   group: swift-tests-${{ github.event.pull_request.number || github.ref }}
@@ -28,11 +31,16 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Select Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest-stable
+
+      - name: Resolve and verify committed package pins
+        run: bash .github/scripts/resolve-packages.sh
 
       - name: Run unit tests
         # tee saves the xcodebuild log for the job-summary step below.
@@ -44,6 +52,7 @@ jobs:
           xcodebuild test \
             -project GestaltX.xcodeproj \
             -scheme GestaltX \
+            -disableAutomaticPackageResolution \
             -destination 'platform=iOS Simulator,name=iPhone 17' \
             -only-testing:GestaltXTests 2>&1 | tee "$RUNNER_TEMP/xcodebuild-test.log"
 
@@ -56,9 +65,10 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: snapshot-references
+          name: snapshot-references-${{ github.run_id }}-${{ github.run_attempt }}
           path: tests/__Snapshots__/
           if-no-files-found: ignore
+          retention-days: 7
 
       - name: Collect snapshot failure renders
         # On a mismatch, SnapshotTesting writes the actual render to
@@ -79,9 +89,10 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: snapshot-failures
+          name: snapshot-failures-${{ github.run_id }}-${{ github.run_attempt }}
           path: /tmp/snapshot-failures/
           if-no-files-found: ignore
+          retention-days: 7
 
       - name: Publish job summary
         # Writes a short summary (SHA, version, test counts) to the run

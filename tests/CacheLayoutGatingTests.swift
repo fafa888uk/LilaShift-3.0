@@ -109,7 +109,7 @@ final class CacheLayoutGatingTests: XCTestCase {
 
         // A document on the offline profile resolves and has no lock reason.
         let matching = try Self.fixtureDocument()
-        XCTAssert(MobileGestaltCacheLayout.lockReason(in: matching) == nil,
+        XCTAssert(LayoutResolver.lockReason(cacheUUID: matching.cacheUUID, cacheData: matching.cacheData) == nil,
                    "A document matching the resolved layout has no lock reason")
 
         // A document whose UUID matches no layout throws on resolve and
@@ -118,15 +118,15 @@ final class CacheLayoutGatingTests: XCTestCase {
         // (On a device build the same throw comes from the failed runtime
         // scan; the hardcoded profile is never substituted there.)
         let wrongUUID = try Self.fixtureDocument(cacheUUID: "00000000-0000-0000-0000-000000000000")
-        XCTAssertThrowsError(try MobileGestaltCacheLayout.resolve(in: wrongUUID), "A document with an unknown CacheUUID fails to resolve")
-        let uuidReason = MobileGestaltCacheLayout.lockReason(in: wrongUUID)
+        XCTAssertThrowsError(try LayoutResolver.resolve(cacheUUID: wrongUUID.cacheUUID, cacheData: wrongUUID.cacheData), "A document with an unknown CacheUUID fails to resolve")
+        let uuidReason = LayoutResolver.lockReason(cacheUUID: wrongUUID.cacheUUID, cacheData: wrongUUID.cacheData)
         XCTAssert(uuidReason != nil && uuidReason!.contains("Unable to resolve"),
                    "An unresolvable layout locks with a reason naming the failure")
 
         // A document with the wrong CacheData length fails the same way.
         let wrongLength = try Self.fixtureDocument(cacheData: Data(count: 10))
-        XCTAssertThrowsError(try MobileGestaltCacheLayout.resolve(in: wrongLength), "A document with the wrong CacheData length fails to resolve")
-        XCTAssert(MobileGestaltCacheLayout.lockReason(in: wrongLength) != nil,
+        XCTAssertThrowsError(try LayoutResolver.resolve(cacheUUID: wrongLength.cacheUUID, cacheData: wrongLength.cacheData), "A document with the wrong CacheData length fails to resolve")
+        XCTAssert(LayoutResolver.lockReason(cacheUUID: wrongLength.cacheUUID, cacheData: wrongLength.cacheData) != nil,
                    "A wrong-length CacheData locks with a reason")
 
     }

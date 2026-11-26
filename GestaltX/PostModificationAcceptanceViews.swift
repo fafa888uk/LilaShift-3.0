@@ -17,18 +17,11 @@ import SwiftUI
 
 struct PostModificationAcceptanceCard: View {
     @EnvironmentObject private var model: GestaltManager
-    @Environment(\.colorScheme) private var colorScheme
     @State private var records: [RecordedChange] = []
     @State private var historyError: String?
     @State private var restartConfirmed = false
     @State private var saveMessage: String?
     @State private var showingDetails = false
-
-    private var heroTint: Color {
-        colorScheme == .dark
-            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
-            : Color.lavenderGlass.opacity(0.65)
-    }
 
     /// The acceptance report for the recorded changes against the
     /// re-read document. `model.working` is the document read after
@@ -44,10 +37,10 @@ struct PostModificationAcceptanceCard: View {
     }
 
     var body: some View {
-        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: heroTint) {
-            VStack(alignment: .leading, spacing: 14) {
-                HStack(spacing: 12) {
-                    GlassIconPedestal(systemImage: "checkmark.seal", tint: .gestaltAccent, size: 44)
+        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: GlassTokens.heroTint) {
+            VStack(alignment: .leading, spacing: GlassTokens.cardSpacing) {
+                HStack(spacing: GlassTokens.rowSpacing) {
+                    GlassIconPedestal(systemImage: "checkmark.seal", tint: .gestaltAccent, size: GlassTokens.iconSize)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(L("Post-Modification Acceptance"))
                             .font(.headline)
@@ -70,7 +63,7 @@ struct PostModificationAcceptanceCard: View {
                     Text(report.summary)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
-                    HStack(spacing: 12) {
+                    HStack(spacing: GlassTokens.rowSpacing) {
                         Text(String(format: L("%d accepted"), report.acceptedCount))
                             .font(.caption)
                             .foregroundStyle(.green)

@@ -66,7 +66,9 @@ final class NonFinitePlistTests: XCTestCase {
                                      writeData: { data, url in trace.writes += 1; try data.write(to: url) })
         let initial = try await store.loadDevice()
         var edited = initial.document
-        edited.set("changed", for: "setting")
+        // "setting" is not a staged key (Stage 5 §3.4 allowlist
+        // gate); the region code is staged.
+        edited.set("changed", for: GestaltKeys.regionCode)
         let result = try await store.commit(edited, expected: initial)
         XCTAssert(trace.writes == 1 && result.document.matches(edited), "An unrelated device edit with NaN passes full readback verification")
         XCTAssert(result.originals["measurement"] == nil && result.originals["nested"] == nil, "Unchanged NaNs are not recorded as field edits")
@@ -80,7 +82,11 @@ final class NonFinitePlistTests: XCTestCase {
         })
         let beforeCorruption = try await corruptingStore.loadDevice()
         var next = beforeCorruption.document
-        next.set("next edit", for: "setting")
+        // "setting" is not a staged key (Stage 5 §3.4 allowlist
+        // gate); the region code is staged. (Stage 9 fix9: with
+        // "setting" the gate threw before the corrupting writer ran,
+        // so the readback-mismatch recovery below was never exercised.)
+        next.set("next edit", for: GestaltKeys.regionCode)
         do {
             _ = try await corruptingStore.commit(next, expected: beforeCorruption)
             throw Failure(message: "Replacing NaN with infinity passed readback verification")

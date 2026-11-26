@@ -4,9 +4,9 @@ import XCTest
 
 /// Offline tests for the item-5 region mode choice: the US regulatory
 /// model mapping (refuses unknown models) and the one-tap unlock, which
-/// stages exactly the 9 items in either region mode on non-native
+/// stages exactly the 10 items in either region mode on non-native
 /// hardware — and exactly the 3 non-AI items on hardware that natively
-/// supports Apple Intelligence, where the six AI keys are skipped. The
+/// supports Apple Intelligence, where the seven AI keys are skipped. The
 /// sales-region suffix and the regulatory model number are never
 /// staged, so a regulatory model that does not match the hardware
 /// cannot make the system discard the cache at boot. No device or
@@ -97,7 +97,7 @@ final class RegionModeTests: XCTestCase {
                    && restored.extra[GestaltKeys.modelNumber] as? String == "A3518",
                    "Restore returns suffixes and model number to their originals")
 
-        // Unknown device: the one-tap still stages exactly the 9 items;
+        // Unknown device: the one-tap still stages exactly the 10 items;
         // the sales-region suffixes and the model number are untouched.
         ChinaUnlockRegionMode.stored = .fullUS
         let unknownOriginal = try fixture(productType: "iPhone99,9", modelNumber: "A9999")
@@ -112,8 +112,8 @@ final class RegionModeTests: XCTestCase {
                    "Unknown device stages the region code and leaves the sales region alone")
         XCTAssert(unknownPreview.extra[GestaltKeys.modelNumber] as? String == "A9999",
                    "Unknown device leaves the model number untouched")
-        XCTAssert(unknown.changeCount == 9,
-                   "Unknown device stages exactly 9 items, got \(unknown.changeCount)")
+        XCTAssert(unknown.changeCount == 10,
+                   "Unknown device stages exactly 10 items, got \(unknown.changeCount)")
         XCTAssert(unknown.isChinaUnlockedInPreview,
                    "Unknown device still reads as unlocked")
 

@@ -24,11 +24,23 @@ final class GestaltManager: ObservableObject {
     @Published private(set) var status = "Connect to your device or open a plist."
     @Published private(set) var deviceAccessible = false
     @Published private(set) var backups: [BackupRecord] = []
+    /// The report of the most recent restore attempt (success or
+    /// failure), from the eight-step `RestoreEngine` pipeline. Kept
+    /// for the Backups view; a failure is a failed outcome in it,
+    /// never a thrown error.
+    @Published private(set) var lastRestoreReport: RestoreEngine.Report?
     @Published private(set) var logs: [String] = []
     /// Structured operation events recorded this session (reads and
     /// backups only — see `OperationEventRecorder`). Observation
     /// only: recording never changes an operation's outcome.
     let operationEvents = OperationEventRecorder()
+    /// Real measured durations of this session's long operations
+    /// (backup, restore, live probe, monitor refresh, apply).
+    /// Stage 3 only built the monitor (ADR-2-12); Stage 9 wires it
+    /// into the operations and shows the samples in the Diagnostics
+    /// Centre. Every sample is a real measured duration — an
+    /// operation with no runs has no row, never a placeholder.
+    let performance = PerformanceMonitor()
     /// When the last successful read happened, or `nil` when no read
     /// has happened yet. Read-path state only.
     @Published private(set) var lastReadAt: Date?
@@ -40,7 +52,7 @@ final class GestaltManager: ObservableObject {
     @Published var modelID = "keep"
     /// Region mode for China Unlock (default region-code-only).
     /// Persisted across launches; never reset by loading a document.
-    /// The one-tap unlock stages the same items in either mode (9 on
+    /// The one-tap unlock stages the same items in either mode (10 on
     /// non-native hardware, 3 on native Apple Intelligence hardware);
     /// the mode only affects manual region presets and restoring an
     /// unlock applied by an older build.
@@ -112,14 +124,8 @@ final class GestaltManager: ObservableObject {
     deinit { if let exploitLogObserver { NotificationCenter.default.removeObserver(exploitLogObserver) } }
 
     var changeKeys: [String] {
-        guard let before = snapshot?.document.extra, let after = preview?.extra else { return [] }
-        return Set(before.keys).union(after.keys).filter { key in
-            switch (before[key], after[key]) {
-            case (nil, nil): return false
-            case (nil, _), (_, nil): return true
-            case (let a?, let b?): return !GestaltDocument.valuesEqual(a, b)
-            }
-        }.sorted()
+        guard let before = snapshot?.document, let after = preview else { return [] }
+        return Self.changeKeys(before: before, after: after)
     }
     var cacheDataChanges: [CachedBooleanChange] {
         guard let original = snapshot?.document, let edited = preview else { return [] }
@@ -144,7 +150,30 @@ final class GestaltManager: ObservableObject {
             return error.localizedDescription
         }
     }
-    var changeCount: Int { changeKeys.count + cacheDataChanges.count }
+    /// One preview build per access: `changeKeys` and
+    /// `cacheDataChanges` each build the preview on their own, so
+    /// counting both here used to build it twice per body
+    /// evaluation — and `changeCount` is read on many body paths
+    /// (home, cards, review sheet). The count is identical; only
+    /// the rebuild is removed.
+    var changeCount: Int {
+        guard let before = snapshot?.document, let after = preview else { return 0 }
+        return Self.changeKeys(before: before, after: after).count
+            + DeviceCacheOptions.changes(from: before, to: after).count
+    }
+
+    /// CacheExtra keys whose value differs between two documents.
+    private static func changeKeys(before: GestaltDocument, after: GestaltDocument) -> [String] {
+        let beforeExtra = before.extra
+        let afterExtra = after.extra
+        return Set(beforeExtra.keys).union(afterExtra.keys).filter { key in
+            switch (beforeExtra[key], afterExtra[key]) {
+            case (nil, nil): return false
+            case (nil, _), (_, nil): return true
+            case (let a?, let b?): return !GestaltDocument.valuesEqual(a, b)
+            }
+        }.sorted()
+    }
     var hasDocument: Bool { snapshot != nil }
     var sourceIsDevice: Bool { snapshot?.source == .device }
     var artworkEditingError: GestaltFailure? {
@@ -214,8 +243,14 @@ final class GestaltManager: ObservableObject {
     /// list in `DeviceAIEligibility`). The document's product type is
     /// the source here — it is the device the file belongs to — and
     /// on a live read it agrees with the profiler's live product
-    /// type. Unknown or absent product type reads as non-native
-    /// (fail closed: stage all 9).
+    /// type. Unknown or absent product type reads as non-native, so
+    /// the full 10-item proposal is built (2 eSIM + region code + 7 AI).
+    /// This is a deliberate availability default, not a fail-closed
+    /// gate: unlisted hardware (including future models not yet in the
+    /// list) stays unlockable — see the #178 decision (2026-11-15).
+    /// The fail-closed gate for model-dependent writes is
+    /// `deviceModelDecision`, which already refuses SiriMode on
+    /// unknown models.
     var isNativeAppleIntelligence: Bool {
         guard let productType = (working ?? snapshot?.document)?.extra[GestaltKeys.productType] as? String else {
             return false
@@ -223,10 +258,26 @@ final class GestaltManager: ObservableObject {
         return DeviceAIEligibility.isNativeAppleIntelligence(productType: productType)
     }
 
+    /// The fail-closed model decision for this document (see
+    /// `DeviceModelSupport`): known only with a verified mapping
+    /// entry — an exact product-type entry, or a recorded original
+    /// regulatory model that is itself a verified entry. Unknown
+    /// product type or regulatory model reads as unknown with a
+    /// reason; there is no family or prefix inference.
+    private var deviceModelDecision: DeviceModelDecision {
+        guard let document = working ?? snapshot?.document else {
+            return .unknown(reason: L("No US regulatory model known for this device — region code only."))
+        }
+        let productType = document.extra[GestaltKeys.productType] as? String ?? ""
+        let originalRegModel = snapshot?.originalValue(for: GestaltKeys.modelNumber) as? String
+            ?? document.extra[GestaltKeys.modelNumber] as? String
+        return DeviceModelSupport.decision(for: productType, originalRegModel: originalRegModel)
+    }
+
     /// True while the full China Unlock is staged (not yet applied):
-    /// eSIM flags enabled, region code US and all six AI presets
+    /// eSIM flags enabled, region code US and all seven AI presets
     /// enabled — or, on hardware that natively supports Apple
-    /// Intelligence, eSIM and region only, with the six AI presets
+    /// Intelligence, eSIM and region only, with the seven AI presets
     /// skipped by nativeness instead of staged (see
     /// `stageChinaUnlock`).
     var isChinaUnlockStaged: Bool {
@@ -249,8 +300,15 @@ final class GestaltManager: ObservableObject {
 
     var chinaUnlockEnabledAICapabilityIDs: Set<String> {
         guard let fields = preview?.extra else { return [] }
+        // An AI capability reads as enabled when every one of its keys
+        // holds the capability's own staged value — boolean true for
+        // most, but SiriMode=2 for siriAIMode. Comparing against a
+        // hardcoded 1 would never count siriAIMode as enabled.
         return Set(ChinaUnlock.aiCapabilities.filter { capability in
-            capability.keys.allSatisfy { (fields[$0] as? NSNumber)?.intValue == 1 }
+            capability.keys.allSatisfy { key in
+                guard let field = fields[key] else { return false }
+                return GestaltDocument.valuesEqual(field, capability.values[key] ?? capability.enabled)
+            }
         }.map(\.id))
     }
 
@@ -258,9 +316,9 @@ final class GestaltManager: ObservableObject {
 
     /// True when the preview already shows the full unlock, whether it was
     /// just staged or applied in an earlier session: eSIM enabled, region
-    /// code LL and all six AI presets enabled — or, on hardware that
+    /// code LL and all seven AI presets enabled — or, on hardware that
     /// natively supports Apple Intelligence, eSIM enabled and region
-    /// code LL with the six AI presets skipped by nativeness. The
+    /// code LL with the seven AI presets skipped by nativeness. The
     /// sales-region suffix and the regulatory model number are never
     /// part of the unlock, so they are not required here.
     var isChinaUnlockedInPreview: Bool {
@@ -269,25 +327,45 @@ final class GestaltManager: ObservableObject {
                 || chinaUnlockAIEnabledCount == ChinaUnlock.aiCapabilityIDs.count)
     }
 
-    /// True while the AI-only preset is staged: all six AI presets
+    /// True while the AI-only preset is staged: all seven AI presets
     /// enabled. This is the AI part of the one-tap unlock, staged on its
     /// own; eSIM and region are untouched. It is not blocked by the eSIM
-    /// cache layout, because the six AI keys are CacheExtra values and do
+    /// cache layout, because the seven AI keys are CacheExtra values and do
     /// not need the layout to resolve.
     var isChinaAIOnlyStaged: Bool {
         guard hasDocument else { return false }
         return ChinaUnlock.aiCapabilityIDs.allSatisfy { (choices[$0] ?? .keep) == .enable }
     }
 
-    /// True when the preview already shows all six AI presets enabled,
+    /// True when the preview already shows all seven AI presets enabled,
     /// whether staged now or applied in an earlier session.
     var isChinaAIOnlyApplied: Bool {
         chinaUnlockAIEnabledCount == ChinaUnlock.aiCapabilityIDs.count
     }
 
+    /// True while the standalone Siri AI Mode preset is staged:
+    /// only the SiriMode key. Unlike the AI-only preset this one is
+    /// allowed on native hardware (an explicit single-item opt-in),
+    /// so nativeness never clears it; the unknown-model refusal
+    /// lives in `stageChinaSiriAIMode`, not here.
+    var isChinaSiriAIModeStaged: Bool {
+        guard hasDocument else { return false }
+        return (choices[ChinaUnlock.siriAIModeID] ?? .keep) == .enable
+    }
+
+    /// True when the preview already shows SiriMode set to 2,
+    /// whether staged now or applied in an earlier session. This
+    /// checks the SiriMode key directly for the value 2: the shared
+    /// AI-enabled count only recognizes a value of 1, so it can
+    /// never report SiriMode as enabled.
+    var isChinaSiriAIModeApplied: Bool {
+        guard let fields = preview?.extra else { return false }
+        return (fields[GestaltKeys.siriMode] as? NSNumber)?.intValue == 2
+    }
+
     /// True while the eSIM+region preset is staged: eSIM flags enabled
     /// and region code US. This is the eSIM+region part of the one-tap
-    /// unlock, staged on its own; the six AI presets are untouched.
+    /// unlock, staged on its own; the seven AI presets are untouched.
     var isChinaESIMRegionStaged: Bool {
         guard hasDocument else { return false }
         return cacheOptionChoice == .enable && regionCodeID == ChinaUnlock.regionCodeID
@@ -317,13 +395,213 @@ final class GestaltManager: ObservableObject {
     @Published var liveAIEnabled: Bool?
 
     /// Refreshes the live probe answers. Read-only; safe to call from the
-    /// checkup card's `onAppear`.
-    func refreshLiveProbe() {
-        liveRegionCode = LiveGestaltProbe.queryString(GestaltKeys.regionCode)
-        liveRegModel = LiveGestaltProbe.queryString(GestaltKeys.modelNumber)
-        liveAIEnabled = Capability.all.first { $0.id == "ai" }.flatMap { capability in
-            capability.keys.first.flatMap { LiveGestaltProbe.queryBool($0) }
+    /// checkup card's `onAppear`. The three MGCopyAnswer queries run off
+    /// the main thread (the live query can be slow) and the results are
+    /// published back on the main actor.
+    func refreshLiveProbe() async {
+        let (region, regModel, aiEnabled) = await performance.measure(label: "live-probe") {
+            await Task.detached(priority: .userInitiated) {
+                let region = LiveGestaltProbe.queryString(GestaltKeys.regionCode)
+                let regModel = LiveGestaltProbe.queryString(GestaltKeys.modelNumber)
+                let aiEnabled = Capability.all.first { $0.id == "ai" }.flatMap { capability in
+                    capability.keys.first.flatMap { LiveGestaltProbe.queryBool($0) }
+                }
+                return (region, regModel, aiEnabled)
+            }.value
         }
+        liveRegionCode = region
+        liveRegModel = regModel
+        liveAIEnabled = aiEnabled
+    }
+
+    // MARK: - MG monitor (Stage 4)
+
+    /// Monitor rows for every database key (three sources side by
+    /// side), or empty before the first refresh. The monitor never
+    /// shows an empty list as a result: on a sentinel-blocked build
+    /// the rows carry `.readFailed` and the view shows the banner.
+    @Published private(set) var monitorRows: [MGMonitorRow] = []
+    /// When the live values in `monitorRows` were read.
+    @Published private(set) var monitorReadAt: Date?
+    /// The version sentinel for the current iOS build. Unknown until
+    /// the first refresh classifies the build — never assumed
+    /// supported before classification.
+    @Published private(set) var monitorSentinel: VersionSentinelState = .unknownBuild(build: "")
+
+    /// Refreshes the monitor rows. Read-only; safe to call from the
+    /// monitor view's `onAppear` or its refresh button. The 77 live
+    /// MGCopyAnswer queries run off the main thread and the rows are
+    /// published back on the main actor. The monitor refreshes on
+    /// demand only — no timer polls the device.
+    ///
+    /// Sources: original values come from the first-read snapshot,
+    /// staged values from the working document (or the snapshot when
+    /// there is no working document — no staged changes exist then),
+    /// live values from MGCopyAnswer. The slot probe resolves the
+    /// layout from the snapshot document and reads the slot byte from
+    /// the snapshot and the working document; the live column for a
+    /// slot key is the MGCopyAnswer answer. A plaintext key (the
+    /// parallax key) answers under its readable name, so the live
+    /// query retries with it when the obfuscated key returns nothing.
+    func refreshMonitor() async {
+        let identity = SystemDeviceIdentitySource()
+        let productType = preview?.extra[GestaltKeys.productType] as? String ?? identity.productType
+        let iosVersion = identity.osVersion ?? ""
+        let sentinel = VersionSentinel.state(forBuild: identity.osBuild)
+        let livePairs = await performance.measure(label: "monitor-refresh") {
+            await Task.detached(priority: .userInitiated) {
+                MGDatabase.all.map { record -> (String, MGValue?) in
+                    let value = LiveGestaltProbe.query(record.obfuscatedName)
+                        ?? (record.readableName != record.obfuscatedName
+                            ? LiveGestaltProbe.query(record.readableName) : nil)
+                    return (record.obfuscatedName, value.flatMap(MGValue.fromPlistValue))
+                }
+            }.value
+        }
+        let liveByKey = Dictionary(
+            livePairs.compactMap { pair in pair.1.map { (pair.0, $0) } },
+            uniquingKeysWith: { first, _ in first })
+        let liveAt = Date()
+        let snapshotDoc = snapshot?.document
+        let stagedDoc = working ?? snapshotDoc
+        let layout = snapshotDoc.flatMap {
+            try? LayoutResolver.resolve(cacheUUID: $0.cacheUUID, cacheData: $0.cacheData)
+        }
+        monitorSentinel = sentinel
+        monitorReadAt = liveAt
+        monitorRows = MGMonitor.rows(for: MGDatabase.all.map { record in
+            MGMonitorInput(
+                record: record,
+                original: value(of: record, in: snapshotDoc),
+                staged: value(of: record, in: stagedDoc),
+                live: liveByKey[record.obfuscatedName],
+                liveReadAt: liveAt,
+                slot: slotProbe(for: record, snapshotDoc: snapshotDoc, stagedDoc: stagedDoc,
+                                layout: layout, liveByKey: liveByKey),
+                productType: productType,
+                iosVersion: iosVersion,
+                sentinel: sentinel)
+        }, now: liveAt)
+    }
+
+    /// The unified diagnostics input for the Diagnostics Centre
+    /// (Stage 6, ADR-2-09): every value the engine needs, as plain
+    /// snapshots — no live objects cross into the engine. Async only
+    /// because the session operation events live in an actor.
+    ///
+    /// The fingerprint comparison, the backup verifications and the
+    /// restart-pending set come from the home cache (the only place
+    /// that loads the stored fingerprint, verifies backups and
+    /// tracks applied changes); pass `nil`/empty when the cache is
+    /// not available and the report says so honestly.
+    func diagnosticsInput(
+        fingerprintComparison: FingerprintComparison? = nil,
+        backupVerifications: [BackupVerification] = [],
+        pendingRestartFeatureIDs: Set<String> = []
+    ) async -> DiagnosticsInput {
+        let document = working ?? snapshot?.document
+        let snapshotValues = valuesByKey(in: snapshot?.document)
+        let workingValues = valuesByKey(in: document)
+        let regionRecord = MGDatabase.all.first { $0.obfuscatedName == GestaltKeys.regionCode }
+        let regionCode: String? = {
+            guard let value = regionRecord.flatMap({ value(of: $0, in: document) }) else { return nil }
+            if case .string(let code) = value { return code }
+            return nil
+        }()
+        let device = DiagnosticsDevice(
+            productType: document?.extra[GestaltKeys.productType] as? String,
+            osBuild: SystemDeviceIdentitySource().osBuild,
+            regionCode: regionCode,
+            isNativeAppleIntelligence: isNativeAppleIntelligence)
+        // Only the read-state case is diagnosed; the timestamp is
+        // never displayed. The fallback is the monitor's live-read
+        // time, then the live clock.
+        let readAt = lastReadAt ?? monitorReadAt ?? Date()
+        let mgReadState: MGReadState = snapshot == nil
+            ? .notReadYet
+            : .live(values: snapshotValues, readAt: readAt)
+        return DiagnosticsInput(
+            device: device,
+            mgReadState: mgReadState,
+            snapshotValues: snapshotValues,
+            workingValues: workingValues,
+            backups: backups,
+            backupVerifications: backupVerifications,
+            monitorRows: monitorRows,
+            restoreReports: lastRestoreReport.map { [$0] } ?? [],
+            events: await operationEvents.recordedEvents(),
+            fingerprintComparison: fingerprintComparison,
+            pendingRestartFeatureIDs: pendingRestartFeatureIDs)
+    }
+
+    /// The unified diagnostics report for the Diagnostics Centre:
+    /// the input from `diagnosticsInput`, run through the pure
+    /// engine. Views call this — never the engine directly.
+    func diagnosticsReport(
+        fingerprintComparison: FingerprintComparison? = nil,
+        backupVerifications: [BackupVerification] = [],
+        pendingRestartFeatureIDs: Set<String> = []
+    ) async -> DiagnosticsReport {
+        DiagnosticsEngine.report(await diagnosticsInput(
+            fingerprintComparison: fingerprintComparison,
+            backupVerifications: backupVerifications,
+            pendingRestartFeatureIDs: pendingRestartFeatureIDs))
+    }
+
+    /// Values by MG key from a document's CacheExtra, for the
+    /// diagnostics input. Keys absent from the document are absent
+    /// from the map — never a placeholder value.
+    private func valuesByKey(in document: GestaltDocument?) -> [String: MGValue] {
+        Dictionary(
+            MGDatabase.all.compactMap { record in
+                value(of: record, in: document).map { (record.obfuscatedName, $0) }
+            },
+            uniquingKeysWith: { first, _ in first })
+    }
+
+    /// The value of a record in a document. A plaintext key is
+    /// staged under its readable name, so the lookup retries with it
+    /// when the obfuscated key is absent.
+    private func value(of record: MGKeyRecord, in document: GestaltDocument?) -> MGValue? {
+        guard let document else { return nil }
+        let raw = document.extra[record.obfuscatedName]
+            ?? (record.readableName != record.obfuscatedName
+                ? document.extra[record.readableName] : nil)
+        return raw.flatMap(MGValue.fromPlistValue)
+    }
+
+    /// The slot probe for a record: the layout-resolved slot number
+    /// and the slot byte at each source. `nil` when the layout did
+    /// not resolve, or the key has no slot on this layout — unknown,
+    /// never a guessed slot.
+    private func slotProbe(for record: MGKeyRecord, snapshotDoc: GestaltDocument?,
+                           stagedDoc: GestaltDocument?, layout: MobileGestaltCacheLayout?,
+                           liveByKey: [String: MGValue]) -> MGSlotProbe? {
+        guard let layout, let slotNumber = layout.slotIndex(forKey: record.obfuscatedName) else { return nil }
+        let liveAnswer: Bool? = {
+            guard case .bool(let value) = liveByKey[record.obfuscatedName] else { return nil }
+            return value
+        }()
+        func slotByte(in document: GestaltDocument?) -> Bool? {
+            guard let document else { return nil }
+            switch record.obfuscatedName {
+            case DeviceCacheOptions.audioIntelligenceKey, DeviceCacheOptions.personalTranslatorKey:
+                return DeviceCacheOptions.advAISlotValue(record.obfuscatedName, in: document, using: layout)
+            case DeviceCacheOptions.greenTeaKey:
+                return (try? DeviceCacheOptions.flags(in: document, using: layout))?.greenTea
+            case DeviceCacheOptions.notGreenTeaKey:
+                return (try? DeviceCacheOptions.flags(in: document, using: layout))?.notGreenTea
+            case DeviceCacheOptions.wapiKey:
+                return try? DeviceCacheOptions.wapi(in: document, using: layout)
+            default:
+                return nil
+            }
+        }
+        return MGSlotProbe(slotNumber: slotNumber,
+                           originalByte: slotByte(in: snapshotDoc),
+                           stagedByte: slotByte(in: stagedDoc),
+                           liveAnswer: liveAnswer,
+                           nativeBaseline: record.slot?.nativeBaseline)
     }
 
     /// Slot and key conflicts on native-AI hardware, computed from the staged
@@ -338,7 +616,7 @@ final class GestaltManager: ObservableObject {
         guard let preview,
               let productType = preview.extra[GestaltKeys.productType] as? String,
               DeviceAIEligibility.isNativeAppleIntelligence(productType: productType),
-              let layout = try? MobileGestaltCacheLayout.resolve(in: preview) else { return [] }
+              let layout = try? LayoutResolver.resolve(cacheUUID: preview.cacheUUID, cacheData: preview.cacheData) else { return [] }
         var conflicts: [AIConflict] = []
         let ptBaseline = DeviceAIEligibility.nativeAdvAISlotValue(
             key: DeviceCacheOptions.personalTranslatorKey, productType: productType)
@@ -405,6 +683,7 @@ final class GestaltManager: ObservableObject {
         request.audioIntelligenceSlotIndex = audioIndex
         request.personalTranslatorSlotIndex = translatorIndex
         request.liveAIEnabled = liveAIEnabled
+        request.siriHubLive = LiveGestaltProbe.queryBool(SiriHubGuard.siriHubKey)
         request.userConfirmedUnverifiedCombination = userConfirmedUnverifiedCombination
         return AIStagingGuard.decide(request)
     }
@@ -416,20 +695,20 @@ final class GestaltManager: ObservableObject {
     /// decision's specific reason.
     var aiStagingDecision: AIStagingDecision? {
         guard let preview,
-              let layout = try? MobileGestaltCacheLayout.resolve(in: preview) else { return nil }
+              let layout = try? LayoutResolver.resolve(cacheUUID: preview.cacheUUID, cacheData: preview.cacheData) else { return nil }
         return Self.stagingDecision(for: preview, layout: layout, liveAIEnabled: liveAIEnabled,
                                     userConfirmedUnverifiedCombination: userConfirmedUnverifiedAICombination,
                                     proposedUnlock: false)
     }
 
-    /// The guard decision for the China Unlock proposal (all six AI keys
+    /// The guard decision for the China Unlock proposal (all seven AI keys
     /// staged as 1), evaluated on the current preview, or `nil` when the
     /// slots are unobservable. Fix evaluates this before staging: it
     /// answers whether the combination Fix is about to stage is blocked,
     /// warned, or allowed.
     var proposedUnlockStagingDecision: AIStagingDecision? {
         guard let preview,
-              let layout = try? MobileGestaltCacheLayout.resolve(in: preview) else { return nil }
+              let layout = try? LayoutResolver.resolve(cacheUUID: preview.cacheUUID, cacheData: preview.cacheData) else { return nil }
         return Self.stagingDecision(for: preview, layout: layout, liveAIEnabled: liveAIEnabled,
                                     userConfirmedUnverifiedCombination: userConfirmedUnverifiedAICombination,
                                     proposedUnlock: true)
@@ -501,6 +780,69 @@ final class GestaltManager: ObservableObject {
         return staged
     }
 
+    /// Repairs the AI baseline in the staged working document, so a
+    /// one-tap unlock (or AI-only staging) leaves a complete and
+    /// consistent AI baseline instead of a partial one. Called at the
+    /// end of `stageChinaUnlock` and `stageChinaAIOnly` (staging only
+    /// — the repair still goes through review + backup + readback
+    /// like every other change).
+    ///
+    /// - CacheData slots: each AdvAI slot is set to its native
+    ///   baseline (Personal Translator #266 = 1, Audio Intelligence
+    ///   #178 = 0) when a baseline is known for this hardware
+    ///   (`DeviceAIEligibility.nativeAdvAISlotValue`, native hardware
+    ///   only) and the slot resolves and disagrees. Correct values are
+    ///   left untouched; unresolvable slots are left alone (unknown,
+    ///   never guessed). This matches Erosion-CN's one-click fix as of
+    ///   main `1d5608dd` (v1.0.3, `applyAppleIntelligenceOneClickFix`,
+    ///   `GestaltStore.swift:903`): it repairs #178/#266 back to their
+    ///   native values and only forces the 3 main AI keys
+    ///   (`appIntellAllKeys`) to 1 on non-native hardware — the two
+    ///   slots are not in that step's key list. (Whether an older
+    ///   Erosion-CN version forced all AI slots to 1 was not verified;
+    ///   see Stage 1 U4.)
+    /// - CacheExtra keys: when AI staging is active (the seven AI
+    ///   choices are staged `.enable`), any AI key absent from the
+    ///   working document is filled with its staged value. Present
+    ///   values are left untouched. On native hardware the AI keys are
+    ///   deliberately NOT filled: the #178 decision skips them there,
+    ///   and the slots above are the only baseline repair that applies.
+    /// Returns true when anything was staged.
+    @discardableResult
+    func fixAIBaseline() -> Bool {
+        guard !isBusy, var document = working,
+              let productType = document.extra[GestaltKeys.productType] as? String else { return false }
+        var staged = false
+        // CacheData slots to their native baselines (native only:
+        // `nativeAdvAISlotValue` returns nil where no baseline is
+        // known, so non-native hardware is left alone).
+        for key in [DeviceCacheOptions.personalTranslatorKey, DeviceCacheOptions.audioIntelligenceKey] {
+            guard let baseline = DeviceAIEligibility.nativeAdvAISlotValue(key: key, productType: productType),
+                  let current = DeviceCacheOptions.advAISlotValue(key, in: document),
+                  current != baseline else { continue }
+            do {
+                try document.setAdvAISlot(key, value: baseline)
+                staged = true
+            } catch {
+                // Layout changed under us; leave it unstaged rather
+                // than staging a slot we cannot verify.
+            }
+        }
+        // CacheExtra keys: fill absent AI keys with their staged
+        // values, only where AI staging is active.
+        let aiStaged = ChinaUnlock.aiCapabilityIDs.allSatisfy { (choices[$0] ?? .keep) == .enable }
+        if aiStaged {
+            for capability in ChinaUnlock.aiCapabilities {
+                for key in capability.keys where document.extra[key] == nil {
+                    document.set(capability.values[key] ?? capability.enabled, for: key)
+                    staged = true
+                }
+            }
+        }
+        if staged { working = document }
+        return staged
+    }
+
     /// One-tap fix for the AI readiness checkup: repairs any slot
     /// conflicts first, then evaluates the staging guard on the China
     /// Unlock proposal before staging it. A `.block` decision holds the
@@ -540,7 +882,7 @@ final class GestaltManager: ObservableObject {
     var cacheLayoutError: String? {
         guard let working else { return L("Read MobileGestalt first.") }
         do {
-            _ = try MobileGestaltCacheLayout.resolve(in: working)
+            _ = try LayoutResolver.resolve(cacheUUID: working.cacheUUID, cacheData: working.cacheData)
             return nil
         } catch {
             return error.localizedDescription
@@ -561,10 +903,10 @@ final class GestaltManager: ObservableObject {
     }
 
     /// Stages the full China Unlock: eSIM cache flags, region code US and
-    /// the six Apple Intelligence presets — exactly the 9 items, in either
+    /// the seven Apple Intelligence presets — exactly the 10 items, in either
     /// region mode. On hardware that natively supports Apple Intelligence
     /// only the 3 non-AI items are staged (eSIM + region code) and the
-    /// six AI presets are skipped, never staged — staging them would
+    /// seven AI presets are skipped, never staged — staging them would
     /// only record type-change diffs (1 → true) for values that are
     /// already on. Nothing is written here; the user still reviews the
     /// changes and applies them, and a restart is required before they
@@ -596,19 +938,23 @@ final class GestaltManager: ObservableObject {
         guard stageCacheOption(.enable) else { return false }
         regionCodeID = ChinaUnlock.regionCodeID
         regionID = "keep"
-        // Native Apple Intelligence hardware already supports the six
+        // Native Apple Intelligence hardware already supports the seven
         // AI presets: staging them would claim a change that is not
         // one. Skip them; the staged flag reads the skip as satisfied
         // (see `isChinaUnlockStaged`).
         if !isNativeAppleIntelligence {
             for id in ChinaUnlock.aiCapabilityIDs { choices[id] = .enable }
         }
+        // Complete the AI baseline: repair the two AdvAI CacheData
+        // slots to their native values and fill any absent AI keys
+        // (native hardware: slots only, keys stay skipped).
+        _ = fixAIBaseline()
         return true
     }
 
     /// Stages a restore of the full China Unlock: eSIM flags back to the
     /// recorded originals, region code back to its recorded original and
-    /// the six AI presets back to their recorded originals (`.disable`
+    /// the seven AI presets back to their recorded originals (`.disable`
     /// removes keys that were originally absent). `siriOnDevice` and WAPI
     /// are left untouched. The sales-region suffixes and the model number
     /// are also restored when the stored mode is Full US, so an unlock
@@ -630,13 +976,21 @@ final class GestaltManager: ObservableObject {
                 document.set(snapshot.originalValue(for: GestaltKeys.legacyRegionInfo), for: GestaltKeys.legacyRegionInfo)
                 document.set(snapshot.originalValue(for: GestaltKeys.modelNumber), for: GestaltKeys.modelNumber)
             }
+            // ADR-2-02: restore the two AdvAI CacheData slots to their
+            // snapshot originals. A failed slot is logged and does not
+            // stop the rest of the restore.
+            for outcome in AdvAISlotRestore.restore(in: &document, from: snapshot.document) {
+                if case .failed(let key, let reason) = outcome {
+                    log("[restore] slot \(key) could not be restored: \(reason)")
+                }
+            }
             working = document
         }
         for id in ChinaUnlock.aiCapabilityIDs { choices[id] = .disable }
         return true
     }
 
-    /// Stages only the six Apple Intelligence presets — the AI part of the
+    /// Stages only the seven Apple Intelligence presets — the AI part of the
     /// one-tap unlock, without eSIM or region. Deliberately not gated by
     /// the eSIM cache layout (see `chinaUnlockESIMLayoutError`): the AI
     /// keys are CacheExtra values and do not need the layout. Like the
@@ -656,21 +1010,72 @@ final class GestaltManager: ObservableObject {
             return false
         }
         for id in ChinaUnlock.aiCapabilityIDs { choices[id] = .enable }
+        // Complete the AI baseline: repair the two AdvAI CacheData
+        // slots to their native values and fill any absent AI keys.
+        _ = fixAIBaseline()
         return true
     }
 
-    /// Stages a restore of the AI-only preset: the six AI presets back to
+    /// Stages a restore of the AI-only preset: the seven AI presets back to
     /// their recorded originals (`.disable` removes keys that were
-    /// originally absent). eSIM and region are left untouched.
+    /// originally absent). eSIM and region are left untouched. The two
+    /// AdvAI CacheData slots are restored to their snapshot originals
+    /// too (ADR-2-02): the AI-only staging path repairs them via
+    /// `fixAIBaseline`, so its restore path must cover them.
     @discardableResult
     func restoreChinaAIOnly() -> Bool {
         guard !isBusy else { return false }
+        if let snapshot, var document = working {
+            let outcomes = AdvAISlotRestore.restore(in: &document, from: snapshot.document)
+            for outcome in outcomes {
+                if case .failed(let key, let reason) = outcome {
+                    log("[restore] slot \(key) could not be restored: \(reason)")
+                }
+            }
+            if outcomes.contains(where: \.isRestored) { working = document }
+        }
         for id in ChinaUnlock.aiCapabilityIDs { choices[id] = .disable }
         return true
     }
 
+    /// Stages only Siri AI Mode (SiriMode=2) — the standalone
+    /// single-item preset, without eSIM, region, or the other AI
+    /// keys. Deliberately not gated by the eSIM cache layout: the
+    /// SiriMode key is a CacheExtra value and does not need the
+    /// layout. Unlike the AI-only preset this one is ALLOWED on
+    /// hardware that natively supports Apple Intelligence — that is
+    /// the point: an explicit single-item opt-in on a device whose
+    /// Siri AI already works, with the experimental warning shown
+    /// by the card. It IS gated by the fail-closed model decision
+    /// (`deviceModelDecision`): an unknown model refuses with the
+    /// reason shown (`message`), so a guessed device never gets a
+    /// staged SiriMode value.
+    @discardableResult
+    func stageChinaSiriAIMode() -> Bool {
+        guard !isBusy else { return false }
+        if case .unknown(let reason) = deviceModelDecision {
+            message = reason
+            log(reason)
+            return false
+        }
+        choices[ChinaUnlock.siriAIModeID] = .enable
+        return true
+    }
+
+    /// Stages a restore of the Siri AI Mode preset: SiriMode back to
+    /// its recorded original (`.disable` removes the key when it was
+    /// originally absent). eSIM, region, and the other AI presets
+    /// are left untouched. Restoring is never gated by the model
+    /// decision — returning to the original is always safe.
+    @discardableResult
+    func restoreChinaSiriAIMode() -> Bool {
+        guard !isBusy else { return false }
+        choices[ChinaUnlock.siriAIModeID] = .disable
+        return true
+    }
+
     /// Stages only the eSIM cache flags and the region code US (LL) — the
-    /// eSIM+region part of the one-tap unlock, without the six AI presets.
+    /// eSIM+region part of the one-tap unlock, without the seven AI presets.
     /// Guarded by the eSIM cache layout exactly like `stageChinaUnlock`:
     /// if the layout cannot be verified, the preset is stopped and the
     /// reason is shown (`message`).
@@ -690,7 +1095,7 @@ final class GestaltManager: ObservableObject {
 
     /// Stages a restore of the eSIM+region preset: eSIM flags back to the
     /// recorded originals and region code back to its recorded original.
-    /// The six AI presets are left untouched.
+    /// The seven AI presets are left untouched.
     @discardableResult
     func restoreChinaESIMRegion() -> Bool {
         guard stageCacheOption(.restoreOriginal) else { return false }
@@ -879,8 +1284,8 @@ final class GestaltManager: ObservableObject {
         var lines = ["CacheExtra: \(document.extra.count) keys"]
         if let cacheData = document.root["CacheData"] as? Data { lines.append("CacheData: \(cacheData.count) bytes") }
         do {
-            let layout = try MobileGestaltCacheLayout.resolve(in: document)
-            let source = MobileGestaltCacheLayout.runtimeLayout().map { $0 == layout } == true ? "runtime scan" : "offline profile"
+            let layout = try LayoutResolver.resolve(cacheUUID: document.cacheUUID, cacheData: document.cacheData)
+            let source = LayoutResolver.runtimeLayout().map { $0 == layout } == true ? "runtime scan" : "offline profile"
             lines.append("Cache layout: \(layout.uuid), \(layout.slotCount) slots (\(source))")
             lines.append(String(format: "green-tea: index %d, offset 0x%X; not-green-tea: index %d, offset 0x%X",
                                 layout.greenTeaIndex, layout.greenTeaOffset, layout.notGreenTeaIndex, layout.notGreenTeaOffset))
@@ -934,7 +1339,8 @@ final class GestaltManager: ObservableObject {
         do {
             let values = try url.resourceValues(forKeys: [.fileSizeKey])
             guard (values.fileSize ?? 0) <= 16 * 1024 * 1024 else { throw GestaltFailure("Choose a plist smaller than 16 MB.") }
-            let result = try await files.loadLocal(data: Data(contentsOf: url), name: url.lastPathComponent)
+            let data = try await Task.detached(priority: .userInitiated) { try Data(contentsOf: url) }.value
+            let result = try await files.loadLocal(data: data, name: url.lastPathComponent)
             accept(result); status = "Local file opened"; needsRestart = false
             lastReadAt = Date()
             log("[open] \(url.lastPathComponent): \(result.data.count) bytes")
@@ -1097,7 +1503,16 @@ final class GestaltManager: ObservableObject {
             log("[apply] source=\(snapshot.source.rawValue) fields=\(changeCount)")
             logChanges(from: snapshot.document, to: edited, prefix: "[diff] ")
             let absentKeys = Set(Capability.all.filter { choices[$0.id] == .removeAdded }.flatMap(\.keys))
-            let result = try await files.commit(edited, expected: snapshot, originallyAbsentKeys: absentKeys)
+            // Stage 5 orchestration (§3.4): a fresh pre-write backup
+            // first, then commit with its record — commit verifies
+            // the record covers the pre-write bytes and does not
+            // write a second backup. The measured "apply" duration
+            // covers both writes (Stage 9, ADR-2-12: real durations
+            // only).
+            let result = try await performance.measure(label: "apply") {
+                let preWriteBackup = try await BackupEngine.createPreWriteBackup(store: files, snapshot: snapshot, reason: "Before applying")
+                return try await files.commit(edited, expected: snapshot, originallyAbsentKeys: absentKeys, preWriteBackup: preWriteBackup)
+            }
             accept(result); needsRestart = result.source == .device
             status = result.source == .device ? "Changes verified on device" : "Local changes saved"
             let changedCacheOption = !DeviceCacheOptions.changes(from: snapshot.document, to: edited).isEmpty
@@ -1112,7 +1527,8 @@ final class GestaltManager: ObservableObject {
         guard !isBusy, let snapshot else { return }
         isBusy = true; defer { isBusy = false }
         do {
-            try await files.backup(snapshot); log(L("Backup saved")); message = L("Backup saved")
+            try await performance.measure(label: "backup") { try await files.backup(snapshot) }
+            log(L("Backup saved")); message = L("Backup saved")
             recordOperationEvent(.backupCreated, detail: L("Backup saved"))
             await reloadBackups()
         }
@@ -1121,25 +1537,136 @@ final class GestaltManager: ObservableObject {
     func reloadBackups() async {
         do { backups = try await files.backups() } catch { failed(error) }
     }
-    func restore(_ record: BackupRecord) async {
+    func restore(_ record: BackupRecord, allowLegacyNoDigest: Bool = false) async {
         guard !isBusy, let snapshot else { return }
         guard changeCount == 0 else {
             message = L("Save or discard your current changes before opening another plist.")
             return
         }
         isBusy = true; defer { isBusy = false }
+        var committed: DocumentSnapshot?
+        let plan = RestoreEngine.Plan(record: record, allowLegacyNoDigest: allowLegacyNoDigest)
+        let currentBuild = SystemDeviceIdentitySource().osBuild
+        let report = await performance.measure(label: "restore") {
+            await RestoreEngine.run(
+                plan: plan, snapshot: snapshot,
+                installationDeviceID: RestoreIntelligence.installationDeviceID,
+                currentBuild: currentBuild,
+                deviceDisplayName: modelName.isEmpty ? L("This device") : modelName,
+                createPreWriteBackup: { snapshot in
+                    try await BackupEngine.createPreWriteBackup(store: files, snapshot: snapshot, reason: "Before restoring")
+                },
+                execute: { record, preWrite in
+                    let data = try await files.backupData(record)
+                    let restored = try GestaltDocument(data: data)
+                    log("[restore] \(record.filename) · \(record.byteCount) bytes · reason=\(record.reason)")
+                    logChanges(from: snapshot.document, to: restored, prefix: "[restore-diff] ")
+                    let result = try await files.commit(restored, expected: snapshot, restoring: record, preWriteBackup: preWrite)
+                    committed = result
+                    return result.document
+                },
+                readBack: {
+                    try await files.loadDevice().document
+                })
+        }
+        lastRestoreReport = report
+        if let committed {
+            let changed = !committed.document.matches(snapshot.document)
+            accept(committed)
+            needsRestart = committed.source == .device && (needsRestart || changed)
+            if report.succeeded {
+                message = L(committed.source == .device
+                            ? (changed ? "Backup restored and verified." : "This backup already matches the device. No changes were made.")
+                            : "Backup opened as a local document.")
+            } else {
+                message = report.outcomes.first(where: { !$0.passed })?.detail
+                    ?? L("The restore did not complete. No system changes were made.")
+            }
+            log(message ?? "")
+        } else if !report.succeeded {
+            message = report.outcomes.first(where: { !$0.passed })?.detail
+                ?? L("The restore did not complete. No system changes were made.")
+            log(message ?? "")
+        }
+        await reloadBackups()
+    }
+    /// Restores only the four hardware-identity fields (product type,
+    /// hardware board, CPU, model number) from a verified same-device
+    /// backup, keeping every other change. This is the Face ID
+    /// recovery (upstream GestaltX #128/#146): enabling AI by
+    /// spoofing the hardware identity can break Face ID, and this
+    /// puts the real hardware back without losing the unlock. The
+    /// physical product type and board come from the kernel, not the
+    /// cache, so a spoofed cache cannot fake them.
+    func restoreHardwareIdentity(from record: BackupRecord? = nil) async {
+        guard !isBusy, let before = snapshot else { return }
+        guard changeCount == 0 else {
+            message = L("Save or discard your current changes before opening another plist.")
+            return
+        }
+        isBusy = true; defer { isBusy = false }
         do {
-            let data = try await files.backupData(record)
-            let restored = try GestaltDocument(data: data)
-            log("[restore] \(record.filename) · \(record.byteCount) bytes · reason=\(record.reason)")
-            logChanges(from: snapshot.document, to: restored, prefix: "[restore-diff] ")
-            let result = try await files.commit(restored, expected: snapshot, restoring: record)
-            let changed = !result.document.matches(snapshot.document)
+            let physical = GXCopyPhysicalHardwareIdentity()
+            guard let product = physical["hw.machine"], let board = physical["hw.model"] else {
+                throw GestaltFailure("This device's hardware identity could not be verified.")
+            }
+            let result: DocumentSnapshot
+            let base: GestaltDocument
+            if let record {
+                base = before.document
+                result = try await files.restoreHardwareIdentity(from: record, expected: before,
+                                                                 physicalProduct: product, physicalBoard: board)
+            } else {
+                // No record: restore from the currently loaded verified
+                // import (a local document whose ownership was verified
+                // on this device — the same entry point as
+                // `restoreImportedPlist`). The live device document is
+                // re-read as the restore target.
+                guard before.source == .local, before.ownershipVerified else {
+                    throw GestaltFailure("A verified original hardware backup matching this device and cache is required.")
+                }
+                let live = try await files.loadDevice()
+                base = live.document
+                result = try await files.restoreHardwareIdentity(from: before, expected: live,
+                                                                 physicalProduct: product, physicalBoard: board)
+            }
+            logChanges(from: base, to: result.document, prefix: "[restore-hardware] ")
+            let changed = !result.document.matches(base)
             accept(result); needsRestart = result.source == .device && (needsRestart || changed)
-            message = L(result.source == .device
-                        ? (changed ? "Backup restored and verified." : "This backup already matches the device. No changes were made.")
-                        : "Backup opened as a local document.")
+            message = L(changed ? "Backup restored and verified." : "This backup already matches the device. No changes were made.")
             log(message ?? ""); await reloadBackups()
+        } catch { failed(error); await reloadBackups() }
+    }
+    /// Clears and rebuilds the MobileGestalt cache to a clean factory
+    /// baseline (Erosion-CN's "清除并重建缓存", reimplemented for
+    /// LilaShift's backup model). The current device file is backed up
+    /// first, the live cache is deleted so iOS regenerates it from
+    /// the hardware on restart, and the loaded document is cleared:
+    /// the file does not exist again until the restart, so the user
+    /// re-reads after restarting.
+    func rebuildCache() async {
+        guard !isBusy, let before = snapshot else { return }
+        guard changeCount == 0 else {
+            message = L("Save or discard your current changes before opening another plist.")
+            return
+        }
+        guard before.source == .device else {
+            message = L("Only a live device cache can be rebuilt. Read the device first.")
+            return
+        }
+        isBusy = true; defer { isBusy = false }
+        do {
+            let record = try await files.rebuildCache(expected: before)
+            log("[rebuild-cache] \(record.filename) · \(record.byteCount) bytes · reason=\(record.reason)")
+            snapshot = nil; working = nil; choices = [:]
+            regionID = "keep"; regionCodeID = "keep"; modelID = "keep"; changesName = false; subtype = 0
+            userConfirmedUnverifiedAICombination = false
+            cacheOptionChoice = .keep; wapiChoice = .keep
+            modelName = ""
+            needsRestart = true
+            message = L("Cache rebuilt. Restart the device to finish.")
+            log(message ?? "")
+            await reloadBackups()
         } catch { failed(error); await reloadBackups() }
     }
     func openBackup(_ record: BackupRecord) async {
@@ -1172,6 +1699,33 @@ final class GestaltManager: ObservableObject {
             let plain = try doc.encoded()
             let bytes = snapshot.source == .device || snapshot.ownershipVerified ? try DeviceBoundPlist.seal(plain) : plain
             return try exportData(bytes, name: "MobileGestalt-LilaShift.plist")
+        }
+        catch { failed(error); return nil }
+    }
+
+    /// Exports the current document with the device-identifying
+    /// values removed (UDID, serial number, chip ID). The result
+    /// is unsealed and explicitly NOT restorable: it has no
+    /// recorded digest and no `DeviceBoundPlist` seal, and
+    /// `restore` never accepts an unsealed document as a backup.
+    /// Use it when a plist must be shared without handing over
+    /// this device's identity.
+    func exportDocumentDeidentified() -> TemporaryExport? {
+        guard let doc = preview else { return nil }
+        do {
+            let stripped = try DeidentifiedExport.strip(try doc.encoded())
+            return try exportData(stripped.data, name: DeidentifiedExport.fileName)
+        }
+        catch { failed(error); return nil }
+    }
+
+    /// The same de-identified export for a backup record: built
+    /// from the plain backup bytes, never from the sealed export.
+    func exportBackupDeidentified(_ record: BackupRecord) async -> TemporaryExport? {
+        do {
+            let stripped = try DeidentifiedExport.strip(try await files.backupData(record))
+            let base = (record.filename as NSString).deletingPathExtension
+            return try exportData(stripped.data, name: base + "-deidentified.plist")
         }
         catch { failed(error); return nil }
     }

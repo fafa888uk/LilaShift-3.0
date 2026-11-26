@@ -14,10 +14,13 @@ final class LaunchArtworkCatalogModel: ObservableObject {
     private var pending = false
     private var pendingForce = false
     init() {
-        catalog = LaunchArtworkCatalogStore(storage: FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("GestaltX/LaunchImages/Catalog", isDirectory: true), device: UIDevice.current.identifierForVendor?.uuidString ?? "")
+        catalog = LaunchArtworkCatalogStore(storage: AppDirectories.launchImagesCatalogStorage, device: UIDevice.current.identifierForVendor?.uuidString ?? "")
     }
     func refreshIfLoaded() { if loaded { refresh() } }
+    func migrateBackups() async {
+        let store = LaunchArtworkStore(storage: AppDirectories.launchImagesStorage, device: UIDevice.current.identifierForVendor?.uuidString ?? "")
+        await store.migrateLegacyBackups()
+    }
     func refresh(force: Bool = false) {
         loaded = true
         if scan != nil { pending = true; pendingForce = pendingForce || force; return }
@@ -46,8 +49,7 @@ final class LaunchArtworkModel: ObservableObject {
     @Published var message: String?
     private let store: LaunchArtworkStore
     init() {
-        store = LaunchArtworkStore(storage: FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("GestaltX/LaunchImages", isDirectory: true), device: UIDevice.current.identifierForVendor?.uuidString ?? "")
+        store = LaunchArtworkStore(storage: AppDirectories.launchImagesStorage, device: UIDevice.current.identifierForVendor?.uuidString ?? "")
     }
     func load(_ app: LaunchArtworkApp) async {
         guard !busy else { return }
@@ -120,11 +122,11 @@ struct LaunchArtworkApplicationsView: View {
     }
     var body: some View {
         List {
-            if catalog.scanning { HStack(spacing: 12) { ProgressView(); Text(L("Reading…")) }.foregroundStyle(.secondary) }
+            if catalog.scanning { HStack(spacing: GlassTokens.rowSpacing) { ProgressView(); Text(L("Reading…")) }.foregroundStyle(.secondary) }
             else if apps.isEmpty { ContentUnavailableView(L("No Launch Images"), systemImage: "app.badge") }
             ForEach(apps) { app in
                 NavigationLink { LaunchArtworkEditor(app: app, customizations: customizations) } label: {
-                    HStack(spacing: 12) {
+                    HStack(spacing: GlassTokens.rowSpacing) {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(app.name).lineLimit(1)
                             Text(app.id).font(.caption).foregroundStyle(.secondary).lineLimit(1)
@@ -147,7 +149,10 @@ struct LaunchArtworkApplicationsView: View {
                 }
             }
         }
-        .task { catalog.refresh() }
+        .task {
+            await catalog.migrateBackups()
+            catalog.refresh()
+        }
         .transaction { $0.animation = nil }
     }
 }
@@ -158,6 +163,10 @@ private struct LaunchArtworkEditor: View {
     @StateObject private var model = LaunchArtworkModel()
     @State private var selectedPhoto: PhotosPickerItem?
     @State private var showsPhotos = false
+    /// The decoded preview image (Stage 9, TASKBOOK §8.2): decoded
+    /// once per preview change, off the main thread — the body used
+    /// to call `UIImage(data:)` on every render.
+    @State private var previewImage: UIImage?
     @State private var asksApply = false
     @State private var asksRestore = false
     @State private var presentationOwner = UUID()
@@ -168,9 +177,15 @@ private struct LaunchArtworkEditor: View {
                 HStack {
                     Spacer()
                     Group {
-                        if let data = model.preview, let image = UIImage(data: data) {
+                        if let image = previewImage {
                             Image(uiImage: image).resizable().scaledToFill()
                         } else { Rectangle().fill(Color(uiColor: .tertiarySystemFill)).overlay { Image(systemName: "photo").foregroundStyle(.secondary) } }
+                    }
+                    .task(id: model.preview) {
+                        let data = model.preview
+                        previewImage = await Task.detached(priority: .userInitiated) {
+                            data.flatMap { UIImage(data: $0) }
+                        }.value
                     }
                     .frame(width: 180, height: min(420, max(100, 180 * CGFloat(model.state?.height ?? 2) / CGFloat(model.state?.width ?? 1))))
                     .clipped().clipShape(RoundedRectangle(cornerRadius: 14))

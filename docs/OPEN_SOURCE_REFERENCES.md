@@ -1,6 +1,6 @@
-# LilaShift 3.0 — 开源来源清单（Open Source References）
+# LilaShift 4.x — 开源来源清单（Open Source References）
 
-> 核实日期：2026-11-14。许可证以各仓库 `LICENSE` 文件与 GitHub 标注为准；
+> 本次来源与依赖复核：2026-11-27；历史来源记录始于 2026-11-14。许可证以各仓库 `LICENSE` 文件与 GitHub 标注为准；
 > 源码使用关系以本仓库实际源码、Git 历史与 `THIRD_PARTY_NOTICES.md` 为准。
 > 本文件与 `THIRD_PARTY_NOTICES.md`（随 App 分发）同步维护；两者不一致时以
 > `THIRD_PARTY_NOTICES.md` 为准并在此记录差异原因。
@@ -16,15 +16,28 @@
 
 ---
 
+## 2026-11-27 更新范围
+
+| 项目 | 本次核实的上游 | 4.2.1 处理 |
+|---|---|---|
+| GestaltX | [main `311f789`](https://github.com/huami1314/GestaltX/commit/311f78999d9f5f062f7e3b4c6374684782be5382)，最新发布 [v1.1.1](https://github.com/huami1314/GestaltX/releases/tag/v1.1.1) | 保留已移植的修复与铃声库；配对、通知捕获、土耳其语完整本地化仍未并入；不将分叉提交数当作缺失功能数 |
+| ZIPFoundation | [0.9.21](https://github.com/weichsel/ZIPFoundation/releases/tag/0.9.21)，`e7048f0569f0ba37df26f8357f560b9d25e9a284` | 从 0.9.20 升级并精确固定版本与提交；保留应用自身的路径、符号链接、体积、CRC 与取消检查 |
+| Erosion-CN | [v1.0.7](https://github.com/Kianuni/Erosion-CN/releases/tag/v1.0.7)，[main `094df45`](https://github.com/Kianuni/Erosion-CN/commit/094df45ddaedb044385ada4a4bf0f22e6a6252cb) | 已对照；近期广告缓存路径、白名单与旧机型电池开关属于本应用尚未集成的功能；既有只读诊断与键表来源未出现新的对应文件修改 |
+| MGKeys | [master `db9cf77`](https://github.com/PoomSmart/MGKeys/commit/db9cf77fa9d5330070b3dcb73fc1fd6a271fc421) | 与当前 77 个已用键的名称/版本数据来源一致；修正“仅研究、未复用数据”的旧描述并补齐随包 MIT 全文 |
+| SnapshotTesting | [1.19.7](https://github.com/pointfreeco/swift-snapshot-testing/releases/tag/1.19.7) | 已为最新版本；补齐 CI 已解析使用的三项传递依赖固定记录 |
+| worse_query | [main `d1540e2`](https://github.com/forcequitOS/worse_query/commit/d1540e20cd82b974d891e0551ced6d6aeb570ac2) | 未发现比既有分支更新的源码；系统版本门控保持原有支持范围 |
+
+“已核实上游”表示本次检查的来源版本，不等于完整移植该项目。ZIPFoundation 0.9.21 的上游发布说明列明畸形压缩包、内存生命周期和符号链接约束等修复；本应用另外用自包含 ZIP 用例验证正常解压、目录穿越、符号链接、名称冲突与 CRC 错误清理，具体通过状态以对应提交的 CI 为准。
+
 ## 1. GestaltX — 原始代码基础
 
 | 项目 | 内容 |
 |---|---|
 | 作者 / 组织 | huamidev |
-| GitHub | https://github.com/huamidev/GestaltX |
-| 使用的版本 / 提交 | 上游 v1.0.7（tag `dfd4a7e`，build `11130112`），main `c60519c`（含上游壁纸删除修复 PR #126） |
+| GitHub | https://github.com/huami1314/GestaltX |
+| 使用的版本 / 提交 | 原始基线 v1.0.7（`dfd4a7e`）及 main `c60519c`；4.x 已选择移植 v1.1.1（`f34d5a7271c14e540edb58e328dc9c06f8f3368f`）的修复与 App Audio Library；不是整体覆盖或完整 rebase |
 | 许可证 | **GPL-3.0**（仓库 `LICENSE` + GitHub 标注一致；`GNU GENERAL PUBLIC LICENSE / Version 3, 29 June 2007`） |
-| 证据来源 | https://github.com/huamidev/GestaltX/blob/main/LICENSE |
+| 证据来源 | https://github.com/huami1314/GestaltX/blob/main/LICENSE |
 | LilaShift 对应功能 | 整个 App：MobileGestalt 编辑器、预设、备份、事务、暂存模型、界面 |
 | 对应源码文件 | 全部上游来源文件（见 `THIRD_PARTY_NOTICES.md` §1）；LilaShift 在此基线上新增的文件见 `docs/FEATURE_ORIGIN_MATRIX.md` |
 | 使用关系 | **原始代码基础** |
@@ -107,13 +120,13 @@
 |---|---|
 | 作者 / 组织 | Kianuni |
 | GitHub | https://github.com/Kianuni/Erosion-CN |
-| 使用的版本 / 提交 | 默认分支 `main`，最后推送 2026-11-14；六项改进于 2026-11-13 前后对照当时版本重新实现；数据表转录自当时的公开内容 |
+| 使用的版本 / 提交 | 六项改进于 2026-11-13 前后对照当时版本重新实现，数据表沿用当时转录内容；2026-11-27 另行核查最新 v1.0.7 / main `094df45ddaedb044385ada4a4bf0f22e6a6252cb`，不声称整包升级到该版本 |
 | 许可证 | **GPL-3.0**（仓库 `LICENSE` + GitHub 标注一致） |
 | 证据来源 | https://github.com/Kianuni/Erosion-CN/blob/main/LICENSE |
 | LilaShift 对应功能 | Apple Intelligence 体检、安全写入、CacheUUID 发现、监管机型映射、原生 AI 设备清单、音频智能/个人翻译插槽基线 |
 | 对应源码文件 | `GestaltX/AIReadinessCheckup.swift`（设计参考：`AppleIntelligenceCheckupCard` 思路）、`GestaltX/DevicePlistWriter.swift`（设计参考：`writeFileAtomically` 思路——仅名字；本实现为原位 pwrite，不作原子性声明）、`GestaltX/GXMobileGestaltImage.m`（设计参考：`MGImageReader` 的 `__cfstring` 遍历）、`GestaltX/USRegulatoryModelMapping.swift`（复用数据：`usRegulatoryModelNumber` 的 A-number 对照表，逐值转录）、`GestaltX/DeviceAIEligibility.swift`（复用数据：`isAppleIntellHD` 的原生 AI 设备清单 + iPhone 18 Pro Max / iPhone 15 Pro Max iOS 27 真机探针的插槽基线） |
 | 使用关系 | **设计参考 + 复用数据**（未逐字复制代码；六项改进为重新实现：写入加固、运行时动态偏移解析、Diff 预览、双金库备份、地区模式、AI 四要素体检） |
-| 主要修改 | 写入改为原位 pwrite + `F_FULLFSYNC` + 全量回读 + 原位回滚（不作原子性声明）；地区模式收敛为一键解锁只改 9 项（不采用 Erosion-CN 的完整美版模式）；Full US 保留为明确的可选模式（遵循其关于国行双实体卡 + eSIM 硬件冲突的警告） |
+| 主要修改 | 写入改为原位 pwrite + `F_FULLFSYNC` + 全量回读 + 原位回滚（不作原子性声明）；地区模式收敛为一键解锁只改 10 项（不采用 Erosion-CN 的完整美版模式）；Full US 保留为明确的可选模式（遵循其关于国行双实体卡 + eSIM 硬件冲突的警告） |
 | 是否打包进入 IPA | 否（代码未打包；转录的数据表随 App 分发） |
 | 版权与许可证义务 | GPL-3.0（LilaShift 本身即 GPL-3.0，同许可证下复用）；保留 Kianuni 署名与来源说明（文件头 + `THIRD_PARTY_NOTICES.md` §5） |
 | 仍需人工确认 | 否 |
@@ -158,9 +171,9 @@
 |---|---|
 | 作者 / 组织 | Thomas Zoechling |
 | GitHub | https://github.com/weichsel/ZIPFoundation |
-| 使用的版本 / 提交 | **0.9.20**（精确版本；`project.pbxproj` 的 `requirement = {kind = exactVersion; version = 0.9.20; }` 与 `Package.resolved` 一致，revision `22787ffb59de99e5dc1fbfe80b19c97a904ad48d`） |
+| 使用的版本 / 提交 | **0.9.21**（精确版本；`project.pbxproj` 的 `requirement = {kind = exactVersion; version = 0.9.21; }` 与 `Package.resolved` 一致，revision `e7048f0569f0ba37df26f8357f560b9d25e9a284`） |
 | 许可证 | **MIT**（仓库 `LICENSE`，默认分支 `development`；"MIT License / Copyright (c) 2017-2026 Thomas Zoechling"） |
-| 证据来源 | https://github.com/weichsel/ZIPFoundation/blob/development/LICENSE |
+| 证据来源 | https://github.com/weichsel/ZIPFoundation/blob/0.9.21/LICENSE |
 | LilaShift 对应功能 | ZIP 压缩包读取与解压（壁纸包导入） |
 | 对应源码文件 | `GestaltX/CustomizationFiles.swift`（`import ZIPFoundation`；头部已注明版本与 MIT）；Swift Package 依赖 |
 | 使用关系 | **直接集成**（Swift Package 链接的库） |
@@ -186,21 +199,21 @@
 | 版权与许可证义务 | MIT（全文随 App 分发于 `Primer-Octicons-MIT.txt`，与上游逐字节相同）；**商标另计**：GitHub 名称与标志仍为 GitHub 商标，使用须遵循 GitHub logo 指南；`THIRD_PARTY_NOTICES.md` 已载明该商标声明。未修改的 UI 归属用途无需额外动作 |
 | 仍需人工确认 | 否（未修改的 UI 归属用途；若未来改变标志用法须重新确认 logo 指南） |
 
-## 11. MGKeys — 研究参考
+## 11. MGKeys — 研究参考与复用元数据
 
 | 项目 | 内容 |
 |---|---|
 | 作者 / 组织 | PoomSmart |
 | GitHub | https://github.com/PoomSmart/MGKeys |
-| 使用的版本 / 提交 | 默认分支 `master`，最后推送 2026-11-01；键名数据基于 iOS 27.2 |
+| 使用的版本 / 提交 | `db9cf77fa9d5330070b3dcb73fc1fd6a271fc421`，iOS 27.2 数据基线；2026-11-27 核查仍为最新 master |
 | 许可证 | **MIT**（仓库 `LICENSE`；"MIT License / Copyright (c) 2020 - 2026 PoomSmart"） |
 | 证据来源 | https://github.com/PoomSmart/MGKeys/blob/master/LICENSE |
 | LilaShift 对应功能 | MobileGestalt 公开键映射对照（预设目录与能力表的键名核对） |
-| 对应源码文件 | `GestaltX/Capabilities.swift`、`GestaltX/PresetCatalog.swift`（仅在注释/证据文本中引用对照关系；头部已补 URL 与许可证） |
-| 使用关系 | **研究参考**（键名对照，未复制代码或数据；其 Python 生成脚本为离线研究工具，不进入 App） |
-| 主要修改 | 无代码或数据移植。未来若生成 Swift 键名表/版本覆盖表（Tier 1 计划），须按 MIT 保留署名，且只纳入已用键子集 |
-| 是否打包进入 IPA | 否 |
-| 版权与许可证义务 | MIT（保留版权声明即可）；仅作参考时无分发义务 |
+| 对应源码文件 | `GestaltX/Capabilities.swift`、`GestaltX/PresetCatalog.swift` 的键名核对；`GestaltX/MGDatabaseSeed.swift` 中 77 个已用键的 readableName / introduced / reintroduced 元数据 |
+| 使用关系 | **研究参考 + 复用数据**；名称与版本范围逐项转录，应用实现与策略自行开发；上游 Python 脚本不进入 App |
+| 主要修改 | 仅纳入 77 个已用键；不打包上游完整表；没有上游探针证据的值仍明确标为未验证 |
+| 是否打包进入 IPA | 是（上述元数据子集） |
+| 版权与许可证义务 | 保留 PoomSmart 版权和 MIT 全文；已纳入 `THIRD_PARTY_NOTICES.md` 及随包 `ThirdPartyNotices.txt`，关于页可直接查看 |
 | 仍需人工确认 | 否 |
 
 ## 12. Nugget — 研究参考（AGPL-3.0，禁止移植）
@@ -269,7 +282,7 @@
 | 主要修改 | 无。快照参考图须在与 CI 相同的模拟器/Xcode 上录制；UI 改动须有意更新参考图 |
 | 是否打包进入 IPA | 否 |
 | 版权与许可证义务 | MIT（保留版权声明即可）；测试工具不随 App 分发，许可证文本不打包进 App（上游链接见上） |
-| 仍需人工确认 | **是——构建清单问题（非许可证问题）**：已提交的 `Package.resolved` 仅固定了 ZIPFoundation 0.9.20，**未列出 SnapshotTesting**，而 `project.pbxproj` 要求其精确版本 1.19.7。须在有 Xcode 的环境运行 `xcodebuild -resolvePackageDependencies` 重新生成并提交；在此之前 `scripts/check-licenses.py` 会报出该差异作为警告 |
+| 仍需人工确认 | 否——构建清单问题已在 Stage 0（P0 LICENSE SYNC）修复：`Package.resolved` 现固定 SnapshotTesting **1.19.7**（revision `1488390b0735e726564b948bf08b384398bdab5c`，`git ls-remote` 核实上游 tag `1.19.7`，轻量 tag、无 `^{}` 解引用，2026-11-17）。`originHash` 未随手改重算，下次 Xcode 解析依赖时会重新生成；仍建议在有 Xcode 的环境跑一次 `xcodebuild -resolvePackageDependencies` 复核 |
 
 ## 16. SwiftLint — 构建工具（不随 IPA 分发）
 
@@ -290,12 +303,31 @@
 
 ---
 
+## 17. WQFiles — 研究参考
+
+| 项目 | 内容 |
+|---|---|
+| 作者 / 组织 | kolbicz |
+| GitHub | https://github.com/kolbicz/WQFiles |
+| 使用的版本 / 提交 | 未记录（NOT RECORDED）：仓库内此前除 URL 外无任何版本/commit 记录；Stage 1 如需对照须补记 |
+| 许可证 | **GPL-3.0**（2026-11-17 核实：GitHub 仓库页标注 "GNU General Public License v3.0 (GPL-3.0)"，仓库含 `LICENSE` 文件；此前 `docs/APP_APPEARANCE_RESEARCH_ZH.md` 的 GPL-3.0 说法经此次核实确认） |
+| 证据来源 | https://github.com/kolbicz/WQFiles（仓库页许可证标注与 `LICENSE` 文件） |
+| LilaShift 对应功能 | LaunchServices 数据库发现：通过 LaunchServices 数据库定位已安装 App 的容器（App 数据、App Group、扩展数据） |
+| 对应源码文件 | `GestaltX/GXLaunchServicesDatabase.m:3`（头注释引用；独立实现） |
+| 使用关系 | **研究参考**（reference only; independently implemented）：仅研究了其数据库发现思路，**未复制任何代码** |
+| 主要修改 | 无（无代码引入） |
+| 是否打包进入 IPA | 否 |
+| 版权与许可证义务 | GPL-3.0；仅作研究参考且无代码再分发，无分发义务；署名与来源已记入 `THIRD_PARTY_NOTICES.md` §10 与 About 页 |
+| 仍需人工确认 | 否（许可证已核实；版本/commit 补记属 Stage 1 研究任务） |
+
+---
+
 ## 已调研、未集成（仅作记录，防止未来误认）
 
 | 项目 | 许可证 | 状态 |
 |---|---|---|
 | WorkPlot（gievano/WorkPlot） | GPL-3.0 | 设计参考：Preset Lab、Session Log、字段编辑器的十六进制查看。**写实现仅在 iOS 27 beta 1–4 验证，正式版未验证，不得移植** |
-| idevice（jkcoxson/idevice） | MIT | Tier 2 研究：Rust 设备通信库；上游 GestaltX 1.0.8 已 vendored，LilaShift 的 1.0.8 rebase 被阻塞，暂未引入 |
+| idevice（jkcoxson/idevice） | MIT | 上游 GestaltX v1.1.1 的设备配对/通知捕获依赖；LilaShift 当前仅移植 App Audio Library，仍未引入设备通信栈 |
 | libimobiledevice | LGPL-2.1-or-later | Tier 2 研究：桌面端设备通信（动态链接）；不编进iOS App |
 | pymobiledevice3（doronz88/pymobiledevice3） | GPL-3.0 | 测试辅助工具（桌面端脚本）；不进 App |
 | SideStore / AltStore / LiveContainer | AGPL-3.0 | 仅参考设计，**不得移植代码** |
@@ -307,6 +339,6 @@
 ## 已知问题（需人工跟进）
 
 1. **NeoSpring 无许可证**（见 §4）：**已决定并处理（2026-11-14，用户选方案 c：移除/替换）**。改编的法律依据不足，`GestaltX/NeoSpringView.swift` 已删除，Respring 操作改为手动重启提示，不再随 IPA 分发。重新集成须先获得有效授权并经独立审计与测试。决定前不得新增对该技术的依赖。
-2. **`Package.resolved` 缺少 SnapshotTesting 的固定版本**（见 §15）：须在 Xcode 环境重新生成。
+2. **依赖图固定记录**：ZIPFoundation 0.9.21、SnapshotTesting 1.19.7 及 CI 已使用的 swift-custom-dump 1.7.3、swift-issue-reporting 2.1.2、swift-syntax 604.0.0 均写入 `Package.resolved`。所有 tag 的提交 SHA 已用上游 Git refs 核实；Xcode 首次解析可刷新 `originHash` 元数据，但不得漂移固定版本或提交。
 3. **worse_query 与 Ketamine 的引入提交尚未核实**（见 §2、§3）：低优先级，不影响许可证结论（文件自带完整声明）。
 4. **fa 语言的 32 个新增本地化键未经母语审校**（3.0 集成遗留）；本次新增的 21 个关于页键的 8 语种翻译同样未经母语审校，测试只校验格式与脚本，不校验翻译质量。

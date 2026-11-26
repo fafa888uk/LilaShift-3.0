@@ -265,6 +265,13 @@ enum RestorePreviewChecklistBuilder {
             switch verification?.status {
             case .verified:
                 return (L("Verified."), true)
+            case .legacyNoDigest:
+                // Integrity is unknown, not failed: the restore is
+                // allowed only through the two-step confirmation, and
+                // the sheet shows this warning. `nil` does not block
+                // the gate by itself — the explicit confirmation is
+                // the gate for a legacy backup.
+                return (L("Legacy backup — integrity not verified (no digest recorded)."), nil)
             case .failed(let reason):
                 return (reason, false)
             case .notFound, nil:
@@ -314,6 +321,11 @@ enum RestorePreviewChecklistBuilder {
                 return (reason, false)
             }
         }
+        // A legacy backup exists for this device but proves nothing
+        // about integrity: unknown, not failed, and never "verified".
+        if own.contains(where: { $0.status == .legacyNoDigest }) {
+            return (L("Legacy backup on file — integrity not verified (no digest recorded)."), nil)
+        }
         return (L("Backup file not found."), false)
     }
 
@@ -331,7 +343,7 @@ enum RestorePreviewChecklistBuilder {
         current: GestaltDocument?, layout: MobileGestaltCacheLayout?
     ) -> Bool? {
         guard let current, let layout else { return nil }
-        return layout.matches(current)
+        return LayoutResolver.matches(layout, cacheUUID: current.cacheUUID, cacheData: current.cacheData)
     }
 }
 

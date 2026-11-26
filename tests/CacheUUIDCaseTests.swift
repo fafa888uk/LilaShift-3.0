@@ -30,7 +30,7 @@ import Foundation
             var edited = try document(uuid: spelling)
             try edited.setCacheOptions(.enabled)
             try edited.setWAPI(false)
-            try expect(MobileGestaltCacheLayout.originalProfile.matches(edited), "The resolver must accept the equivalent UUID spelling")
+            try expect(LayoutResolver.matches(MobileGestaltCacheLayout.originalProfile, cacheUUID: edited.cacheUUID, cacheData: edited.cacheData), "The resolver must accept the equivalent UUID spelling")
             do {
                 try expect(try flags.flags(in: edited) == .restricted, "The original cache flags must remain available")
                 try expect(try wapi.value(in: edited), "The original WAPI value must remain available")

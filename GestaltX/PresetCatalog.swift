@@ -43,7 +43,7 @@ import Foundation
 /// Preset categories for search and filtering. The five
 /// `CapabilityCategory` cases are kept; `esim` and `region` cover
 /// the virtual entries, and `group` covers the preset groups
-/// (one-tap, AI-only, eSIM+region).
+/// (one-tap, AI-only, Siri AI Mode, eSIM+region).
 enum PresetCategory: String, CaseIterable, Equatable, Sendable, Identifiable {
     case esim
     case region
@@ -284,6 +284,19 @@ enum PresetSharedContent {
     static let siriKeepUpstreamEvidence = PresetEvidence(
         text: "上游 GestaltX #102：保留设备专属的 Siri 值。",
         kind: .upstream)
+    /// Evidence: upstream GestaltX ships siriAIMode (SiriMode=2).
+    static let siriModeUpstreamEvidence = PresetEvidence(
+        text: "上游 GestaltX：siriAIMode（SiriMode=2，不伪装硬件；实验性）。",
+        kind: .upstream)
+    /// Evidence: media/camera/health CacheData slot keys come from
+    /// Erosion-CN's MGCacheLayout (Kianuni, GPL-3.0).
+    static let erosionMGCacheEvidence = PresetEvidence(
+        text: "键映射来自 Erosion-CN MGCacheLayout.swift（Kianuni，GPL-3.0）。",
+        kind: .code)
+    /// Evidence: spatial audio recording needs four microphones.
+    static let spatialAudioFourMicEvidence = PresetEvidence(
+        text: "四麦克风机型表来自 Erosion-CN GestaltHelpers.fourMicPhones（iPhone17,1–5、iPhone18,1/2/3/5）；iPhone Air（iPhone18,4）不在其中，强开可能破坏语音备忘录录音室模式。",
+        kind: .code)
 }
 
 // MARK: - Catalog
@@ -306,14 +319,15 @@ enum PresetCatalog {
         all.first { $0.featureID == id }
     }
 
-    /// The three preset groups, in display order.
+    /// The four preset groups, in display order.
     static var groups: [PresetEntry] {
         all.filter { $0.kind == .group }
     }
 
-    /// Builds the catalog: the 35 `CapabilityEntry` entries (33
-    /// capabilities + eSIM + region code), the WAPI and model-number
-    /// virtual entries, and the three preset groups.
+    /// Builds the catalog: the 37 `CapabilityEntry` entries (35
+    /// capabilities + eSIM + region code), the WAPI, model-number,
+    /// and lock-screen-text virtual entries, and the four preset
+    /// groups.
     private static func build() -> [PresetEntry] {
         var entries: [PresetEntry] = []
         for capabilityEntry in CapabilityEntry.all {
@@ -322,6 +336,7 @@ enum PresetCatalog {
         }
         entries.append(wapiEntry)
         entries.append(modelNumberEntry)
+        entries.append(lockScreenTextEntry)
         entries.append(contentsOf: groupEntries)
         return entries
     }
@@ -365,6 +380,37 @@ enum PresetCatalog {
             underlyingKeyOrSlot: capabilityEntry.underlyingKeyOrSlot,
             dependencies: capabilityEntry.dependencies,
             conflicts: capabilityEntry.conflicts)
+    }
+
+    /// The lock-screen-text virtual entry: a pointer, not a
+    /// stageable preset. The text lives in a configuration-profiles
+    /// plist (`LockScreenFootnote` in
+    /// `SharedDeviceConfiguration.plist`), not in the MobileGestalt
+    /// cache, so no MG pipeline can stage it. Tapping the entry
+    /// opens the Tools page, where the System Settings tile lets
+    /// the user type and apply the text. The entry exists so the
+    /// feature is discoverable from the catalog, search, and
+    /// combinations — it never offers a stage toggle.
+    private static var lockScreenTextEntry: PresetEntry {
+        PresetEntry(
+            featureID: "lockScreenText",
+            kind: .virtual,
+            category: .display,
+            chineseName: "锁屏文字",
+            englishTitle: "Lock Screen Text",
+            chineseDescription: "在锁屏底部显示自定义文字（写入系统配置描述文件 SharedDeviceConfiguration.plist 的 LockScreenFootnote）。只改这一项文字，不改 MobileGestalt 缓存、不改壁纸与启动图。预设本身不暂存文字：点开后进入工具页，在「系统设置」里输入并应用；重启设备不需要，但文字是否立即显示须真机验收。恢复须在「系统设置」页点还原，全局恢复不包含此项。",
+            scope: .unknown(reason: "各机型未经逐一验证，仅确认 iOS 27 可访问系统配置组。"),
+            scopeNote: "仅确认 iOS 27 可访问系统配置组；各机型未经逐一验证。",
+            minSystem: .known("iOS 27"),
+            riskLevel: .low,
+            riskReason: "只改锁屏底部文字；写入前有备份与原文记录。文字过长或含换行会被拒绝；生效时机未经逐机型验证。",
+            restoreMethod: "在「系统设置」页点还原可恢复记录的原文；全局恢复（备份页的全部恢复）不包含此项。",
+            evidence: [PresetEvidence(text: "GestaltX/SystemSettingsStore.swift (upstream v1.0.6, GPL-3.0)", kind: .code)],
+            memberIDs: [],
+            keys: ["LockScreenFootnote"],
+            underlyingKeyOrSlot: "LockScreenFootnote (String) in SharedDeviceConfiguration.plist",
+            dependencies: [],
+            conflicts: [])
     }
 
     /// The WAPI virtual entry: staging sets the CacheData WAPI slot
@@ -419,7 +465,7 @@ enum PresetCatalog {
             conflicts: [])
     }
 
-    /// The three preset groups. A group is a named set of members;
+    /// The four preset groups. A group is a named set of members;
     /// it stages nothing by itself — the existing stage paths own
     /// staging, and a group entry only describes the set.
     private static var groupEntries: [PresetEntry] {
@@ -430,7 +476,7 @@ enum PresetCatalog {
                 category: .group,
                 chineseName: "一键解锁（中国）",
                 englishTitle: "China Unlock (One-Tap)",
-                chineseDescription: "为国行 eSIM 设备一键暂存 9 项：2 个 eSIM 缓存标记、地区码 LL、6 个 Apple 智能键。原生支持 Apple Intelligence 的机型跳过 6 个 Apple 智能键，只暂存 3 项。不改监管型号与销售地区。siriOnDevice 刻意保留原值。重启后须重新读取验收；系统可能在重启时还原地区值。",
+                chineseDescription: "为国行 eSIM 设备一键暂存 10 项：2 个 eSIM 缓存标记、地区码 LL、7 个 Apple 智能键。原生支持 Apple Intelligence 的机型跳过 7 个 Apple 智能键，只暂存 3 项。不改监管型号与销售地区。siriOnDevice 刻意保留原值。重启后须重新读取验收；系统可能在重启时还原地区值。",
                 scope: .unknown(reason: "组合包含不同适用范围的项目：eSIM 仅限中国大陆市场设备，AI 功能依赖原生硬件或地区 LL。"),
                 scopeNote: "eSIM 仅限中国大陆市场设备（地区码 CH）；AI 功能依赖原生硬件或地区 LL；地区码暂存不依赖机型。",
                 minSystem: .known("iOS 27"),
@@ -440,12 +486,12 @@ enum PresetCatalog {
                 evidence: [PresetSharedContent.regionRevertedEvidence,
                            PresetSharedContent.audioSlotEvidence,
                            PresetSharedContent.esimSlotsEvidence,
-                           PresetEvidence(text: "GestaltX/Capabilities.swift（9 项定义）", kind: .code)],
+                           PresetEvidence(text: "GestaltX/Capabilities.swift（10 项定义）", kind: .code)],
                 memberIDs: [FeatureEligibilityEvaluator.esimFeatureID,
                             FeatureEligibilityEvaluator.regionCodeFeatureID]
                     + ChinaUnlock.aiCapabilityIDs,
                 keys: [],
-                underlyingKeyOrSlot: "eSIM CacheData slots + region code + 6 AI CacheExtra keys",
+                underlyingKeyOrSlot: "eSIM CacheData slots + region code + 7 AI CacheExtra keys",
                 dependencies: [],
                 conflicts: []),
             PresetEntry(
@@ -454,18 +500,38 @@ enum PresetCatalog {
                 category: .group,
                 chineseName: "仅开启 AI",
                 englishTitle: "AI Only",
-                chineseDescription: "只暂存 6 个 Apple 智能键，不动 eSIM 与地区。注意：AI 功能依赖地区为 LL；单独使用此预设而不改地区时，依赖分析会报告缺少地区前置条件。",
+                chineseDescription: "只暂存 7 个 Apple 智能键，不动 eSIM 与地区。注意：AI 功能依赖地区为 LL；单独使用此预设而不改地区时，依赖分析会报告缺少地区前置条件。",
                 scope: .nativeAIHardware,
                 scopeNote: "原生支持 Apple 智能的机型可直接使用；其他机型须暂存开启，且地区须为 LL。",
                 minSystem: .known("iOS 27"),
                 riskLevel: .medium,
-                riskReason: "仅改 6 个 AI 能力标记；实际可用还取决于机型、地区与 Apple 服务器；单独使用时须先把地区改为 LL。",
+                riskReason: "仅改 7 个 AI 能力标记；实际可用还取决于机型、地区与 Apple 服务器；单独使用时须先把地区改为 LL。",
                 restoreMethod: PresetSharedContent.restoreGroup,
                 evidence: [PresetSharedContent.audioSlotEvidence,
                            PresetEvidence(text: "GestaltX/Capabilities.swift（AI 预设）", kind: .code)],
                 memberIDs: ChinaUnlock.aiCapabilityIDs,
                 keys: [],
-                underlyingKeyOrSlot: "6 AI CacheExtra keys",
+                underlyingKeyOrSlot: "7 AI CacheExtra keys",
+                dependencies: [FeatureEligibilityEvaluator.regionCodeFeatureID],
+                conflicts: ["siriOnDevice"]),
+            PresetEntry(
+                featureID: "preset.siriAIMode",
+                kind: .group,
+                category: .group,
+                chineseName: "仅 Siri AI 模式",
+                englishTitle: "Siri AI Mode Only",
+                chineseDescription: "只暂存 Siri AI 模式（SiriMode=2），不动 eSIM、地区与其他 AI 能力。原生 Apple Intelligence 机型也可显式开启（实验性；原生机型上 Siri AI 已可用，通常不需要）。未知机型拒绝暂存。",
+                scope: .nativeAIHardware,
+                scopeNote: "原生机型可显式开启（实验性）；其他已知机型须暂存开启，且地区须为 LL；未知机型拒绝暂存。",
+                minSystem: .known("iOS 27"),
+                riskLevel: .high,
+                riskReason: "实验性单项：只改 SiriMode 一个标记；资源下载与可用性不保证。原生机型上 Siri AI 已可用，通常不需要；未知机型拒绝暂存。",
+                restoreMethod: PresetSharedContent.restoreGroup,
+                evidence: [PresetSharedContent.siriModeUpstreamEvidence,
+                           PresetEvidence(text: "GestaltX/Capabilities.swift（Siri AI 模式单项预设）", kind: .code)],
+                memberIDs: [ChinaUnlock.siriAIModeID],
+                keys: [],
+                underlyingKeyOrSlot: "SiriMode CacheExtra key (a3n5T9sFtlyQ74NEp9ESxg = 2)",
                 dependencies: [FeatureEligibilityEvaluator.regionCodeFeatureID],
                 conflicts: ["siriOnDevice"]),
             PresetEntry(
@@ -546,6 +612,15 @@ extension PresetCatalog {
             minSystem: .known("iOS 27"),
             riskReason: "仅改 Apple 智能能力标记；实际可用还取决于机型、地区（须为 LL）与 Apple 服务器，标记本身不保证功能可用。",
             evidence: [PresetSharedContent.keyMappingEvidence]),
+        "siriAIMode": PresetContent(
+            chineseName: "Siri AI 模式",
+            chineseDescription: "将 Siri 模式设为 2（SiriMode=2），让 Siri 本身切到新版 AI 模式，不伪装硬件。实验性：资源下载与可用性不保证。只改 SiriMode 一个标记，不动其他 AI 能力；原生 AI 机型上 Siri AI 已可用，此项通常不需要。",
+            scope: .nativeAIHardware,
+            scopeNote: "原生支持 Apple 智能的机型上 Siri AI 已可用，此项通常不需要；作为单项开关可在原生机型上显式开启（实验性）。其他机型须暂存开启，且地区须为 LL。",
+            minSystem: .known("iOS 27"),
+            riskReason: "实验性：只改 SiriMode 一个标记；资源下载与可用性不保证，实际可用还取决于机型、地区与 Apple 服务器。原生机型上通常不需要。",
+            evidence: [PresetSharedContent.siriModeUpstreamEvidence,
+                       PresetSharedContent.keyMappingEvidence]),
         "siriOnDevice": PresetContent(
             chineseName: "设备端 Siri",
             chineseDescription: "在设备上运行 Siri 处理。此项使用设备专属的能力类型；改动可能影响 Apple 智能 Siri 界面，请保留当前值或恢复记录的原始值。一键解锁刻意保留此项，不参与暂存。",
@@ -683,6 +758,23 @@ extension PresetCatalog {
             chineseName: "空间化 FaceTime 音频",
             chineseDescription: "为 FaceTime 启用空间音频播放。可能需要重新启动设备才能生效。",
             riskReason: "只改空间音频能力标记；实际播放取决于音频硬件与系统支持。"),
+        "spatialAudioRecording": PresetContent(
+            chineseName: "空间音频录制",
+            chineseDescription: "在语音备忘录中启用空间音频录制。需要四麦克风硬件（iPhone 16 系列及更新机型）；在三麦克风机型（含 iPhone Air）上强开可能破坏语音备忘录录音室模式。可能需要重新启动设备才能生效。",
+            scope: FeatureEligibilityEvaluator.spatialAudioScope,
+            scopeNote: "仅四麦克风机型（iPhone17,1–5、iPhone18,1/2/3/5）；iPhone Air（iPhone18,4）不在其中。",
+            riskReason: "只改空间音频录制能力标记；在三麦克风机型上强开可能破坏语音备忘录录音室模式，关掉并应用、重启即可恢复。",
+            evidence: [PresetSharedContent.erosionMGCacheEvidence, PresetSharedContent.spatialAudioFourMicEvidence]),
+        "responsiveShutter": PresetContent(
+            chineseName: "灵敏快门",
+            chineseDescription: "降低相机快门到成像的延迟，实现即时拍摄。可能需要重新启动设备才能生效。",
+            riskReason: "只改快门响应能力标记；实际拍摄延迟取决于相机硬件与系统支持。",
+            evidence: [PresetSharedContent.erosionMGCacheEvidence]),
+        "hypertensionNotifications": PresetContent(
+            chineseName: "高血压通知",
+            chineseDescription: "在健康 App 中启用高血压趋势评估与通知。可能需要重新启动设备才能生效。",
+            riskReason: "只改高血压通知能力标记；健康数据的评估取决于系统与健康 App 支持。",
+            evidence: [PresetSharedContent.erosionMGCacheEvidence]),
         // MARK: iPad
         "pencil": PresetContent(
             chineseName: "Apple Pencil",

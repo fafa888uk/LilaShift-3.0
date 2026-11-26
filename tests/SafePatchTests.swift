@@ -5,7 +5,7 @@
 //
 // The happy-path fixture is a known non-native model (iPhone14,7)
 // with a document matching the offline `originalProfile` layout, so
-// `resolve(in:)` succeeds on the test host and the profile is
+// `LayoutResolver.resolve` succeeds on the test host and the profile is
 // injected (the test host itself is an unknown model, which is
 // exactly what the fail-closed test exercises).
 import Foundation
@@ -13,9 +13,9 @@ import XCTest
 @testable import GestaltX
 
 final class SafePatchTests: XCTestCase {
-    /// The 9-item one-tap unlock on a known non-native CH device:
-    /// the simulation proceeds, the diff is exactly the 9 fields
-    /// (region + 6 AI keys + the eSIM pair), the serialization
+    /// The 10-item one-tap unlock on a known non-native CH device:
+    /// the simulation proceeds, the diff is exactly the 10 fields
+    /// (region + 7 AI keys + the eSIM pair), the serialization
     /// round-trips, and the effect states show only "staged" as
     /// projected — the other three are confirmed only by real events.
     func testOneTapSimulationHappyPath() throws {
@@ -32,16 +32,26 @@ final class SafePatchTests: XCTestCase {
         XCTAssertNotNil(simulation.simulatedByteCount)
         XCTAssertTrue(simulation.hardwareIdentityTouches.isEmpty,
                       "One-tap must not touch any hardware-identity field")
-        XCTAssertEqual(simulation.diffs.count, 9,
-                       "One-tap changes exactly 9 fields, got: \(simulation.diffs.map(\.key))")
+        XCTAssertEqual(simulation.diffs.count, 10,
+                       "One-tap changes exactly 10 fields, got: \(simulation.diffs.map(\.key))")
         let regionDiff = simulation.diffs.first { $0.key == GestaltKeys.regionCode }
         XCTAssertEqual(regionDiff?.original, .string("CH"))
         XCTAssertEqual(regionDiff?.target, .string("LL"))
         XCTAssertEqual(regionDiff?.originalSource, .firstRecordedValue)
-        for key in ChinaUnlock.aiCapabilityIDs.compactMap({ id in Capability.all.first { $0.id == id }?.keys.first }) {
+        for id in ChinaUnlock.aiCapabilityIDs {
+            guard let capability = Capability.all.first(where: { $0.id == id }),
+                  let key = capability.keys.first else {
+                XCTFail("AI capability \(id) is missing from the catalog")
+                continue
+            }
             let diff = simulation.diffs.first { $0.key == key }
             XCTAssertEqual(diff?.original, .absent, "AI key \(key) was absent before staging")
-            XCTAssertEqual(diff?.target, .bool(true))
+            // The staged target is the capability's own value:
+            // SiriMode=2 for siriAIMode, boolean true for the rest.
+            let expectedTarget = capability.values[key]
+                .flatMap(ChangeValue.fromPlistValue) ?? .bool(true)
+            XCTAssertEqual(diff?.target, expectedTarget,
+                           "AI key \(key) stages its capability value")
         }
         let greenTea = simulation.diffs.first { $0.key == DeviceCacheOptions.greenTeaKey }
         XCTAssertEqual(greenTea?.original, .bool(true))
@@ -158,7 +168,7 @@ final class SafePatchTests: XCTestCase {
 
     /// The native one-tap (iPhone Air, iPhone18,4): the proposal
     /// stages exactly the 3 non-AI fields (region + the eSIM pair),
-    /// the six AI keys are absent from the diff and recorded as
+    /// the seven AI keys are absent from the diff and recorded as
     /// skipped, and the simulation proceeds.
     func testOneTapSimulationNativeSkipsAI() throws {
         let document = try CoreModuleFixtures.document(extra: [GestaltKeys.productType: "iPhone18,4"])
@@ -173,14 +183,14 @@ final class SafePatchTests: XCTestCase {
                         FeatureEligibilityEvaluator.regionCodeFeatureID],
                        "Native one-tap stages only eSIM and region code")
         XCTAssertEqual(proposal.skippedFeatureIDs, ChinaUnlock.aiCapabilityIDs,
-                       "Native one-tap records all six AI capabilities as skipped")
+                       "Native one-tap records all seven AI capabilities as skipped")
         let simulation = SafePatch.simulate(proposal: proposal, snapshot: snapshot, profile: profile)
         XCTAssertTrue(simulation.canProceed, "Native one-tap must proceed; blockers: \(simulation.blockers)")
         XCTAssertTrue(simulation.serializationOK, "The simulated document must encode and decode back to itself")
         XCTAssertEqual(simulation.diffs.count, 3,
                        "Native one-tap changes exactly 3 fields, got: \(simulation.diffs.map(\.key))")
         XCTAssertEqual(simulation.skippedFeatureIDs, ChinaUnlock.aiCapabilityIDs,
-                       "Native one-tap simulation records all six AI capabilities as skipped")
+                       "Native one-tap simulation records all seven AI capabilities as skipped")
         let aiKeys = ChinaUnlock.aiCapabilityIDs.flatMap { id in
             Capability.all.first { $0.id == id }?.keys ?? []
         }
@@ -200,9 +210,9 @@ final class SafePatchTests: XCTestCase {
     }
 
     /// The AI-only preset on native hardware: the proposal comes back
-    /// empty with all six recorded as skipped, the simulation changes
+    /// empty with all seven recorded as skipped, the simulation changes
     /// nothing (a warning, not a blocker) and still proceeds.
-    func testAIOnlyNativeSkipsAllSix() throws {
+    func testAIOnlyNativeSkipsAllSeven() throws {
         let document = try CoreModuleFixtures.document(extra: [GestaltKeys.productType: "iPhone18,4"])
         let snapshot = CoreModuleFixtures.snapshot(
             document: document,
@@ -213,15 +223,80 @@ final class SafePatchTests: XCTestCase {
         XCTAssertTrue(proposal.featureIDs.isEmpty,
                       "Native AI-only stages nothing")
         XCTAssertEqual(proposal.skippedFeatureIDs, ChinaUnlock.aiCapabilityIDs,
-                       "Native AI-only records all six AI capabilities as skipped")
+                       "Native AI-only records all seven AI capabilities as skipped")
         let simulation = SafePatch.simulate(proposal: proposal, snapshot: snapshot, profile: profile)
         XCTAssertTrue(simulation.diffs.isEmpty, "Native AI-only changes nothing")
         XCTAssertEqual(simulation.skippedFeatureIDs, ChinaUnlock.aiCapabilityIDs,
-                       "Native AI-only simulation records all six AI capabilities as skipped")
+                       "Native AI-only simulation records all seven AI capabilities as skipped")
         XCTAssertEqual(simulation.check(.diff)?.passed, false)
         XCTAssertEqual(simulation.check(.diff)?.isBlocker, false,
                        "Changing nothing is a warning, not a blocker")
         XCTAssertTrue(simulation.canProceed, "An empty AI-only proposal must not block")
+    }
+
+    /// The Siri AI Mode preset on a known non-native CH device: the
+    /// proposal stages exactly the SiriMode key to 2 — one diff,
+    /// original absent, target `.int(2)` (an integer, not a bool) —
+    /// and nothing else, and the simulation proceeds.
+    func testSiriAIModeProposalDiff() throws {
+        let document = try CoreModuleFixtures.document()
+        let snapshot = CoreModuleFixtures.snapshot(
+            document: document,
+            cachedOptions: try CachedOptionsOriginal(document: document),
+            wapi: try WAPIOriginal(document: document))
+        let profile = CoreModuleFixtures.profile(productType: "iPhone14,7", isNativeAI: false)
+        let proposal = SafePatchProposal.siriAIMode()
+        XCTAssertEqual(proposal.featureIDs, [ChinaUnlock.siriAIModeID],
+                       "Siri AI Mode stages exactly one feature id")
+        XCTAssertTrue(proposal.skippedFeatureIDs.isEmpty,
+                      "Siri AI Mode skips nothing")
+        let simulation = SafePatch.simulate(proposal: proposal, snapshot: snapshot, profile: profile)
+        XCTAssertTrue(simulation.canProceed, "Siri AI Mode must proceed on a known non-native CH device; blockers: \(simulation.blockers)")
+        XCTAssertTrue(simulation.serializationOK, "The simulated document must encode and decode back to itself")
+        XCTAssertEqual(simulation.diffs.count, 1,
+                       "Siri AI Mode changes exactly 1 field, got: \(simulation.diffs.map(\.key))")
+        let siriModeDiff = simulation.diffs.first { $0.key == GestaltKeys.siriMode }
+        XCTAssertNotNil(siriModeDiff, "Siri AI Mode stages the SiriMode key")
+        XCTAssertEqual(siriModeDiff?.original, .absent, "SiriMode was absent before staging")
+        XCTAssertEqual(siriModeDiff?.target, .int(2),
+                       "SiriMode stages to the integer 2, not a bool")
+        for key in ChinaUnlock.aiCapabilityIDs.compactMap({ id in Capability.all.first { $0.id == id }?.keys.first })
+            where key != GestaltKeys.siriMode {
+            XCTAssertNil(simulation.diffs.first { $0.key == key },
+                         "AI key \(key) must not be staged by the Siri AI Mode preset")
+        }
+        XCTAssertNil(simulation.diffs.first { $0.key == GestaltKeys.regionCode },
+                     "Siri AI Mode must not stage the region code")
+        XCTAssertNil(simulation.diffs.first { $0.key == DeviceCacheOptions.greenTeaKey },
+                     "Siri AI Mode must not stage the eSIM flags")
+        XCTAssertTrue(simulation.hardwareIdentityTouches.isEmpty,
+                      "Siri AI Mode must not touch any hardware-identity field")
+    }
+
+    /// The Siri AI Mode preset on native hardware: unlike AI-only,
+    /// it is NOT emptied — an explicit single-item opt-in — so the
+    /// proposal still stages the SiriMode key and the simulation
+    /// proceeds with exactly one diff.
+    func testSiriAIModeProposalNative() throws {
+        let document = try CoreModuleFixtures.document(extra: [GestaltKeys.productType: "iPhone18,4"])
+        let snapshot = CoreModuleFixtures.snapshot(
+            document: document,
+            cachedOptions: try CachedOptionsOriginal(document: document),
+            wapi: try WAPIOriginal(document: document))
+        let profile = CoreModuleFixtures.profile(productType: "iPhone18,4", isNativeAI: true)
+        let proposal = SafePatchProposal.siriAIMode()
+        XCTAssertEqual(proposal.featureIDs, [ChinaUnlock.siriAIModeID],
+                       "Siri AI Mode on native hardware still stages the single feature id")
+        XCTAssertTrue(proposal.skippedFeatureIDs.isEmpty,
+                      "Siri AI Mode on native hardware skips nothing")
+        let simulation = SafePatch.simulate(proposal: proposal, snapshot: snapshot, profile: profile)
+        XCTAssertTrue(simulation.canProceed, "Siri AI Mode must proceed on native hardware; blockers: \(simulation.blockers)")
+        XCTAssertEqual(simulation.diffs.count, 1,
+                       "Siri AI Mode on native hardware changes exactly 1 field, got: \(simulation.diffs.map(\.key))")
+        let siriModeDiff = simulation.diffs.first { $0.key == GestaltKeys.siriMode }
+        XCTAssertEqual(siriModeDiff?.original, .absent, "SiriMode was absent before staging")
+        XCTAssertEqual(siriModeDiff?.target, .int(2),
+                       "SiriMode stages to the integer 2 on native hardware")
     }
 
     /// The native flag resolves from a known profile value first,
@@ -253,11 +328,11 @@ final class SafePatchTests: XCTestCase {
         XCTAssertFalse(SafePatchProposal.isNativeAppleIntelligence(profile: unknownProfile),
                        "Unknown product type reads as non-native")
         let proposal = SafePatchProposal.oneTap(nativeAppleIntelligence: false)
-        // 8 feature IDs, not 9: the fail-closed one-tap stages 9
-        // FIELDS (2 eSIM keys + region + 6 AI keys), but eSIM is a
-        // single feature ID covering both keys, so featureIDs has 8.
-        XCTAssertEqual(proposal.featureIDs.count, 8,
-                       "Fail-closed one-tap still carries all 8 feature IDs (9 staged fields)")
+        // 9 feature IDs, not 10: the fail-closed one-tap stages 10
+        // FIELDS (2 eSIM keys + region + 7 AI keys), but eSIM is a
+        // single feature ID covering both keys, so featureIDs has 9.
+        XCTAssertEqual(proposal.featureIDs.count, 9,
+                       "Fail-closed one-tap still carries all 9 feature IDs (10 staged fields)")
         XCTAssertTrue(proposal.skippedFeatureIDs.isEmpty,
                       "Fail-closed one-tap skips nothing")
     }

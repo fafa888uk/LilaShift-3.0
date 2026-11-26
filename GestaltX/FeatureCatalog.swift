@@ -3,12 +3,12 @@
 // the home sections, the preset pages and search.
 //
 // The catalog does not duplicate the preset database: every preset
-// item is a view of a `PresetEntry` from `PresetCatalog` (40 entries),
+// item is a view of a `PresetEntry` from `PresetCatalog` (46 entries),
 // mapped onto one of the eleven feature categories below. Page items
 // are the thirteen non-preset destinations (diagnostics pages,
 // backups, modified values, personalization, launch artwork) that
 // have no `PresetEntry` of their own. Together they are the whole
-// browsable surface of the app: 53 items, each with a Simplified
+// browsable surface of the app: 55 items, each with a Simplified
 // Chinese name and description.
 //
 // The eleven categories are the task's list, in the task's order
@@ -161,7 +161,7 @@ struct FeatureCatalogItem: Equatable, Sendable, Identifiable {
 
 // MARK: - Catalog
 
-/// The unified catalog: 40 preset items + 13 page items = 53.
+/// The unified catalog: 46 preset items + 13 page items = 59.
 /// Built from `PresetCatalog.all` plus the explicit page table, so
 /// a preset added to the catalog appears here with no extra edit,
 /// and a preset dropped there disappears here (the count test fails
@@ -181,7 +181,7 @@ enum FeatureCatalog {
     /// The category of one preset entry. Feature id wins over the
     /// entry's `PresetCategory`: eSIM, region code and WAPI are
     /// eSIM & region even though the catalog files them under
-    /// device/intelligence, the three groups map to their own
+    /// device/intelligence, the four groups map to their own
     /// categories, and the model-number virtual entry is an
     /// advanced tool, not an intelligence feature.
     static func category(for entry: PresetEntry) -> FeatureCatalogCategory {
@@ -189,6 +189,7 @@ enum FeatureCatalog {
             switch entry.featureID {
             case "preset.oneTap": return .smartUnlock
             case "preset.aiOnly": return .appleIntelligence
+            case "preset.siriAIMode": return .appleIntelligence
             case "preset.esimRegion": return .esimRegion
             default: return .smartUnlock
             }
@@ -216,15 +217,48 @@ enum FeatureCatalog {
         }
     }
 
-    /// The dashboard page where a preset can be staged: the unlock
-    /// page for the one-tap family (unlock, AI, eSIM & region), the
-    /// tools page for everything else (its category groups).
+    /// The dashboard page where a preset can be staged. Each of
+    /// the four one-tap family groups has its own page (Stage 14):
+    /// one-tap on `.unlock`, AI-only on `.aiOnly`, Siri AI Mode on
+    /// `.siriAIMode`, eSIM & region on `.esimRegion`. Individual AI
+    /// capabilities stage on the AI page (Siri AI Mode on its own
+    /// page); eSIM / region / WAPI on the eSIM page. Backup &
+    /// restore presets stage on `.restore`, diagnostics on
+    /// `.diagnostics`, and the rest on the tools page (`.advanced`),
+    /// where their ToolGroup lives — see
+    /// `ToolGroup.init(for: FeatureCatalogCategory)`, which must
+    /// agree with this mapping: a category with a tool group always
+    /// stages on `.advanced`, and a category without one stages on
+    /// its own page (for `.systemSettings` that is still the tools
+    /// page, since its presets live across three groups there).
+    /// The group feature id wins over the category, so
+    /// a group never lands on another group's page.
     static func destination(for entry: PresetEntry) -> DashboardV3Destination {
-        switch category(for: entry) {
-        case .smartUnlock, .appleIntelligence, .esimRegion: return .unlock
+        switch entry.featureID {
+        case "preset.oneTap": return .unlock
+        case "preset.aiOnly": return .aiOnly
+        case "preset.siriAIMode": return .siriAIMode
+        case "preset.esimRegion": return .esimRegion
+        default: break
+        }
+        let category = category(for: entry)
+        // Categories with a Tools-page group stage on the tools
+        // page — this is the single mapping, shared with
+        // `ToolGroup.init(for:)` (see the agreement test in
+        // ToolGroupMappingTests). The rest stage on their own page.
+        if ToolGroup(for: category) != nil { return .advanced }
+        switch category {
+        case .smartUnlock: return .unlock
+        case .appleIntelligence:
+            return entry.featureID == "siriAIMode" ? .siriAIMode : .aiOnly
+        case .esimRegion: return .esimRegion
+        case .deviceDiagnostics: return .diagnostics
+        case .modifiedRecords: return .unlock
+        case .backupRestore: return .restore
         case .screenLock, .systemSettings, .personalization,
-             .launchArtwork, .deviceDiagnostics, .modifiedRecords,
-             .backupRestore, .advancedTools:
+             .launchArtwork, .advancedTools:
+            // Unreachable: every one of these has a tool group
+            // (see the check above). Kept for exhaustiveness.
             return .advanced
         }
     }
@@ -400,11 +434,12 @@ enum FeatureCatalog {
 /// file written before a field existed decodes with that field at
 /// its default, so upgrades preserve existing user config.
 struct FeatureCatalogSettings: Codable, Equatable, Sendable {
-    /// Item ids in the user's preferred order, or `nil` for the
-    /// default order. Unknown ids are ignored by the sorter; items
-    /// missing from a stored order are appended in default order,
-    /// so an item added in a later version still appears.
-    var customOrder: [String]?
+    /// Item ids in the user's preferred order; an empty array
+    /// means the default order. Unknown ids are ignored by the
+    /// sorter; items missing from a stored order are appended in
+    /// default order, so an item added in a later version still
+    /// appears.
+    var customOrder: [String] = []
     /// Item ids the user hid. Unknown ids are ignored.
     var hiddenIDs: Set<String>
     /// Recently used item ids, most recent first, capped at
@@ -414,9 +449,9 @@ struct FeatureCatalogSettings: Codable, Equatable, Sendable {
     static let maxRecentCount = 10
 
     static let defaults = FeatureCatalogSettings(
-        customOrder: nil, hiddenIDs: [], recentIDs: [])
+        customOrder: [], hiddenIDs: [], recentIDs: [])
 
-    init(customOrder: [String]? = nil, hiddenIDs: Set<String> = [],
+    init(customOrder: [String] = [], hiddenIDs: Set<String> = [],
          recentIDs: [String] = []) {
         self.customOrder = customOrder
         self.hiddenIDs = hiddenIDs
@@ -568,14 +603,17 @@ enum HomeSectionID: String, CaseIterable, Identifiable, Sendable {
     }
 
     /// The dashboard page this section opens, or `nil` for the two
-    /// inline summary sections. One-tap unlock and Apple
-    /// Intelligence & eSIM share the unlock page: that page holds
-    /// both the one-tap card and the AI / eSIM cards, so the two
-    /// sections are summaries of different parts of one page.
+    /// inline summary sections. One-tap unlock opens the unlock
+    /// page; Apple Intelligence & eSIM opens the AI-only page
+    /// (Stage 14: the AI readiness checkup lives there now, not on
+    /// the unlock page). The eSIM & Siri AI Mode groups have no
+    /// home section of their own — they are reached from the
+    /// common-features tiles and the catalog.
     var destination: DashboardV3Destination? {
         switch self {
         case .deviceOverview, .commonFeatures: return nil
-        case .chinaUnlock, .appleIntelligenceEsim: return .unlock
+        case .chinaUnlock: return .unlock
+        case .appleIntelligenceEsim: return .aiOnly
         case .securityDiagnosis: return .diagnostics
         case .backupRestore: return .restore
         case .presetManagement: return .presets
@@ -591,7 +629,11 @@ enum HomeSectionID: String, CaseIterable, Identifiable, Sendable {
         for destination in destinations {
             switch destination {
             case .unlock:
-                sections += [.chinaUnlock, .appleIntelligenceEsim]
+                sections.append(.chinaUnlock)
+            case .aiOnly:
+                sections.append(.appleIntelligenceEsim)
+            case .siriAIMode, .esimRegion:
+                break
             case .diagnostics:
                 sections.append(.securityDiagnosis)
             case .restore:

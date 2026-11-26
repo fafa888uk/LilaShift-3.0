@@ -2,6 +2,73 @@
 
 English | [简体中文](CHANGELOG_ZH-CN.md)
 
+## [4.2.1] - Unreleased (prepared 2026-11-27)
+
+Maintenance update from the 4.2.0 source lineage. In-app version `4.2.1`, build `42000002`; expected IPA file `LilaShift_4.2.1.ipa`. The exact source, CI and artifact evidence is tracked in [the 4.2.1 record](docs/RELEASE_4_2_1.md). This entry does not assert that a release has been published or a real device has been tested.
+
+### Fixed
+
+- Update ZIPFoundation 0.9.20 → [0.9.21](https://github.com/weichsel/ZIPFoundation/releases/tag/0.9.21), pinned to `e7048f0569f0ba37df26f8357f560b9d25e9a284`. Upstream fixes include malformed-archive failures and chained-symlink containment; application-level path, size, CRC and symlink checks remain in place.
+- Complete missing localization entries for the 4.x wallpaper, restore, monitoring and archive interfaces across all supported languages; preserve warning meanings and format placeholders. Localization checks remain required before delivery.
+- The About-page source link now validates an HTTPS URL and displays plain text if invalid, instead of force-unwrapping the URL. Remove an unused `GestaltManager` state subscription (PR #25).
+- Draft release creation explicitly targets the commit actually checked out for the build, preventing a tag from accidentally targeting the old default-branch source. Build provenance also records the checked-out SHA when manual inputs select a different ref.
+
+### Changed
+
+- Integrate the governance and 4.x documentation/CI changes from PRs #20–#24, retaining 4.x application code while bringing the old `main` history forward. Retire its 30 historical one-shot patch workflows; older shared maintenance workflows still require individual review.
+- Ordinary build, test, lint and license checks use minimum read-only repository permissions. Automatic creation or replacement of release assets is removed; the manual release workflow creates a draft and rejects existing release/tag versions.
+- Keep free standard `xcode-27` and `ubuntu-latest` runners. Move SwiftLint to `xcode-27` and pin its checksum-verified 0.65.1 executable without disabling lint rules.
+- Package an IPA SHA-256 file and build manifest with source, version, toolchain and package pins. IPA artifacts are retained for 14 days; snapshot artifacts for seven days.
+- Align current-source, download and build documentation across English, Simplified Chinese and Japanese. Preserve historical release evidence and record the latest upstream review separately from code actually imported.
+
+### Verification and limits
+
+- CI for this integrated version must pass build, Swift tests, SwiftLint and license checks at the same source revision. Previous 4.2.0 or PR-only passes are not a pass for 4.2.1.
+- Real-device installation, eSIM, Apple Intelligence, restore behavior and performance have not been measured for this version. No risk-free upgrade or measured performance improvement is claimed.
+- Erosion-CN v1.0.7 ad-blocking paths and pairing/audio-capture work are not added in this maintenance update. Existing write/restore guards and historical feature decisions remain in place.
+
+## [4.2.0] - 2026-11-19
+
+Navigation recategorization (Stage 14). Built from the 4.1.0 release (branch `feature/lilashift-4.0-quality-upgrade`, commit `4dbc674`) plus the Stage 14 recategorization batch. In-app version `4.2.0`, build `42000001`; IPA file `LilaShift_4.2.0.ipa` (bundle `com.huami.gestultx`, minimum iOS `26.0`).
+
+### Changed (vs 4.1.0)
+- The four home cards (One-Tap Unlock, AI Only, Siri AI Mode, eSIM & Region) now each open their own dedicated page instead of all opening the same long unlock page.
+- The Tools tab no longer inlines the unlock-family cards; it keeps the category grid, the diagnostics summary and the actions.
+- Classification is unified on the Tools page's seven groups; the FeatureCatalog destination mapping and the ToolGroup mapping now agree (one mapping table, covered by tests).
+- The home title now reads the real bundle version instead of the hardcoded "LilaShift 3.0".
+
+### Notes
+- No preset or catalog items were added or removed (46 presets / 59 catalog items). The two new pages (Siri AI Mode, eSIM & Region) are reached from the home's common-features tiles and the catalog, not from a home section — the home keeps its eight sections.
+- Snapshot baselines for the home, unlock and tools pages were deleted for re-recording on CI; three new destination snapshots are recorded on first run.
+
+## [4.1.0] - 2026-11-18
+
+Formal release. Built from branch `feature/lilashift-4.0-quality-upgrade` at the 4.0.0 baseline commit `6c8c4aba` plus the Stage 13 feature batch. In-app version `4.1.0`, build `41000001`; IPA file `LilaShift_4.1.0.ipa` (bundle `com.huami.gestultx`, minimum iOS `26.0`).
+
+### Added (vs 4.0.0)
+- App Audio Library: replace notification sounds with custom audio, ported 1:1 from upstream GestaltX v1.1.1 (GPL-3.0, with attribution). Covers apps that already expose notification sounds in their containers. The capture guide (for apps whose sounds live in the bundle) needs Pairing & Device Connection, which is deferred to a later stage — see the Stage 13 implementation record.
+- Lock screen text (catalog integration): the System Settings page itself was already in 4.0.0 (ported 1:1 from upstream GestaltX v1.0.6); Stage 13 adds the catalog pointer entry (discoverable from search and the catalog browser), the version-sentinel gate (blocked builds now show stay/downgrade guidance instead of a misleading error), and documents that global restore-all does not cover the footnote — use Revert on the System Settings page.
+- Further upstream v1.1.1 ports from the full comparison (see the Stage 13 implementation record for the covered / ported / skipped table).
+- Japanese README (README_JA.md), translated from the English README and adapted to 4.1.0 — including the App Audio Library, the lock screen text entry, and the iOS 27.3 beta 2 notice. First-pass translation; native-speaker review pending.
+
+### Notes
+- New features work on iOS 27.0–27.3 beta 1. Apple blocked the underlying mechanism in iOS 27.3 beta 2, so do not upgrade past 27.3 beta 1 if you use these features.
+
+## [4.0.0] - 2026-11-18
+
+Formal release. Built from branch `feature/lilashift-4.0-quality-upgrade` at commit `7c6df01` (code baseline; a docs-only version-consistency fix follows on the same branch). In-app version `4.0.0`, build `40000001`; IPA file `LilaShift_4.0.0.ipa` (bundle `com.huami.gestultx`, minimum iOS `26.0`).
+
+### Added (vs 3.0.0)
+- MG real-time monitoring and key database (77 seeded keys, version sentinel, compatibility model).
+- Advanced backup and differential restore (BackupEngine/RestoreEngine).
+- Intelligent diagnostics centre (DiagnosticsEngine with fix suggestions, plus a performance section).
+- App archive and cache analysis (sandbox-compliant ZIP archive; no third-party app backup).
+- Wallpaper and personalisation centre (WallpaperLibrary; no public API can set the system wallpaper or another app's launch image — applying means exporting to Photos plus guidance).
+- Performance optimisation (dialer import/scaling, MG key search debounce, diagnostics caching, PreviewImageCache, PerformanceMonitor; no fabricated metrics — the baseline lists measurement methods only).
+
+### Verified
+- Run Swift Tests #429: 744 executed, 3 skipped, 0 failed. Build IPA #431 green. SwiftLint #178 green. All on commit `7c6df01`.
+
 ## [3.0.0-rc.1] - Pre-release (not stable)
 
 Built from branch `feature/lilashift-3.0-dashboard` at commit `37c4a36`

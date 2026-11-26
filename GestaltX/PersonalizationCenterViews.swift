@@ -16,7 +16,6 @@ import SwiftUI
 struct PersonalizationCenterCard: View {
     @EnvironmentObject private var model: GestaltManager
     @Environment(\.homeDiagnosticsCache) private var diagnostics: HomeDiagnosticsCache?
-    @Environment(\.colorScheme) private var colorScheme
 
     @State private var settings = PersonalizationSettings.defaults
     @State private var settingsError: String?
@@ -37,12 +36,6 @@ struct PersonalizationCenterCard: View {
     @State private var formSearch = ""
     @State private var formError: String?
     @State private var deletingPresetID: UUID?
-
-    private var heroTint: Color {
-        colorScheme == .dark
-            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
-            : Color.lavenderGlass.opacity(0.65)
-    }
 
     /// The records to use: the cache's, when the cache is present
     /// (it loads the history on a background task), else this card's
@@ -85,10 +78,10 @@ struct PersonalizationCenterCard: View {
     }
 
     var body: some View {
-        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: heroTint) {
-            VStack(alignment: .leading, spacing: 14) {
-                HStack(spacing: 12) {
-                    GlassIconPedestal(systemImage: "paintpalette", tint: .gestaltAccent, size: 44)
+        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: GlassTokens.heroTint) {
+            VStack(alignment: .leading, spacing: GlassTokens.cardSpacing) {
+                HStack(spacing: GlassTokens.rowSpacing) {
+                    GlassIconPedestal(systemImage: "paintpalette", tint: .gestaltAccent, size: GlassTokens.iconSize)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(L("Personalization Center"))
                             .font(.headline)
@@ -211,10 +204,10 @@ struct PersonalizationCenterCard: View {
                     .buttonStyle(.plain)
                     .disabled(!canMoveHomeSection(section, by: 1))
                     Toggle("", isOn: Binding(
-                        get: { !(settings.hiddenHomeSections ?? []).contains(section.rawValue) },
+                        get: { !settings.hiddenHomeSections.contains(section.rawValue) },
                         set: { newValue in
                             updateSettings { settings in
-                                var hidden = settings.hiddenHomeSections ?? []
+                                var hidden = settings.hiddenHomeSections
                                 if newValue { hidden.remove(section.rawValue) }
                                 else { hidden.insert(section.rawValue) }
                                 settings.hiddenHomeSections = hidden
@@ -231,18 +224,20 @@ struct PersonalizationCenterCard: View {
     /// default order), including hidden ones so a hidden section can
     /// be re-shown. Missing sections are appended in default order.
     private var homeSectionRows: [HomeDiagnosticsSectionID] {
-        if let stored = settings.homeSectionOrder {
-            let known = stored.compactMap { HomeDiagnosticsSectionID(rawValue: $0) }
-            let missing = HomeDiagnosticsSectionID.defaultOrder.filter { !known.contains($0) }
-            return known + missing
+        if settings.homeSectionOrder.isEmpty {
+            return HomeDiagnosticsSectionID.defaultOrder
         }
-        return HomeDiagnosticsSectionID.defaultOrder
+        let known = settings.homeSectionOrder.compactMap { HomeDiagnosticsSectionID(rawValue: $0) }
+        let missing = HomeDiagnosticsSectionID.defaultOrder.filter { !known.contains($0) }
+        return known + missing
     }
 
     /// Moves a section one position in the stored order. The stored
     /// order is created from the default order on first use.
     private func moveHomeSection(_ section: HomeDiagnosticsSectionID, by offset: Int) {
-        var order = settings.homeSectionOrder ?? HomeDiagnosticsSectionID.defaultOrder.map(\.rawValue)
+        var order = settings.homeSectionOrder.isEmpty
+            ? HomeDiagnosticsSectionID.defaultOrder.map(\.rawValue)
+            : settings.homeSectionOrder
         guard let index = order.firstIndex(of: section.rawValue) else { return }
         let target = index + offset
         guard target >= 0 && target < order.count else { return }
@@ -251,7 +246,9 @@ struct PersonalizationCenterCard: View {
     }
 
     private func canMoveHomeSection(_ section: HomeDiagnosticsSectionID, by offset: Int) -> Bool {
-        let order = settings.homeSectionOrder ?? HomeDiagnosticsSectionID.defaultOrder.map(\.rawValue)
+        let order = settings.homeSectionOrder.isEmpty
+            ? HomeDiagnosticsSectionID.defaultOrder.map(\.rawValue)
+            : settings.homeSectionOrder
         guard let index = order.firstIndex(of: section.rawValue) else { return false }
         let target = index + offset
         return target >= 0 && target < order.count
@@ -534,7 +531,7 @@ struct PersonalizationCenterCard: View {
             Text(L("Wallpaper and Launch Images"))
                 .font(.headline)
                 .foregroundStyle(.primary)
-            Text(L("iOS offers no public API for an app to change the system wallpaper or another app's launch image. Save an image to Photos and set it manually."))
+            Text(L("iOS offers no public API for an app to change the system wallpaper or another app's launch image. Save an image to Photos and set it manually. The Wallpaper Library can use one of your images as the background inside LilaShift."))
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }

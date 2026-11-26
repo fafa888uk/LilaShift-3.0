@@ -13,7 +13,6 @@ import SwiftUI
 struct SafePatchCard: View {
     @EnvironmentObject private var model: GestaltManager
     @Environment(\.homeDiagnosticsCache) private var diagnostics: HomeDiagnosticsCache?
-    @Environment(\.colorScheme) private var colorScheme
     @State private var selectedKind: SafePatchProposalKind = .oneTap
     @State private var showingChecks = false
 
@@ -38,12 +37,6 @@ struct SafePatchCard: View {
         selectedKind.proposal(nativeAppleIntelligence: isNativeAppleIntelligence)
     }
 
-    private var heroTint: Color {
-        colorScheme == .dark
-            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
-            : Color.lavenderGlass.opacity(0.65)
-    }
-
     /// The simulation for the selected proposal, or `nil` when the
     /// device has not been read yet. Prefers the shared diagnostics
     /// cache (all three proposals are simulated once per input change
@@ -60,10 +53,10 @@ struct SafePatchCard: View {
     }
 
     var body: some View {
-        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: heroTint) {
-            VStack(alignment: .leading, spacing: 14) {
-                HStack(spacing: 12) {
-                    GlassIconPedestal(systemImage: "shield.checkered", tint: .gestaltAccent, size: 44)
+        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: GlassTokens.heroTint) {
+            VStack(alignment: .leading, spacing: GlassTokens.cardSpacing) {
+                HStack(spacing: GlassTokens.rowSpacing) {
+                    GlassIconPedestal(systemImage: "shield.checkered", tint: .gestaltAccent, size: GlassTokens.iconSize)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(L("SafePatch Simulator"))
                             .font(.headline)
@@ -89,6 +82,7 @@ struct SafePatchCard: View {
                         Text(L("One-Tap Unlock")).tag(SafePatchProposalKind.oneTap)
                         Text(L("AI Only")).tag(SafePatchProposalKind.aiOnly)
                         Text(L("eSIM & Region")).tag(SafePatchProposalKind.esimRegion)
+                        Text(L("Siri AI Mode Only")).tag(SafePatchProposalKind.siriAIMode)
                     }
                     .pickerStyle(.segmented)
 
@@ -193,7 +187,7 @@ struct SafePatchCard: View {
     }
 
     /// The features this proposal deliberately leaves unstaged: on
-    /// native Apple Intelligence hardware, the six AI capabilities.
+    /// native Apple Intelligence hardware, the seven AI capabilities.
     /// They are shown as skipped with the reason, never as changes.
     @ViewBuilder
     private func skippedList(_ simulation: SafePatchSimulation) -> some View {

@@ -25,3 +25,6 @@ docs/plans/
 
 # Swift package compiler index output
 GestaltX.xcodeproj/-Xcc/
+
+# Python validation cache
+__pycache__/

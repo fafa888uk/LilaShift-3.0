@@ -260,7 +260,9 @@ final class DocumentTests: XCTestCase {
                 var changed = initial.document
                 // Ensure a real edit even when the input already has enabled flags.
                 try changed.setCacheOptions(flags == .enabled ? .restricted : .enabled)
-                changed.set("committed", for: "other-field")
+                // "other-field" is not a staged key (Stage 5 §3.4
+                // allowlist gate); the region code is staged.
+                changed.set("committed", for: GestaltKeys.regionCode)
                 let applied = try await store.commit(changed, expected: initial)
                 XCTAssert(try applied.originalCachedOptionFlags() == flags, "Commit records the actual original pair")
                 // Repeated changes must never replace the earliest recorded state.
@@ -298,14 +300,14 @@ final class DocumentTests: XCTestCase {
                 var restored = loaded.document
                 try restored.setCacheOptions(loaded.originalCachedOptionFlags())
                 let result = try await reopened.commit(restored, expected: loaded)
-                XCTAssert(result.document.extra["other-field"] as? String == "committed", "One-cell restore leaves other applied fields intact")
+                XCTAssert(result.document.extra[GestaltKeys.regionCode] as? String == "committed", "One-cell restore leaves other applied fields intact")
                 let rebased = loaded.rebasingPendingEdits(pending, onto: result.document, excluding: [], preservingCacheData: false)
                 XCTAssert(try DeviceCacheOptions.flags(in: rebased) == flags, "Reverting the preset discards only its staged cache edits")
                 XCTAssert(rebased.extra["pending-field"] as? String == "pending", "Reverting the preset preserves unrelated pending edits")
                 let final = try await makeStore().loadDevice()
                 XCTAssert(try DeviceCacheOptions.flags(in: final.document) == flags, "Exact original flags survive write and reopen")
                 var expected = baseline
-                expected.set("committed", for: "other-field")
+                expected.set("committed", for: GestaltKeys.regionCode)
                 XCTAssert(final.document.matches(expected), "Restore touches only the two flag bytes")
             }
         }
@@ -517,7 +519,7 @@ final class DocumentTests: XCTestCase {
         let rebased = initial.rebasingPendingEdits(pending, onto: latest, excluding: [srdKey])
         XCTAssert(rebased.extra[srdKey] == nil, "Single-row restore removes the target's pending override")
         XCTAssert(rebased.extra["unrelated-pending"] as? String == "pending" && rebased.extra["payload"] == nil, "Single-row restore preserves unrelated pending additions and deletions")
-        document.set("edited", for: "new")
+        document.set("edited", for: GestaltKeys.regionCode)
         let committed = try await store.commit(document, expected: initial)
         XCTAssert(committed.document.matches(document), "Successful transaction must match readback")
         XCTAssert((committed.document.root["CacheData"] as? Data) == Data([5, 10, 15]), "Preserve CacheData")

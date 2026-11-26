@@ -6,6 +6,13 @@ import Foundation
 /// unknown" there — never a faked value. The probe returns system
 /// capability answers, no user data.
 enum LiveGestaltProbe {
+    /// The raw MGCopyAnswer value, or `nil` when the probe returns
+    /// nothing (simulator, unreadable key, or the key is absent).
+    /// Callers convert with `MGValue.fromPlistValue`.
+    static func query(_ key: String) -> Any? {
+        GXCopyLiveGestaltAnswer(key)
+    }
+
     static func queryBool(_ key: String) -> Bool? {
         (GXCopyLiveGestaltAnswer(key) as? NSNumber)?.boolValue
     }

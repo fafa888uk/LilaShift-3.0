@@ -12,7 +12,6 @@ import SwiftUI
 
 struct DependencyAnalyzerCard: View {
     @EnvironmentObject private var model: GestaltManager
-    @Environment(\.colorScheme) private var colorScheme
     @State private var selectedKind: SafePatchProposalKind = .oneTap
     @State private var showingDetails = false
 
@@ -34,12 +33,6 @@ struct DependencyAnalyzerCard: View {
         selectedKind.proposal(nativeAppleIntelligence: isNativeAppleIntelligence)
     }
 
-    private var heroTint: Color {
-        colorScheme == .dark
-            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
-            : Color.lavenderGlass.opacity(0.65)
-    }
-
     /// The analysis for the selected proposal, or `nil` when the
     /// device has not been read yet.
     private var analysis: DependencyAnalysis? {
@@ -53,10 +46,10 @@ struct DependencyAnalyzerCard: View {
     }
 
     var body: some View {
-        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: heroTint) {
-            VStack(alignment: .leading, spacing: 14) {
-                HStack(spacing: 12) {
-                    GlassIconPedestal(systemImage: "point.3.connected.trianglepath.dotted", tint: .gestaltAccent, size: 44)
+        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: GlassTokens.heroTint) {
+            VStack(alignment: .leading, spacing: GlassTokens.cardSpacing) {
+                HStack(spacing: GlassTokens.rowSpacing) {
+                    GlassIconPedestal(systemImage: "point.3.connected.trianglepath.dotted", tint: .gestaltAccent, size: GlassTokens.iconSize)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(L("Dependency Analyzer"))
                             .font(.headline)
@@ -119,7 +112,7 @@ struct DependencyAnalyzerCard: View {
                         }
                         // Features the proposal deliberately leaves
                         // unstaged: on native Apple Intelligence
-                        // hardware, the six AI capabilities.
+                        // hardware, the seven AI capabilities.
                         if !selectedProposal.skippedFeatureIDs.isEmpty {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(L("Skipped"))

@@ -3,7 +3,7 @@
 //
 // Shows the device profile and the per-feature eligibility the local
 // rule engine derives from REAL readings of the current device,
-// plus the China Unlock recommendation (eSIM + region + the six AI
+// plus the China Unlock recommendation (eSIM + region + the seven AI
 // capabilities). Nothing here writes to the device, stages a change,
 // or sends anything anywhere: the engine is local-only, and every
 // reading that could not be made is shown as unknown, never
@@ -13,16 +13,9 @@ import SwiftUI
 struct LilaIntelligenceCard: View {
     @EnvironmentObject private var model: GestaltManager
     @Environment(\.homeDiagnosticsCache) private var diagnostics: HomeDiagnosticsCache?
-    @Environment(\.colorScheme) private var colorScheme
     @State private var recordCount = 0
     @State private var records: [RecordedChange] = []
     @State private var showingDetails = false
-
-    private var heroTint: Color {
-        colorScheme == .dark
-            ? Color(red: 0.16, green: 0.13, blue: 0.28).opacity(0.65)
-            : Color.lavenderGlass.opacity(0.65)
-    }
 
     /// The report for the current snapshot, or `nil` when the device
     /// has not been read yet. Prefers the shared diagnostics cache
@@ -40,10 +33,10 @@ struct LilaIntelligenceCard: View {
     }
 
     var body: some View {
-        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: heroTint) {
-            VStack(alignment: .leading, spacing: 14) {
-                HStack(spacing: 12) {
-                    GlassIconPedestal(systemImage: "brain", tint: .gestaltAccent, size: 44)
+        GlassCard(cornerRadius: GlassTokens.cardRadius, tint: GlassTokens.heroTint) {
+            VStack(alignment: .leading, spacing: GlassTokens.cardSpacing) {
+                HStack(spacing: GlassTokens.rowSpacing) {
+                    GlassIconPedestal(systemImage: "brain", tint: .gestaltAccent, size: GlassTokens.iconSize)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(L("Lila Intelligence"))
                             .font(.headline)
@@ -175,7 +168,7 @@ struct LilaIntelligenceCard: View {
 
     @ViewBuilder
     private func eligibilitySummary(_ report: LilaDeviceReport) -> some View {
-        HStack(spacing: 12) {
+        HStack(spacing: GlassTokens.rowSpacing) {
             countChip(String(report.nativeCount), label: L("Native"), color: .green)
             countChip(String(report.eligibleCount), label: L("Eligible"), color: .gestaltAccent)
             countChip(String(report.unknownCount), label: L("Unknown"), color: .orange)

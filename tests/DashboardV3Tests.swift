@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-// LilaShift 3.0 landing page ordering and compatibility migration tests.
+// LilaShift landing page ordering and compatibility migration tests.
 import XCTest
 @testable import GestaltX
 
@@ -9,8 +9,13 @@ final class DashboardV3Tests: XCTestCase {
     }
 
     func testCustomOrderingSurvivesReload() {
-        let original = DashboardV3Destination.allCases
-        let desired = [original[2], original[0], original[1], original[4], original[3]]
+        // Stage 14: eight destinations now — the stored order must
+        // cover all of them for the round-trip to be exact.
+        let desired: [DashboardV3Destination] = [
+            .esimRegion, .unlock, .aiOnly, .advanced,
+            .siriAIMode, .diagnostics, .restore, .presets,
+        ]
+        XCTAssertEqual(desired.count, DashboardV3Destination.allCases.count)
         let stored = desired.map(\.rawValue).joined(separator: ",")
         XCTAssertEqual(DashboardV3Destination.resolvedOrder(stored), desired)
     }
