@@ -11,6 +11,7 @@ Maintenance update from the 4.2.0 source lineage. In-app version `4.2.1`, build 
 - Update ZIPFoundation 0.9.20 → [0.9.21](https://github.com/weichsel/ZIPFoundation/releases/tag/0.9.21), pinned to `e7048f0569f0ba37df26f8357f560b9d25e9a284`. Upstream fixes include malformed-archive failures and chained-symlink containment; application-level path, size, CRC and symlink checks remain in place.
 - Complete missing localization entries for the 4.x wallpaper, restore, monitoring and archive interfaces across all supported languages; preserve warning meanings and format placeholders. Localization checks remain required before delivery.
 - The About-page source link now validates an HTTPS URL and displays plain text if invalid, instead of force-unwrapping the URL. Remove an unused `GestaltManager` state subscription (PR #25).
+- Correct the documented restore scope and controls: global restore from the Backups page does not cover lock screen text, notification text or ringtones. The current System Settings UI has no standalone Restore/Revert button; an underlying restore method does not imply a user-accessible control.
 - Draft release creation explicitly targets the commit actually checked out for the build, preventing a tag from accidentally targeting the old default-branch source. Build provenance also records the checked-out SHA when manual inputs select a different ref.
 
 ### Changed
@@ -47,7 +48,7 @@ Formal release. Built from branch `feature/lilashift-4.0-quality-upgrade` at the
 
 ### Added (vs 4.0.0)
 - App Audio Library: replace notification sounds with custom audio, ported 1:1 from upstream GestaltX v1.1.1 (GPL-3.0, with attribution). Covers apps that already expose notification sounds in their containers. The capture guide (for apps whose sounds live in the bundle) needs Pairing & Device Connection, which is deferred to a later stage — see the Stage 13 implementation record.
-- Lock screen text (catalog integration): the System Settings page itself was already in 4.0.0 (ported 1:1 from upstream GestaltX v1.0.6); Stage 13 adds the catalog pointer entry (discoverable from search and the catalog browser), the version-sentinel gate (blocked builds now show stay/downgrade guidance instead of a misleading error), and documents that global restore-all does not cover the footnote — use Revert on the System Settings page.
+- Lock screen text (catalog integration): the System Settings page itself was already in 4.0.0 (ported 1:1 from upstream GestaltX v1.0.6); Stage 13 adds the catalog pointer entry (discoverable from search and the catalog browser) and the version-sentinel gate (blocked builds show stay/downgrade guidance instead of a misleading error). Global restore from the Backups page does not cover lock screen text, notification text or ringtones. The current System Settings UI has no standalone Restore/Revert button; the store and model have restore methods, but these are not connected to a user-accessible restore control.
 - Further upstream v1.1.1 ports from the full comparison (see the Stage 13 implementation record for the covered / ported / skipped table).
 - Japanese README (README_JA.md), translated from the English README and adapted to 4.1.0 — including the App Audio Library, the lock screen text entry, and the iOS 27.3 beta 2 notice. First-pass translation; native-speaker review pending.
 

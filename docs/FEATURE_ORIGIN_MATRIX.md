@@ -107,7 +107,7 @@
 | 方面 | 来源 |
 |---|---|
 | 启动图预览（图片校验、裁剪、圆角预览、名称编辑、撤销、SHA-256 本地草稿） | **LilaShift 新增实现**（PR #3 App Appearance；明确为"仅预览"，能力恒为 unknown） |
-| 个性化基础设施（容器访问、文件导入） | **原始代码**（上游 GestaltX 的个性化基础设施）+ **LilaShift 新增实现**（导入/验证/应用/备份/恢复流程；`launchImage` / `lockScreenText` 的应用处理器须先补上——**已知缺口，未实现**，指 CustomizationStore/PersonalizationCenter 的应用路径，不是 `SystemSettingsStore` 本身：锁屏文字页（`SystemSettingsStore`，上游 v1.0.6 1:1 移植）自带暂存/备份/验证/恢复；全局恢复（备份页的全部恢复）不包含锁屏文字，须在「系统设置」页点还原） |
+| 个性化基础设施（容器访问、文件导入） | **原始代码**（上游 GestaltX 的个性化基础设施）+ **LilaShift 新增实现**（导入/验证/应用/备份/恢复流程；`launchImage` / `lockScreenText` 的应用处理器须先补上——**已知缺口，未实现**，指 CustomizationStore/PersonalizationCenter 的应用路径）。独立的锁屏文字功能（`SystemSettingsStore`，上游 v1.0.6 移植）有暂存、写前备份、回读验证及底层恢复方法，但当前「系统设置」UI 尚无独立 Restore/Revert（还原）按钮；底层方法存在不等于已有可点击入口。备份页全局恢复不覆盖锁屏文字、通知文本或铃声。 |
 
 ## 12. 壁纸个性化
 
