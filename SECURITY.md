@@ -2,6 +2,8 @@
 
 ## Supported versions
 
+**Release status (2026-11-26):** [v4.2.0](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0) is the latest published release. Please include its exact version, build and source commit when privately reporting an issue. The legacy support table below predates 4.x; its support commitments are not automatically extended to new versions. Maintainers must confirm the updated support policy. Publication alone does not establish real-device safety or compatibility.
+
 | Version | Supported |
 | --- | --- |
 | 3.0.0-rc.1 (pre-release, `feature/lilashift-3.0-dashboard`) | Yes — security reports accepted, fixes land on the branch first |
