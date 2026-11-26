@@ -6,10 +6,9 @@
 
 [English](README.md) · [简体中文](README_ZH-CN.md) · [日本語](README_JA.md)
 
-> **プレリリース: LilaShift 3.0.0-rc.1** — これは**プレリリースであり、安定版ではありません**。
-> `feature/lilashift-3.0-dashboard` ブランチのコミット `37c4a368c73ec80654c8b395387abea9a24915f6` からビルド（修正コミット `7020964` を含む）。
-> アプリ内バージョン `3.0.0`（ビルド `30000002`）· IPA ファイル `LilaShift_3.0.0.ipa`。
-> **このビルドでは、実機へのインストール、eSIM の有効化、Apple Intelligence の有効化、復元は検証されていません。この HEAD に対する実機の証拠はこのリポジトリにありません。**[検証済みの内容と未検証の内容](#検証済みの内容と未検証の内容)と `CHANGELOG.md`（既知の不足）を参照してください。
+> **リリース記録: LilaShift 4.2.0** — 2026-11-19 公開、ソースコミット `3152fc7c49ccb00f80f97da90666a65fb66a6d89`、アプリ内バージョン `4.2.0`、ビルド `42000001`。
+> **CI の成功やリリース公開は、実機の安全性・互換性を証明するものではありません。** この正確なリリースの実機インストール、eSIM、Apple Intelligence、復元の検証証拠はここにはありません。
+> 以下の 3.0.0-rc.1 に関する記述は過去の資料であり、4.2.0 の検証結果やインストール手順ではありません。
 
 [![Version](https://img.shields.io/badge/version-4.2.0-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0)
 [![Build LilaShift IPA](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml)
@@ -23,7 +22,7 @@
 
 ### クイックリンク
 
-- **ダウンロード:** [3.0.0-rc.1 リリース](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v3.0.0-rc.1) · [すべてのリリース](https://github.com/fafa888uk/LilaShift-3.0/releases)
+- **リリース履歴:** [すべてのリリース](https://github.com/fafa888uk/LilaShift-3.0/releases)（バージョンとリリースノートを確認してください）。
 - **インストールガイド:** [docs/INSTALL_ZH-CN.md](docs/INSTALL_ZH-CN.md)（簡体字中国語）
 - **ユーザーガイド:** [docs/USER_GUIDE_ZH-CN.md](docs/USER_GUIDE_ZH-CN.md) · **互換性:** [docs/COMPATIBILITY_ZH-CN.md](docs/COMPATIBILITY_ZH-CN.md) · **バックアップと復元:** [docs/BACKUP_RESTORE_ZH-CN.md](docs/BACKUP_RESTORE_ZH-CN.md) · **トラブルシューティング:** [docs/TROUBLESHOOTING_ZH-CN.md](docs/TROUBLESHOOTING_ZH-CN.md) · **FAQ:** [docs/FAQ_ZH-CN.md](docs/FAQ_ZH-CN.md)
 - **お知らせ:** [Telegram チャンネル](https://t.me/LilaShiftUpdates)（お知らせ専用 — 議論用のグループではありません）
@@ -58,11 +57,11 @@
 
 ## 検証済みの内容と未検証の内容
 
-| 項目 | このプレリリースでの状態 |
+| 項目 | 検証状況 |
 |---|---|
-| ソースが CI でビルドできること（`Build LilaShift IPA`） | ✅ GitHub Actions で検証済み — 上のバッジを参照 |
-| Swift ユニットテスト（`Run Swift Tests`） | ✅ GitHub Actions で検証済み — 上のバッジを参照 |
-| ライセンス / 帰属チェック（`Check Licenses`） | ✅ GitHub Actions で検証済み |
+| ソースが CI でビルドできること（`Build LilaShift IPA`） | 対象リリースの CI 記録を確認してください。ブランチのバッジは個別の成果物の検証証拠ではありません。 |
+| Swift ユニットテスト（`Run Swift Tests`） | 対象リリースの CI 記録を確認してください。ブランチのバッジは個別の成果物の検証証拠ではありません。 |
+| ライセンス / 帰属チェック（`Check Licenses`） | 対象リリースの CI 記録を確認してください。ブランチのバッジは個別の成果物の検証証拠ではありません。 |
 | この IPA の実機インストール | ⚠️ **このビルドでは未検証** — この HEAD に対する実機の証拠はこのリポジトリにありません（`CHANGELOG.md` の「既知の不足」を参照） |
 | アンロック後の eSIM 有効化 | ⚠️ **このビルドでは未検証** — この HEAD に対する実機の証拠はこのリポジトリにありません |
 | Apple Intelligence が実際に表示 / 動作すること | ⚠️ **このビルドでは未検証** — この HEAD に対する実機の証拠はこのリポジトリにありません |
@@ -148,7 +147,7 @@ MobileGestalt のフラグを変更することと、その機能が実際に動
 
 ## ダウンロード
 
-IPA は [3.0.0-rc.1 リリース](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v3.0.0-rc.1)からダウンロードしてください — `LilaShift_3.0.0.ipa`（バンドル `com.huami.gestultx`、バージョン `3.0.0`、ビルド `30000002`、最小 iOS `26.0`）。IPA のファイル名はビルドスクリプト（`.github/scripts/build-ipa.sh`）によるものです：`LilaShift_<バージョン>.ipa`。
+過去の 3.0.0-rc.1 の成果物は `LilaShift_3.0.0.ipa`（ビルド `30000002`）であり、4.2.0 の成果物ではありません。該当するバージョンのリリースノートと検証記録を確認してください。公開済みであることは実機の安全性を保証しません。
 
 > iOS 27 の Safari でダウンロードが不完全になるという報告があります。ファイルが破損している、または解凍できないと表示された場合は、ダウンロードし直してください。数回試す必要がある場合があります。改善しない場合は別のブラウザをお試しください。原因はまだ確認されていません。
 

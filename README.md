@@ -6,10 +6,9 @@
 
 [English](README.md) · [简体中文](README_ZH-CN.md) · [日本語](README_JA.md)
 
-> **Pre-release: LilaShift 3.0.0-rc.1** — this is a **pre-release, not a stable release**.
-> Built from `feature/lilashift-3.0-dashboard` at commit `37c4a368c73ec80654c8b395387abea9a24915f6` (includes fix commit `7020964`).
-> In-app version `3.0.0` (build `30000002`) · IPA file `LilaShift_3.0.0.ipa`.
-> **Real-device install, eSIM activation, Apple Intelligence activation and restore have NOT been verified for this build: no real-device evidence for this HEAD is in this repository.** See [What is verified](#what-is-verified-and-what-is-not) and `CHANGELOG.md` (Known gaps).
+> **Release record: LilaShift 4.2.0** — published 2026-11-19; release source commit `3152fc7c49ccb00f80f97da90666a65fb66a6d89`. In-app version `4.2.0`, build `42000001`. 
+> **Real-device safety and compatibility are not established by CI or publication.** Real-device installation, eSIM, Apple Intelligence and restoration for this exact release are not verified here.
+> Sections describing 3.0.0-rc.1 below are historical context, not verification or installation guidance for 4.2.0.
 
 [![Version](https://img.shields.io/badge/version-4.2.0-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0)
 [![Build LilaShift IPA](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml)
@@ -23,7 +22,7 @@
 
 ### Quick links
 
-- **Download:** [3.0.0-rc.1 release](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v3.0.0-rc.1) · [all releases](https://github.com/fafa888uk/LilaShift-3.0/releases)
+- **Release history:** [all releases](https://github.com/fafa888uk/LilaShift-3.0/releases) (check the exact version and its release notes).
 - **Install guide:** [docs/INSTALL_ZH-CN.md](docs/INSTALL_ZH-CN.md) (Simplified Chinese)
 - **User guide:** [docs/USER_GUIDE_ZH-CN.md](docs/USER_GUIDE_ZH-CN.md) · **Compatibility:** [docs/COMPATIBILITY_ZH-CN.md](docs/COMPATIBILITY_ZH-CN.md) · **Backup & restore:** [docs/BACKUP_RESTORE_ZH-CN.md](docs/BACKUP_RESTORE_ZH-CN.md) · **Troubleshooting:** [docs/TROUBLESHOOTING_ZH-CN.md](docs/TROUBLESHOOTING_ZH-CN.md) · **FAQ:** [docs/FAQ_ZH-CN.md](docs/FAQ_ZH-CN.md)
 - **Announcements:** [Telegram channel](https://t.me/LilaShiftUpdates) (announcements only — a channel, not a discussion group)
@@ -56,11 +55,11 @@ One-tap eSIM, region code, and Apple Intelligence setup for China-model iPhones 
 
 ## What is verified, and what is not
 
-| Area | Status at this pre-release |
+| Area | Verification status |
 |---|---|
-| Source builds in CI (`Build LilaShift IPA`) | ✅ Verified by GitHub Actions — see badge above |
-| Swift unit tests (`Run Swift Tests`) | ✅ Verified by GitHub Actions — see badge above |
-| License / attribution check (`Check Licenses`) | ✅ Verified by GitHub Actions |
+| Source builds in CI (`Build LilaShift IPA`) | Refer to the exact release's recorded CI runs; branch badges are not proof for an individual artifact. |
+| Swift unit tests (`Run Swift Tests`) | Refer to the exact release's recorded CI runs; branch badges are not proof for an individual artifact. |
+| License / attribution check (`Check Licenses`) | Refer to the exact release's recorded CI runs; branch badges are not proof for an individual artifact. |
 | Real-device install of this exact IPA | ⚠️ **Not verified for this build** — no real-device evidence for this HEAD in this repository (see `CHANGELOG.md`, Known gaps) |
 | eSIM activation after unlocking | ⚠️ **Not verified for this build** — no real-device evidence for this HEAD in this repository |
 | Apple Intelligence actually appearing / working | ⚠️ **Not verified for this build** — no real-device evidence for this HEAD in this repository |
@@ -129,7 +128,7 @@ Full compatibility table: [docs/COMPATIBILITY_ZH-CN.md](docs/COMPATIBILITY_ZH-CN
 
 ## Download
 
-Download the IPA from the [3.0.0-rc.1 release](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v3.0.0-rc.1) — `LilaShift_3.0.0.ipa` (bundle `com.huami.gestultx`, version `3.0.0`, build `30000002`, minimum iOS `26.0`). The IPA file name comes from the build script (`.github/scripts/build-ipa.sh`): `LilaShift_<version>.ipa`.
+The historical 3.0.0-rc.1 artifact was `LilaShift_3.0.0.ipa` (build `30000002`); it is not the 4.2.0 artifact. Consult the release notes and version-specific evidence, and do not infer device safety from a published release.
 
 > Some users report incomplete downloads with Safari on iOS 27. If the file shows as damaged or cannot be extracted, download it again — several attempts may be needed. Try another browser if it persists. The cause has not been confirmed.
 

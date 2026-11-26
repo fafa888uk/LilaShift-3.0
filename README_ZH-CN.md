@@ -6,10 +6,9 @@
 
 [English](README.md) · [简体中文](README_ZH-CN.md) · [日本語](README_JA.md)
 
-> **预发布版本：LilaShift 3.0.0-rc.1** —— 这是**预发布版，不是正式稳定版**。
-> 基于 `feature/lilashift-3.0-dashboard` 分支构建，提交 `37c4a368c73ec80654c8b395387abea9a24915f6`（包含 fix 提交 `7020964`）。
-> App 内版本号 `3.0.0`（构建号 `30000002`），IPA 文件名 `LilaShift_3.0.0.ipa`。
-> **真机安装、eSIM 激活、Apple Intelligence 激活与恢复，本版本均未验证：仓库中没有针对此 HEAD 的真机证据。** 详见[已验证内容与未验证内容](#已验证内容与未验证内容)与 `CHANGELOG_ZH-CN.md`（本 HEAD 已知缺口）。
+> **发布记录：LilaShift 4.2.0** —— 2026-11-19 发布，发布源码提交 `3152fc7c49ccb00f80f97da90666a65fb66a6d89`，App 版本 `4.2.0`，构建号 `42000001`。
+> **CI 通过或发布不代表真机安全与兼容性已得到证明。** 此处没有针对这一确切发布版本的真机安装、eSIM、Apple Intelligence 或恢复验证证据。
+> 下文涉及 3.0.0-rc.1 的内容仅为历史资料，不是 4.2.0 的验证或安装依据。
 
 [![版本](https://img.shields.io/badge/version-4.2.0-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0)
 [![Build LilaShift IPA](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml)
@@ -23,7 +22,7 @@
 
 ### 快速链接
 
-- **下载：** [3.0.0-rc.1 发布页](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v3.0.0-rc.1) · [全部发布](https://github.com/fafa888uk/LilaShift-3.0/releases)
+- **发布历史：** [全部发布](https://github.com/fafa888uk/LilaShift-3.0/releases)（请核对具体版本及其发布说明）。
 - **安装教程：** [docs/INSTALL_ZH-CN.md](docs/INSTALL_ZH-CN.md)
 - **使用指南：** [docs/USER_GUIDE_ZH-CN.md](docs/USER_GUIDE_ZH-CN.md) · **兼容性：** [docs/COMPATIBILITY_ZH-CN.md](docs/COMPATIBILITY_ZH-CN.md) · **备份与恢复：** [docs/BACKUP_RESTORE_ZH-CN.md](docs/BACKUP_RESTORE_ZH-CN.md) · **故障排查：** [docs/TROUBLESHOOTING_ZH-CN.md](docs/TROUBLESHOOTING_ZH-CN.md) · **常见问题：** [docs/FAQ_ZH-CN.md](docs/FAQ_ZH-CN.md)
 - **官方公告频道：** [Telegram 频道](https://t.me/LilaShiftUpdates)（仅发布公告：更新说明、测试通知、兼容性与已知问题。这是**频道，不是讨论群**，源码、下载和反馈都在 GitHub 上进行）
@@ -56,11 +55,11 @@
 
 ## 已验证内容与未验证内容
 
-| 项目 | 当前预发布版状态 |
+| 项目 | 验证状态 |
 |---|---|
-| CI 源码构建（`Build LilaShift IPA`） | ✅ 已通过 GitHub Actions 验证——见上方徽章 |
-| Swift 单元测试（`Run Swift Tests`） | ✅ 已通过 GitHub Actions 验证——见上方徽章 |
-| 许可证 / 署名检查（`Check Licenses`） | ✅ 已通过 GitHub Actions 验证 |
+| CI 源码构建（`Build LilaShift IPA`） | 请查看确切发布版本的 CI 记录；分支徽章不能证明单一发布产物通过验证。 |
+| Swift 单元测试（`Run Swift Tests`） | 请查看确切发布版本的 CI 记录；分支徽章不能证明单一发布产物通过验证。 |
+| 许可证 / 署名检查（`Check Licenses`） | 请查看确切发布版本的 CI 记录；分支徽章不能证明单一发布产物通过验证。 |
 | 本版本 IPA 的真机安装 | ⚠️ **本版本未验证**——仓库中没有针对此 HEAD 的真机证据（见 `CHANGELOG_ZH-CN.md`，本 HEAD 已知缺口） |
 | 解锁后的 eSIM 激活 | ⚠️ **本版本未验证**——仓库中没有针对此 HEAD 的真机证据 |
 | Apple Intelligence 实际出现 / 可用 | ⚠️ **本版本未验证**——仓库中没有针对此 HEAD 的真机证据 |
@@ -129,7 +128,7 @@
 
 ## 下载
 
-从 [3.0.0-rc.1 发布页](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v3.0.0-rc.1) 下载 IPA——`LilaShift_3.0.0.ipa`（Bundle ID `com.huami.gestultx`，版本 `3.0.0`，构建号 `30000002`，最低要求 iOS `26.0`）。IPA 文件名由构建脚本（`.github/scripts/build-ipa.sh`）生成，格式为 `LilaShift_<版本号>.ipa`。
+历史 3.0.0-rc.1 产物为 `LilaShift_3.0.0.ipa`（构建号 `30000002`），并非 4.2.0 的产物。请核对对应版本的发布说明和验证证据；正式发布不代表真机操作安全。
 
 > 部分用户反馈在 iOS 27 的 Safari 中下载不完整。如果文件显示损坏或无法解压，请重新下载，可能需要多次尝试；若问题持续，请换一个浏览器试试。目前尚未确认具体原因。
 
