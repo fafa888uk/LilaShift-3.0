@@ -1,35 +1,23 @@
-[![LilaShift](GestaltX/Assets.xcassets/AppIcon.appiconset/AppIcon.png)](GestaltX/Assets.xcassets/AppIcon.appiconset/AppIcon.png)
+<p align="center"><img src="GestaltX/Assets.xcassets/AppIcon.appiconset/AppIcon.png" alt="LilaShift" width="96"></p>
 
-# LilaShift 4.2.1 · 紫序
-
-**智能设备检测 · 功能管理 · 安全备份 · 可追溯恢复**
+# LilaShift · 紫序
 
 [English](README.md) · [简体中文](README_ZH-CN.md) · [日本語](README_JA.md)
 
-> **当前源码：LilaShift 4.2.1** —— 构建号 `42000002`，2026-11-27 准备的维护更新。变更与验收状态见 [4.2.1 记录](docs/RELEASE_4_2_1.md)；CI 结果和 IPA 必须与确切源码提交对应。
-> **此前已发布：[4.2.0](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0)** —— 2026-11-19 发布，提交 `3152fc7c49ccb00f80f97da90666a65fb66a6d89`，构建号 `42000001`。准备 4.2.1 源码不等于已发布新版。
-> 4.2.1 的真机安装、eSIM、Apple Intelligence 与恢复尚未验证。下文的 3.0.0-rc.1 内容保留为历史资料。
+**面向 iPhone / iPad 的开源设备诊断、配置审阅和备份工具。**
 
-[![Source 4.2.1](https://img.shields.io/badge/version-4.2.1-purple)](docs/RELEASE_4_2_1.md)
-[![Build LilaShift IPA](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml)
-[![Run Swift Tests](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml)
-[![Check Licenses](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml)
-[![SwiftLint](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/swiftlint.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/swiftlint.yml)
-[![平台](https://img.shields.io/badge/iOS-27.x-black?logo=apple)](#兼容性)
-[![协议](https://img.shields.io/badge/license-GPLv3-blue)](LICENSE)
+| 渠道 | 版本 | 状态 |
+| --- | --- | --- |
+| 当前源码 | **4.2.1** · 构建 `42000002` | [变更与验证记录](docs/RELEASE_4_2_1.md) · 尚未公开发布 |
+| 当前公开下载版 | **4.2.0** · 构建 `42000001` | 已发布 |
 
-> **关于仓库名称：** 本仓库已于 2026-11-17 从 `LilaShift-2.0` 改名为 `LilaShift-3.0`（账号也从 `fafa920q-hue` 改为 `fafa888uk`），旧链接会自动跳转到新地址，不会破坏已有的引用。
+CI 通过不等于真机验收。4.2.1 的真机安装、设备相关功能与恢复仍待验证。
 
-### 快速链接
+[兼容性](docs/COMPATIBILITY_ZH-CN.md) · [使用指南](docs/USER_GUIDE_ZH-CN.md) · [备份与恢复](docs/BACKUP_RESTORE_ZH-CN.md) · [问题反馈](https://github.com/fafa888uk/LilaShift-3.0/issues/new/choose) · [GPLv3](LICENSE)
 
-- **4.2.1 更新：** [变更、开源核查与验收记录](docs/RELEASE_4_2_1.md) · [IPA 构建记录](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml)
-- **发布历史：** [全部发布](https://github.com/fafa888uk/LilaShift-3.0/releases)（请核对具体版本及其发布说明）。
-- **安装教程：** [docs/INSTALL_ZH-CN.md](docs/INSTALL_ZH-CN.md)
-- **使用指南：** [docs/USER_GUIDE_ZH-CN.md](docs/USER_GUIDE_ZH-CN.md) · **兼容性：** [docs/COMPATIBILITY_ZH-CN.md](docs/COMPATIBILITY_ZH-CN.md) · **备份与恢复：** [docs/BACKUP_RESTORE_ZH-CN.md](docs/BACKUP_RESTORE_ZH-CN.md) · **故障排查：** [docs/TROUBLESHOOTING_ZH-CN.md](docs/TROUBLESHOOTING_ZH-CN.md) · **常见问题：** [docs/FAQ_ZH-CN.md](docs/FAQ_ZH-CN.md)
-- **官方公告频道：** [Telegram 频道](https://t.me/LilaShiftUpdates)（仅发布公告：更新说明、测试通知、兼容性与已知问题。这是**频道，不是讨论群**，源码、下载和反馈都在 GitHub 上进行）
-- **反馈 / 问题报告：** [GitHub Issues](https://github.com/fafa888uk/LilaShift-3.0/issues)（参见 [COMMUNITY.md](COMMUNITY.md)）。**请勿在 Issue 中发布序列号、UDID、账号密钥或其他个人数据。**
+项目基于 GestaltX。仓库名沿用 `LilaShift-3.0`，不代表应用版本。
 
-面向国行 iPhone 的一键 eSIM、区域代码与 Apple Intelligence 设置方案。这里是 LilaShift 4.x 的完整源码，保留 GestaltX 原始代码历史和经审查的上游更新；仓库名称沿用 `LilaShift-3.0`。
+[![Build](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml) [![Swift Tests](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml) [![Licenses](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml) [![SwiftLint](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/swiftlint.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/swiftlint.yml)
 
 ---
 

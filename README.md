@@ -1,35 +1,23 @@
-[![LilaShift](GestaltX/Assets.xcassets/AppIcon.appiconset/AppIcon.png)](GestaltX/Assets.xcassets/AppIcon.appiconset/AppIcon.png)
+<p align="center"><img src="GestaltX/Assets.xcassets/AppIcon.appiconset/AppIcon.png" alt="LilaShift" width="96"></p>
 
-# LilaShift 4.2.1 · 紫序
-
-**Smart device detection · Feature management · Safe backups · Traceable restore**
+# LilaShift · 紫序
 
 [English](README.md) · [简体中文](README_ZH-CN.md) · [日本語](README_JA.md)
 
-> **Current source: LilaShift 4.2.1** — build `42000002`, maintenance update prepared on 2026-11-27. See the [4.2.1 change and verification record](docs/RELEASE_4_2_1.md); CI results and an IPA must be matched to the exact source commit.
-> **Previous published release: [4.2.0](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0)** — 2026-11-19, commit `3152fc7c49ccb00f80f97da90666a65fb66a6d89`, build `42000001`. Preparing 4.2.1 does not publish a new release.
-> Real-device installation, eSIM, Apple Intelligence and restoration are unverified for 4.2.1. Sections about 3.0.0-rc.1 below are historical records.
+**An open-source iOS utility for device diagnostics, configuration review, and backups.**
 
-[![Source 4.2.1](https://img.shields.io/badge/version-4.2.1-purple)](docs/RELEASE_4_2_1.md)
-[![Build LilaShift IPA](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml)
-[![Run Swift Tests](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml)
-[![Check Licenses](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml)
-[![SwiftLint](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/swiftlint.yml/badge.svg)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/swiftlint.yml)
-[![Platform](https://img.shields.io/badge/iOS-27.x-black?logo=apple)](#compatibility)
-[![License](https://img.shields.io/badge/license-GPLv3-blue)](LICENSE)
+| Channel | Version | Status |
+| --- | --- | --- |
+| Current source | **4.2.1** · build `42000002` | [Changes and verification](docs/RELEASE_4_2_1.md) · not a public release |
+| Current public download | **4.2.0** · build `42000001` | Published version |
 
-> **Note on the repository name:** this repo was renamed from `LilaShift-2.0` to `LilaShift-3.0` (and the account from `fafa920q-hue` to `fafa888uk`) on 2026-11-17. Old links redirect to the new location, so no existing links break.
+CI passing does not imply real-device validation. Installation, device-specific features, and restore are not yet verified on devices for 4.2.1.
 
-### Quick links
+[Compatibility](docs/COMPATIBILITY_ZH-CN.md) · [User guide](docs/USER_GUIDE_ZH-CN.md) · [Backup and restore](docs/BACKUP_RESTORE_ZH-CN.md) · [Report an issue](https://github.com/fafa888uk/LilaShift-3.0/issues/new/choose) · [GPLv3](LICENSE)
 
-- **4.2.1 update:** [changes, source review and verification](docs/RELEASE_4_2_1.md) · [IPA workflow runs](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml)
-- **Release history:** [all releases](https://github.com/fafa888uk/LilaShift-3.0/releases) (check the exact version and its release notes).
-- **Install guide:** [docs/INSTALL_ZH-CN.md](docs/INSTALL_ZH-CN.md) (Simplified Chinese)
-- **User guide:** [docs/USER_GUIDE_ZH-CN.md](docs/USER_GUIDE_ZH-CN.md) · **Compatibility:** [docs/COMPATIBILITY_ZH-CN.md](docs/COMPATIBILITY_ZH-CN.md) · **Backup & restore:** [docs/BACKUP_RESTORE_ZH-CN.md](docs/BACKUP_RESTORE_ZH-CN.md) · **Troubleshooting:** [docs/TROUBLESHOOTING_ZH-CN.md](docs/TROUBLESHOOTING_ZH-CN.md) · **FAQ:** [docs/FAQ_ZH-CN.md](docs/FAQ_ZH-CN.md)
-- **Announcements:** [Telegram channel](https://t.me/LilaShiftUpdates) (announcements only — a channel, not a discussion group)
-- **Bug reports:** [GitHub Issues](https://github.com/fafa888uk/LilaShift-3.0/issues) — see [COMMUNITY.md](COMMUNITY.md). **Never post serial numbers, UDIDs, account keys, or other personal data in an issue.**
+Based on GestaltX. The repository name `LilaShift-3.0` is retained and is not the app version.
 
-One-tap eSIM, region code, and Apple Intelligence setup for China-model iPhones — the complete LilaShift 4.x source, retaining the original GestaltX lineage and reviewed upstream updates. The repository name remains `LilaShift-3.0`.
+[![Build](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml) [![Swift Tests](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml) [![Licenses](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml) [![SwiftLint](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/swiftlint.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/swiftlint.yml)
 
 ---
 
