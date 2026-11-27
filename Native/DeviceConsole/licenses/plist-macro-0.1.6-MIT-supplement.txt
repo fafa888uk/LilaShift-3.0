@@ -1,0 +1,37 @@
+plist-macro 0.1.6 — MIT license supplement
+
+Author attribution from Cargo.toml/source: Jackson Coxson
+License declaration: MIT
+Pinned source: https://github.com/jkcoxson/plist_macro/tree/d1d48559ddc8e9bd263f36180bbe1d4f2a3d55e5
+Declaration: https://github.com/jkcoxson/plist_macro/blob/d1d48559ddc8e9bd263f36180bbe1d4f2a3d55e5/Cargo.toml
+README: https://github.com/jkcoxson/plist_macro/blob/d1d48559ddc8e9bd263f36180bbe1d4f2a3d55e5/README.md
+
+The pinned upstream source declares MIT but contains no standalone MIT
+license text or explicit copyright year for its Rust implementation.
+The standard MIT text below is supplied by LilaShift as a license supplement;
+it is not presented as a verbatim upstream LICENSE file. No copyright year
+has been invented. The upstream author attribution is retained above.
+
+The macro source comments identify a port of serde's json! macro. The complete
+serde_json MIT and Apache-2.0 license texts are also included in the generated
+dependency notices (serde_json is part of the locked build dependency graph).
+
+MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

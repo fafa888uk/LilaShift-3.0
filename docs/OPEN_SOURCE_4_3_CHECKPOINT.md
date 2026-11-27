@@ -2,7 +2,53 @@
 
 日期：2026-11-27（Asia/Shanghai）。
 
-## 当前实际状态
+## 第二次中断后的最新状态（2026-11-27）
+
+执行环境短暂恢复后已继续完成集成收尾，随后再次被标记为 `unavailable`。命令执行明确返回“No usable execution environment is available”；运行中的工具执行状态也被重置。以下记录以再次中断后的实际核验为准。
+
+### 已远端保存的源码
+
+- 本次恢复检查点包含 **`Native/DeviceConsole` 全部 195 个文件**，包括桥接层、固定版本 Rust/vendor 源码、Cargo.lock、许可证和构建脚本。远端 Native 子树为 `c5205192b44f3008bc12ab0c3e5c9f08c4f510a9`；递归读取确认 195 个 blob 且未截断。
+- 这些文件仅保存在 `feature/lilashift-4.3-open-source` 的恢复提交中。应用工程仍是原来 4.2.1 的接线，**该提交不是完整 4.3 集成**。
+- 主线仍为 `892947a2b1a1a44f1756b430f82232272bed04e5`，没有合并本轮新功能，没有新建 4.3 PR，也没有 4.3 IPA。
+- 2,072,151 字节的 `GestaltX/Licenses/DeviceConsole-Dependencies.txt` 上传被中断。预期 blob `8f0db8ee8f692e1436c8cc68f223148faa71ca81` 再次读取为 404，**不能算已上传**。
+
+### 已完成但尚未完整上传的工作区改动
+
+工作区仍以 `/workspace/scratch/7fec03e58a3a/LilaShift-3.0` 为准，不能用较旧目录覆盖。下列状态来自中断前完成的文件修改与检查：
+
+1. 独立诊断工具、个性化分组可在未读取 MobileGestalt 时进入；设备修改控件保留文档与忙碌守卫。
+2. Camlo 双图工坊已接入“工具 → 个性化 → 变身壁纸工坊”，导航、About 许可、功能目录和测试目标已注册。目录为 **46 个预设 + 21 个工具页面 = 67 项**；此前漏注册的 ToolGroupMappingTests 也已补入。
+3. AppleFlow 62 键、Camlo 26 键、AppleLens 28 键以及 10 个收尾词条均已合并。完整目录为 **1,989 键 × 10 语言**，包含简体中文和两套繁体中文。中文报告、局域网浏览器页面及报错正文已补齐。
+4. LAN 网页本地化值使用 JSON 编码，并转义小于号、大于号、&、U+2028/U+2029，经 textContent 写入；不使用 innerHTML。HTTP 头、状态原因词与校验没有改动。
+5. 三语 README、双语 CHANGELOG、RELEASE_4_3_0、FEATURE_ORIGIN_MATRIX、OPEN_SOURCE_REFERENCES、两份字节相同 Notices 已更新。来源清单为 **23 项来源、12 份许可文本**，Camlo 八个种子 plist 已与固定上游逐字节核对。
+6. 最后一次源码/Xcode 配置审阅未发现明确的新增编译阻塞；**Linux 代码审阅和语法解析不能证明 Xcode 编译通过**。
+
+### 最新实际检查
+
+- LocalizationTests.py：4/4 通过。
+- ThirdPartyNoticesTests.py：14/14 通过。
+- scripts/check-licenses.py：通过，23 项来源、12 份许可文本、0 警告。
+- LAN 实际嵌入 JavaScript：10 语言及脚本结束标签/恶意文件名输入检查通过。
+- 局部 Swift 语法解析与 git diff --check 通过。
+- 早前 Rust 的 9 项测试、device feature 检查、AppleFlow 实际 JavaScript 回归结果仍见下文。
+- **尚未在最终冻结源码上跑完整 Python 套件；未跑 Xcode 编译、XCTest、最终 SwiftLint 或 IPA 构建；未做真机验收。**
+
+### 下次恢复后的准确起点
+
+1. 先检查上述当前工作区是否仍在，保留所有未提交文件。获取最新远端分支；本地 HEAD 在中断时仍为 `9af1c1f`，需以不丢弃工作区内容的方式与新的恢复提交对齐，禁止 hard reset/clean 覆盖未提交成果。
+2. 远端已保存的 Native 文件可直接复用。磁盘 `remote-upload43-state.json` 的旧 parent/tree 仅是上传过程状态，必须以新的分支 HEAD/tree 为准；按实际 blob hash 判断是否需要重传。
+3. 对最终冻结源码运行完整 Python 一致性测试、许可证检查、本地化再生成一致性和 diff 检查。
+4. 上传剩余文件，远端树必须与本地暂存树一致；创建完整 4.3 提交后，再建立 PR 触发既有免费 CI。
+5. 按下文执行真实编译、XCTest、快照审阅和 IPA 构建。只有成功产生与最终源码提交对应的产物后，才能报告 4.3 可下载。
+
+---
+
+## 以下为第一次中断时的历史快照
+
+其中“尚未接入”“尚未合并翻译”和待办条目只描述第一次中断时的情况；最新状态以上节为准。
+
+## 第一次中断时实际状态
 
 用户要求把别人已发布或更新、紫序尚未接入的相关开源功能加入现有项目，继续优先使用免费 GitHub 构建。此前已授权修改代码并提交。
 
