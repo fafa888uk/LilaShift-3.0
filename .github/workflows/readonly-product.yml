@@ -1,0 +1,36 @@
+name: Build standalone read-only IPA
+on:
+  push:
+    branches: [product/lilashift-5-readonly]
+permissions:
+  contents: write
+jobs:
+  product:
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          set -euo pipefail
+          brew list xcodegen >/dev/null 2>&1 || brew install xcodegen
+          cd ReadOnly
+          xcodegen generate
+          xcodebuild -project LilaReadOnly.xcodeproj -scheme LilaReadOnly -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build CODE_SIGNING_ALLOWED=NO build
+          mkdir Payload
+          cp -R build/Build/Products/Release-iphoneos/LilaReadOnly.app Payload/
+          app=Payload/LilaReadOnly.app
+          codesign -fs - "$app"
+          codesign --verify --strict "$app"
+          test "$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$app/Info.plist")" = 5.0.0
+          zip -qry LilaShift_5.0.0_ReadOnly.ipa Payload
+          unzip -tq LilaShift_5.0.0_ReadOnly.ipa
+          shasum -a 256 LilaShift_5.0.0_ReadOnly.ipa > LilaShift_5.0.0_ReadOnly.ipa.sha256
+          shasum -a 256 -c LilaShift_5.0.0_ReadOnly.ipa.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LilaShift-5.0.0-ReadOnly
+          path: ReadOnly/*.ipa*
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create v5.0.0-readonly ReadOnly/*.ipa* --target "$GITHUB_SHA" --prerelease --title '紫序 5.0.0 只读版' --notes '独立只读工具，支持自签。未完成真机验证。'

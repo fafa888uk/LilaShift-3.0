@@ -1,0 +1,44 @@
+name: LilaReadOnly
+options:
+  deploymentTarget:
+    iOS: "26.0"
+packages:
+  ZIPFoundation:
+    url: https://github.com/weichsel/ZIPFoundation
+    revision: e7048f0569f0ba37df26f8357f560b9d25e9a284
+targets:
+  LilaReadOnly:
+    type: application
+    platform: iOS
+    sources:
+      - App.swift
+      - ../GestaltX/DeviceModelReference.swift
+      - ../GestaltX/IPAAudit.swift
+      - ../GestaltX/IPAAuditView.swift
+      - ../GestaltX/LiveDiagnosticsView.swift
+      - ../GestaltX/MGReferenceView.swift
+      - ../GestaltX/PairingRecordInspectionView.swift
+      - ../GestaltX/ReadOnlyToolsView.swift
+      - ../GestaltX/ThemePreviewView.swift
+      - ../GestaltX/Localization.swift
+      - ../GestaltX/DeviceModels.json
+      - ../GestaltX/MGReference.json
+      - ../GestaltX/PrivacyInfo.xcprivacy
+      - ../GestaltX/Localizable.xcstrings
+      - ../GestaltX/ReadOnlyTools.xcstrings
+      - ../GestaltX/Licenses/DeviceKit-MIT.txt
+      - ../GestaltX/Licenses/ZIPFoundation-MIT.txt
+      - ../GestaltX/Licenses/ThirdPartyNotices.txt
+      - ../GestaltX/Licenses/GestaltX-GPL-3.0.txt
+    dependencies:
+      - package: ZIPFoundation
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.lilashift.readonly
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: 紫序只读版
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        SWIFT_VERSION: "5.0"
+        CURRENT_PROJECT_VERSION: 50000001
+        MARKETING_VERSION: 5.0.0
