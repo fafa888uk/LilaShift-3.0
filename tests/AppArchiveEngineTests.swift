@@ -33,6 +33,51 @@ final class AppArchiveEngineTests: XCTestCase {
         ArchiveSource(rootURL: root, kind: kind, sourceApp: "com.huami.gestultx")
     }
 
+    func testIPAAuditReportsMetadataWithoutClaimingSigningTrust() throws {
+        let archive = """
+        UEsDBBQAAAAIAC8rfF1UhnykwAAAAPoAAAAeAAAAUGF5bG9hZC9FeGFtcGxlLmFwcC9JbmZvLnBsaXN0SyrIySwuMTC4ysj
+        EzMLKxs7ByRUvIOTs5lSal5KT6lqRmlxakpiUk4ok6JmSmleSmZaZWhQvIAUTDM7ILyoJSy0qzszPCy4pysxLjxcQ8M3My8
+        wtzfUPhkrEC0j4BTsn5qYWJYYWJ6anuqQWJxdlFpQApcJdKxJzC0D2COcXpeulQnh6aZkVJaVFqcGGegYhRmZ6BvECssFgG
+        YWC1KLczGKQqQopCGM4hDVso3I7JixbtZ4BDBgZITQDNwMqOA8AUEsDBBQAAAAIAC8rfF3uQOUFCQAAAAcAAAAbAAAAUGF5
+        bG9hZC9FeGFtcGxlLmFwcC9FeGFtcGxlS8usKCktSgUAUEsDBBQAAAAIAC8rfF3uQOUFCQAAAAcAAAAvAAAAUGF5bG9hZC9
+        FeGFtcGxlLmFwcC9GcmFtZXdvcmtzL0V4YW1wbGVMaWIuZHlsaWJLy6woKS1KBQBQSwMEFAAAAAgALyt8Xe5A5QUJAAAABw
+        AAADAAAABQYXlsb2FkL0V4YW1wbGUuYXBwL19Db2RlU2lnbmF0dXJlL0NvZGVSZXNvdXJjZXNLy6woKS1KBQBQSwECFAMUA
+        AAACAAvK3xdVIZ8pMAAAAD6AAAAHgAAAAAAAAAAAAAAgAEAAAAAUGF5bG9hZC9FeGFtcGxlLmFwcC9JbmZvLnBsaXN0UEsB
+        AhQDFAAAAAgALyt8Xe5A5QUJAAAABwAAABsAAAAAAAAAAAAAAIAB/AAAAFBheWxvYWQvRXhhbXBsZS5hcHAvRXhhbXBsZVB
+        LAQIUAxQAAAAIAC8rfF3uQOUFCQAAAAcAAAAvAAAAAAAAAAAAAACAAT4BAABQYXlsb2FkL0V4YW1wbGUuYXBwL0ZyYW1ld2
+        9ya3MvRXhhbXBsZUxpYi5keWxpYlBLAQIUAxQAAAAIAC8rfF3uQOUFCQAAAAcAAAAwAAAAAAAAAAAAAACAAZQBAABQYXlsb
+        2FkL0V4YW1wbGUuYXBwL19Db2RlU2lnbmF0dXJlL0NvZGVSZXNvdXJjZXNQSwUGAAAAAAQABABQAQAA6wEAAAAA
+        """
+        let data = try XCTUnwrap(Data(base64Encoded: archive, options: .ignoreUnknownCharacters))
+        let file = try tempDirectory().appendingPathComponent("Fixture.ipa")
+        try data.write(to: file)
+        let report = try IPAAudit.inspect(file)
+        XCTAssertEqual(report.bundleID, "org.example.fixture")
+        XCTAssertEqual(report.minimumOS, "26.0")
+        XCTAssertTrue(report.executablePresent)
+        XCTAssertTrue(report.signatureResourcesPresent)
+        XCTAssertFalse(report.provisioningPresent)
+        XCTAssertEqual(report.codePaths, ["Payload/Example.app/Frameworks/ExampleLib.dylib"])
+        XCTAssertEqual(report.usageDescriptionKeys, ["NSCameraUsageDescription"])
+    }
+
+    func testIPAAuditRejectsNonArchive() throws {
+        let file = try tempDirectory().appendingPathComponent("Invalid.ipa")
+        try Data("not an archive".utf8).write(to: file)
+        XCTAssertThrowsError(try IPAAudit.inspect(file))
+    }
+
+    func testPairingInspectionDoesNotAcceptInvalidCertificates() throws {
+        let file = try tempDirectory().appendingPathComponent("Pairing.plist")
+        let fixture: [String: Any] = ["HostID": "fixture", "HostCertificate": Data([0, 1, 2])]
+        let data = try PropertyListSerialization.data(fromPropertyList: fixture, format: .binary, options: 0)
+        try data.write(to: file)
+        let report = try PairingRecordInspection.inspect(file)
+        XCTAssertEqual(report.missingIdentifiers, ["SystemBUID"])
+        XCTAssertEqual(report.unreadableCertificates, ["DeviceCertificate", "HostCertificate", "RootCertificate"])
+        XCTAssertEqual(report.missingKeys, ["HostPrivateKey", "RootPrivateKey"])
+    }
+
     // MARK: - Create and verify
 
     func testCreateArchiveRoundTrip() async throws {

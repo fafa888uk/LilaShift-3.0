@@ -1803,6 +1803,16 @@ struct ToolGroupView: View {
                         .buttonStyle(.plain)
                         .disabled(model.isBusy)
                         Divider()
+                        NavigationLink { ThemePreviewView() } label: {
+                            GlassCategoryTile(
+                                title: L("Theme Preview"),
+                                detail: L("Preview Wallet cards and Lock Screen keypads."),
+                                symbol: "swatchpalette",
+                                tint: .gestaltAccent
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        Divider()
                         NavigationLink { WallpaperLibraryView(model: wallpaperLibrary) } label: {
                             GlassCategoryTile(
                                 title: L("Wallpaper Library"),

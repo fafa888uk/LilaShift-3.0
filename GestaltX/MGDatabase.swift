@@ -5,7 +5,7 @@ import Foundation
 ///
 /// Base table: MGKeys (PoomSmart, MIT, master `db9cf77f`, iOS 27.2
 /// baseline) — the used-keys subset only (77 records in
-/// `MGDatabaseSeed`); the 928-key full table never enters the app.
+/// `MGDatabaseSeed`). The separate read-only reference does not feed this editor database.
 /// Every record carries the 14 task-book fields (§3.2) plus the two
 /// Stage 1 additions (`readableViaMGCopyAnswer`, `slot`).
 /// Verification is evidence-gated: only the two AdvAI slot keys

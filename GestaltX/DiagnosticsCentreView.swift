@@ -42,6 +42,11 @@ struct DiagnosticsCentreView: View {
 
     var body: some View {
         List {
+            NavigationLink {
+                ReadOnlyToolsView()
+            } label: {
+                Label(L("Read-Only Tools"), systemImage: "magnifyingglass")
+            }
             if let report {
                 Section {
                     VStack(alignment: .leading, spacing: 4) {

@@ -8,10 +8,10 @@
 
 | 渠道 | 版本 | 状态 |
 | --- | --- | --- |
-| 当前源码 | **4.2.1** · 构建 `42000002` | [变更与验证记录](docs/RELEASE_4_2_1.md) · 尚未公开发布 |
+| 当前开发分支 | **5.0.0** · 构建 `50000001` | [开发记录](docs/RELEASE_5_0_0.md) · 尚未发布 |
 | 当前公开下载版 | **4.2.0** · 构建 `42000001` | 已发布 |
 
-CI 通过不等于真机验收。4.2.1 的真机安装、设备相关功能与恢复仍待验证。
+5.0.0 开发分支尚无 IPA 或真机验证。下方保留 4.2.1 的维护记录。
 
 [兼容性](docs/COMPATIBILITY_ZH-CN.md) · [使用指南](docs/USER_GUIDE_ZH-CN.md) · [备份与恢复](docs/BACKUP_RESTORE_ZH-CN.md) · [问题反馈](https://github.com/fafa888uk/LilaShift-3.0/issues/new/choose) · [GPLv3](LICENSE)
 

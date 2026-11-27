@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import Foundation
-func L(_ key: String) -> String { NSLocalizedString(key, comment: "") }
+func L(_ key: String) -> String {
+    let missing = "__LILASHIFT_MISSING_LOCALIZATION__"
+    let base = NSLocalizedString(key, value: missing, comment: "")
+    return base == missing ? NSLocalizedString(key, tableName: "ReadOnlyTools", comment: "") : base
+}
 
 enum GestaltBrand {
     static let developer = "huamidev"

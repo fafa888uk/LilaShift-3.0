@@ -2,6 +2,12 @@
 
 English | [简体中文](CHANGELOG_ZH-CN.md)
 
+## [5.0.0] - Unreleased source branch (2026-11-28)
+
+Build `50000001`. Added a searchable read-only tools directory, IPA metadata inspection, pairing record structure checks, live process and interface charts, on-device language-model availability, a searchable 928-key MobileGestalt reference and in-app theme and wallpaper previews. Reused 168 iPhone/iPad model identifiers and names from DeviceKit. Added English and Simplified Chinese UI strings and restored the README version badge required by the repository’s license check.
+
+See the [5.0.0 development record](docs/RELEASE_5_0_0.md) for scope and validation status.
+
 ## [4.2.1] - Unreleased (prepared 2026-11-27)
 
 Maintenance update from the 4.2.0 source lineage. In-app version `4.2.1`, build `42000002`; expected IPA file `LilaShift_4.2.1.ipa`. The exact source, CI and artifact evidence is tracked in [the 4.2.1 record](docs/RELEASE_4_2_1.md). This entry does not assert that a release has been published or a real device has been tested.

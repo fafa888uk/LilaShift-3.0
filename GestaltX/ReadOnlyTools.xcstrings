@@ -1,0 +1,1430 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "App CPU": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App CPU"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "紫序 CPU 占用"
+          }
+        }
+      }
+    },
+    "App Executable": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App Executable"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "应用可执行文件"
+          }
+        }
+      }
+    },
+    "App Resident Memory": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App Resident Memory"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "紫序常驻内存"
+          }
+        }
+      }
+    },
+    "Bundle Identifier": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bundle Identifier"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "包标识符"
+          }
+        }
+      }
+    },
+    "Camera & Media": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera & Media"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "相机与媒体"
+          }
+        }
+      }
+    },
+    "Capacity": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capacity"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "总容量"
+          }
+        }
+      }
+    },
+    "Cellular": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cellular"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "蜂窝网络"
+          }
+        }
+      }
+    },
+    "Charts sample LilaShift while this screen is active. CPU is expressed as a percentage of one logical core.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Charts sample LilaShift while this screen is active. CPU is expressed as a percentage of one logical core."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "页面处于前台时采样紫序的性能数据。CPU 占用率以单个逻辑核心为基准。"
+          }
+        }
+      }
+    },
+    "Checks a file locally without saving or displaying its private keys. A structural check cannot confirm whether an iPhone still trusts the pairing.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Checks a file locally without saving or displaying its private keys. A structural check cannot confirm whether an iPhone still trusts the pairing."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在本机检查文件，私钥不会保存或显示。文件结构完整并不能确认 iPhone 是否仍然信任该配对。"
+          }
+        }
+      }
+    },
+    "Checks whether the system language model is available to apps on this device.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Checks whether the system language model is available to apps on this device."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "检查本机应用当前能否使用系统端侧语言模型。"
+          }
+        }
+      }
+    },
+    "Choose IPA": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose IPA"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择 IPA"
+          }
+        }
+      }
+    },
+    "Choose Pairing Record": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose Pairing Record"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择配对文件"
+          }
+        }
+      }
+    },
+    "Choose a pairing record smaller than 256 KB.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose a pairing record smaller than 256 KB."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请选择小于 256 KB 的配对文件。"
+          }
+        }
+      }
+    },
+    "Connectivity": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connectivity"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "网络与连接"
+          }
+        }
+      }
+    },
+    "Device Model": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Device Model"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设备型号"
+          }
+        }
+      }
+    },
+    "Display & Input": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Display & Input"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "显示与输入"
+          }
+        }
+      }
+    },
+    "Drag the image to preview the layered motion inside LilaShift.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drag the image to preview the layered motion inside LilaShift."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "拖动图片，在紫序内预览图像与时钟的分层视差效果。"
+          }
+        }
+      }
+    },
+    "Embedded Libraries": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Embedded Libraries"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "内嵌动态库"
+          }
+        }
+      }
+    },
+    "Embedded Provisioning Profile": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Embedded Provisioning Profile"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "内嵌描述文件"
+          }
+        }
+      }
+    },
+    "Ethernet": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ethernet"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "以太网"
+          }
+        }
+      }
+    },
+    "Expensive Path": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expensive Path"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "按量计费路径"
+          }
+        }
+      }
+    },
+    "First Observed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "First Observed"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最早观察到的版本"
+          }
+        }
+      }
+    },
+    "Free Space": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Free Space"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "可用空间"
+          }
+        }
+      }
+    },
+    "Hardware & Power": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hardware & Power"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "硬件与电源"
+          }
+        }
+      }
+    },
+    "IPA Archive Inspection": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "IPA Archive Inspection"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "IPA 结构检查"
+          }
+        }
+      }
+    },
+    "Identity & Security": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Identity & Security"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "标识与安全"
+          }
+        }
+      }
+    },
+    "Inspects the selected IPA locally. Signature files and permission descriptions are metadata only. This does not verify trust, entitlements, or whether the app is safe to install.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inspects the selected IPA locally. Signature files and permission descriptions are metadata only. This does not verify trust, entitlements, or whether the app is safe to install."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在本机检查所选 IPA。签名文件和权限用途说明仅作为元数据展示。结果不代表签名可信、权限已授权或安装安全。"
+          }
+        }
+      }
+    },
+    "Interface": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Interface"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "网络接口"
+          }
+        }
+      }
+    },
+    "Interface Download Rate": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Interface Download Rate"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "接口接收速率"
+          }
+        }
+      }
+    },
+    "Interface Traffic": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Interface Traffic"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "网络接口流量"
+          }
+        }
+      }
+    },
+    "Interface Upload Rate": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Interface Upload Rate"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "接口发送速率"
+          }
+        }
+      }
+    },
+    "Jade": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jade"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "青绿"
+          }
+        }
+      }
+    },
+    "Key Hash": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Key Hash"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "键名哈希"
+          }
+        }
+      }
+    },
+    "Lavender": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lavender"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "浅紫"
+          }
+        }
+      }
+    },
+    "Live Diagnostics": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Live Diagnostics"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "实时诊断"
+          }
+        }
+      }
+    },
+    "Live Performance": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Live Performance"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "实时性能"
+          }
+        }
+      }
+    },
+    "Local Storage": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Local Storage"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本机存储"
+          }
+        }
+      }
+    },
+    "Lock Screen Keypad Preview": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock Screen Keypad Preview"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "锁屏数字键盘预览"
+          }
+        }
+      }
+    },
+    "Logical CPU Cores": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logical CPU Cores"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "逻辑核心数"
+          }
+        }
+      }
+    },
+    "Loopback": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loopback"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本机环回"
+          }
+        }
+      }
+    },
+    "Low Data Mode": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Low Data Mode"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "低数据模式"
+          }
+        }
+      }
+    },
+    "Minimum iOS": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Minimum iOS"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最低 iOS 版本"
+          }
+        }
+      }
+    },
+    "Missing Identifiers": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Missing Identifiers"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "缺失的标识字段"
+          }
+        }
+      }
+    },
+    "Missing Private Key Fields": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Missing Private Key Fields"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "缺失的私钥字段"
+          }
+        }
+      }
+    },
+    "MobileGestalt Reference": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MobileGestalt Reference"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MobileGestalt 键名参考库"
+          }
+        }
+      }
+    },
+    "MobileGestalt reference data is unavailable.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MobileGestalt reference data is unavailable."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法读取 MobileGestalt 参考数据。"
+          }
+        }
+      }
+    },
+    "Model Identifier": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Model Identifier"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "型号标识符"
+          }
+        }
+      }
+    },
+    "Navy": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Navy"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "深蓝"
+          }
+        }
+      }
+    },
+    "Network Path": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Network Path"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本机网络路径"
+          }
+        }
+      }
+    },
+    "None Found": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "None Found"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未发现"
+          }
+        }
+      }
+    },
+    "On-Device Model": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On-Device Model"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "端侧语言模型"
+          }
+        }
+      }
+    },
+    "Other Interface": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Other Interface"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "其他接口"
+          }
+        }
+      }
+    },
+    "Other Keys": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Other Keys"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "其他键"
+          }
+        }
+      }
+    },
+    "Package Metadata": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Package Metadata"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安装包信息"
+          }
+        }
+      }
+    },
+    "Pairing Record Checks": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pairing Record Checks"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "配对文件检查结果"
+          }
+        }
+      }
+    },
+    "Pairing Record Inspection": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pairing Record Inspection"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "配对文件检查"
+          }
+        }
+      }
+    },
+    "Path Status": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Path Status"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "路径状态"
+          }
+        }
+      }
+    },
+    "Permission Descriptions": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Permission Descriptions"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "权限用途说明"
+          }
+        }
+      }
+    },
+    "Physical Memory": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Physical Memory"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "物理内存"
+          }
+        }
+      }
+    },
+    "Present": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Present"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "存在"
+          }
+        }
+      }
+    },
+    "Preview Palette": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preview Palette"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "预览配色"
+          }
+        }
+      }
+    },
+    "Preview Swipe Transition": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preview Swipe Transition"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "播放上滑过渡预览"
+          }
+        }
+      }
+    },
+    "Preview Wallet cards and Lock Screen keypads.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preview Wallet cards and Lock Screen keypads."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "预览钱包卡面和锁屏数字键盘。"
+          }
+        }
+      }
+    },
+    "Rates come from the device’s Wi-Fi, Ethernet and cellular interface counters. They may include traffic from other apps.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rates come from the device’s Wi-Fi, Ethernet and cellular interface counters. They may include traffic from other apps."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "速率来自设备的无线局域网、以太网和蜂窝接口计数器，可能包含其他应用的流量。"
+          }
+        }
+      }
+    },
+    "Read-Only Tools": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Read-Only Tools"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "只读工具"
+          }
+        }
+      }
+    },
+    "Reference": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reference"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "参考资料"
+          }
+        }
+      }
+    },
+    "Removed In": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Removed In"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "移除版本"
+          }
+        }
+      }
+    },
+    "Reports the local network path without sending traffic to a server.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reports the local network path without sending traffic to a server."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "查看本机网络路径，不向服务器发送请求。"
+          }
+        }
+      }
+    },
+    "Requires Connection": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Requires Connection"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要建立连接"
+          }
+        }
+      }
+    },
+    "Reset Preview": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset Preview"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重置预览"
+          }
+        }
+      }
+    },
+    "Returned In": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Returned In"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重新出现的版本"
+          }
+        }
+      }
+    },
+    "Search names, hashes, or categories": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search names, hashes, or categories"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "搜索键名、哈希或分类"
+          }
+        }
+      }
+    },
+    "Search tools": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search tools"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "搜索工具"
+          }
+        }
+      }
+    },
+    "Signature Resources": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signature Resources"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "签名资源文件"
+          }
+        }
+      }
+    },
+    "Simulator Only": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Simulator Only"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "仅模拟器"
+          }
+        }
+      }
+    },
+    "System & Localization": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System & Localization"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "系统与地区"
+          }
+        }
+      }
+    },
+    "The IPA must contain one app with a readable Info.plist.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The IPA must contain one app with a readable Info.plist."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "IPA 必须包含一个具有可读 Info.plist 的主应用。"
+          }
+        }
+      }
+    },
+    "Theme Preview": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Theme Preview"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "主题预览"
+          }
+        }
+      }
+    },
+    "These previews appear inside LilaShift. They do not change Wallet cards or the iOS Lock Screen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "These previews appear inside LilaShift. They do not change Wallet cards or the iOS Lock Screen."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "预览仅在紫序内显示，不会改变 iOS 钱包卡面或系统锁屏。"
+          }
+        }
+      }
+    },
+    "This file does not contain a readable pairing record.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This file does not contain a readable pairing record."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法从此文件读取配对记录。"
+          }
+        }
+      }
+    },
+    "Time": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "时间"
+          }
+        }
+      }
+    },
+    "Unreadable Certificates": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unreadable Certificates"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法读取的证书"
+          }
+        }
+      }
+    },
+    "Version": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "版本"
+          }
+        }
+      }
+    },
+    "Version history comes from MGKeys. Categories are approximate. Entries describe known keys and do not confirm support on your device.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version history comes from MGKeys. Categories are approximate. Entries describe known keys and do not confirm support on your device."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "版本记录来自 MGKeys，分类按键名推断。条目仅供查阅，无法确认本机是否支持。"
+          }
+        }
+      }
+    },
+    "Waiting for a sample": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting for a sample"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "等待采样"
+          }
+        }
+      }
+    },
+    "Wallet Card Preview": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wallet Card Preview"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "钱包卡面预览"
+          }
+        }
+      }
+    },
+    "Wallpaper Parallax Preview": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wallpaper Parallax Preview"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "壁纸视差预览"
+          }
+        }
+      }
+    },
+    "Wi-Fi": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wi-Fi"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无线局域网"
+          }
+        }
+      }
+    },
+    "iOS Version": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iOS Version"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iOS 版本"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

@@ -1,5 +1,7 @@
 # LilaShift 4.x — 开源来源清单（Open Source References）
 
+> **5.0.0 来源更新**见 [上游核查表](RELEASE_5_0_0.md#上游核查)。DeviceKit 5.10.0 的机型数据和 MGKeys 的完整只读键名表已写入源码。
+
 > 本次来源与依赖复核：2026-11-27；历史来源记录始于 2026-11-14。许可证以各仓库 `LICENSE` 文件与 GitHub 标注为准；
 > 源码使用关系以本仓库实际源码、Git 历史与 `THIRD_PARTY_NOTICES.md` 为准。
 > 本文件与 `THIRD_PARTY_NOTICES.md`（随 App 分发）同步维护；两者不一致时以
@@ -211,7 +213,7 @@
 | LilaShift 对应功能 | MobileGestalt 公开键映射对照（预设目录与能力表的键名核对） |
 | 对应源码文件 | `GestaltX/Capabilities.swift`、`GestaltX/PresetCatalog.swift` 的键名核对；`GestaltX/MGDatabaseSeed.swift` 中 77 个已用键的 readableName / introduced / reintroduced 元数据 |
 | 使用关系 | **研究参考 + 复用数据**；名称与版本范围逐项转录，应用实现与策略自行开发；上游 Python 脚本不进入 App |
-| 主要修改 | 仅纳入 77 个已用键；不打包上游完整表；没有上游探针证据的值仍明确标为未验证 |
+| 主要修改 | 编辑器保留 77 个已用键；5.0.0 分支另打包 928 项只读键名参考数据，与编辑器隔离 |
 | 是否打包进入 IPA | 是（上述元数据子集） |
 | 版权与许可证义务 | 保留 PoomSmart 版权和 MIT 全文；已纳入 `THIRD_PARTY_NOTICES.md` 及随包 `ThirdPartyNotices.txt`，关于页可直接查看 |
 | 仍需人工确认 | 否 |
@@ -319,6 +321,11 @@
 | 是否打包进入 IPA | 否 |
 | 版权与许可证义务 | GPL-3.0；仅作研究参考且无代码再分发，无分发义务；署名与来源已记入 `THIRD_PARTY_NOTICES.md` §10 与 About 页 |
 | 仍需人工确认 | 否（许可证已核实；版本/commit 补记属 Stage 1 研究任务） |
+
+## 18. DeviceKit — 复用机型数据
+
+DeviceKit 5.10.0（MIT，提交 `fab82bd988405367c915143e293479f481e93ba0`）提供 iPhone 和 iPad 的型号标识符与名称。该分支由 `scripts/generate-device-models.py` 将它们生成到 `GestaltX/DeviceModels.json`。随应用分发的许可文件为 `GestaltX/Licenses/DeviceKit-MIT.txt`，原作者为 Dennis Weissmann。来源 [DeviceKit](https://github.com/devicekit/DeviceKit/tree/5.10.0)。
+
 
 ---
 

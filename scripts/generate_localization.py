@@ -1662,13 +1662,33 @@ for line in TRANSLATIONS.strip().splitlines():
         continue
     key, value = line.split('\t', 1)
     entries[key] = {'localizations': {lang: {'stringUnit': {'state': 'translated', 'value': text}} for lang, text in [('en', key), ('zh-Hans', value)]}}
+def write_catalog(filename, strings):
+    catalog = {'sourceLanguage': 'en', 'strings': strings, 'version': '1.0'}
+    (ROOT / 'GestaltX' / filename).write_text(json.dumps(catalog, ensure_ascii=False, indent=2) + '\n')
+
+
 for translation_file in sorted((ROOT / 'localization').glob('*.json')):
     locale = translation_file.stem
+    if locale == 'zh-Hans':
+        continue
     translations = json.loads(translation_file.read_text())
     missing = set(entries) - set(translations)
     if missing:
         raise ValueError(f'{locale}: missing {len(missing)} translations')
     for key in entries:
         entries[key]['localizations'][locale] = {'stringUnit': {'state': 'translated', 'value': translations[key]}}
-(ROOT / 'GestaltX/Localizable.xcstrings').write_text(json.dumps({'sourceLanguage': 'en', 'strings': entries, 'version': '1.0'}, ensure_ascii=False, indent=2) + '\n')
-print(f'Generated {len(entries)} strings in {len(next(iter(entries.values()))["localizations"])} locales.')
+write_catalog('Localizable.xcstrings', entries)
+
+simplified = json.loads((ROOT / 'localization/zh-Hans.json').read_text())
+overlap = set(simplified).intersection(entries)
+if overlap:
+    raise ValueError(f'Read-only tools duplicate base localization keys: {sorted(overlap)}')
+tools_entries = {
+    key: {'localizations': {
+        locale: {'stringUnit': {'state': 'translated', 'value': translation}}
+        for locale, translation in [('en', key), ('zh-Hans', value)]
+    }}
+    for key, value in simplified.items()
+}
+write_catalog('ReadOnlyTools.xcstrings', tools_entries)
+print(f'Generated {len(entries)} base strings and {len(tools_entries)} read-only tools strings.')

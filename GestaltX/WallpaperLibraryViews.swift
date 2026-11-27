@@ -536,6 +536,13 @@ struct WallpaperEntryDetailView: View {
         List {
             Section {
                 preview(entry)
+                if let data = model.previews[entry.id], let image = UIImage(data: data) {
+                    NavigationLink {
+                        WallpaperParallaxPreview(image: image)
+                    } label: {
+                        Label(L("Wallpaper Parallax Preview"), systemImage: "square.on.square")
+                    }
+                }
                 Text(String(format: L("Image: %@ · %d × %d · %d KB"),
                             entry.format.displayName, entry.width, entry.height, entry.byteCount / 1024))
                     .font(.caption).foregroundStyle(.secondary)

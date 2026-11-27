@@ -70,14 +70,27 @@ ALL_LOCALE_SCRIPTS = {
 }
 
 
+SIMPLIFIED_ONLY_KEYS = set(json.loads((ROOT / "localization/zh-Hans.json").read_text()))
+
+
+def load_catalog():
+    result = {}
+    for name in ("Localizable", "ReadOnlyTools"):
+        catalog = json.loads((ROOT / f"GestaltX/{name}.xcstrings").read_text())
+        if catalog["sourceLanguage"] != "en" or set(result).intersection(catalog["strings"]):
+            raise ValueError(f"Invalid localization catalog: {name}")
+        result.update(catalog["strings"])
+    return result
+
+
 class LocalizationTests(unittest.TestCase):
     def test_all_locales_have_complete_valid_translations(self):
-        catalog = json.loads((ROOT / "GestaltX/Localizable.xcstrings").read_text())
-        self.assertEqual(catalog["sourceLanguage"], "en")
+        catalog = load_catalog()
         placeholders = re.compile(r"%(?:\d+\$)?(?:ll|l)?[diufsg@]")
-        for key, entry in catalog["strings"].items():
+        for key, entry in catalog.items():
             localizations = entry["localizations"]
-            self.assertEqual(set(localizations), set(ALL_LOCALE_SCRIPTS), key)
+            expected = {"en", "zh-Hans"} if key in SIMPLIFIED_ONLY_KEYS else set(ALL_LOCALE_SCRIPTS)
+            self.assertEqual(set(localizations), expected, key)
             for locale, localization in localizations.items():
                 with self.subTest(locale=locale, key=key):
                     unit = localization["stringUnit"]
@@ -95,7 +108,7 @@ class LocalizationTests(unittest.TestCase):
                         self.assertNotEqual(value, key, "Untranslated prose")
 
     def test_directly_used_localization_keys_exist(self):
-        catalog = json.loads((ROOT / "GestaltX/Localizable.xcstrings").read_text())["strings"]
+        catalog = load_catalog()
         pattern = re.compile(
             r'\b(?:(?:L|text|GestaltFailure|CustomizationFailure)\(|SharedPlistError\(key:\s*)'
             r'"([^"\\]*(?:\\.[^"\\]*)*)"'
@@ -121,10 +134,11 @@ class LocalizationTests(unittest.TestCase):
                     self.assertLessEqual(scripts, {"LATIN", script})
 
     def test_catalog_matches_translation_sources(self):
-        catalog = json.loads((ROOT / "GestaltX/Localizable.xcstrings").read_text())["strings"]
+        catalog = load_catalog()
         for path in sorted((ROOT / "localization").glob("*.json")):
             translations = json.loads(path.read_text())
-            self.assertEqual(set(translations), set(catalog), path.stem)
+            expected = SIMPLIFIED_ONLY_KEYS if path.stem == "zh-Hans" else set(catalog) - SIMPLIFIED_ONLY_KEYS
+            self.assertEqual(set(translations), expected, path.stem)
             for key, value in translations.items():
                 with self.subTest(locale=path.stem, key=key):
                     unit = catalog[key]["localizations"][path.stem]["stringUnit"]

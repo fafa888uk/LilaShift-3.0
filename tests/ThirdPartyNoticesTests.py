@@ -11,7 +11,7 @@ REFERENCES = ROOT / "docs" / "OPEN_SOURCE_REFERENCES.md"
 MATRIX = ROOT / "docs" / "FEATURE_ORIGIN_MATRIX.md"
 GENERATE_LOCALIZATION = ROOT / "scripts" / "generate_localization.py"
 
-# The 17 projects the audit covers (see docs/OPEN_SOURCE_REFERENCES.md).
+# The 18 projects the audit covers (see docs/OPEN_SOURCE_REFERENCES.md).
 AUDIT_PROJECTS = (
     "GestaltX",
     "worse_query",
@@ -30,6 +30,7 @@ AUDIT_PROJECTS = (
     "WQFiles",
     "SnapshotTesting",
     "SwiftLint",
+    "DeviceKit",
 )
 
 # Files that must not contain the old patch-based distribution statement.

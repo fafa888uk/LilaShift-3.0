@@ -8,16 +8,16 @@
 
 | Channel | Version | Status |
 | --- | --- | --- |
-| Current source | **4.2.1** · build `42000002` | [Changes and verification](docs/RELEASE_4_2_1.md) · not a public release |
+| Current source branch | **5.0.0** · build `50000001` | [Development record](docs/RELEASE_5_0_0.md) · unreleased |
 | Current public download | **4.2.0** · build `42000001` | Published version |
 
-CI passing does not imply real-device validation. Installation, device-specific features, and restore are not yet verified on devices for 4.2.1.
+5.0.0 source has no IPA or real-device validation. The 4.2.1 maintenance record is retained below.
 
 [Compatibility](docs/COMPATIBILITY_ZH-CN.md) · [User guide](docs/USER_GUIDE_ZH-CN.md) · [Backup and restore](docs/BACKUP_RESTORE_ZH-CN.md) · [Report an issue](https://github.com/fafa888uk/LilaShift-3.0/issues/new/choose) · [GPLv3](LICENSE)
 
 Based on GestaltX. The repository name `LilaShift-3.0` is retained and is not the app version.
 
-[![Build](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml) [![Swift Tests](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml) [![Licenses](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml) [![SwiftLint](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/swiftlint.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/swiftlint.yml)
+[![Version 5.0.0](https://img.shields.io/badge/version-5.0.0-lavender)](docs/RELEASE_5_0_0.md) [![Build](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml) [![Swift Tests](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml) [![Licenses](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml) [![SwiftLint](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/swiftlint.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/swiftlint.yml)
 
 ---
 

@@ -200,11 +200,16 @@ projects below has been ported.
   (GestaltX/Capabilities.swift). The MGDatabase base table
   (GestaltX/MGDatabaseSeed.swift, iOS 27.2 baseline, master
   db9cf77f) transcribes the readable names and iOS version ranges
-  from mapping-gestalt.h and keys_versions.py; 77 used keys are seeded,
-  and the full upstream table is not bundled. The reviewed master
+  from mapping-gestalt.h and keys_versions.py; 77 keys are seeded for the
+  editor, and all 928 named entries are bundled as a separate read-only
+  reference (GestaltX/MGReference.json). The reviewed master
   db9cf77fa9d5330070b3dcb73fc1fd6a271fc421 remains current as of
   2026-11-27. The MIT copyright and license for this reused metadata
   are reproduced in full after the research-reference list.
+- DeviceKit 5.10.0 (MIT): https://github.com/devicekit/DeviceKit
+  DeviceModels.json reuses iPhone and iPad model identifiers and marketing
+  names from Device.generated.swift at fab82bd988405367c915143e293479f481e93ba0.
+  Copyright (c) 2015 Dennis Weissmann. License: Licenses/DeviceKit-MIT.txt.
 - leminlimez/Nugget (AGPL-3.0): https://github.com/leminlimez/Nugget
   Key mappings cross-checked; no code ported.
 - rooootdev/mond (AGPL-3.0): https://github.com/rooootdev/mond
