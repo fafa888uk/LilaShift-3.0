@@ -33,3 +33,9 @@
 "status.rejected" = "Target was not confirmed; the original value was read back.";
 "status.unverified" = "The expected value could not be verified; the recovery record is still available.";
 "status.conflict" = "Readback diverged; the app did not overwrite the unexpected value.";
+"tools.heading" = "Diagnostics and tools";
+"network.title" = "Internet egress check";
+"network.check" = "Check using RIPEstat";
+"network.result" = "Observed public address";
+"network.scope" = "Only sends a request when you tap Check. RIPEstat sees your connection's public IP. The app displays it for this session; it does not upload your diagnostics or photos.";
+"network.failed" = "RIPEstat did not return a verified-format public address. No result was recorded.";

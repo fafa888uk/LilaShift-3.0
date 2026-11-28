@@ -5,22 +5,26 @@ import Foundation
 
 @main
 struct LilaShiftApp: App {
-    @AppStorage("appearance") private var appearance = "system"
+    @AppStorage(W11AppearanceMode.storageKey) private var appearance = W11AppearanceMode.defaultMode.rawValue
+    @State private var counter = W8NetworkCounter()
 
     var body: some Scene {
         WindowGroup {
-            SettingsScreen(appearance: $appearance)
-                .preferredColorScheme(
-                    appearance == "dark" ? .dark : appearance == "light" ? .light : nil
-                )
-                .tint(Color(red: 0.49, green: 0.30, blue: 0.78))
+            SettingsScreen()
+                .environment(\.w8NetworkCounter, counter)
+                .preferredColorScheme(W11AppearanceMode.stored(appearance).preferredScheme)
+                .tint(Color(uiColor: UIColor { traits in
+                    if traits.userInterfaceStyle == .dark {
+                        return UIColor(red: 0.76, green: 0.66, blue: 0.99, alpha: 1)
+                    }
+                    return UIColor(red: 0.49, green: 0.30, blue: 0.78, alpha: 1)
+                }))
         }
     }
 }
 
 @MainActor
 private struct SettingsScreen: View {
-    @Binding var appearance: String
     @Environment(\.scenePhase) private var scenePhase
     @State private var transaction = VerifiedChange<Double>()
     @State private var selectedScreen: UIScreen?
@@ -98,12 +102,23 @@ private struct SettingsScreen: View {
                     LabeledContent("device.cpu", value: ProcessInfo.processInfo.processorCount.formatted())
                 }
 
-                Section("appearance.heading") {
-                    Picker("appearance.mode", selection: $appearance) {
-                        Text("appearance.system").tag("system")
-                        Text("appearance.light").tag("light")
-                        Text("appearance.dark").tag("dark")
+                Section("tools.heading") {
+                    NavigationLink { W7IntelligenceReportView() } label: {
+                        Label(W7IntelligenceReportView.title, systemImage: "doc.text.magnifyingglass")
                     }
+                    NavigationLink { W8ResourceMonitorView() } label: {
+                        Label(W8ResourceMonitorView.title, systemImage: "waveform.path")
+                    }
+                    NavigationLink { NetworkCheckView() } label: {
+                        Label("network.title", systemImage: "network")
+                    }
+                    NavigationLink { W9WallpaperStudioView() } label: {
+                        Label(W9WallpaperStudioView.title, systemImage: "photo.stack")
+                    }
+                }
+
+                Section("appearance.heading") {
+                    W11AppearanceSettingsRow()
                 }
 
                 Section("limits.heading") {

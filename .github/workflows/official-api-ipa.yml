@@ -1,0 +1,46 @@
+name: LilaShift 5.0 Official API IPA
+on:
+  push:
+    branches: [codex/lilashift-5.0-ipa-delivery]
+permissions:
+  contents: read
+concurrency:
+  group: official-api-ipa-delivery
+  cancel-in-progress: false
+jobs:
+  build:
+    if: github.event.repository.private == false
+    runs-on: macos-26
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check project, privacy manifest, and language assets
+        run: |
+          set -eu
+          xcodebuild -version
+          bash -n scripts/package.sh
+          plutil -lint LilaShift.xcodeproj/project.pbxproj App/PrivacyInfo.xcprivacy App/*.lproj/Localizable.strings
+          for f in App/*.xcstrings; do python3 -m json.tool "$f" >/dev/null; done
+      - name: Run Swift unit tests
+        run: swift test
+      - name: Build arm64 iOS IPA and verify integrity
+        run: bash scripts/package.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LilaShift-5.0.0-Official-API
+          path: |
+            artifacts/LilaShift_5.0.0_Official_API.ipa
+            artifacts/LilaShift_5.0.0_Official_API.ipa.sha256
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30
+      - name: Record package provenance
+        run: |
+          {
+            printf '## LilaShift 5.0.0 · Build 50000001\n\n'
+            printf 'Official API preview; no physical-device test or distribution signature.\n\n'
+            printf 'Source commit: `%s`\n\n' "$GITHUB_SHA"
+            printf 'SHA256: `%s`\n' "$(awk '{print $1}' artifacts/*.sha256)"
+          } >> "$GITHUB_STEP_SUMMARY"

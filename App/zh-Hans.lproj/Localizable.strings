@@ -33,3 +33,9 @@
 "status.rejected" = "未确认目标值；读回值仍是原值。";
 "status.unverified" = "未能确认预期值，仍保留恢复记录。";
 "status.conflict" = "读回值不一致；应用没有覆盖意外值。";
+"tools.heading" = "诊断与工具";
+"network.title" = "网络出口检查";
+"network.check" = "使用 RIPEstat 检查";
+"network.result" = "服务观测到的公网地址";
+"network.scope" = "只有点检查才联网。RIPEstat 会看到此次请求的公网 IP；地址仅在本次会话显示。应用不会上传诊断报告或图片。";
+"network.failed" = "RIPEstat 未返回格式有效的公网地址，没有记录结果。";
