@@ -1,0 +1,71 @@
+name: LilaShift 5.0.0 official build
+on:
+  push:
+    branches: [codex/lilashift-5.0-official]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: lilashift-v5-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  build:
+    if: github.ref == 'refs/heads/codex/lilashift-5.0-official' && github.event.repository.visibility == 'public'
+    runs-on: macos-15
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check and test
+        run: |
+          set -euo pipefail
+          bash -n scripts/package.sh
+          plutil -lint LilaShift.xcodeproj/project.pbxproj App/*.lproj/Localizable.strings
+          swift test
+      - name: Build and verify self-signable IPA
+        run: bash scripts/package.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LilaShift-5.0.0-unsigned
+          path: |
+            artifacts/LilaShift_5.0.0.ipa
+            artifacts/LilaShift_5.0.0.ipa.sha256
+          if-no-files-found: error
+  publish:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: LilaShift-5.0.0-unsigned
+          path: artifacts
+      - name: Verify package and publish prerelease
+        working-directory: artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          sha256sum -c LilaShift_5.0.0.ipa.sha256
+          unzip -tq LilaShift_5.0.0.ipa
+          if gh release view v5.0.0 >/dev/null 2>&1; then
+            echo 'v5.0.0 already has a release; refusing to modify it.'
+            exit 1
+          fi
+          if git ls-remote --exit-code --tags "https://github.com/$GH_REPO.git" refs/tags/v5.0.0; then
+            echo 'v5.0.0 already exists; refusing to replace it.'
+            exit 1
+          else
+            code=$?
+            if [ "$code" -ne 2 ]; then exit "$code"; fi
+          fi
+          gh release create v5.0.0 LilaShift_5.0.0.ipa LilaShift_5.0.0.ipa.sha256 \
+            --target "$GITHUB_SHA" --prerelease --latest=false \
+            --title 'LilaShift 5.0.0 · 紫序（官方接口预发布）' \
+            --notes "真机尚未验证。未签名 IPA，仅供合法签名测试。通过 Apple 官方 UIKit 提供会话式屏幕亮度写入、读回和恢复。不支持受保护系统设置写入。源码提交：$GITHUB_SHA。"
+          gh release view v5.0.0 --json isPrerelease,assets --jq \
+            '.isPrerelease and ([.assets[].name] | sort == ["LilaShift_5.0.0.ipa", "LilaShift_5.0.0.ipa.sha256"])' | grep -Fx true
