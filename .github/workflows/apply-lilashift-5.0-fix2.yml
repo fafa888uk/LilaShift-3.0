@@ -1,0 +1,91 @@
+name: Apply LilaShift 5.0 Fix 2
+
+# One-shot: apply lilashift-5.0-fix2.patch (fix2: ambiguous init on the
+# fix1 baseline) to the 5.0 branch.
+# The patch file must already be uploaded to the branch root.
+# Patch SHA-256: d9c942da974ab14b2f40d2299f674fb7c494e2f0e23194942318310b90bd790e (verified)
+# Base: feature/lilashift-5.0 @ 70a560c
+#   ("LilaShift 5.0.0 fix1: CI errors", tree b827dc68).
+#
+# Dispatch with ref = feature/lilashift-5.0.
+#
+# This file must exist identically on main (so it can be dispatched)
+# and on feature/lilashift-5.0 (so the run checks out the branch
+# with the patch file). It stays on main afterwards as scaffolding.
+#
+# TEMPLATE SOURCE (authoritative): the fix1 workflow as it exists
+# on main @ e707691, which includes the fetch-depth: 0 fix and ran
+# green. Only the parameters below were changed for fix2.
+#
+# PLACEHOLDERS -- all filled in after fix2 landed (2026-11-28):
+#   SHA-256 d9c942da974ab14b2f40d2299f674fb7c494e2f0e23194942318310b90bd790e
+#   1 file, +10/-3, expected tree 775fdec971f7bf3027237dba0013e84a89173b29
+#   (local fix2 commit 381b4da, verified by clean-checkout apply test)
+#   Commit message "LilaShift 5.0.0 fix2: ambiguous init" confirmed by the coordinator.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v7
+        with:
+          ref: feature/lilashift-5.0
+          fetch-depth: 0
+
+      - name: Verify baseline is an ancestor
+        run: |
+          git merge-base --is-ancestor 70a560c2d438f2bf32ea36095857133a70169382 HEAD
+          echo "base 70a560c is an ancestor of HEAD"
+
+      - name: Verify patch file
+        run: |
+          ls -l lilashift-5.0-fix2.patch
+          echo "d9c942da974ab14b2f40d2299f674fb7c494e2f0e23194942318310b90bd790e  lilashift-5.0-fix2.patch" | sha256sum -c -
+
+      - name: Apply patch
+        run: |
+          git config user.name "fafa888uk"
+          git config user.email "fafa888uk@users.noreply.github.com"
+          git apply --index lilashift-5.0-fix2.patch
+
+      - name: Verify staged files
+        run: |
+          echo "=== staged files ==="
+          git diff --cached --name-only
+          echo "=== staged stat ==="
+          git diff --cached --stat
+          # Expect exactly 1 file, +10/-3
+          test "$(git diff --cached --name-only | wc -l)" -eq 1
+          git diff --cached --name-only | grep -qxF "GestaltX/DeviceDiagnostics.swift"
+          test "$(git diff --cached --numstat | awk '{s+=$1; d+=$2} END {print s}')" -eq 10
+          test "$(git diff --cached --numstat | awk '{s+=$1; d+=$2} END {print d}')" -eq 3
+          # The branch also tracks the uploaded patch file and this
+          # workflow file, so the staged tree includes them and can
+          # never equal the expected tree. Remove them from the index
+          # (disk copies stay) before comparing the tree.
+          git rm --cached -q lilashift-5.0-fix2.patch .github/workflows/apply-lilashift-5.0-fix2.yml
+          # Expect tree 775fdec971f7bf3027237dba0013e84a89173b29
+          # (base 70a560c + patch)
+          test "$(git write-tree)" = "775fdec971f7bf3027237dba0013e84a89173b29"
+
+      - name: Commit and push
+        run: |
+          git commit -m "LilaShift 5.0.0 fix2: ambiguous init"
+          git push origin feature/lilashift-5.0
+
+      - name: Clean up patch file
+        if: always()
+        # The patch file was already removed from the index by the
+        # verify step, so it is not in the fix commit; it is only an
+        # untracked file on disk in this ephemeral runner. Delete it
+        # from disk; there is nothing to commit.
+        run: |
+          rm -f lilashift-5.0-fix2.patch
+          git status --porcelain
