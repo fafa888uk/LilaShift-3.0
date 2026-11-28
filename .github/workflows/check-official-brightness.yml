@@ -1,0 +1,112 @@
+name: Check official brightness
+on:
+  push:
+    branches: [codex/lilashift-official-api-integration]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: official-brightness-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  check:
+    if: github.event.repository.private == false
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Type-check only the new UIKit code
+        run: |
+          set -euo pipefail
+          sdk="$(xcrun --sdk iphoneos --show-sdk-path)"
+          xcrun --sdk iphoneos swiftc -typecheck -target arm64-apple-ios17.0 -sdk "$sdk" GestaltX/OfficialBrightnessView.swift
+      - name: Run transaction tests without building the legacy app
+        run: |
+          set -euo pipefail
+          work="$(mktemp -d)"
+          mkdir -p "$work/Sources/BrightnessCore" "$work/Tests/BrightnessTests"
+          sed -n '/^\/\/\/ A single reversible/,$p' GestaltX/OfficialBrightnessView.swift \
+            | sed 's/^private struct OfficialBrightnessTransaction/struct OfficialBrightnessTransaction/' \
+            > "$work/Sources/BrightnessCore/OfficialBrightnessTransaction.swift"
+          test -s "$work/Sources/BrightnessCore/OfficialBrightnessTransaction.swift"
+          cat > "$work/Package.swift" <<'PACKAGE'
+          // swift-tools-version: 5.9
+          import PackageDescription
+          let package = Package(name: "BrightnessCheck", targets: [
+              .target(name: "BrightnessCore"),
+              .testTarget(name: "BrightnessTests", dependencies: ["BrightnessCore"])
+          ])
+          PACKAGE
+          cat > "$work/Tests/BrightnessTests/OfficialBrightnessTransactionTests.swift" <<'TESTS'
+          import XCTest
+          @testable import BrightnessCore
+          
+          final class OfficialBrightnessTransactionTests: XCTestCase {
+              func testWriteAndRestoreBothReadBack() {
+                  var change = OfficialBrightnessTransaction<Int>()
+                  var value = 40
+                  var reads = 0
+                  let read: () -> Int? = { reads += 1; return value }
+                  let write: (Int) -> Void = { value = $0 }
+                  XCTAssertEqual(change.apply(70, read: read, write: write, equals: ==), .applied)
+                  XCTAssertEqual(value, 70)
+                  XCTAssertTrue(change.canRestore)
+                  XCTAssertEqual(change.restore(read: read, write: write, equals: ==), .restored)
+                  XCTAssertEqual(value, 40)
+                  XCTAssertFalse(change.canRestore)
+                  XCTAssertEqual(reads, 4)
+              }
+          
+              func testRejectedWriteDoesNotReportSuccess() {
+                  var change = OfficialBrightnessTransaction<Int>()
+                  XCTAssertEqual(change.apply(70, read: { 40 }, write: { _ in }, equals: ==),
+                                 .writeRejectedAndOriginalRecovered)
+                  XCTAssertFalse(change.canRestore)
+              }
+          
+              func testUnavailableReadingNeverWrites() {
+                  var change = OfficialBrightnessTransaction<Int>()
+                  XCTAssertEqual(change.apply(70, read: { nil }, write: { _ in XCTFail() }, equals: ==),
+                                 .unavailable)
+              }
+          
+              func testExternalChangeIsNotOverwritten() {
+                  var change = OfficialBrightnessTransaction<Int>()
+                  var value = 40
+                  XCTAssertEqual(change.apply(70, read: { value }, write: { value = $0 }, equals: ==), .applied)
+                  value = 55
+                  XCTAssertEqual(change.restore(read: { value }, write: { _ in XCTFail() }, equals: ==),
+                                 .externallyChanged)
+                  XCTAssertEqual(value, 55)
+                  XCTAssertTrue(change.canRestore)
+                  change.discard()
+                  XCTAssertFalse(change.canRestore)
+              }
+          
+              func testRejectedRestoreRemainsRetryable() {
+                  var change = OfficialBrightnessTransaction<Int>()
+                  var value = 40
+                  XCTAssertEqual(change.apply(70, read: { value }, write: { value = $0 }, equals: ==), .applied)
+                  XCTAssertEqual(change.restore(read: { value }, write: { _ in }, equals: ==), .restoreUnverified)
+                  XCTAssertTrue(change.canRestore)
+                  XCTAssertEqual(change.restore(read: { value }, write: { value = $0 }, equals: ==), .restored)
+              }
+          
+              func testPendingTransactionCannotBeOverwritten() {
+                  var change = OfficialBrightnessTransaction<Int>()
+                  var value = 40
+                  XCTAssertEqual(change.apply(70, read: { value }, write: { value = $0 }, equals: ==), .applied)
+                  XCTAssertEqual(change.apply(60, read: { value }, write: { _ in XCTFail() }, equals: ==), .busy)
+                  value = 40
+                  XCTAssertEqual(change.restore(read: { value }, write: { _ in XCTFail() }, equals: ==), .restored)
+              }
+          
+              func testUnchangedValueDoesNotWrite() {
+                  var change = OfficialBrightnessTransaction<Int>()
+                  XCTAssertEqual(change.apply(40, read: { 40 }, write: { _ in XCTFail() }, equals: ==), .unchanged)
+              }
+          }
+          TESTS
+          swift test --package-path "$work"
