@@ -1,0 +1,4392 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index f87deb4..7dff19b 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -4,7 +4,7 @@ English | [简体中文](CHANGELOG_ZH-CN.md)
+ 
+ ## [5.0.0] - Unreleased (prepared 2026-11-28)
+ 
+-Major update from the 4.2.1 source lineage. In-app version `5.0.0`, build `50000000`; expected IPA file `LilaShift_5.0.0.ipa`. The exact source, CI and artifact evidence is tracked in [the 5.0.0 record](docs/RELEASE_5_0_0.md). This entry does not assert that a release has been published or a real device has been tested.
++Major update from the 4.2.1 source lineage. In-app version `5.0.0`, build `50000002`; expected IPA file `LilaShift_5.0.0.ipa`. The exact source, CI and artifact evidence is tracked in [the 5.0.0 record](docs/RELEASE_5_0_0.md). This entry does not assert that a release has been published or a real device has been tested.
+ 
+ ### Added — Wave 1 diagnostics and audit (23 features)
+ 
+@@ -18,9 +18,16 @@ Major update from the 4.2.1 source lineage. In-app version `5.0.0`, build `50000
+ - Localization: 281 missing Wave 1 strings added across all 10 supported locales (1934 keys total); the localization suite is green again. Twelve fragment keys that carried a leading/trailing space inside `L(...)` were fixed in code (spaces moved into the concatenation); rendered English output is unchanged.
+ - Licenses: Wave 1 third-party notices merged into `THIRD_PARTY_NOTICES.md` (§12) with three new bundled MIT texts (DeviceKit, WQGuard, ip-tools); the in-app notices stay byte-identical.
+ 
++### Added — Merge with 4.2.0 and the official-API build (build 50000002)
++
++- One IPA now holds the full 4.2.0 feature set (verified: all 425 files of the 4.2.0 release are present in this tree, so no 4.2.0 feature was missing or needed to be added back) plus the official-API features from the merged-offline build and the Wave 1 diagnostics. The isolated official-API tree was a stripped CI tree with 465 files removed; none of those deletions were carried into this merge — the merge is additive only.
++- Official-API tools (new "Official API Tools" page, 7 new catalog pages, 18 → 25 pages, 64 → 71 total items): screen-brightness write with read-back verification and automatic restore, an offline Apple Intelligence report reader, a resource monitor (own-process memory curve, pressure events, traffic totals), a network egress check via RIPEstat, a parallax wallpaper studio exporting static PNGs, a local plist workspace (edit in-app copies only, per-key diff, read-back verification, restore to original or last backup), a session operation log, and a three-mode app appearance switch (light / dark / follow system; default light, unchanged from 4.2.0).
++- Wiring fix: the four Wave 1 cards (device diagnostics, structured log, IPA audit, network probe) are now also hosted on the Advanced & Diagnostics page, so the catalog pages that pointed there are no longer dead ends.
++- Not merged: the parallel `LilaShift.xcodeproj` project, the standalone `LilaShiftApp.swift` entry point, the `UnavailableLegacyView` "unsupported" list (its claims are false in the full tree — every feature it lists works here), the incomplete `PrivacyInfo.xcprivacy`, the CI-only `check-merged-offline.yml` workflow, and the `Package.swift` second build system. None of these is a feature loss; the reasons are recorded in the merge record.
++
+ ### Changed
+ 
+-- Version 4.2.1 → 5.0.0, build 42000002 → 50000000. The README now carries a version badge checked by the license CI.
++- Version 4.2.1 → 5.0.0, build 42000002 → 50000002. The README now carries a version badge checked by the license CI.
+ - The 4.2.1 maintenance changes (ZIPFoundation 0.9.21, localization completion, governance/CI) remain part of the baseline.
+ 
+ ### Verification and limits
+diff --git a/CHANGELOG_ZH-CN.md b/CHANGELOG_ZH-CN.md
+index eadfc2e..1183f87 100644
+--- a/CHANGELOG_ZH-CN.md
++++ b/CHANGELOG_ZH-CN.md
+@@ -4,7 +4,7 @@
+ 
+ ## [5.0.0] - 未发布（2026-11-28 准备）
+ 
+-基于 4.2.1 源码历史的重大更新。应用内版本 `5.0.0`，构建号 `50000000`；预期 IPA 文件名 `LilaShift_5.0.0.ipa`。确切源码、CI 与产物证据见 [5.0.0 记录](docs/RELEASE_5_0_0.md)。此条目不代表已经公开发布或完成真机验证。
++基于 4.2.1 源码历史的重大更新。应用内版本 `5.0.0`，构建号 `50000002`；预期 IPA 文件名 `LilaShift_5.0.0.ipa`。确切源码、CI 与产物证据见 [5.0.0 记录](docs/RELEASE_5_0_0.md)。此条目不代表已经公开发布或完成真机验证。
+ 
+ ### 新增 — Wave 1 诊断与审计（23 项功能）
+ 
+@@ -18,9 +18,16 @@
+ - 本地化：补齐 Wave 1 缺失的 281 个字符串，覆盖全部 10 个支持语种（共 1934 键），本地化测试重新全绿。12 个在 `L(...)` 键内带首尾空格的片段键已在代码中修复（空格移入拼接处），渲染出的英文输出不变。
+ - 许可证：Wave 1 第三方声明并入 `THIRD_PARTY_NOTICES.md`（§12），新增 3 份 bundled MIT 文本（DeviceKit、WQGuard、ip-tools）；应用内声明保持字节一致。
+ 
++### 新增 — 与 4.2.0 及官方接口版合并（构建号 50000002）
++
++- 一个 IPA 同时包含完整的 4.2.0 功能集（已核实：4.2.0 正式版的 425 个文件全部在本树中，不缺任何一项，无需补回）与官方接口版新增功能及 Wave 1 诊断功能。隔离的官方接口树是剥离的 CI 树（删了 465 个文件）；这些删除一项都未带进合并——本次合并只加不删。
++- 官方接口工具（新增“官方接口工具”页、7 个新目录页，页面 18 → 25、总数 64 → 71）：屏幕亮度写入（写后读回核对、切后台自动恢复）、离线 Apple Intelligence 报告读取、资源监控（本进程内存曲线、内存压力事件、累计流量）、经 RIPEstat 的网络出口检查、视差壁纸工坊（导出静态 PNG）、本地 plist 工作区（只改应用内副本、逐键差异、写后读回核对、可恢复原始或上次备份）、会话操作日志，以及三档应用外观切换（浅色 / 深色 / 跟随系统；默认浅色，与 4.2.0 行为一致）。
++- 接线修复：Wave 1 的四张卡（设备诊断、结构化日志、IPA 审计、网络探针）现也挂在“高级与诊断”页上，之前指向该页的目录项不再是死胡同。
++- 未合并：平行的 `LilaShift.xcodeproj` 工程、独立的 `LilaShiftApp.swift` 入口、`UnavailableLegacyView` 的“不支持”清单（在完整树里其说法不成立——它列出的功能在这里都能用）、不完整的 `PrivacyInfo.xcprivacy`、仅供 CI 的 `check-merged-offline.yml` 工作流，以及 `Package.swift` 第二套构建系统。这些都不是功能损失，原因见合并记录。
++
+ ### 变更
+ 
+-- 版本 4.2.1 → 5.0.0，构建号 42000002 → 50000000。README 新增版本徽章，由许可证检查校验。
++- 版本 4.2.1 → 5.0.0，构建号 42000002 → 50000002。README 新增版本徽章，由许可证检查校验。
+ - 4.2.1 的维护改动（ZIPFoundation 0.9.21、本地化补齐、治理/CI）继续包含在基线中。
+ 
+ ### 验证与限制
+diff --git a/GestaltX.xcodeproj/project.pbxproj b/GestaltX.xcodeproj/project.pbxproj
+index 22fed73..ef727df 100644
+--- a/GestaltX.xcodeproj/project.pbxproj
++++ b/GestaltX.xcodeproj/project.pbxproj
+@@ -142,6 +142,12 @@
+ 		6EC27EA9D6B9B559F8FADE96 /* W4AppleWikiKeyTableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6F16064205BE1E172B832B1 /* W4AppleWikiKeyTableTests.swift */; };
+ 		424E9D51A52ED05AAC14DE71 /* W5NetworkProbeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1808E9EC5587C243C7092E34 /* W5NetworkProbeTests.swift */; };
+ 		B34B97871F7D7EC2D5D3461B /* W6FileBrowserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3123E00F77111BFA9541001 /* W6FileBrowserTests.swift */; };
++		FF46ABDC425AEBBFF43FCAD8 /* LocalPlistWorkspaceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47078458B9A33988346ED8AB /* LocalPlistWorkspaceTests.swift */; };
++		BBFA4AA230B83C214B572614 /* VerifiedChangeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C74280B5EA7FD7FAEB4D2ECD /* VerifiedChangeTests.swift */; };
++		92178F3572E73284E2A6CFF4 /* W11AppearanceModeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5684E0A962C8F74B88558BF9 /* W11AppearanceModeTests.swift */; };
++		83A0D5EF86B80B3339BCEFCD /* W7IntelligenceReportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C9F377525C84A88EF84BBC /* W7IntelligenceReportTests.swift */; };
++		930DE4E3A578066172F5C943 /* W8ResourceMetricsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2D0D51E010ED870C1C6A4D4 /* W8ResourceMetricsTests.swift */; };
++		B71BA9F6D13D4D96B363D635 /* W9WallpaperStudioTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEAB27FE89BD56931FD07266 /* W9WallpaperStudioTests.swift */; };
+ /* End PBXBuildFile section */
+ 
+ /* Begin PBXContainerItemProxy section */
+@@ -313,6 +319,12 @@
+ 		E6F16064205BE1E172B832B1 /* W4AppleWikiKeyTableTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = W4AppleWikiKeyTableTests.swift; sourceTree = "<group>"; };
+ 		1808E9EC5587C243C7092E34 /* W5NetworkProbeTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = W5NetworkProbeTests.swift; sourceTree = "<group>"; };
+ 		D3123E00F77111BFA9541001 /* W6FileBrowserTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = W6FileBrowserTests.swift; sourceTree = "<group>"; };
++		47078458B9A33988346ED8AB /* LocalPlistWorkspaceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LocalPlistWorkspaceTests.swift; sourceTree = "<group>"; };
++		C74280B5EA7FD7FAEB4D2ECD /* VerifiedChangeTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VerifiedChangeTests.swift; sourceTree = "<group>"; };
++		5684E0A962C8F74B88558BF9 /* W11AppearanceModeTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = W11AppearanceModeTests.swift; sourceTree = "<group>"; };
++		F8C9F377525C84A88EF84BBC /* W7IntelligenceReportTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = W7IntelligenceReportTests.swift; sourceTree = "<group>"; };
++		A2D0D51E010ED870C1C6A4D4 /* W8ResourceMetricsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = W8ResourceMetricsTests.swift; sourceTree = "<group>"; };
++		EEAB27FE89BD56931FD07266 /* W9WallpaperStudioTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = W9WallpaperStudioTests.swift; sourceTree = "<group>"; };
+ /* End PBXFileReference section */
+ 
+ /* Begin PBXFileSystemSynchronizedRootGroup section */
+@@ -551,6 +563,12 @@
+ 				D4E1320CF71EABD8197C0EF5 /* DashboardV3NavigationTests.swift */,
+ 				4E5F224BA529875D89FF6BDE /* DiagnosticsEngineTests.swift */,
+ 				DE7645FF99DB44D29B4CE01D /* DiagnosticsEquatableTests.swift */,
++				47078458B9A33988346ED8AB /* LocalPlistWorkspaceTests.swift */,
++				C74280B5EA7FD7FAEB4D2ECD /* VerifiedChangeTests.swift */,
++				5684E0A962C8F74B88558BF9 /* W11AppearanceModeTests.swift */,
++				F8C9F377525C84A88EF84BBC /* W7IntelligenceReportTests.swift */,
++				A2D0D51E010ED870C1C6A4D4 /* W8ResourceMetricsTests.swift */,
++				EEAB27FE89BD56931FD07266 /* W9WallpaperStudioTests.swift */,
+ 			);
+ 			name = Tests;
+ 			path = tests;
+@@ -830,6 +848,12 @@
+ 				D43F6FE6E3F70F2FD3EC5873 /* DashboardV3NavigationTests.swift in Sources */,
+ 				F0BB5CA63302978160D3D647 /* DiagnosticsEngineTests.swift in Sources */,
+ 				1A7AD902F4504E46B9FC8038 /* DiagnosticsEquatableTests.swift in Sources */,
++				FF46ABDC425AEBBFF43FCAD8 /* LocalPlistWorkspaceTests.swift in Sources */,
++				BBFA4AA230B83C214B572614 /* VerifiedChangeTests.swift in Sources */,
++				92178F3572E73284E2A6CFF4 /* W11AppearanceModeTests.swift in Sources */,
++				83A0D5EF86B80B3339BCEFCD /* W7IntelligenceReportTests.swift in Sources */,
++				930DE4E3A578066172F5C943 /* W8ResourceMetricsTests.swift in Sources */,
++				B71BA9F6D13D4D96B363D635 /* W9WallpaperStudioTests.swift in Sources */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+@@ -988,7 +1012,7 @@
+ 				CLANG_ENABLE_MODULES = YES;
+ 				CODE_SIGN_ENTITLEMENTS = GestaltX/GestaltX.entitlements;
+ 				CODE_SIGN_STYLE = Automatic;
+-				CURRENT_PROJECT_VERSION = 50000000;
++				CURRENT_PROJECT_VERSION = 50000002;
+ 				DEVELOPMENT_TEAM = "";
+ 				ENABLE_PREVIEWS = YES;
+ 				GENERATE_INFOPLIST_FILE = YES;
+@@ -1032,7 +1056,7 @@
+ 				CLANG_ENABLE_MODULES = YES;
+ 				CODE_SIGN_ENTITLEMENTS = GestaltX/GestaltX.entitlements;
+ 				CODE_SIGN_STYLE = Automatic;
+-				CURRENT_PROJECT_VERSION = 50000000;
++				CURRENT_PROJECT_VERSION = 50000002;
+ 				DEVELOPMENT_TEAM = "";
+ 				ENABLE_PREVIEWS = YES;
+ 				GENERATE_INFOPLIST_FILE = YES;
+@@ -1075,7 +1099,7 @@
+ 				CLANG_ENABLE_OBJC_WEAK = NO;
+ 				CODE_SIGN_ENTITLEMENTS = ShareExtension/GestaltXShare.entitlements;
+ 				CODE_SIGN_STYLE = Automatic;
+-				CURRENT_PROJECT_VERSION = 50000000;
++				CURRENT_PROJECT_VERSION = 50000002;
+ 				DEVELOPMENT_TEAM = "";
+ 				GENERATE_INFOPLIST_FILE = NO;
+ 				INFOPLIST_FILE = ShareExtension/Info.plist;
+@@ -1107,7 +1131,7 @@
+ 				CLANG_ENABLE_OBJC_WEAK = NO;
+ 				CODE_SIGN_ENTITLEMENTS = ShareExtension/GestaltXShare.entitlements;
+ 				CODE_SIGN_STYLE = Automatic;
+-				CURRENT_PROJECT_VERSION = 50000000;
++				CURRENT_PROJECT_VERSION = 50000002;
+ 				DEVELOPMENT_TEAM = "";
+ 				GENERATE_INFOPLIST_FILE = NO;
+ 				INFOPLIST_FILE = ShareExtension/Info.plist;
+@@ -1135,7 +1159,7 @@
+ 			buildSettings = {
+ 				BUNDLE_LOADER = "$(TEST_HOST)";
+ 				CODE_SIGN_STYLE = Automatic;
+-				CURRENT_PROJECT_VERSION = 50000000;
++				CURRENT_PROJECT_VERSION = 50000002;
+ 				DEVELOPMENT_TEAM = "";
+ 				GENERATE_INFOPLIST_FILE = YES;
+ 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+@@ -1161,7 +1185,7 @@
+ 			buildSettings = {
+ 				BUNDLE_LOADER = "$(TEST_HOST)";
+ 				CODE_SIGN_STYLE = Automatic;
+-				CURRENT_PROJECT_VERSION = 50000000;
++				CURRENT_PROJECT_VERSION = 50000002;
+ 				DEVELOPMENT_TEAM = "";
+ 				GENERATE_INFOPLIST_FILE = YES;
+ 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+diff --git a/GestaltX/BrightnessWriteView.swift b/GestaltX/BrightnessWriteView.swift
+new file mode 100644
+index 0000000..c7f71da
+--- /dev/null
++++ b/GestaltX/BrightnessWriteView.swift
+@@ -0,0 +1,172 @@
++// SPDX-License-Identifier: GPL-3.0-only
++// Screen brightness write / read-back / restore, using only the
++// public UIScreen API. Extracted from the official-API target's
++// SettingsScreen (Codex, lilashift-merged-offline-ci): the @main
++// entry itself cannot be ported (the GestaltX target already has
++// its own @main), so the brightness section lives here as a plain
++// view hosted by the merged official-tools page. Every write goes
++// through VerifiedChange: read back, compare with 1/255 tolerance,
++// and restore the original when the app goes to the background.
++import SwiftUI
++import UIKit
++
++@MainActor
++struct BrightnessWriteView: View {
++    @EnvironmentObject private var operationLog: UnifiedOperationLog
++    @Environment(\.scenePhase) private var scenePhase
++    @State private var transaction = VerifiedChange<Double>()
++    @State private var selectedScreen: UIScreen?
++    @State private var observed: Double?
++    @State private var requested = 0.5
++    @State private var result: VerifiedChange<Double>.Result?
++    @State private var confirming = false
++
++    private var isPhysicalDevice: Bool {
++#if targetEnvironment(simulator)
++        false
++#else
++        !ProcessInfo.processInfo.isiOSAppOnMac && !ProcessInfo.processInfo.isMacCatalystApp
++#endif
++    }
++
++    private var activeScreen: UIScreen? {
++        guard isPhysicalDevice else { return nil }
++        let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
++        return scenes.first {
++            $0.session.role == .windowApplication &&
++            $0.activationState == .foregroundActive &&
++            $0.windows.contains(where: \.isKeyWindow)
++        }?.screen
++    }
++
++    var body: some View {
++        Form {
++            Section {
++                if let observed {
++                    LabeledContent("screen.actual", value: observed.formatted(.percent.precision(.fractionLength(1))))
++                } else {
++                    Text(LocalizedStringKey(isPhysicalDevice ? "screen.unavailable" : "screen.physicalOnly"))
++                        .foregroundStyle(.secondary)
++                }
++
++                if observed != nil && !transaction.canRestore {
++                    LabeledContent("screen.target", value: requested.formatted(.percent))
++                    Slider(value: $requested, in: 0.15...1, step: 0.01) {
++                        Text("screen.target")
++                    }
++                    Button("screen.apply", systemImage: "sun.max") {
++                        confirming = true
++                    }
++                }
++
++                if transaction.canRestore {
++                    Button("screen.restore", systemImage: "arrow.uturn.backward") { restore() }
++                    if result == .externallyChanged || result == .restoreUnverified {
++                        Button("screen.discard", systemImage: "xmark.circle") {
++                            transaction.discard()
++                            selectedScreen = nil
++                            result = nil
++                            refresh()
++                        }
++                    }
++                }
++
++                if let result {
++                    Text(status(result)).font(.footnote).foregroundStyle(.secondary)
++                }
++            } header: {
++                Text("screen.heading")
++            } footer: {
++                Text("screen.footer")
++            }
++        }
++        .navigationTitle("screen.heading")
++        .alert("screen.confirmTitle", isPresented: $confirming) {
++            Button("screen.confirmWrite") { apply() }
++            Button("common.cancel", role: .cancel) {}
++        } message: {
++            Text("screen.confirmBody")
++        }
++        .task { refresh() }
++        .onChange(of: scenePhase) { _, newPhase in
++            if newPhase == .background && transaction.canRestore {
++                restore()
++            } else if newPhase == .active {
++                refresh()
++            }
++        }
++        .onReceive(NotificationCenter.default.publisher(for: UIScreen.brightnessDidChangeNotification)) { _ in
++            // Do not synchronously reenter a UIKit setter/transaction.
++            Task { @MainActor in refresh() }
++        }
++    }
++
++    private func refresh() {
++        let value = (selectedScreen ?? activeScreen).map { Double($0.brightness) }
++        if observed == nil, let value {
++            requested = min(1, max(0.15, value))
++        }
++        observed = value
++    }
++
++    private func matches(_ a: Double, _ b: Double) -> Bool {
++        abs(a - b) <= 1.0 / 255
++    }
++
++    private func apply() {
++        guard let screen = activeScreen else {
++            result = .unavailable
++            refresh()
++            return
++        }
++        let target = requested
++        var change = transaction
++        let outcome = change.apply(
++            target, read: { Double(screen.brightness) },
++            write: { screen.brightness = CGFloat($0) }, equals: matches
++        )
++        result = outcome
++        switch outcome {
++        case .applied:
++            operationLog.record(.screen, .info, "屏幕亮度写入已读回核对")
++        case .unchanged:
++            operationLog.record(.screen, .info, "屏幕亮度已相同，没有写入")
++        default:
++            operationLog.record(.screen, .warning, "屏幕亮度写入未获确认")
++        }
++        transaction = change
++        selectedScreen = change.canRestore ? screen : nil
++        refresh()
++    }
++
++    private func restore() {
++        guard let screen = selectedScreen else { return }
++        var change = transaction
++        let outcome = change.restore(
++            read: { Double(screen.brightness) },
++            write: { screen.brightness = CGFloat($0) }, equals: matches
++        )
++        result = outcome
++        if outcome == .restored {
++            operationLog.record(.screen, .info, "原始屏幕亮度已恢复并读回")
++        } else {
++            operationLog.record(.screen, .warning, "屏幕亮度恢复未获确认")
++        }
++        transaction = change
++        if !change.canRestore { selectedScreen = nil }
++        refresh()
++    }
++
++    private func status(_ result: VerifiedChange<Double>.Result) -> LocalizedStringKey {
++        switch result {
++        case .applied: "status.applied"
++        case .restored: "status.restored"
++        case .unchanged: "status.unchanged"
++        case .busy: "status.busy"
++        case .unavailable: "status.unavailable"
++        case .writeRejectedAndOriginalRecovered: "status.rejected"
++        case .restoreUnverified: "status.unverified"
++        case .externallyChanged: "status.conflict"
++        }
++    }
++}
+diff --git a/GestaltX/ContentView.swift b/GestaltX/ContentView.swift
+index 55bd937..ab67f20 100644
+--- a/GestaltX/ContentView.swift
++++ b/GestaltX/ContentView.swift
+@@ -461,6 +461,20 @@ struct ContentView: View {
+                     SystemHealthScoreCard()
+                     DependencyAnalyzerCard()
+                     DiagnosticsExpansionCard()
++                    // Merge (LilaShift 5.0.0): the four Wave 1 cards
++                    // belong on this page too. Before the merge the
++                    // catalog pages for device diagnostics, structured
++                    // log, IPA audit and network probe all pointed
++                    // here, but this page only held the five cards
++                    // above — the catalog entries were dead ends
++                    // (the real Wave 1 entry was the Tools home
++                    // diagnostics rows). The detail views are the
++                    // same instances HomeDiagnosticsSection mounts,
++                    // so no card is duplicated, only hosted twice.
++                    DeviceDiagnosticsCard()
++                    StructuredLogView()
++                    IPAAuditView()
++                    NetworkProbeCard()
+                 }
+                 .padding()
+             }
+@@ -504,6 +518,11 @@ struct ContentView: View {
+             .navigationTitle(section.title)
+         case .advanced:
+             tools
++        case .officialTools:
++            // Merge (LilaShift 5.0.0): the merged official-API
++            // tools live on their own page, reached from the new
++            // home section and the seven new catalog pages.
++            OfficialToolsPage()
+         }
+     }
+ 
+diff --git a/GestaltX/DashboardV3.swift b/GestaltX/DashboardV3.swift
+index 3fe08b5..d86488f 100644
+--- a/GestaltX/DashboardV3.swift
++++ b/GestaltX/DashboardV3.swift
+@@ -19,7 +19,12 @@ import SwiftUI
+ /// all four opened `.unlock`, so every home tile led to the same
+ /// long page.
+ enum DashboardV3Destination: String, CaseIterable, Identifiable, Hashable {
+-    case unlock, aiOnly, siriAIMode, esimRegion, diagnostics, restore, presets, advanced
++    // Merge (LilaShift 5.0.0): .officialTools hosts the merged
++    // official-API features (brightness write, intelligence report,
++    // resource monitor, network egress check, wallpaper studio,
++    // local plist workspace, session log, appearance mode). New
++    // cases go at the end so stored destination orders never shift.
++    case unlock, aiOnly, siriAIMode, esimRegion, diagnostics, restore, presets, advanced, officialTools
+ 
+     var id: String { rawValue }
+ 
+@@ -33,6 +38,7 @@ enum DashboardV3Destination: String, CaseIterable, Identifiable, Hashable {
+         case .restore: return L("Backups")
+         case .presets: return L("Feature Categories")
+         case .advanced: return L("Tools")
++        case .officialTools: return L("Official API Tools")
+         }
+     }
+ 
+@@ -46,6 +52,7 @@ enum DashboardV3Destination: String, CaseIterable, Identifiable, Hashable {
+         case .restore: return L("Restore pre-unlock state")
+         case .presets: return L("Personalization")
+         case .advanced: return L("All tools")
++        case .officialTools: return L("Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.")
+         }
+     }
+ 
+@@ -59,6 +66,7 @@ enum DashboardV3Destination: String, CaseIterable, Identifiable, Hashable {
+         case .restore: return "clock.arrow.circlepath"
+         case .presets: return "square.grid.2x2"
+         case .advanced: return "slider.horizontal.3"
++        case .officialTools: return "hammer"
+         }
+     }
+ 
+@@ -73,7 +81,7 @@ enum DashboardV3Destination: String, CaseIterable, Identifiable, Hashable {
+     }
+ }
+ 
+-/// The home, restructured (Phase D) into eight sections that show
++/// The home, restructured (Phase D) into nine sections that show
+ /// summaries only — the full cards live on the destination pages:
+ ///
+ /// 1. Device overview — the read / re-read card (inline, unchanged).
+@@ -127,12 +135,12 @@ struct DashboardV3Home<DestinationView: View>: View {
+     }
+     let destination: (DashboardV3Destination) -> DestinationView
+ 
+-    /// The eight sections in display order.
++    /// The nine sections in display order.
+     private var orderedSections: [HomeSectionID] {
+         HomeSectionID.resolvedSections(savedOrder)
+     }
+ 
+-    /// The destination-backed sections (3–8), in display order.
++    /// The destination-backed sections (3–9), in display order.
+     private var destinationSections: [HomeSectionID] {
+         orderedSections.filter { $0.destination != nil }
+     }
+@@ -357,7 +365,7 @@ struct DashboardV3Home<DestinationView: View>: View {
+     /// The caller then shows the section description instead.
+     private func summaryText(for section: HomeSectionID) -> String? {
+         switch section {
+-        case .deviceOverview, .commonFeatures, .moreTools:
++        case .deviceOverview, .commonFeatures, .moreTools, .officialTools:
+             return nil
+         case .chinaUnlock:
+             guard model.hasDocument else { return nil }
+diff --git a/GestaltX/FeatureCatalog.swift b/GestaltX/FeatureCatalog.swift
+index 7ba1f1d..fb60659 100644
+--- a/GestaltX/FeatureCatalog.swift
++++ b/GestaltX/FeatureCatalog.swift
+@@ -364,6 +364,40 @@ enum FeatureCatalog {
+              title: "文件浏览器",
+              subtitle: "浏览、多选与导入文件夹；跨应用浏览与缓存统计为只读，不清理。",
+              destination: .advanced, symbol: "folder"),
++        // Merge wiring (LilaShift 5.0.0): one page per merged
++        // official-API feature. Titles follow the Wave 1 pattern
++        // (Chinese title, L() falls back to itself). All seven
++        // point at the new .officialTools destination, so every
++        // destination is reached by at least one catalog item and
++        // no catalog page is a dead end.
++        page(id: "page.brightnessWrite", category: .screenLock,
++             title: "屏幕亮度写入",
++             subtitle: "用公开 API 写屏幕亮度，写后读回核对，可恢复原始亮度；切后台自动恢复。",
++             destination: .officialTools, symbol: "sun.max"),
++        page(id: "page.intelligenceReport", category: .deviceDiagnostics,
++             title: "智能报告",
++             subtitle: "读取自选的 Apple Intelligence Report JSON，只数两类请求条数，不留存原文。",
++             destination: .officialTools, symbol: "doc.text.magnifyingglass"),
++        page(id: "page.resourceMonitor", category: .deviceDiagnostics,
++             title: "资源监控",
++             subtitle: "本进程常驻内存曲线、内存压力事件与累计流量统计；只计本应用，不含其他应用。",
++             destination: .officialTools, symbol: "waveform.path"),
++        page(id: "page.networkCheck", category: .deviceDiagnostics,
++             title: "网络出口检查",
++             subtitle: "查 RIPEstat 观测到的公网出口 IP；不含 Ping 与路由追踪（见网络探针）。",
++             destination: .officialTools, symbol: "network"),
++        page(id: "page.wallpaperStudio", category: .launchArtwork,
++             title: "壁纸工坊",
++             subtitle: "背景加透明前景双层合成，视差位移，导出静态 PNG；不设系统壁纸。",
++             destination: .officialTools, symbol: "photo.stack"),
++        page(id: "page.plistWorkspace", category: .advancedTools,
++             title: "本地 plist 工作区",
++             subtitle: "在应用内副本上编辑自选 plist，逐键差异、写后读回核对、可恢复原始或上次备份；绝不改来源文件。",
++             destination: .officialTools, symbol: "doc.badge.gearshape"),
++        page(id: "page.sessionLog", category: .advancedTools,
++             title: "会话日志",
++             subtitle: "本次会话的操作日志，可按级别筛选、搜索、导出 JSON；只记本应用的操作。",
++             destination: .officialTools, symbol: "list.bullet.rectangle"),
+     ]
+ 
+     private static func page(
+@@ -586,6 +620,10 @@ enum HomeSectionID: String, CaseIterable, Identifiable, Sendable {
+     case backupRestore
+     case presetManagement
+     case moreTools
++    // Merge (LilaShift 5.0.0): the merged official-API tools get
++    // their own home section. New cases go at the end so stored
++    // section orders never shift.
++    case officialTools
+ 
+     var id: String { rawValue }
+ 
+@@ -599,6 +637,7 @@ enum HomeSectionID: String, CaseIterable, Identifiable, Sendable {
+         case .backupRestore: return L("Backup & Restore")
+         case .presetManagement: return L("Preset Management")
+         case .moreTools: return L("More Tools")
++        case .officialTools: return L("Official API Tools")
+         }
+     }
+ 
+@@ -615,6 +654,7 @@ enum HomeSectionID: String, CaseIterable, Identifiable, Sendable {
+         case .backupRestore: return L("Backups appear here before each write. You can also make one anytime.")
+         case .presetManagement: return L("Search, filter and save presets — from the catalog only.")
+         case .moreTools: return L("All tools")
++        case .officialTools: return L("Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.")
+         }
+     }
+ 
+@@ -628,6 +668,7 @@ enum HomeSectionID: String, CaseIterable, Identifiable, Sendable {
+         case .backupRestore: return "clock.arrow.circlepath"
+         case .presetManagement: return "books.vertical"
+         case .moreTools: return "slider.horizontal.3"
++        case .officialTools: return "hammer"
+         }
+     }
+ 
+@@ -647,6 +688,7 @@ enum HomeSectionID: String, CaseIterable, Identifiable, Sendable {
+         case .backupRestore: return .restore
+         case .presetManagement: return .presets
+         case .moreTools: return .advanced
++        case .officialTools: return .officialTools
+         }
+     }
+ 
+@@ -671,6 +713,8 @@ enum HomeSectionID: String, CaseIterable, Identifiable, Sendable {
+                 sections.append(.presetManagement)
+             case .advanced:
+                 sections.append(.moreTools)
++            case .officialTools:
++                sections.append(.officialTools)
+             }
+         }
+         return sections
+diff --git a/GestaltX/GestaltXApp.swift b/GestaltX/GestaltXApp.swift
+index fe8b16c..82b7276 100644
+--- a/GestaltX/GestaltXApp.swift
++++ b/GestaltX/GestaltXApp.swift
+@@ -8,10 +8,26 @@ import SwiftUI
+ 
+ @main
+ struct GestaltXApp: App {
++    // Merge (LilaShift 5.0.0): the official-API tools need two
++    // app-level objects — the W8 network counter (RIPEstat traffic
++    // totals, observed by W8ResourceMonitorView / NetworkCheckView)
++    // and the unified session operation log (written by the
++    // brightness, network and plist tools). Both are created here
++    // so every hosted view sees the same instance.
++    @State private var w8Counter = W8NetworkCounter()
++    @StateObject private var operationLog = UnifiedOperationLog()
++    // Merge: the app appearance mode (W11). Default is light, so
++    // the 4.2.0 forced-light behaviour is unchanged until the user
++    // picks dark / follow-system in the official-tools page. This
++    // only changes this app's scheme, never the iOS setting.
++    @AppStorage(W11AppearanceMode.storageKey) private var appearance = W11AppearanceMode.defaultMode.rawValue
++
+     var body: some Scene {
+         WindowGroup {
+             ContentView()
+-                .preferredColorScheme(.light)
++                .preferredColorScheme(W11AppearanceMode.stored(appearance).preferredScheme)
++                .environment(\.w8NetworkCounter, w8Counter)
++                .environmentObject(operationLog)
+                 .environment(\.layoutDirection, Bundle.main.preferredLocalizations.first?.hasPrefix("fa") == true ? .rightToLeft : .leftToRight)
+         }
+     }
+diff --git a/GestaltX/LocalPlistWorkspace.swift b/GestaltX/LocalPlistWorkspace.swift
+new file mode 100644
+index 0000000..4747620
+--- /dev/null
++++ b/GestaltX/LocalPlistWorkspace.swift
+@@ -0,0 +1,171 @@
++// SPDX-License-Identifier: GPL-3.0-only
++import CryptoKit
++import Foundation
++
++/// A local copy only. No stored path points back to the imported source or to a system file.
++struct LocalPlistWorkspace {
++    enum Failure: Error, Equatable {
++        case unsupportedFile, tooLarge, notDictionary, staleRevision, damagedRecord, noChange
++    }
++
++    struct Record: Codable, Identifiable, Equatable, Sendable {
++        let id: UUID
++        let name: String
++        let original: Data
++        let originalSHA: String
++        var working: Data
++        var workingSHA: String
++        var previous: Data? = nil
++        var previousSHA: String? = nil
++    }
++
++    struct Change: Equatable {
++        let recordID: UUID
++        let beforeSHA: String
++        let afterSHA: String
++        let changedKeys: [String]
++        let bytes: Data
++    }
++
++    static let maxBytes = 1_048_576
++    let root: URL
++
++    static func readSelectedFile(_ url: URL) throws -> Data {
++        let scoped = url.startAccessingSecurityScopedResource()
++        defer { if scoped { url.stopAccessingSecurityScopedResource() } }
++        let values = try url.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey])
++        guard values.isRegularFile == true, values.isSymbolicLink != true else { throw Failure.unsupportedFile }
++        if let size = values.fileSize, size > maxBytes { throw Failure.tooLarge }
++        let handle = try FileHandle(forReadingFrom: url)
++        defer { try? handle.close() }
++        var bytes = Data()
++        while bytes.count <= maxBytes {
++            let count = min(32_768, maxBytes + 1 - bytes.count)
++            guard let chunk = try handle.read(upToCount: count), !chunk.isEmpty else { return bytes }
++            bytes.append(chunk)
++        }
++        throw Failure.tooLarge
++    }
++
++    func importCopy(_ data: Data, name: String) throws -> Record {
++        _ = try Self.dictionary(data)
++        let digest = Self.sha(data)
++        let created = Record(
++            id: UUID(), name: String(name.prefix(100)), original: data, originalSHA: digest,
++            working: data, workingSHA: digest
++        )
++        return try persistAndReadBack(created)
++    }
++
++    func records() throws -> [Record] {
++        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
++        let urls = try FileManager.default.contentsOfDirectory(at: root, includingPropertiesForKeys: nil)
++        return try urls
++            .filter { $0.pathExtension == "json" }
++            .compactMap { UUID(uuidString: $0.deletingPathExtension().lastPathComponent) }
++            .map { try read($0) }
++            .sorted { ($0.name, $0.id.uuidString) < ($1.name, $1.id.uuidString) }
++    }
++
++    func stage(xml: String, for record: Record) throws -> Change {
++        let candidate = Data(xml.utf8)
++        let before = try Self.dictionary(record.working)
++        let after = try Self.dictionary(candidate)
++        let changed = try Set(before.keys).union(after.keys).sorted().filter {
++            try Self.encodedValue(before[$0]) != Self.encodedValue(after[$0])
++        }
++        guard !changed.isEmpty else { throw Failure.noChange }
++        return Change(
++            recordID: record.id, beforeSHA: record.workingSHA, afterSHA: Self.sha(candidate),
++            changedKeys: changed, bytes: candidate
++        )
++    }
++
++    func apply(_ change: Change) throws -> Record {
++        var current = try read(change.recordID)
++        guard current.workingSHA == change.beforeSHA else { throw Failure.staleRevision }
++        _ = try Self.dictionary(change.bytes)
++        guard Self.sha(change.bytes) == change.afterSHA else { throw Failure.damagedRecord }
++        current.previous = current.working
++        current.previousSHA = current.workingSHA
++        current.working = change.bytes
++        current.workingSHA = change.afterSHA
++        return try persistAndReadBack(current)
++    }
++
++    func restoreOriginal(id: UUID, expectedSHA: String) throws -> Record {
++        var current = try read(id)
++        guard current.workingSHA == expectedSHA else { throw Failure.staleRevision }
++        current.previous = current.working
++        current.previousSHA = current.workingSHA
++        current.working = current.original
++        current.workingSHA = current.originalSHA
++        return try persistAndReadBack(current)
++    }
++
++    func restorePrevious(id: UUID, expectedSHA: String) throws -> Record {
++        var current = try read(id)
++        guard current.workingSHA == expectedSHA else { throw Failure.staleRevision }
++        guard let before = current.previous, let digest = current.previousSHA else { throw Failure.noChange }
++        current.previous = current.working
++        current.previousSHA = current.workingSHA
++        current.working = before
++        current.workingSHA = digest
++        return try persistAndReadBack(current)
++    }
++
++    static func editableXML(_ data: Data) throws -> String {
++        let bytes = try PropertyListSerialization.data(fromPropertyList: dictionary(data), format: .xml, options: 0)
++        guard bytes.count <= maxBytes else { throw Failure.tooLarge }
++        return String(decoding: bytes, as: UTF8.self)
++    }
++
++    private static func dictionary(_ data: Data) throws -> [String: Any] {
++        guard data.count <= maxBytes else { throw Failure.tooLarge }
++        guard let values = try PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any] else {
++            throw Failure.notDictionary
++        }
++        return values
++    }
++
++    private static func encodedValue(_ value: Any?) throws -> Data? {
++        guard let value else { return nil }
++        return try PropertyListSerialization.data(fromPropertyList: [value], format: .xml, options: 0)
++    }
++
++    private static func sha(_ bytes: Data) -> String {
++        SHA256.hash(data: bytes).map { String(format: "%02x", $0) }.joined()
++    }
++
++    private func persistAndReadBack(_ record: Record) throws -> Record {
++        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
++        let payload = try JSONEncoder().encode(record)
++#if os(iOS)
++        try payload.write(to: path(record.id), options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
++#else
++        try payload.write(to: path(record.id), options: [.atomic])
++#endif
++        let verified = try read(record.id)
++        guard verified == record else { throw Failure.damagedRecord }
++        return verified
++    }
++
++    private func read(_ id: UUID) throws -> Record {
++        let url = path(id)
++        let props = try url.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey])
++        guard props.isRegularFile == true, props.isSymbolicLink != true,
++              let size = props.fileSize, size <= 6 * Self.maxBytes else { throw Failure.damagedRecord }
++        let value = try JSONDecoder().decode(Record.self, from: Data(contentsOf: url))
++        guard value.id == id, value.original.count <= Self.maxBytes, value.working.count <= Self.maxBytes,
++              Self.sha(value.original) == value.originalSHA, Self.sha(value.working) == value.workingSHA
++        else { throw Failure.damagedRecord }
++        switch (value.previous, value.previousSHA) {
++        case (nil, nil): break
++        case (let before?, let digest?) where before.count <= Self.maxBytes && Self.sha(before) == digest: break
++        default: throw Failure.damagedRecord
++        }
++        return value
++    }
++
++    private func path(_ id: UUID) -> URL { root.appendingPathComponent("\(id.uuidString).json", isDirectory: false) }
++}
+diff --git a/GestaltX/LocalPlistWorkspaceView.swift b/GestaltX/LocalPlistWorkspaceView.swift
+new file mode 100644
+index 0000000..a75e477
+--- /dev/null
++++ b/GestaltX/LocalPlistWorkspaceView.swift
+@@ -0,0 +1,181 @@
++// SPDX-License-Identifier: GPL-3.0-only
++import SwiftUI
++import UniformTypeIdentifiers
++
++@MainActor
++struct LocalPlistWorkspaceView: View {
++    @EnvironmentObject private var operationLog: UnifiedOperationLog
++    @State private var records: [LocalPlistWorkspace.Record] = []
++    @State private var selected: LocalPlistWorkspace.Record?
++    @State private var draft = ""
++    @State private var proposal: LocalPlistWorkspace.Change?
++    @State private var notice: String?
++    @State private var importing = false
++    @State private var restoring = false
++    @State private var restoreLast = false
++    @State private var exporting = false
++    @State private var document: CopyDocument?
++
++    private struct CopyDocument: FileDocument {
++        static var readableContentTypes: [UTType] { [.propertyList] }
++        let bytes: Data
++
++        init(bytes: Data) { self.bytes = bytes }
++
++        init(configuration: ReadConfiguration) throws {
++            guard let bytes = configuration.file.regularFileContents else { throw CocoaError(.fileReadCorruptFile) }
++            self.bytes = bytes
++        }
++
++        func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
++            FileWrapper(regularFileWithContents: bytes)
++        }
++    }
++
++    private var store: LocalPlistWorkspace {
++        .init(root: URL.applicationSupportDirectory.appending(path: "LocalPlistWorkspace", directoryHint: .isDirectory))
++    }
++
++    var body: some View {
++        List {
++            Section {
++                Button("导入 plist 副本", systemImage: "doc.badge.plus") { importing = true }
++                ForEach(records) { record in
++                    Button { select(record) } label: {
++                        Label(record.name, systemImage: record.id == selected?.id ? "checkmark.circle.fill" : "doc")
++                    }
++                }
++            } footer: {
++                Text("只编辑应用内的独立副本，不修改来源文件、系统设置或 MobileGestalt。")
++            }
++
++            if let selected {
++                Section("副本编辑") {
++                    TextEditor(text: $draft)
++                        .font(.system(.footnote, design: .monospaced))
++                        .frame(minHeight: 180)
++                        .autocorrectionDisabled()
++                        .textInputAutocapitalization(.never)
++                        .accessibilityLabel("plist XML")
++                    Button("检查差异", systemImage: "arrow.left.arrow.right") { prepare(selected) }
++                }
++
++                if let proposal {
++                    Section("写入前核对") {
++                        LabeledContent("变更字段", value: proposal.changedKeys.count.formatted())
++                        ForEach(proposal.changedKeys.prefix(25), id: \.self) { Text($0) }
++                        if proposal.changedKeys.count > 25 { Text("这里只列出前 25 项。") }
++                        Text("原 SHA256：\(proposal.beforeSHA)").font(.caption.monospaced())
++                        Text("新 SHA256：\(proposal.afterSHA)").font(.caption.monospaced())
++                        Button("写入副本并校验", systemImage: "checkmark.shield") { apply(proposal) }
++                    }
++                }
++
++                Section("备份与恢复") {
++                    Button("导出当前副本") { export(selected.working) }
++                    Button("导出原始备份") { export(selected.original) }
++                    if let before = selected.previous, selected.previousSHA != selected.workingSHA {
++                        Button("导出上次写入前的备份") { export(before) }
++                        Button("恢复上次写入前的备份", role: .destructive) { restoreLast = true; restoring = true }
++                    }
++                    if selected.workingSHA != selected.originalSHA {
++                        Button("恢复原始备份", role: .destructive) { restoreLast = false; restoring = true }
++                    }
++                }
++            }
++
++            if let notice { Text(notice).foregroundStyle(.secondary) }
++        }
++        .navigationTitle("本地 plist 工作区")
++        .onChange(of: draft) { _, _ in proposal = nil }
++        .task { refresh() }
++        .fileImporter(isPresented: $importing, allowedContentTypes: [.propertyList]) { result in
++            guard case .success(let url) = result else { return }
++            Task { await importFile(url) }
++        }
++        .fileExporter(isPresented: $exporting, document: document, contentType: .propertyList, defaultFilename: "LilaShift-Local.plist") {
++            if case .success = $0 { notice = "文件已导出。" }
++            else { notice = "导出未完成。" }
++            document = nil
++        }
++        .confirmationDialog("用核对过的备份恢复当前副本？", isPresented: $restoring, titleVisibility: .visible) {
++            Button("恢复并校验", role: .destructive) { restore() }
++        } message: {
++            if let selected {
++                let target = restoreLast ? selected.previousSHA : selected.originalSHA
++                Text("当前 SHA256：\(selected.workingSHA)\n恢复目标：\(target ?? "不可读")")
++            }
++        }
++    }
++
++    private func refresh() {
++        do { records = try store.records() }
++        catch { notice = "无法载入本地副本；未修改文件。" }
++    }
++
++    private func importFile(_ url: URL) async {
++        do {
++            let data = try await Task.detached { try LocalPlistWorkspace.readSelectedFile(url) }.value
++            _ = try LocalPlistWorkspace.editableXML(data)
++            let imported = try store.importCopy(data, name: url.lastPathComponent)
++            select(imported)
++            refresh()
++            notice = "副本与原始备份已写入并读回校验。"
++            operationLog.record(.plist, .info, "导入副本，已校验原始备份")
++        } catch {
++            operationLog.record(.plist, .error, "导入副本未完成")
++            notice = "导入未完成。需要不超过 1 MiB 的有效字典 plist，且不能是链接。"
++        }
++    }
++
++    private func select(_ record: LocalPlistWorkspace.Record) {
++        do {
++            draft = try LocalPlistWorkspace.editableXML(record.working)
++            selected = record
++            proposal = nil
++            notice = nil
++        } catch { notice = "无法打开此副本。" }
++    }
++
++    private func prepare(_ record: LocalPlistWorkspace.Record) {
++        do { proposal = try store.stage(xml: draft, for: record); notice = nil }
++        catch LocalPlistWorkspace.Failure.noChange { proposal = nil; notice = "没有字段变化。" }
++        catch { proposal = nil; notice = "无法生成差异，请核对 XML 格式及大小。" }
++    }
++
++    private func apply(_ change: LocalPlistWorkspace.Change) {
++        guard Data(draft.utf8) == change.bytes else { proposal = nil; return }
++        do {
++            selected = try store.apply(change)
++            proposal = nil
++            refresh()
++            notice = "副本已保存，读回的 SHA256 与本次差异一致。"
++            operationLog.record(.plist, .info, "保存副本，已读回核对")
++        } catch {
++            proposal = nil
++            notice = "未能确认写入；请重新打开副本核对，原始备份未替换。"
++            operationLog.record(.plist, .error, "副本写入未得到读回确认")
++        }
++    }
++
++    private func restore() {
++        guard let selected else { return }
++        do {
++            let verified = try restoreLast
++                ? store.restorePrevious(id: selected.id, expectedSHA: selected.workingSHA)
++                : store.restoreOriginal(id: selected.id, expectedSHA: selected.workingSHA)
++            select(verified)
++            refresh()
++            notice = "恢复后读回的内容与所选备份一致。"
++            operationLog.record(.plist, .info, "恢复副本，已读回核对")
++        } catch {
++            notice = "未能确认恢复；请重新打开副本核对。"
++            operationLog.record(.plist, .error, "副本恢复未得到读回确认")
++        }
++    }
++
++    private func export(_ bytes: Data) {
++        document = .init(bytes: bytes)
++        exporting = true
++    }
++}
+diff --git a/GestaltX/Localizable.xcstrings b/GestaltX/Localizable.xcstrings
+index 50a5505..01f52e2 100644
+--- a/GestaltX/Localizable.xcstrings
++++ b/GestaltX/Localizable.xcstrings
+@@ -123776,6 +123776,710 @@
+           }
+         }
+       }
++    },
++    "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "屏幕亮度、智能报告、资源监控、壁纸工坊与本地 plist 工作区——仅用官方 API。"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Brillo, informes, monitorización de recursos, estudio de fondos y espacio de trabajo plist local; solo API oficiales."
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "روشنایی صفحه، گزارش‌ها، پایش منابع، استودیوی تصویر زمینه و فضای کاری plist محلی — فقط APIهای رسمی."
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "画面の明るさ、レポート、リソース監視、壁紙スタジオ、ローカル plist ワークスペース——公式 API のみ。"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "화면 밝기, 보고서, 리소스 모니터링, 배경화면 스티디오, 로컬 plist 작업 공간 — 공식 API만 사용."
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Яркость экрана, отчёты, мониторинг ресурсов, студия обоев и локальная рабочая область plist — только официальные API."
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Độ sáng màn hình, báo cáo, giám sát tài nguyên, xưởng hình nền và không gian làm việc plist cục bộ — chỉ API chính thức."
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "螢幕亮度、智慧報告、資源監控、桌布工坊與本機 plist 工作區——僅使用官方 API。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "螢幕亮度、智慧報告、資源監控、桌布工坊與本機 plist 工作區——僅使用官方 API。"
++          }
++        }
++      }
++    },
++    "Official API Tools": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Official API Tools"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "官方接口工具"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Herramientas de API oficiales"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "ابزارهای رسمی API"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "公式 API ツール"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "공식 API 도구"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Официальные инструменты API"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Công cụ API chính thức"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "官方介面工具"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "官方介面工具"
++          }
++        }
++      }
++    },
++    "Critical": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Critical"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "严重"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Crítica"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "بحرانی"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "重大"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "심각"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Критическое"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Nghiêm trọng"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "嚴重"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "嚴重"
++          }
++        }
++      }
++    },
++    "Memory in MiB": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Memory in MiB"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "内存（MiB）"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Memoria en MiB"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "حافظه بر حسب MiB"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "メモリ（MiB）"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "메모리(MiB)"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Память в МиБ"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Bộ nhớ theo MiB"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "記憶體（MiB）"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "記憶體（MiB）"
++          }
++        }
++      }
++    },
++    "Monitor session": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Monitor session"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "监控会话"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Sesión de monitorización"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "نشست پایش"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "監視セッション"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "모니터 세션"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Сеанс мониторинга"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Phiên giám sát"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "監控工作階段"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "監控工作階段"
++          }
++        }
++      }
++    },
++    "Normal": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Normal"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "正常"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Normal"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "عادی"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "正常"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "정상"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Норма"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Bình thường"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "正常"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "正常"
++          }
++        }
++      }
++    },
++    "Not measured": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Not measured"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "未测得"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "No medido"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "اندازه‌گیری نشده"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "未測定"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "측정 안 됨"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Не измерено"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Chưa đo"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "未測量"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "未測量"
++          }
++        }
++      }
++    },
++    "Resident memory": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Resident memory"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "常驻内存"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Memoria residente"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "حافظه مقیم"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "常駐メモリ"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "상주 메모리"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Резидентная память"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Bộ nhớ thường trú"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "常駐記憶體"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "常駐記憶體"
++          }
++        }
++      }
++    },
++    "Sent": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Sent"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "已发送"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Enviados"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "ارسال شده"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "送信済み"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "보냄"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Отправлено"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Đã gửi"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "已傳送"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "已傳送"
++          }
++        }
++      }
++    },
++    "Session seconds": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Session seconds"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "会话秒数"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Segundos de sesión"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "ثانیه‌های نشست"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "セッション秒数"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "세션 초"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Секунды сеанса"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Giây phiên"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "工作階段秒數"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "工作階段秒數"
++          }
++        }
++      }
++    },
++    "sec": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "sec"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "秒"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "s"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "ثانیه"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "秒"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "초"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "с"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "giây"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "秒"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "秒"
++          }
++        }
++      }
+     }
+   },
+   "version": "1.0"
+diff --git a/GestaltX/NetworkCheckView.swift b/GestaltX/NetworkCheckView.swift
+new file mode 100644
+index 0000000..8fb4719
+--- /dev/null
++++ b/GestaltX/NetworkCheckView.swift
+@@ -0,0 +1,81 @@
++// SPDX-License-Identifier: GPL-3.0-only
++import Foundation
++import Network
++import SwiftUI
++
++@MainActor
++struct NetworkCheckView: View {
++    @Environment(\.w8NetworkCounter) private var counter
++    @EnvironmentObject private var operationLog: UnifiedOperationLog
++    @State private var requestID: UUID?
++    @State private var publicIP: String?
++    @State private var issue: LocalizedStringKey?
++
++    var body: some View {
++        List {
++            Section {
++                Button("network.check", systemImage: "network") {
++                    publicIP = nil
++                    issue = nil
++                    requestID = UUID()
++                }
++                .disabled(requestID != nil)
++                if requestID != nil { ProgressView() }
++                if let publicIP { LabeledContent("network.result", value: publicIP) }
++                if let issue { Text(issue).foregroundStyle(.secondary) }
++            } footer: {
++                Text("network.scope")
++            }
++        }
++        .navigationTitle("network.title")
++        .task(id: requestID) {
++            guard let id = requestID else { return }
++            defer { if requestID == id { requestID = nil } }
++            do {
++                let value = try await Self.check(counter: counter)
++                if !Task.isCancelled {
++                    publicIP = value
++                    operationLog.record(.network, .info, "网络出口查询完成")
++                }
++            } catch {
++                if !Task.isCancelled {
++                    issue = "network.failed"
++                    operationLog.record(.network, .warning, "网络出口查询未完成")
++                }
++            }
++        }
++    }
++
++    private struct Response: Decodable {
++        struct Payload: Decodable { let ip: String }
++        let status: String
++        let data: Payload
++    }
++
++    private static func check(counter: W8NetworkCounter?) async throws -> String {
++        guard let url = URL(string: "https://stat.ripe.net/data/whats-my-ip/data.json") else {
++            throw URLError(.badURL)
++        }
++        let configuration = URLSessionConfiguration.ephemeral
++        configuration.timeoutIntervalForRequest = 10
++        configuration.timeoutIntervalForResource = 15
++        configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
++        let session = URLSession(configuration: configuration)
++        defer { session.finishTasksAndInvalidate() }
++        let (stream, response) = try await session.bytes(from: url, delegate: counter)
++        guard let http = response as? HTTPURLResponse, http.statusCode == 200, http.url?.host == url.host else {
++            throw URLError(.badServerResponse)
++        }
++        var buffer = Data()
++        for try await byte in stream {
++            guard buffer.count < 16_384 else { throw URLError(.dataLengthExceedsMaximum) }
++            buffer.append(byte)
++        }
++        let envelope = try JSONDecoder().decode(Response.self, from: buffer)
++        let address = envelope.data.ip
++        guard envelope.status == "ok", IPv4Address(address) != nil || IPv6Address(address) != nil else {
++            throw URLError(.cannotParseResponse)
++        }
++        return address
++    }
++}
+diff --git a/GestaltX/OfficialToolsPage.swift b/GestaltX/OfficialToolsPage.swift
+new file mode 100644
+index 0000000..f69ac34
+--- /dev/null
++++ b/GestaltX/OfficialToolsPage.swift
+@@ -0,0 +1,66 @@
++// SPDX-License-Identifier: GPL-3.0-only
++// The merged official-API tools page (LilaShift 5.0.0 merge).
++// One destination hosting every feature that uses only public
++// Apple APIs: screen brightness write, the intelligence report,
++// the resource monitor, the network egress check, the wallpaper
++// studio, the local plist workspace, the session log, and the
++// app appearance mode. Nothing on this page writes MobileGestalt,
++// eSIM, Apple Intelligence eligibility, the system appearance,
++// wallet cards, or another app's container. The full 4.2.0
++// feature set (including the sandbox-escape-backed writes) stays
++// reachable from the rest of the app; this page adds to it, it
++// does not replace it.
++import SwiftUI
++
++struct OfficialToolsPage: View {
++    var body: some View {
++        List {
++            Section {
++                NavigationLink {
++                    BrightnessWriteView()
++                } label: {
++                    Label("屏幕亮度写入", systemImage: "sun.max")
++                }
++                NavigationLink {
++                    W7IntelligenceReportView()
++                } label: {
++                    Label(W7IntelligenceReportView.title, systemImage: "doc.text.magnifyingglass")
++                }
++                NavigationLink {
++                    W8ResourceMonitorView()
++                } label: {
++                    Label(W8ResourceMonitorView.title, systemImage: "waveform.path")
++                }
++                NavigationLink {
++                    NetworkCheckView()
++                } label: {
++                    Label("network.title", systemImage: "network")
++                }
++                NavigationLink {
++                    W9WallpaperStudioView()
++                } label: {
++                    Label(W9WallpaperStudioView.title, systemImage: "photo.stack")
++                }
++                NavigationLink {
++                    LocalPlistWorkspaceView()
++                } label: {
++                    Label("本地 plist 工作区", systemImage: "doc.badge.gearshape")
++                }
++                NavigationLink {
++                    UnifiedOperationLogView()
++                } label: {
++                    Label("会话日志", systemImage: "list.bullet.rectangle")
++                }
++            }
++
++            Section {
++                W11AppearanceSettingsRow()
++            } header: {
++                Text("appearance.heading")
++            } footer: {
++                Text(String(localized: "Changes only LilaShift, not the iOS appearance setting.", table: "W11Appearance"))
++            }
++        }
++        .navigationTitle(L("Official API Tools"))
++    }
++}
+diff --git a/GestaltX/UnifiedOperationLogView.swift b/GestaltX/UnifiedOperationLogView.swift
+new file mode 100644
+index 0000000..9439197
+--- /dev/null
++++ b/GestaltX/UnifiedOperationLogView.swift
+@@ -0,0 +1,113 @@
++// SPDX-License-Identifier: GPL-3.0-only
++import Foundation
++import SwiftUI
++import UniformTypeIdentifiers
++
++@MainActor
++final class UnifiedOperationLog: ObservableObject {
++    enum Area: String, Codable { case plist, screen, network }
++    enum Level: String, CaseIterable, Codable, Identifiable {
++        case info, warning, error
++        var id: Self { self }
++        var title: String {
++            switch self {
++            case .info: "信息"
++            case .warning: "警告"
++            case .error: "错误"
++            }
++        }
++    }
++
++    struct Event: Codable, Identifiable {
++        let id: UUID
++        let time: Date
++        let area: Area
++        let level: Level
++        let event: String
++    }
++
++    @Published private(set) var entries: [Event] = []
++
++    /// Only controlled event names: no paths, reports, IPs or setting values.
++    func record(_ area: Area, _ level: Level, _ event: String) {
++        entries.append(.init(id: UUID(), time: .now, area: area, level: level, event: event))
++        if entries.count > 500 { entries.removeFirst(entries.count - 500) }
++    }
++}
++
++@MainActor
++struct UnifiedOperationLogView: View {
++    @EnvironmentObject private var log: UnifiedOperationLog
++    @State private var text = ""
++    @State private var level: UnifiedOperationLog.Level?
++    @State private var exporting = false
++    @State private var document: JSONDocument?
++    @State private var exportFailed = false
++
++    private struct JSONDocument: FileDocument {
++        static var readableContentTypes: [UTType] { [.json] }
++        let bytes: Data
++        init(bytes: Data) { self.bytes = bytes }
++        init(configuration: ReadConfiguration) throws {
++            guard let bytes = configuration.file.regularFileContents else { throw CocoaError(.fileReadCorruptFile) }
++            self.bytes = bytes
++        }
++        func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper { FileWrapper(regularFileWithContents: bytes) }
++    }
++
++    private var matched: [UnifiedOperationLog.Event] {
++        let query = text.trimmingCharacters(in: .whitespacesAndNewlines)
++        return log.entries.reversed().filter {
++            (level == nil || level == $0.level) &&
++            (query.isEmpty || $0.event.localizedCaseInsensitiveContains(query) || $0.area.rawValue.localizedCaseInsensitiveContains(query))
++        }
++    }
++
++    var body: some View {
++        List {
++            Section {
++                Picker("日志级别", selection: $level) {
++                    Text("全部").tag(nil as UnifiedOperationLog.Level?)
++                    ForEach(UnifiedOperationLog.Level.allCases) { row in
++                        Text(row.title).tag(Optional(row))
++                    }
++                }
++                Button("导出当前筛选结果", systemImage: "square.and.arrow.up") { prepareExport() }
++                    .disabled(matched.isEmpty)
++            } footer: {
++                Text("仅本次应用会话内的真实操作，最多 500 条。不记录文件内容、路径或网络地址。")
++            }
++            if matched.isEmpty {
++                Text(log.entries.isEmpty ? "本次会话还没有可记录的操作。" : "没有匹配的日志。")
++                    .foregroundStyle(.secondary)
++            } else {
++                ForEach(matched) { item in
++                    VStack(alignment: .leading, spacing: 4) {
++                        Text(item.event)
++                        Text(item.level.title + " · " + item.area.rawValue + " · " + item.time.formatted())
++                            .font(.caption).foregroundStyle(.secondary)
++                    }
++                }
++            }
++        }
++        .navigationTitle("会话日志")
++        .searchable(text: $text)
++        .fileExporter(isPresented: $exporting, document: document, contentType: .json, defaultFilename: "LilaShift-Session-Log") {
++            if case .failure = $0 { exportFailed = true }
++            document = nil
++        }
++        .alert("未能导出日志", isPresented: $exportFailed) {
++            Button("好", role: .cancel) {}
++        }
++    }
++
++    private func prepareExport() {
++        do {
++            let encoder = JSONEncoder()
++            encoder.dateEncodingStrategy = .iso8601
++            encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
++            document = .init(bytes: try encoder.encode(matched))
++            exporting = true
++        } catch { exportFailed = true }
++    }
++}
+diff --git a/GestaltX/VerifiedChange.swift b/GestaltX/VerifiedChange.swift
+new file mode 100644
+index 0000000..81986bc
+--- /dev/null
++++ b/GestaltX/VerifiedChange.swift
+@@ -0,0 +1,75 @@
++// SPDX-License-Identifier: GPL-3.0-only
++/// A single reversible, verified change. The caller provides the real read/write
++/// implementation and must serialize every call on the device API's actor.
++struct VerifiedChange<Value> {
++    enum Result: Equatable {
++        case applied
++        case restored
++        case unchanged
++        case busy
++        case unavailable
++        case writeRejectedAndOriginalRecovered
++        case restoreUnverified
++        case externallyChanged
++    }
++
++    private struct Snapshot {
++        let original: Value
++        let lastObserved: Value
++    }
++
++    private var pending: Snapshot?
++    var canRestore: Bool { pending != nil }
++
++    init() {}
++
++    mutating func apply(
++        _ target: Value,
++        read: () -> Value?,
++        write: (Value) -> Void,
++        equals: (Value, Value) -> Bool
++    ) -> Result {
++        guard pending == nil else { return .busy }
++        guard let original = read() else { return .unavailable }
++        guard !equals(original, target) else { return .unchanged }
++        // Save before the application of the requested value.
++        pending = Snapshot(original: original, lastObserved: target)
++        write(target)
++        let observed = read()
++        if let observed, equals(observed, target) {
++            pending = Snapshot(original: original, lastObserved: observed)
++            return .applied
++        }
++        if let observed, equals(observed, original) {
++            pending = nil
++            return .writeRejectedAndOriginalRecovered
++        }
++        // An unverified intermediate value is never blindly overwritten.
++        return observed == nil ? .restoreUnverified : .externallyChanged
++    }
++
++    mutating func restore(
++        read: () -> Value?,
++        write: (Value) -> Void,
++        equals: (Value, Value) -> Bool
++    ) -> Result {
++        guard let snapshot = pending else { return .unchanged }
++        guard let current = read() else { return .unavailable }
++        if equals(current, snapshot.original) {
++            pending = nil
++            return .restored
++        }
++        guard equals(current, snapshot.lastObserved) else { return .externallyChanged }
++        write(snapshot.original)
++        guard let actual = read(), equals(actual, snapshot.original) else {
++            return .restoreUnverified
++        }
++        pending = nil
++        return .restored
++    }
++
++    /// Stops tracking the transaction without writing to the device.
++    mutating func discard() {
++        pending = nil
++    }
++}
+diff --git a/GestaltX/W11Appearance.xcstrings b/GestaltX/W11Appearance.xcstrings
+new file mode 100644
+index 0000000..d319470
+--- /dev/null
++++ b/GestaltX/W11Appearance.xcstrings
+@@ -0,0 +1,61 @@
++{
++  "sourceLanguage": "en",
++  "strings": {
++    "App Appearance": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "应用外观"
++          }
++        }
++      }
++    },
++    "Changes only LilaShift, not the iOS appearance setting.": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "仅影响紫序，不会更改 iOS 的系统外观。"
++          }
++        }
++      }
++    },
++    "Dark": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "深色"
++          }
++        }
++      }
++    },
++    "Follow System": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "跟随系统"
++          }
++        }
++      }
++    },
++    "Light": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "浅色"
++          }
++        }
++      }
++    }
++  },
++  "version": "1.0"
++}
+diff --git a/GestaltX/W11AppearanceMode.swift b/GestaltX/W11AppearanceMode.swift
+new file mode 100644
+index 0000000..3fd72ce
+--- /dev/null
++++ b/GestaltX/W11AppearanceMode.swift
+@@ -0,0 +1,58 @@
++// SPDX-License-Identifier: GPL-3.0-only
++import SwiftUI
++
++enum W11AppearanceMode: String, CaseIterable, Identifiable {
++    case light, dark, system
++
++    static let storageKey = "LilaShift.appearanceMode.v1"
++    static let defaultMode: Self = .light
++
++    var id: Self { self }
++
++    static func stored(_ rawValue: String) -> Self {
++        Self(rawValue: rawValue) ?? defaultMode
++    }
++
++    var preferredScheme: ColorScheme? {
++        switch self {
++        case .light: .light
++        case .dark: .dark
++        case .system: nil
++        }
++    }
++
++    var title: String {
++        switch self {
++        case .light: String(localized: "Light", table: "W11Appearance")
++        case .dark: String(localized: "Dark", table: "W11Appearance")
++        case .system: String(localized: "Follow System", table: "W11Appearance")
++        }
++    }
++}
++
++struct W11AppearanceSettingsRow: View {
++    @AppStorage(W11AppearanceMode.storageKey) private var storedMode = W11AppearanceMode.defaultMode.rawValue
++
++    private var selection: Binding<W11AppearanceMode> {
++        Binding(
++            get: { W11AppearanceMode.stored(storedMode) },
++            set: { storedMode = $0.rawValue }
++        )
++    }
++
++    var body: some View {
++        Picker(selection: selection) {
++            ForEach(W11AppearanceMode.allCases) { mode in
++                Text(mode.title).tag(mode)
++            }
++        } label: {
++            Label {
++                Text("App Appearance", tableName: "W11Appearance")
++            } icon: {
++                Image(systemName: "circle.lefthalf.filled")
++            }
++        }
++        .pickerStyle(.menu)
++        .accessibilityIdentifier("lilashift.appearance.mode")
++    }
++}
+diff --git a/GestaltX/W7IntelligenceReport.swift b/GestaltX/W7IntelligenceReport.swift
+new file mode 100644
+index 0000000..7c90589
+--- /dev/null
++++ b/GestaltX/W7IntelligenceReport.swift
+@@ -0,0 +1,63 @@
++// SPDX-License-Identifier: GPL-3.0-only
++import Foundation
++
++/// A narrow, on-device summary of user-selected Apple Intelligence Report JSON.
++/// This is not signature verification and does not retain prompts or other fields.
++struct W7IntelligenceReport: Equatable, Sendable {
++    let privateCloudComputeRequests: Int?
++    let modelRequests: Int?
++
++    enum Failure: Error, Equatable {
++        case unreadable
++        case tooLarge
++        case malformedJSON
++        case unrecognized
++        case invalidRequestList
++    }
++
++    static let maximumBytes = 4 * 1_024 * 1_024
++
++    static func read(_ url: URL) throws -> Self {
++        let scoped = url.startAccessingSecurityScopedResource()
++        defer { if scoped { url.stopAccessingSecurityScopedResource() } }
++
++        do {
++            let handle = try FileHandle(forReadingFrom: url)
++            defer { try? handle.close() }
++            var buffer = Data()
++            while buffer.count <= maximumBytes {
++                let count = min(65_536, maximumBytes + 1 - buffer.count)
++                guard let next = try handle.read(upToCount: count), !next.isEmpty else {
++                    return try decode(buffer)
++                }
++                buffer.append(next)
++            }
++            throw Failure.tooLarge
++        } catch let failure as Failure {
++            throw failure
++        } catch {
++            throw Failure.unreadable
++        }
++    }
++
++    static func decode(_ data: Data) throws -> Self {
++        guard data.count <= maximumBytes else { throw Failure.tooLarge }
++        let object: Any
++        do {
++            object = try JSONSerialization.jsonObject(with: data, options: [.fragmentsAllowed])
++        } catch {
++            throw Failure.malformedJSON
++        }
++        guard let root = object as? [String: Any] else { throw Failure.unrecognized }
++        let pcc = try requestCount("privateCloudComputeRequests", in: root)
++        let models = try requestCount("modelRequests", in: root)
++        guard pcc != nil || models != nil else { throw Failure.unrecognized }
++        return Self(privateCloudComputeRequests: pcc, modelRequests: models)
++    }
++
++    private static func requestCount(_ key: String, in root: [String: Any]) throws -> Int? {
++        guard let value = root[key] else { return nil }
++        guard let requests = value as? [[String: Any]] else { throw Failure.invalidRequestList }
++        return requests.count
++    }
++}
+diff --git a/GestaltX/W7IntelligenceReportView.swift b/GestaltX/W7IntelligenceReportView.swift
+new file mode 100644
+index 0000000..11a4ea2
+--- /dev/null
++++ b/GestaltX/W7IntelligenceReportView.swift
+@@ -0,0 +1,90 @@
++// SPDX-License-Identifier: GPL-3.0-only
++import Foundation
++import SwiftUI
++import UniformTypeIdentifiers
++
++@MainActor
++struct W7IntelligenceReportView: View {
++    @State private var choosing = false
++    @State private var request: OpenRequest?
++    @State private var summary: W7IntelligenceReport?
++    @State private var issue: String?
++
++    private struct OpenRequest: Identifiable, Sendable {
++        let id = UUID()
++        let url: URL
++    }
++
++    static var title: String { String(localized: "Apple Intelligence Report", table: "W7Report") }
++
++    var body: some View {
++        List {
++            Section {
++                Button {
++                    choosing = true
++                } label: {
++                    Label(String(localized: "Choose report JSON", table: "W7Report"), systemImage: "doc.text")
++                }
++                if request != nil { ProgressView() }
++                if let issue { Text(issue).foregroundStyle(.secondary) }
++            } footer: {
++                Text("Export from Settings → Privacy & Security → Apple Intelligence Report. This app only reads the file you choose and does not upload or retain it.", tableName: "W7Report")
++            }
++
++            if let summary {
++                Section {
++                    LabeledContent(label("Private Cloud Compute records"), value: displayCount(summary.privateCloudComputeRequests))
++                    LabeledContent(label("Model request records"), value: displayCount(summary.modelRequests))
++                } header: {
++                    Text("Records found in this file", tableName: "W7Report")
++                } footer: {
++                    Text("A zero count describes this file only. The app does not verify the report's origin, server attestation, or device eligibility.", tableName: "W7Report")
++                }
++            }
++        }
++        .navigationTitle(Self.title)
++        .fileImporter(isPresented: $choosing, allowedContentTypes: [.json]) { result in
++            summary = nil
++            switch result {
++            case .success(let url):
++                issue = nil
++                request = OpenRequest(url: url)
++            case .failure:
++                request = nil
++                issue = label("Could not open this file.")
++            }
++        }
++        .task(id: request?.id) {
++            guard let opened = request else { return }
++            let result = await Task.detached(priority: .userInitiated) {
++                Result { try W7IntelligenceReport.read(opened.url) }
++            }.value
++            guard !Task.isCancelled, request?.id == opened.id else { return }
++            request = nil
++            switch result {
++            case .success(let value):
++                summary = value
++            case .failure(let error):
++                issue = failureMessage(error as? W7IntelligenceReport.Failure)
++            }
++        }
++    }
++
++    private func displayCount(_ count: Int?) -> String {
++        count?.formatted() ?? label("Not in this file")
++    }
++
++    private func failureMessage(_ error: W7IntelligenceReport.Failure?) -> String {
++        switch error {
++        case .tooLarge: label("This file is larger than 4 MiB.")
++        case .malformedJSON: label("This file is not valid JSON.")
++        case .unrecognized: label("Recognized report sections were not found.")
++        case .invalidRequestList: label("A report section had an unsupported format.")
++        case .unreadable, nil: label("Could not open this file.")
++        }
++    }
++
++    private func label(_ value: String.LocalizationValue) -> String {
++        String(localized: value, table: "W7Report")
++    }
++}
+diff --git a/GestaltX/W7Report.xcstrings b/GestaltX/W7Report.xcstrings
+new file mode 100644
+index 0000000..edf6882
+--- /dev/null
++++ b/GestaltX/W7Report.xcstrings
+@@ -0,0 +1,149 @@
++{
++  "sourceLanguage": "en",
++  "strings": {
++    "A report section had an unsupported format.": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "报告包含格式不受支持的字段。"
++          }
++        }
++      }
++    },
++    "A zero count describes this file only. The app does not verify the report's origin, server attestation, or device eligibility.": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "零条仅描述此文件。本应用不核验报告来源、服务器证明或设备准入。"
++          }
++        }
++      }
++    },
++    "Apple Intelligence Report": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Apple 智能报告"
++          }
++        }
++      }
++    },
++    "Choose report JSON": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "选择报告 JSON"
++          }
++        }
++      }
++    },
++    "Could not open this file.": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "无法打开此文件。"
++          }
++        }
++      }
++    },
++    "Export from Settings → Privacy & Security → Apple Intelligence Report. This app only reads the file you choose and does not upload or retain it.": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "请从「设置 → 隐私与安全性 → Apple 智能报告」导出。本应用只读你选中的文件，不上传、不留存原文。"
++          }
++        }
++      }
++    },
++    "Model request records": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "模型请求记录"
++          }
++        }
++      }
++    },
++    "Not in this file": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "此文件未提供"
++          }
++        }
++      }
++    },
++    "Private Cloud Compute records": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "私密云计算记录"
++          }
++        }
++      }
++    },
++    "Recognized report sections were not found.": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "没有找到受支持的报告字段。"
++          }
++        }
++      }
++    },
++    "Records found in this file": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "文件内找到的记录"
++          }
++        }
++      }
++    },
++    "This file is larger than 4 MiB.": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "文件超过 4 MiB。"
++          }
++        }
++      }
++    },
++    "This file is not valid JSON.": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "文件不是有效的 JSON。"
++          }
++        }
++      }
++    }
++  },
++  "version": "1.0"
++}
+diff --git a/GestaltX/W8Monitoring.xcstrings b/GestaltX/W8Monitoring.xcstrings
+new file mode 100644
+index 0000000..9364021
+--- /dev/null
++++ b/GestaltX/W8Monitoring.xcstrings
+@@ -0,0 +1,226 @@
++{
++  "sourceLanguage": "en",
++  "strings": {
++    "App memory": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "应用内存"
++          }
++        }
++      }
++    },
++    "Critical": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "严重"
++          }
++        }
++      }
++    },
++    "Current process only. Samples about every two seconds while this page is active.": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "仅统计本应用进程。此页在前台时约每两秒采样。"
++          }
++        }
++      }
++    },
++    "Elapsed time since opening this monitor. It is not system uptime.": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "从打开此监控页开始计算，不是系统运行时间。"
++          }
++        }
++      }
++    },
++    "Measured network traffic": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "已观测流量"
++          }
++        }
++      }
++    },
++    "Memory in MiB": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "内存（MiB）"
++          }
++        }
++      }
++    },
++    "Memory pressure events": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "内存压力事件"
++          }
++        }
++      }
++    },
++    "Monitor session": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "监控会话"
++          }
++        }
++      }
++    },
++    "No memory pressure event observed yet.": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "目前尚未收到内存压力事件。"
++          }
++        }
++      }
++    },
++    "Normal": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "正常"
++          }
++        }
++      }
++    },
++    "Not measured": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "未测得"
++          }
++        }
++      }
++    },
++    "Received": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "已接收"
++          }
++        }
++      }
++    },
++    "Resident memory": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "常驻内存"
++          }
++        }
++      }
++    },
++    "Resource Monitor": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "资源监控"
++          }
++        }
++      }
++    },
++    "sec": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "秒"
++          }
++        }
++      }
++    },
++    "Sent": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "已发送"
++          }
++        }
++      }
++    },
++    "Session seconds": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "会话秒数"
++          }
++        }
++      }
++    },
++    "Since app launch, for RIPEstat HTTPS diagnostics only. Includes measured HTTP headers and bodies. Does not include cache hits, ping, traceroute, or other apps.": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "从应用启动累计，仅统计 RIPEstat HTTPS 诊断测得的请求与响应头及正文；不含缓存命中、Ping、路由追踪或其他应用。"
++          }
++        }
++      }
++    },
++    "The latest 12 observed changes during foreground monitoring; an empty list does not mean normal.": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "显示前台监控期间最近收到的 12 条变化。列表为空不代表正常。"
++          }
++        }
++      }
++    },
++    "Warning": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "警告"
++          }
++        }
++      }
++    }
++  },
++  "version": "1.0"
++}
+diff --git a/GestaltX/W8ResourceMetrics.swift b/GestaltX/W8ResourceMetrics.swift
+new file mode 100644
+index 0000000..db93508
+--- /dev/null
++++ b/GestaltX/W8ResourceMetrics.swift
+@@ -0,0 +1,89 @@
++// SPDX-License-Identifier: GPL-3.0-only
++import Darwin
++import Dispatch
++import Foundation
++
++enum W8ResourceMetrics {
++    /// Mach resident size of this process, not whole-device RAM or physical footprint.
++    static func residentBytes() -> UInt64? {
++        var info = mach_task_basic_info()
++        var count = mach_msg_type_number_t(MemoryLayout<mach_task_basic_info>.stride / MemoryLayout<integer_t>.stride)
++        let requiredCount = count
++        let result = withUnsafeMutablePointer(to: &info) { infoPointer in
++            infoPointer.withMemoryRebound(to: integer_t.self, capacity: Int(requiredCount)) {
++                task_info(mach_task_self_, task_flavor_t(MACH_TASK_BASIC_INFO), $0, &count)
++            }
++        }
++        guard result == KERN_SUCCESS, count >= requiredCount else { return nil }
++        return info.resident_size
++    }
++
++    static func pressureEvents() -> AsyncStream<W8PressureLevel> {
++        AsyncStream(bufferingPolicy: .bufferingNewest(12)) { continuation in
++            let source = DispatchSource.makeMemoryPressureSource(eventMask: [.normal, .warning, .critical])
++            source.setEventHandler {
++                if let level = W8PressureLevel(event: source.data) {
++                    continuation.yield(level)
++                }
++            }
++            continuation.onTermination = { _ in source.cancel() }
++            source.activate()
++        }
++    }
++}
++
++enum W8PressureLevel: Equatable, Sendable {
++    case normal, warning, critical
++
++    init?(event: DispatchSource.MemoryPressureEvent) {
++        if event.contains(.critical) { self = .critical }
++        else if event.contains(.warning) { self = .warning }
++        else if event.contains(.normal) { self = .normal }
++        else { return nil }
++    }
++}
++
++struct W8NetworkTotals: Equatable, Sendable {
++    private(set) var sent: UInt64?
++    private(set) var received: UInt64?
++
++    /// Only on-network transactions count; URLSession can return cached or unknown results.
++    mutating func include(isNetwork: Bool, sent: [Int64], received: [Int64]) {
++        guard isNetwork else { return }
++        self.sent = Self.add(sent, to: self.sent)
++        self.received = Self.add(received, to: self.received)
++    }
++
++    private static func add(_ components: [Int64], to current: UInt64?) -> UInt64? {
++        components.reduce(current) { total, component in
++            guard component >= 0 else { return total }
++            let (value, overflow) = (total ?? 0).addingReportingOverflow(UInt64(component))
++            return overflow ? UInt64.max : value
++        }
++    }
++}
++
++/// Owned by the app scene. The lock guards the only mutable state; callbacks
++/// store counts, never URLs, headers, addresses, payloads or user identifiers.
++final class W8NetworkCounter: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
++    private let lock = NSLock()
++    private var totals = W8NetworkTotals()
++
++    func snapshot() -> W8NetworkTotals {
++        lock.lock()
++        defer { lock.unlock() }
++        return totals
++    }
++
++    func urlSession(_ session: URLSession, task: URLSessionTask, didFinishCollecting metrics: URLSessionTaskMetrics) {
++        lock.lock()
++        defer { lock.unlock() }
++        for transaction in metrics.transactionMetrics where transaction.resourceFetchType == .networkLoad {
++            totals.include(
++                isNetwork: true,
++                sent: [transaction.countOfRequestHeaderBytesSent, transaction.countOfRequestBodyBytesSent],
++                received: [transaction.countOfResponseHeaderBytesReceived, transaction.countOfResponseBodyBytesReceived]
++            )
++        }
++    }
++}
+diff --git a/GestaltX/W8ResourceMonitorView.swift b/GestaltX/W8ResourceMonitorView.swift
+new file mode 100644
+index 0000000..2ad56a2
+--- /dev/null
++++ b/GestaltX/W8ResourceMonitorView.swift
+@@ -0,0 +1,162 @@
++// SPDX-License-Identifier: GPL-3.0-only
++import Charts
++import Foundation
++import SwiftUI
++
++private struct W8NetworkCounterKey: EnvironmentKey {
++    static let defaultValue: W8NetworkCounter? = nil
++}
++
++extension EnvironmentValues {
++    var w8NetworkCounter: W8NetworkCounter? {
++        get { self[W8NetworkCounterKey.self] }
++        set { self[W8NetworkCounterKey.self] = newValue }
++    }
++}
++
++@MainActor
++struct W8ResourceMonitorView: View {
++    @Environment(\.scenePhase) private var scenePhase
++    @Environment(\.w8NetworkCounter) private var counter
++    @State private var started: ContinuousClock.Instant?
++    @State private var elapsed: Int64 = 0
++    @State private var resident: UInt64?
++    @State private var memoryPoints: [MemoryPoint] = []
++    @State private var pressurePoints: [PressurePoint] = []
++    @State private var network = W8NetworkTotals()
++
++    private struct MemoryPoint: Identifiable {
++        let at: Double
++        let bytes: UInt64
++        var id: Double { at }
++    }
++
++    private struct PressurePoint: Identifiable {
++        let id = UUID()
++        let at: Int64
++        let level: W8PressureLevel
++    }
++
++    static var title: String { String(localized: "Resource Monitor", table: "W8Monitoring") }
++
++    var body: some View {
++        List {
++            Section {
++                LabeledContent(text("Resident memory"), value: byteText(resident))
++                if !memoryPoints.isEmpty {
++                    Chart(memoryPoints) { point in
++                        LineMark(
++                            x: .value(text("Session seconds"), point.at),
++                            y: .value(text("Memory in MiB"), Double(point.bytes) / 1_048_576)
++                        )
++                        .foregroundStyle(Color.accentColor)
++                        PointMark(
++                            x: .value(text("Session seconds"), point.at),
++                            y: .value(text("Memory in MiB"), Double(point.bytes) / 1_048_576)
++                        )
++                        .foregroundStyle(Color.accentColor)
++                    }
++                    .frame(height: 146)
++                }
++            } header: {
++                Text("App memory", tableName: "W8Monitoring")
++            } footer: {
++                Text("Current process only. Samples about every two seconds while this page is active.", tableName: "W8Monitoring")
++            }
++
++            Section {
++                if pressurePoints.isEmpty {
++                    Text("No memory pressure event observed yet.", tableName: "W8Monitoring")
++                        .foregroundStyle(.secondary)
++                } else {
++                    ForEach(pressurePoints.reversed()) { point in
++                        LabeledContent(pressureText(point.level), value: secondsText(point.at))
++                    }
++                }
++            } header: {
++                Text("Memory pressure events", tableName: "W8Monitoring")
++            } footer: {
++                Text("The latest 12 observed changes during foreground monitoring; an empty list does not mean normal.", tableName: "W8Monitoring")
++            }
++
++            Section {
++                LabeledContent(text("Sent"), value: byteText(network.sent))
++                LabeledContent(text("Received"), value: byteText(network.received))
++            } header: {
++                Text("Measured network traffic", tableName: "W8Monitoring")
++            } footer: {
++                Text("Since app launch, for RIPEstat HTTPS diagnostics only. Includes measured HTTP headers and bodies. Does not include cache hits, ping, traceroute, or other apps.", tableName: "W8Monitoring")
++            }
++
++            Section {
++                LabeledContent(text("Monitor session"), value: secondsText(elapsed))
++            } footer: {
++                Text("Elapsed time since opening this monitor. It is not system uptime.", tableName: "W8Monitoring")
++            }
++        }
++        .navigationTitle(Self.title)
++        .task(id: scenePhase) {
++            guard scenePhase == .active else { return }
++            if started == nil { started = .now }
++            memoryPoints.removeAll(keepingCapacity: true)
++            await sample()
++        }
++        .task(id: scenePhase) {
++            guard scenePhase == .active else { return }
++            for await level in W8ResourceMetrics.pressureEvents() {
++                guard !Task.isCancelled else { return }
++                pressurePoints.append(.init(at: secondsSinceStart().components.seconds, level: level))
++                if pressurePoints.count > 12 { pressurePoints.removeFirst() }
++            }
++        }
++    }
++
++    private func sample() async {
++        let clock = ContinuousClock()
++        while !Task.isCancelled {
++            let duration = secondsSinceStart()
++            elapsed = duration.components.seconds
++            network = counter?.snapshot() ?? W8NetworkTotals()
++            let value = W8ResourceMetrics.residentBytes()
++            resident = value
++            if let value {
++                let time = Double(duration.components.seconds) + Double(duration.components.attoseconds) / 1e18
++                memoryPoints.append(.init(at: time, bytes: value))
++                if memoryPoints.count > 60 { memoryPoints.removeFirst() }
++            } else {
++                memoryPoints.removeAll(keepingCapacity: true)
++            }
++            do {
++                try await clock.sleep(for: .seconds(2))
++            } catch {
++                return
++            }
++        }
++    }
++
++    private func secondsSinceStart() -> Duration {
++        guard let started else { return .zero }
++        return started.duration(to: .now)
++    }
++
++    private func byteText(_ bytes: UInt64?) -> String {
++        guard let bytes else { return text("Not measured") }
++        return ByteCountFormatter.string(fromByteCount: Int64(clamping: bytes), countStyle: .binary)
++    }
++
++    private func secondsText(_ seconds: Int64) -> String {
++        seconds.formatted(.number) + " " + text("sec")
++    }
++
++    private func pressureText(_ level: W8PressureLevel) -> String {
++        switch level {
++        case .normal: text("Normal")
++        case .warning: text("Warning")
++        case .critical: text("Critical")
++        }
++    }
++
++    private func text(_ key: String.LocalizationValue) -> String {
++        String(localized: key, table: "W8Monitoring")
++    }
++}
+diff --git a/GestaltX/W9Studio.xcstrings b/GestaltX/W9Studio.xcstrings
+new file mode 100644
+index 0000000..209190a
+--- /dev/null
++++ b/GestaltX/W9Studio.xcstrings
+@@ -0,0 +1,171 @@
++{
++  "sourceLanguage": "en",
++  "strings": {
++    "Center Layers": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "图层居中"
++          }
++        }
++      }
++    },
++    "Choose Background": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "选择背景"
++          }
++        }
++      }
++    },
++    "Choose PNG Foreground": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "选择 PNG 前景"
++          }
++        }
++      }
++    },
++    "Could not open this image.": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "无法打开此图像。"
++          }
++        }
++      }
++    },
++    "Could not render PNG.": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "无法渲染 PNG。"
++          }
++        }
++      }
++    },
++    "Could not save PNG.": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "无法保存 PNG。"
++          }
++        }
++      }
++    },
++    "Exports a static 1080 × 1920 PNG. It does not set your wallpaper or create a Live Photo.": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "导出 1080 × 1920 的静态 PNG，不设置系统壁纸，也不会生成实况照片。"
++          }
++        }
++      }
++    },
++    "Horizontal Framing": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "水平取景"
++          }
++        }
++      }
++    },
++    "Parallax Wallpaper Studio": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "双层壁纸工坊"
++          }
++        }
++      }
++    },
++    "PNG saved.": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "PNG 已保存。"
++          }
++        }
++      }
++    },
++    "Remove Foreground": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "移除前景"
++          }
++        }
++      }
++    },
++    "Save PNG to Files": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "将 PNG 存到文件"
++          }
++        }
++      }
++    },
++    "The image format, dimensions, or foreground alpha channel are not supported.": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "图像格式、尺寸或前景透明通道不受支持。"
++          }
++        }
++      }
++    },
++    "This image exceeds 20 MiB.": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "图像文件超过 20 MiB。"
++          }
++        }
++      }
++    },
++    "Use a JPG, PNG, or HEIC background and an optional PNG with transparency. Images stay on this device.": {
++      "extractionState": "manual",
++      "localizations": {
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "背景支持 JPG、PNG 或 HEIC，可添加带透明通道的 PNG 前景。图像仅在设备上处理。"
++          }
++        }
++      }
++    }
++  },
++  "version": "1.0"
++}
+diff --git a/GestaltX/W9WallpaperStudio.swift b/GestaltX/W9WallpaperStudio.swift
+new file mode 100644
+index 0000000..9c4fa59
+--- /dev/null
++++ b/GestaltX/W9WallpaperStudio.swift
+@@ -0,0 +1,122 @@
++// SPDX-License-Identifier: GPL-3.0-only
++import CoreGraphics
++import Foundation
++import ImageIO
++import UniformTypeIdentifiers
++
++enum W9WallpaperStudio {
++    enum Layer: Equatable, Sendable { case background, foreground }
++    enum Failure: Error, Equatable { case unreadable, tooLarge, unsupportedImage, renderFailed }
++
++    static let sourceByteLimit = 20 * 1_024 * 1_024
++
++    static func loadImage(at url: URL, for layer: Layer) throws -> CGImage {
++        let scoped = url.startAccessingSecurityScopedResource()
++        defer { if scoped { url.stopAccessingSecurityScopedResource() } }
++        let data = try readBounded(url)
++        guard let source = CGImageSourceCreateWithData(data as CFData, nil),
++              CGImageSourceGetCount(source) == 1,
++              let identifier = CGImageSourceGetType(source),
++              let type = UTType(identifier as String),
++              (layer == .foreground ? type == .png : [.png, .jpeg, .heic].contains(type)),
++              let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
++              let width = properties[kCGImagePropertyPixelWidth] as? Int,
++              let height = properties[kCGImagePropertyPixelHeight] as? Int,
++              (1...16_000).contains(width), (1...16_000).contains(height),
++              width * height <= 64_000_000 else { throw Failure.unsupportedImage }
++
++        let settings: [CFString: Any] = [
++            kCGImageSourceCreateThumbnailFromImageAlways: true,
++            kCGImageSourceCreateThumbnailWithTransform: true,
++            kCGImageSourceThumbnailMaxPixelSize: 2_048,
++            kCGImageSourceShouldCacheImmediately: true
++        ]
++        guard let image = CGImageSourceCreateThumbnailAtIndex(source, 0, settings as CFDictionary) else {
++            throw Failure.unsupportedImage
++        }
++        if layer == .foreground {
++            switch image.alphaInfo {
++            case .premultipliedFirst, .premultipliedLast, .first, .last: break
++            default: throw Failure.unsupportedImage
++            }
++        }
++        return image
++    }
++
++    private static func readBounded(_ url: URL) throws -> Data {
++        do {
++            let file = try FileHandle(forReadingFrom: url)
++            defer { try? file.close() }
++            var buffer = Data()
++            while buffer.count <= sourceByteLimit {
++                let count = min(65_536, sourceByteLimit + 1 - buffer.count)
++                guard let chunk = try file.read(upToCount: count), !chunk.isEmpty else { return buffer }
++                buffer.append(chunk)
++            }
++            throw Failure.tooLarge
++        } catch let failure as Failure {
++            throw failure
++        } catch {
++            throw Failure.unreadable
++        }
++    }
++
++    /// The background fills the canvas with a horizontal margin for movement.
++    /// Foreground fits inside an 80% box and moves in the opposite direction.
++    static func placement(
++        background: CGSize, foreground: CGSize?, canvas: CGSize, shift: Double
++    ) -> (background: CGRect, foreground: CGRect?) {
++        let clamped = shift.isFinite ? max(-1, min(1, shift)) : 0
++        let amount = CGFloat(clamped)
++        let pad = canvas.width * 0.04
++        let scale = max((canvas.width + pad * 2) / background.width, canvas.height / background.height)
++        let backgroundRect = centered(background, scale: scale, canvas: canvas, dx: -pad * amount)
++        let foregroundRect = foreground.map { size in
++            let fit = min(canvas.width * 0.8 / size.width, canvas.height * 0.8 / size.height)
++            return centered(size, scale: fit, canvas: canvas, dx: canvas.width * 0.09 * amount)
++        }
++        return (backgroundRect, foregroundRect)
++    }
++
++    private static func centered(_ size: CGSize, scale: CGFloat, canvas: CGSize, dx: CGFloat) -> CGRect {
++        let w = size.width * scale
++        let h = size.height * scale
++        return CGRect(x: (canvas.width - w) / 2 + dx, y: (canvas.height - h) / 2, width: w, height: h)
++    }
++
++    static func render(
++        background: CGImage, foreground: CGImage?, shift: Double, exporting: Bool
++    ) throws -> CGImage {
++        let width = exporting ? 1_080 : 270
++        let height = exporting ? 1_920 : 480
++        guard let space = CGColorSpace(name: CGColorSpace.sRGB),
++              let context = CGContext(
++                data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: 0,
++                space: space, bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue
++              ) else { throw Failure.renderFailed }
++        let canvas = CGSize(width: CGFloat(width), height: CGFloat(height))
++        let images = placement(
++            background: CGSize(width: CGFloat(background.width), height: CGFloat(background.height)),
++            foreground: foreground.map { CGSize(width: CGFloat($0.width), height: CGFloat($0.height)) },
++            canvas: canvas, shift: shift
++        )
++        context.setFillColor(CGColor(gray: 0, alpha: 1))
++        context.fill(CGRect(origin: .zero, size: canvas))
++        context.interpolationQuality = .high
++        context.draw(background, in: images.background)
++        if let foreground, let rect = images.foreground { context.draw(foreground, in: rect) }
++        guard let image = context.makeImage() else { throw Failure.renderFailed }
++        return image
++    }
++
++    static func png(background: CGImage, foreground: CGImage?, shift: Double) throws -> Data {
++        let image = try render(background: background, foreground: foreground, shift: shift, exporting: true)
++        let data = NSMutableData()
++        guard let destination = CGImageDestinationCreateWithData(data as CFMutableData, UTType.png.identifier as CFString, 1, nil) else {
++            throw Failure.renderFailed
++        }
++        CGImageDestinationAddImage(destination, image, nil)
++        guard CGImageDestinationFinalize(destination) else { throw Failure.renderFailed }
++        return data as Data
++    }
++}
+diff --git a/GestaltX/W9WallpaperStudioView.swift b/GestaltX/W9WallpaperStudioView.swift
+new file mode 100644
+index 0000000..fade67e
+--- /dev/null
++++ b/GestaltX/W9WallpaperStudioView.swift
+@@ -0,0 +1,185 @@
++// SPDX-License-Identifier: GPL-3.0-only
++import CoreGraphics
++import SwiftUI
++import UniformTypeIdentifiers
++
++@MainActor
++struct W9WallpaperStudioView: View {
++    @State private var inputLayer = W9WallpaperStudio.Layer.background
++    @State private var isChoosing = false
++    @State private var request: FileRequest?
++    @State private var background: LayerImage?
++    @State private var foreground: LayerImage?
++    @State private var shift = 0.0
++    @State private var preview: CGImage?
++    @State private var isRendering = false
++    @State private var isExporting = false
++    @State private var document: PNGDocument?
++    @State private var status: String?
++
++    private struct LayerImage: Identifiable {
++        let id = UUID()
++        let value: CGImage
++    }
++
++    private struct FileRequest: Identifiable, Sendable {
++        let id = UUID()
++        let url: URL
++        let layer: W9WallpaperStudio.Layer
++    }
++
++    private struct PreviewKey: Equatable {
++        let background: UUID?
++        let foreground: UUID?
++        let shift: Double
++    }
++
++    private struct PNGDocument: FileDocument {
++        static var readableContentTypes: [UTType] { [.png] }
++        let bytes: Data
++
++        init(_ bytes: Data) { self.bytes = bytes }
++
++        init(configuration: ReadConfiguration) throws {
++            guard let bytes = configuration.file.regularFileContents else { throw CocoaError(.fileReadCorruptFile) }
++            self.bytes = bytes
++        }
++
++        func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
++            FileWrapper(regularFileWithContents: bytes)
++        }
++    }
++
++    static var title: String { String(localized: "Parallax Wallpaper Studio", table: "W9Studio") }
++
++    var body: some View {
++        List {
++            Section {
++                Button { choose(.background) } label: { Label(label("Choose Background"), systemImage: "photo") }
++                Button { choose(.foreground) } label: { Label(label("Choose PNG Foreground"), systemImage: "square.stack") }
++                    .disabled(background == nil)
++                if foreground != nil {
++                    Button(label("Remove Foreground")) {
++                        foreground = nil
++                        shift = 0
++                    }
++                }
++            } footer: {
++                Text("Use a JPG, PNG, or HEIC background and an optional PNG with transparency. Images stay on this device.", tableName: "W9Studio")
++            }
++            .disabled(isRendering || request != nil)
++
++            if let preview {
++                Section {
++                    Image(decorative: preview, scale: 1)
++                        .resizable()
++                        .scaledToFit()
++                        .frame(maxHeight: 260)
++                        .frame(maxWidth: .infinity)
++                        .accessibilityHidden(true)
++                    if foreground != nil {
++                        Slider(value: $shift, in: -1...1, step: 0.02) {
++                            Text("Horizontal Framing", tableName: "W9Studio")
++                        }
++                        if shift != 0 {
++                            Button(label("Center Layers")) { shift = 0 }
++                        }
++                    }
++                }
++            }
++
++            Section {
++                if request != nil || isRendering { ProgressView() }
++                Button { exportPNG() } label: {
++                    Label(label("Save PNG to Files"), systemImage: "square.and.arrow.up")
++                }
++                .disabled(background == nil || request != nil || isRendering)
++                if let status { Text(status).foregroundStyle(.secondary) }
++            } footer: {
++                Text("Exports a static 1080 × 1920 PNG. It does not set your wallpaper or create a Live Photo.", tableName: "W9Studio")
++            }
++        }
++        .navigationTitle(Self.title)
++        .fileImporter(
++            isPresented: $isChoosing,
++            allowedContentTypes: inputLayer == .foreground ? [.png] : [.jpeg, .png, .heic]
++        ) { result in
++            switch result {
++            case .success(let url):
++                request = .init(url: url, layer: inputLayer)
++                status = nil
++            case .failure:
++                status = label("Could not open this image.")
++            }
++        }
++        .task(id: request?.id) {
++            guard let selected = request else { return }
++            let result = await Task.detached(priority: .userInitiated) {
++                Result { try W9WallpaperStudio.loadImage(at: selected.url, for: selected.layer) }
++            }.value
++            guard !Task.isCancelled, request?.id == selected.id else { return }
++            request = nil
++            switch result {
++            case .success(let image):
++                if selected.layer == .background { background = .init(value: image) }
++                else { foreground = .init(value: image) }
++            case .failure(let error):
++                status = message(error as? W9WallpaperStudio.Failure)
++            }
++        }
++        .task(id: PreviewKey(background: background?.id, foreground: foreground?.id, shift: shift)) {
++            guard let background else { return }
++            preview = try? W9WallpaperStudio.render(
++                background: background.value, foreground: foreground?.value, shift: shift, exporting: false
++            )
++        }
++        .fileExporter(
++            isPresented: $isExporting, document: document, contentType: .png, defaultFilename: "LilaShift-Wallpaper"
++        ) { result in
++            document = nil
++            switch result {
++            case .success: status = label("PNG saved.")
++            case .failure: status = label("Could not save PNG.")
++            }
++        }
++    }
++
++    private func choose(_ layer: W9WallpaperStudio.Layer) {
++        inputLayer = layer
++        isChoosing = true
++    }
++
++    private func exportPNG() {
++        guard let background = background?.value else { return }
++        let overlay = foreground?.value
++        let framing = shift
++        isRendering = true
++        status = nil
++        Task {
++            let result = await Task.detached(priority: .userInitiated) {
++                Result { try W9WallpaperStudio.png(background: background, foreground: overlay, shift: framing) }
++            }.value
++            isRendering = false
++            switch result {
++            case .success(let data):
++                document = PNGDocument(data)
++                isExporting = true
++            case .failure:
++                status = label("Could not render PNG.")
++            }
++        }
++    }
++
++    private func label(_ key: String.LocalizationValue) -> String {
++        String(localized: key, table: "W9Studio")
++    }
++
++    private func message(_ issue: W9WallpaperStudio.Failure?) -> String {
++        switch issue {
++        case .tooLarge: label("This image exceeds 20 MiB.")
++        case .unsupportedImage: label("The image format, dimensions, or foreground alpha channel are not supported.")
++        case .renderFailed: label("Could not render PNG.")
++        case .unreadable, nil: label("Could not open this image.")
++        }
++    }
++}
+diff --git a/GestaltX/en.lproj/Localizable.strings b/GestaltX/en.lproj/Localizable.strings
+new file mode 100644
+index 0000000..2c1a632
+--- /dev/null
++++ b/GestaltX/en.lproj/Localizable.strings
+@@ -0,0 +1,41 @@
++"app.title" = "LilaShift";
++"common.cancel" = "Cancel";
++"screen.heading" = "Display brightness";
++"screen.actual" = "Current UIKit reading";
++"screen.unavailable" = "No active built-in display is available.";
++"screen.physicalOnly" = "Brightness writes are unavailable on simulators and Mac.";
++"screen.target" = "Target brightness";
++"screen.apply" = "Apply to screen";
++"screen.restore" = "Restore original brightness";
++"screen.discard" = "Clear recovery record without changing brightness";
++"screen.footer" = "Applies to the built-in display, not a permanent Settings value. The app saves the original in memory and attempts recovery when backgrounded. A lock or app termination can end the session. Use Control Center if recovery cannot be verified.";
++"screen.confirmTitle" = "Change display brightness?";
++"screen.confirmWrite" = "Write and verify";
++"screen.confirmBody" = "The app will read the current value, save it for recovery, write the requested value, then read it back from UIKit.";
++"device.heading" = "Device information (read-only)";
++"device.system" = "Operating system";
++"device.family" = "Device family";
++"device.memory" = "Physical memory";
++"device.cpu" = "Logical processors";
++"appearance.heading" = "App appearance";
++"appearance.mode" = "Mode (this app only)";
++"appearance.system" = "Follow system";
++"appearance.light" = "Light";
++"appearance.dark" = "Dark";
++"limits.heading" = "Unsupported writes";
++"limits.body" = "This app cannot change protected MobileGestalt values, eSIM availability, Apple Intelligence eligibility, system appearance, Wallet card art, or lock-screen assets. It does not offer previews of these actions.";
++"limits.test" = "Prerelease · Real-device validation pending.";
++"status.applied" = "UIKit readback matched the target.";
++"status.restored" = "UIKit readback matched the saved original.";
++"status.unchanged" = "The read value already matched the target; nothing was written.";
++"status.busy" = "Restore the previous change first.";
++"status.unavailable" = "Readback is unavailable; no success was recorded.";
++"status.rejected" = "Target was not confirmed; the original value was read back.";
++"status.unverified" = "The expected value could not be verified; the recovery record is still available.";
++"status.conflict" = "Readback diverged; the app did not overwrite the unexpected value.";
++"tools.heading" = "Diagnostics and tools";
++"network.title" = "Internet egress check";
++"network.check" = "Check using RIPEstat";
++"network.result" = "Observed public address";
++"network.scope" = "Only sends a request when you tap Check. RIPEstat sees your connection's public IP. The app displays it for this session; it does not upload your diagnostics or photos.";
++"network.failed" = "RIPEstat did not return a verified-format public address. No result was recorded.";
+diff --git a/GestaltX/zh-Hans.lproj/Localizable.strings b/GestaltX/zh-Hans.lproj/Localizable.strings
+new file mode 100644
+index 0000000..916ea5f
+--- /dev/null
++++ b/GestaltX/zh-Hans.lproj/Localizable.strings
+@@ -0,0 +1,41 @@
++"app.title" = "紫序";
++"common.cancel" = "取消";
++"screen.heading" = "屏幕亮度";
++"screen.actual" = "UIKit 当前读数";
++"screen.unavailable" = "当前未找到可用的内置屏幕。";
++"screen.physicalOnly" = "模拟器和 Mac 不支持本功能的亮度写入。";
++"screen.target" = "目标亮度";
++"screen.apply" = "应用到屏幕";
++"screen.restore" = "恢复原亮度";
++"screen.discard" = "清除恢复记录（不改亮度）";
++"screen.footer" = "这会改变内置屏幕实际亮度，不会永久更改系统设置。原值在本次会话中保留，进入后台时尝试恢复。锁屏或强退可能中断会话。若无法确认恢复，请使用控制中心调整。";
++"screen.confirmTitle" = "更改屏幕亮度？";
++"screen.confirmWrite" = "写入并读回";
++"screen.confirmBody" = "应用将先读取并保存原值，再写入目标值并从 UIKit 读回。";
++"device.heading" = "设备信息（只读）";
++"device.system" = "系统版本";
++"device.family" = "设备类别";
++"device.memory" = "物理内存";
++"device.cpu" = "逻辑处理器";
++"appearance.heading" = "应用外观";
++"appearance.mode" = "模式（仅本应用）";
++"appearance.system" = "跟随系统";
++"appearance.light" = "浅色";
++"appearance.dark" = "深色";
++"limits.heading" = "不支持的写入";
++"limits.body" = "本应用无法修改受保护的 MobileGestalt、eSIM 准入、Apple 智能资格、系统外观、钱包卡面或锁屏资源，也不提供这些操作的预览。";
++"limits.test" = "预发布 · 尚未完成真机验证。";
++"status.applied" = "UIKit 读回值与目标一致。";
++"status.restored" = "UIKit 读回值与保存的原值一致。";
++"status.unchanged" = "当前读数与目标一致，没有写入。";
++"status.busy" = "请先恢复上一次修改。";
++"status.unavailable" = "无法获取读数，未记录成功。";
++"status.rejected" = "未确认目标值；读回值仍是原值。";
++"status.unverified" = "未能确认预期值，仍保留恢复记录。";
++"status.conflict" = "读回值不一致；应用没有覆盖意外值。";
++"tools.heading" = "诊断与工具";
++"network.title" = "网络出口检查";
++"network.check" = "使用 RIPEstat 检查";
++"network.result" = "服务观测到的公网地址";
++"network.scope" = "只有点检查才联网。RIPEstat 会看到此次请求的公网 IP；地址仅在本次会话显示。应用不会上传诊断报告或图片。";
++"network.failed" = "RIPEstat 未返回格式有效的公网地址，没有记录结果。";
+diff --git a/README.md b/README.md
+index 2a76b09..7d1aa28 100644
+--- a/README.md
++++ b/README.md
+@@ -8,7 +8,7 @@
+ 
+ | Channel | Version | Status |
+ | --- | --- | --- |
+-| Current source | **5.0.0** · build `50000000` | [Changes and verification](docs/RELEASE_5_0_0.md) · not a public release |
++| Current source | **5.0.0** · build `50000002` | [Changes and verification](docs/RELEASE_5_0_0.md) · not a public release |
+ | Current public download | **4.2.0** · build `42000001` | Published version |
+ 
+ CI passing does not imply real-device validation. Installation, device-specific features, and restore are not yet verified on devices for 5.0.0.
+@@ -139,7 +139,7 @@ For 5.0.0, open a successful [Build LilaShift IPA run](https://github.com/fafa88
+ - `LilaShift_5.0.0.ipa.sha256`
+ - `build-manifest.json` (source commit, version, build, toolchain and IPA hash)
+ 
+-Check the checksum and confirm that the manifest records version `5.0.0`, build `50000000`, and the intended source commit. Workflow artifacts are retained for 14 days. A downloadable workflow artifact is separate from a published release; published versions remain listed in [Releases](https://github.com/fafa888uk/LilaShift-3.0/releases).
++Check the checksum and confirm that the manifest records version `5.0.0`, build `50000002`, and the intended source commit. Workflow artifacts are retained for 14 days. A downloadable workflow artifact is separate from a published release; published versions remain listed in [Releases](https://github.com/fafa888uk/LilaShift-3.0/releases).
+ 
+ The previous published artifact is [LilaShift 4.2.0](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0). The historical `LilaShift_3.0.0.ipa` is not a 4.x package. If a download is incomplete or its checksum differs, download it again before installing.
+ 
+diff --git a/README_JA.md b/README_JA.md
+index fef13fa..81e6f93 100644
+--- a/README_JA.md
++++ b/README_JA.md
+@@ -8,7 +8,7 @@
+ 
+ | チャネル | バージョン | 状態 |
+ | --- | --- | --- |
+-| 現在のソース | **5.0.0** · ビルド `50000000` | [変更と検証の記録](docs/RELEASE_5_0_0.md) · 未公開 |
++| 現在のソース | **5.0.0** · ビルド `50000002` | [変更と検証の記録](docs/RELEASE_5_0_0.md) · 未公開 |
+ | 現在の公開ダウンロード版 | **4.2.0** · ビルド `42000001` | 公開済み |
+ 
+ CI の成功は実機検証を意味しません。5.0.0 の実機へのインストール、デバイス固有の機能、復元は未検証です。
+@@ -158,7 +158,7 @@ MobileGestalt のフラグを変更することと、その機能が実際に動
+ - `LilaShift_5.0.0.ipa.sha256`
+ - `build-manifest.json`（ソースコミット、バージョン、ビルド番号、ツールチェーン、IPA ハッシュ）
+ 
+-SHA-256 を照合し、manifest のバージョンが `5.0.0`、ビルド番号が `50000000`、ソースコミットが対象の更新と一致することを確認してください。ワークフロー成果物の保存期間は 14 日です。ビルド成果物と公開リリースは別に管理され、公開済みバージョンは [Releases](https://github.com/fafa888uk/LilaShift-3.0/releases) に表示されます。
++SHA-256 を照合し、manifest のバージョンが `5.0.0`、ビルド番号が `50000002`、ソースコミットが対象の更新と一致することを確認してください。ワークフロー成果物の保存期間は 14 日です。ビルド成果物と公開リリースは別に管理され、公開済みバージョンは [Releases](https://github.com/fafa888uk/LilaShift-3.0/releases) に表示されます。
+ 
+ 以前の公開版は [LilaShift 4.2.0](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0) です。過去の `LilaShift_3.0.0.ipa` は 4.x のパッケージではありません。ダウンロードが不完全、またはハッシュが一致しない場合は、インストール前に再取得してください。
+ 
+diff --git a/README_ZH-CN.md b/README_ZH-CN.md
+index 956298a..445f775 100644
+--- a/README_ZH-CN.md
++++ b/README_ZH-CN.md
+@@ -8,7 +8,7 @@
+ 
+ | 渠道 | 版本 | 状态 |
+ | --- | --- | --- |
+-| 当前源码 | **5.0.0** · 构建 `50000000` | [变更与验证记录](docs/RELEASE_5_0_0.md) · 尚未公开发布 |
++| 当前源码 | **5.0.0** · 构建 `50000002` | [变更与验证记录](docs/RELEASE_5_0_0.md) · 尚未公开发布 |
+ | 当前公开下载版 | **4.2.0** · 构建 `42000001` | 已发布 |
+ 
+ CI 通过不等于真机验收。5.0.0 的真机安装、设备相关功能与恢复仍待验证。
+@@ -139,7 +139,7 @@ CI 通过不等于真机验收。5.0.0 的真机安装、设备相关功能与
+ - `LilaShift_5.0.0.ipa.sha256`
+ - `build-manifest.json`（源码提交、版本、构建号、工具链与 IPA 摘要）
+ 
+-校验 SHA-256，并确认 manifest 中版本为 `5.0.0`、构建号为 `50000000`、源码提交与本次更新一致。工作流产物保留 14 天。构建产物与正式 Release 分开管理，已发布版本以 [Releases 页面](https://github.com/fafa888uk/LilaShift-3.0/releases)为准。
++校验 SHA-256，并确认 manifest 中版本为 `5.0.0`、构建号为 `50000002`、源码提交与本次更新一致。工作流产物保留 14 天。构建产物与正式 Release 分开管理，已发布版本以 [Releases 页面](https://github.com/fafa888uk/LilaShift-3.0/releases)为准。
+ 
+ 此前已发布的版本为 [LilaShift 4.2.0](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0)。历史文件 `LilaShift_3.0.0.ipa` 不是 4.x 安装包。如果下载不完整或摘要不一致，请重新下载后再安装。
+ 
+diff --git a/SECURITY.md b/SECURITY.md
+index cfc96f4..c55935a 100644
+--- a/SECURITY.md
++++ b/SECURITY.md
+@@ -2,11 +2,11 @@
+ 
+ ## Version and report scope
+ 
+-**Status checked 2026-11-28:** the current source is 5.0.0, build `50000000`, prepared as a major update (Wave 1 diagnostics and audit). [v4.2.0](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0) is the most recent published release verified when this record was prepared. See the [5.0.0 verification record](docs/RELEASE_5_0_0.md) for the integrated source and build evidence. Preparing source or passing CI does not publish a release or establish real-device safety.
++**Status checked 2026-11-28:** the current source is 5.0.0, build `50000002`, prepared as a major update (Wave 1 diagnostics and audit). [v4.2.0](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0) is the most recent published release verified when this record was prepared. See the [5.0.0 verification record](docs/RELEASE_5_0_0.md) for the integrated source and build evidence. Preparing source or passing CI does not publish a release or establish real-device safety.
+ 
+ | Version | Reporting context |
+ | --- | --- |
+-| 5.0.0 source / build `50000000` | Include the exact source commit and workflow/build-manifest evidence; integration and real-device verification must be distinguished. |
++| 5.0.0 source / build `50000002` | Include the exact source commit and workflow/build-manifest evidence; integration and real-device verification must be distinguished. |
+ | 4.2.1 source / build `42000002` | Previous source version (maintenance update, not separately published); include the exact source commit when reporting against it. |
+ | Published 4.2.0 / build `42000001` | Source commit `3152fc7c49ccb00f80f97da90666a65fb66a6d89`; include this version when reporting against the published IPA. |
+ | 3.x and older | Historical versions; identify the exact version and commit. The old support declarations do not establish an ongoing maintenance commitment for these versions. |
+diff --git a/docs/RELEASE_5_0_0.md b/docs/RELEASE_5_0_0.md
+index 908248d..a4c4db5 100644
+--- a/docs/RELEASE_5_0_0.md
++++ b/docs/RELEASE_5_0_0.md
+@@ -1,6 +1,6 @@
+ # LilaShift 5.0.0 · 重大更新与验收记录
+ 
+-准备日期：2026-11-28（Asia/Shanghai）。应用版本 `5.0.0`，构建号 `50000000`，预期文件名 `LilaShift_5.0.0.ipa`。
++准备日期：2026-11-28（Asia/Shanghai）。应用版本 `5.0.0`，构建号 `50000002`，预期文件名 `LilaShift_5.0.0.ipa`。
+ 
+ 本文随构建源码冻结，记录更新范围和验收入口。最终源码 SHA、实际 CI 结果和下载位置以本次集成 PR 与构建 manifest 为准；本文不预填运行结果，准备源码不等于已经公开发布。此前已发布版本为 [v4.2.0](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0)，其源码提交为 `3152fc7c49ccb00f80f97da90666a65fb66a6d89`，build `42000001`。4.2.1 维护更新（ZIPFoundation 0.9.21、本地化补齐、治理/CI）已包含在本版本基线中，未单独发布。
+ 
+@@ -17,7 +17,7 @@
+ | 导航接线 | 5 个新页面加入功能目录（页面项 13 → 18，总数 59 → 64）与首页诊断分区（11 → 15）；MG 键值表增强现有字段编辑器 |
+ | 本地化 | 补齐 Wave 1 缺失的 281 个字符串，覆盖全部 10 个语种（共 1934 键）；12 个带首尾空格的片段键在代码中修复 |
+ | 许可证 | Wave 1 第三方声明并入 `THIRD_PARTY_NOTICES.md`（§12），新增 3 份 bundled MIT 文本；应用内声明保持字节一致 |
+-| 版本与文档 | 版本 4.2.1 → 5.0.0，构建号 42000002 → 50000000；README 新增版本徽章；中、英、日三语文档同步 |
++| 版本与文档 | 版本 4.2.1 → 5.0.0，构建号 42000002 → 50000002；README 新增版本徽章；中、英、日三语文档同步；合并 4.2.0 全部功能（已核实无缺失）与官方接口版新增功能（亮度写入、智能报告、资源监控、壁纸工坊、应用外观、本地 plist 工作区、会话日志），只加不删 |
+ | 免费构建 | 标准 `xcode-27` 负责构建、测试、lint，标准 `ubuntu-latest` 负责许可证检查；不启用付费回退 |
+ 
+ 现有 4.2.x 导航、App Audio Library、锁屏文字、一键解锁、备份恢复及写入守卫继续保留。没有把此次新增功能宣称为已真机验证，也没有把源码存在视为性能提升。
+@@ -83,7 +83,7 @@ shasum -a 256 -c LilaShift_5.0.0.ipa.sha256
+ Get-FileHash .\LilaShift_5.0.0.ipa -Algorithm SHA256
+ ```
+ 
+-同时核对 manifest 的版本 `5.0.0`、构建号 `50000000` 与源码提交。构建通过后仍需按现有安装教程使用 LiveContainer 或合适的重签名方式；此 IPA 不包含个人开发者签名。
++同时核对 manifest 的版本 `5.0.0`、构建号 `50000002` 与源码提交。构建通过后仍需按现有安装教程使用 LiveContainer 或合适的重签名方式；此 IPA 不包含个人开发者签名。
+ 
+ 未完成真机验证时，本版本发布为预发布，不得虚假标注为已验证稳定版；关键测试失败时禁止正式发布。
+ 
+diff --git a/docs/REPOSITORY_GOVERNANCE_ZH-CN.md b/docs/REPOSITORY_GOVERNANCE_ZH-CN.md
+index 6fa8bb4..4a3d5fa 100644
+--- a/docs/REPOSITORY_GOVERNANCE_ZH-CN.md
++++ b/docs/REPOSITORY_GOVERNANCE_ZH-CN.md
+@@ -4,7 +4,7 @@
+ 
+ ## 5.0.0 实施记录（2026-11-28）
+ 
+-当前源码版本为 `5.0.0`（build `50000000`）。本次以 5.x 为应用基线，纳入 Wave 1 六路诊断与审计功能（W1 设备诊断、W2 结构化日志、W3 IPA 安全审计、W4 MG 键值表、W5 网络探针、W6 文件浏览，共 23 项）、导航接线（目录 59 → 64 项）、281 个本地化键补齐与许可证登记；版本号与三语文档同步更新，README 新增版本徽章。证据集中记录在 [5.0.0 更新记录](RELEASE_5_0_0.md)。未完成真机验证时发预发布，关键测试失败时禁止正式发布。
++当前源码版本为 `5.0.0`（build `50000002`）。本次以 5.x 为应用基线，纳入 Wave 1 六路诊断与审计功能（W1 设备诊断、W2 结构化日志、W3 IPA 安全审计、W4 MG 键值表、W5 网络探针、W6 文件浏览，共 23 项）、导航接线（目录 59 → 71 项：Wave 1 后 64 项，合并官方接口工具后再加 7 项）、281 个本地化键补齐与许可证登记，并合并 4.2.0 全部功能与官方接口版新增功能（亮度写入、智能报告、资源监控、壁纸工坊、应用外观、本地 plist 工作区、会话日志）；版本号与三语文档同步更新，README 新增版本徽章。证据集中记录在 [5.0.0 更新记录](RELEASE_5_0_0.md)。未完成真机验证时发预发布，关键测试失败时禁止正式发布。
+ 
+ ## 4.2.1 实施记录（2026-11-27）
+ 
+diff --git a/localization/es.json b/localization/es.json
+index dea8d67..ac050a1 100644
+--- a/localization/es.json
++++ b/localization/es.json
+@@ -1932,5 +1932,16 @@
+   "bytes": "bytes",
+   "hops.": "saltos.",
+   "timeout": "tiempo agotado",
+-  "unknown time": "hora desconocida"
++  "unknown time": "hora desconocida",
++  "Critical": "Crítica",
++  "Memory in MiB": "Memoria en MiB",
++  "Monitor session": "Sesión de monitorización",
++  "Normal": "Normal",
++  "Not measured": "No medido",
++  "Resident memory": "Memoria residente",
++  "Sent": "Enviados",
++  "Session seconds": "Segundos de sesión",
++  "sec": "s",
++  "Official API Tools": "Herramientas de API oficiales",
++  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "Brillo, informes, monitorización de recursos, estudio de fondos y espacio de trabajo plist local; solo API oficiales."
+ }
+diff --git a/localization/fa.json b/localization/fa.json
+index 22fcce9..0c5847c 100644
+--- a/localization/fa.json
++++ b/localization/fa.json
+@@ -1932,5 +1932,16 @@
+   "bytes": "بایت",
+   "hops.": "پرش.",
+   "timeout": "پایان مهلت",
+-  "unknown time": "زمان نامشخص"
++  "unknown time": "زمان نامشخص",
++  "Critical": "بحرانی",
++  "Memory in MiB": "حافظه بر حسب MiB",
++  "Monitor session": "نشست پایش",
++  "Normal": "عادی",
++  "Not measured": "اندازه‌گیری نشده",
++  "Resident memory": "حافظه مقیم",
++  "Sent": "ارسال شده",
++  "Session seconds": "ثانیه‌های نشست",
++  "sec": "ثانیه",
++  "Official API Tools": "ابزارهای رسمی API",
++  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "روشنایی صفحه، گزارش‌ها، پایش منابع، استودیوی تصویر زمینه و فضای کاری plist محلی — فقط APIهای رسمی."
+ }
+diff --git a/localization/ja.json b/localization/ja.json
+index 63505e5..9ab2ef9 100644
+--- a/localization/ja.json
++++ b/localization/ja.json
+@@ -1932,5 +1932,16 @@
+   "bytes": "バイト",
+   "hops.": "ホップ。",
+   "timeout": "タイムアウト",
+-  "unknown time": "不明な時刻"
++  "unknown time": "不明な時刻",
++  "Critical": "重大",
++  "Memory in MiB": "メモリ（MiB）",
++  "Monitor session": "監視セッション",
++  "Normal": "正常",
++  "Not measured": "未測定",
++  "Resident memory": "常駐メモリ",
++  "Sent": "送信済み",
++  "Session seconds": "セッション秒数",
++  "sec": "秒",
++  "Official API Tools": "公式 API ツール",
++  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "画面の明るさ、レポート、リソース監視、壁紙スタジオ、ローカル plist ワークスペース——公式 API のみ。"
+ }
+diff --git a/localization/ko.json b/localization/ko.json
+index 637cab2..f4963e7 100644
+--- a/localization/ko.json
++++ b/localization/ko.json
+@@ -1932,5 +1932,16 @@
+   "bytes": "바이트",
+   "hops.": "홉.",
+   "timeout": "시간 초과",
+-  "unknown time": "알 수 없는 시간"
++  "unknown time": "알 수 없는 시간",
++  "Critical": "심각",
++  "Memory in MiB": "메모리(MiB)",
++  "Monitor session": "모니터 세션",
++  "Normal": "정상",
++  "Not measured": "측정 안 됨",
++  "Resident memory": "상주 메모리",
++  "Sent": "보냄",
++  "Session seconds": "세션 초",
++  "sec": "초",
++  "Official API Tools": "공식 API 도구",
++  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "화면 밝기, 보고서, 리소스 모니터링, 배경화면 스티디오, 로컬 plist 작업 공간 — 공식 API만 사용."
+ }
+diff --git a/localization/ru.json b/localization/ru.json
+index 502cee6..449d8a1 100644
+--- a/localization/ru.json
++++ b/localization/ru.json
+@@ -1932,5 +1932,16 @@
+   "bytes": "байт",
+   "hops.": "прыжков.",
+   "timeout": "тайм-аут",
+-  "unknown time": "неизвестное время"
++  "unknown time": "неизвестное время",
++  "Critical": "Критическое",
++  "Memory in MiB": "Память в МиБ",
++  "Monitor session": "Сеанс мониторинга",
++  "Normal": "Норма",
++  "Not measured": "Не измерено",
++  "Resident memory": "Резидентная память",
++  "Sent": "Отправлено",
++  "Session seconds": "Секунды сеанса",
++  "sec": "с",
++  "Official API Tools": "Официальные инструменты API",
++  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "Яркость экрана, отчёты, мониторинг ресурсов, студия обоев и локальная рабочая область plist — только официальные API."
+ }
+diff --git a/localization/vi.json b/localization/vi.json
+index 1763cd8..4855de3 100644
+--- a/localization/vi.json
++++ b/localization/vi.json
+@@ -1932,5 +1932,16 @@
+   "bytes": "byte",
+   "hops.": "bước nhảy.",
+   "timeout": "hết thời gian chờ",
+-  "unknown time": "thời gian không xác định"
++  "unknown time": "thời gian không xác định",
++  "Critical": "Nghiêm trọng",
++  "Memory in MiB": "Bộ nhớ theo MiB",
++  "Monitor session": "Phiên giám sát",
++  "Normal": "Bình thường",
++  "Not measured": "Chưa đo",
++  "Resident memory": "Bộ nhớ thường trú",
++  "Sent": "Đã gửi",
++  "Session seconds": "Giây phiên",
++  "sec": "giây",
++  "Official API Tools": "Công cụ API chính thức",
++  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "Độ sáng màn hình, báo cáo, giám sát tài nguyên, xưởng hình nền và không gian làm việc plist cục bộ — chỉ API chính thức."
+ }
+diff --git a/localization/zh-Hant-HK.json b/localization/zh-Hant-HK.json
+index f4605e0..bc7a265 100644
+--- a/localization/zh-Hant-HK.json
++++ b/localization/zh-Hant-HK.json
+@@ -1932,5 +1932,16 @@
+   "bytes": "位元組",
+   "hops.": "跳。",
+   "timeout": "超時",
+-  "unknown time": "未知時間"
++  "unknown time": "未知時間",
++  "Critical": "嚴重",
++  "Memory in MiB": "記憶體（MiB）",
++  "Monitor session": "監控工作階段",
++  "Normal": "正常",
++  "Not measured": "未測量",
++  "Resident memory": "常駐記憶體",
++  "Sent": "已傳送",
++  "Session seconds": "工作階段秒數",
++  "sec": "秒",
++  "Official API Tools": "官方介面工具",
++  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "螢幕亮度、智慧報告、資源監控、桌布工坊與本機 plist 工作區——僅使用官方 API。"
+ }
+diff --git a/localization/zh-Hant-TW.json b/localization/zh-Hant-TW.json
+index 062a1da..5bb9ccf 100644
+--- a/localization/zh-Hant-TW.json
++++ b/localization/zh-Hant-TW.json
+@@ -1932,5 +1932,16 @@
+   "bytes": "位元組",
+   "hops.": "跳。",
+   "timeout": "逾時",
+-  "unknown time": "未知時間"
++  "unknown time": "未知時間",
++  "Critical": "嚴重",
++  "Memory in MiB": "記憶體（MiB）",
++  "Monitor session": "監控工作階段",
++  "Normal": "正常",
++  "Not measured": "未測量",
++  "Resident memory": "常駐記憶體",
++  "Sent": "已傳送",
++  "Session seconds": "工作階段秒數",
++  "sec": "秒",
++  "Official API Tools": "官方介面工具",
++  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "螢幕亮度、智慧報告、資源監控、桌布工坊與本機 plist 工作區——僅使用官方 API。"
+ }
+diff --git a/scripts/generate_localization.py b/scripts/generate_localization.py
+index eee438a..c1781db 100644
+--- a/scripts/generate_localization.py
++++ b/scripts/generate_localization.py
+@@ -1936,6 +1936,17 @@ bytes	字节
+ hops.	跳。
+ timeout	超时
+ unknown time	未知时间
++Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.	屏幕亮度、智能报告、资源监控、壁纸工坊与本地 plist 工作区——仅用官方 API。
++Official API Tools	官方接口工具
++Critical	严重
++Memory in MiB	内存（MiB）
++Monitor session	监控会话
++Normal	正常
++Not measured	未测得
++Resident memory	常驻内存
++Sent	已发送
++Session seconds	会话秒数
++sec	秒
+ '''
+ entries = {}
+ for line in TRANSLATIONS.strip().splitlines():
+diff --git a/tests/DashboardV3NavigationTests.swift b/tests/DashboardV3NavigationTests.swift
+index 5e581a2..6dcf671 100644
+--- a/tests/DashboardV3NavigationTests.swift
++++ b/tests/DashboardV3NavigationTests.swift
+@@ -10,10 +10,10 @@
+ //     by a home section, or — Stage 14 — by one of the four
+ //     preset-group tiles in the common-features section. The
+ //     Siri AI Mode and eSIM & region pages have no home section
+-//     of their own (the home keeps its eight sections); they are
++//     of their own (the home keeps its nine sections); they are
+ //     reached from their group tiles and from the catalog, so
+ //     they are not orphans — the test asserts exactly that.
+-//   - Every one of the 64 catalog items is reachable: it has a
++//   - Every one of the 71 catalog items is reachable: it has a
+ //     non-empty id, names and symbol, and a destination that is
+ //     a real dashboard destination.
+ //   - Every dashboard destination is reached by at least one
+@@ -23,10 +23,10 @@
+ //     so the catalog never sends a preset to a page where it
+ //     cannot be staged.
+ //   - The home sections, the group tiles and the catalog agree
+-//     on the destinations: the sections reach six destinations,
++//     on the destinations: the sections reach seven destinations,
+ //     the group tiles add the remaining two (Siri AI Mode,
+ //     eSIM & region), and together with the catalog they reach
+-//     exactly the eight dashboard destinations, so no
++//     exactly the nine dashboard destinations, so no
+ //     destination is reachable from one surface but missing
+ //     from the other.
+ import XCTest
+@@ -60,7 +60,7 @@ final class DashboardV3NavigationTests: XCTestCase {
+     }
+ 
+     func testEveryCatalogItemIsReachable() {
+-        XCTAssertEqual(FeatureCatalog.allItems.count, 64)
++        XCTAssertEqual(FeatureCatalog.allItems.count, 71)
+         for item in FeatureCatalog.allItems {
+             XCTAssertFalse(item.id.isEmpty, "Catalog item has an empty id")
+             XCTAssertFalse(item.chineseName.isEmpty, "Missing name for \(item.id)")
+@@ -113,12 +113,12 @@ final class DashboardV3NavigationTests: XCTestCase {
+     func testHomeSectionsGroupTilesAndCatalogAgreeOnDestinations() {
+         let sectionDestinations = Set(HomeSectionID.allCases.compactMap(\.destination))
+         let catalogDestinations = Set(FeatureCatalog.allItems.map(\.destination))
+-        // Six destinations have a home section; the other two
++        // Seven destinations have a home section; the other two
+         // (Siri AI Mode, eSIM & region) are reached from the group
+         // tiles instead — see testEveryDestinationIsReachedFromTheHome.
+         XCTAssertEqual(
+             sectionDestinations,
+-            [.unlock, .aiOnly, .diagnostics, .restore, .presets, .advanced])
++            [.unlock, .aiOnly, .diagnostics, .restore, .presets, .advanced, .officialTools])
+         XCTAssertEqual(catalogDestinations, Set(DashboardV3Destination.allCases))
+         XCTAssertEqual(sectionDestinations.union(groupTileDestinations), catalogDestinations)
+     }
+diff --git a/tests/DashboardV3Tests.swift b/tests/DashboardV3Tests.swift
+index fdd1059..0b264a7 100644
+--- a/tests/DashboardV3Tests.swift
++++ b/tests/DashboardV3Tests.swift
+@@ -9,11 +9,13 @@ final class DashboardV3Tests: XCTestCase {
+     }
+ 
+     func testCustomOrderingSurvivesReload() {
+-        // Stage 14: eight destinations now — the stored order must
+-        // cover all of them for the round-trip to be exact.
++        // Merge (LilaShift 5.0.0): nine destinations now — the
++        // stored order must cover all of them for the round-trip
++        // to be exact.
+         let desired: [DashboardV3Destination] = [
+             .esimRegion, .unlock, .aiOnly, .advanced,
+             .siriAIMode, .diagnostics, .restore, .presets,
++            .officialTools,
+         ]
+         XCTAssertEqual(desired.count, DashboardV3Destination.allCases.count)
+         let stored = desired.map(\.rawValue).joined(separator: ",")
+diff --git a/tests/FeatureCatalogTests.swift b/tests/FeatureCatalogTests.swift
+index 443c746..2cc01ad 100644
+--- a/tests/FeatureCatalogTests.swift
++++ b/tests/FeatureCatalogTests.swift
+@@ -62,8 +62,8 @@ final class FeatureCatalogTests: XCTestCase {
+     func testCatalogCounts() {
+         XCTAssertEqual(PresetCatalog.all.count, 46)
+         XCTAssertEqual(FeatureCatalog.presetItems.count, 46)
+-        XCTAssertEqual(FeatureCatalog.pageItems.count, 18)
+-        XCTAssertEqual(FeatureCatalog.allItems.count, 64)
++        XCTAssertEqual(FeatureCatalog.pageItems.count, 25)
++        XCTAssertEqual(FeatureCatalog.allItems.count, 71)
+     }
+ 
+     func testCatalogHasNoDuplicateIDsAndCoversEveryPreset() {
+@@ -321,12 +321,12 @@ final class FeatureCatalogTests: XCTestCase {
+ 
+     // MARK: - Home sections
+ 
+-    func testHomeSectionsDefaultOrderIsTheEightSections() {
++    func testHomeSectionsDefaultOrderIsTheNineSections() {
+         XCTAssertEqual(
+             HomeSectionID.resolvedSections(""),
+             [.deviceOverview, .commonFeatures, .chinaUnlock,
+              .appleIntelligenceEsim, .securityDiagnosis, .backupRestore,
+-             .presetManagement, .moreTools])
++             .presetManagement, .moreTools, .officialTools])
+     }
+ 
+     func testHomeSectionsFollowDestinationOrder() {
+@@ -334,12 +334,13 @@ final class FeatureCatalogTests: XCTestCase {
+             HomeSectionID.resolvedSections("restore,unlock"),
+             [.deviceOverview, .commonFeatures, .backupRestore,
+              .chinaUnlock, .appleIntelligenceEsim,
+-             .securityDiagnosis, .presetManagement, .moreTools])
++             .securityDiagnosis, .presetManagement, .moreTools,
++             .officialTools])
+     }
+ 
+     func testHomeSectionsIgnoreUnknownAndDuplicateDestinations() {
+         let sections = HomeSectionID.resolvedSections("unlock,invalid,unlock")
+-        XCTAssertEqual(sections.count, 8)
++        XCTAssertEqual(sections.count, 9)
+         XCTAssertEqual(Set(sections.map(\.rawValue)).count, sections.count)
+     }
+ 
+@@ -358,9 +359,10 @@ final class FeatureCatalogTests: XCTestCase {
+         XCTAssertEqual(HomeSectionID.backupRestore.destination, .restore)
+         XCTAssertEqual(HomeSectionID.presetManagement.destination, .presets)
+         XCTAssertEqual(HomeSectionID.moreTools.destination, .advanced)
++        XCTAssertEqual(HomeSectionID.officialTools.destination, .officialTools)
+     }
+ 
+     func testHomeSectionCountMatchesTask() {
+-        XCTAssertEqual(HomeSectionID.allCases.count, 8)
++        XCTAssertEqual(HomeSectionID.allCases.count, 9)
+     }
+ }
+diff --git a/tests/LocalPlistWorkspaceTests.swift b/tests/LocalPlistWorkspaceTests.swift
+new file mode 100644
+index 0000000..e85beec
+--- /dev/null
++++ b/tests/LocalPlistWorkspaceTests.swift
+@@ -0,0 +1,71 @@
++// SPDX-License-Identifier: GPL-3.0-only
++import Foundation
++import XCTest
++@testable import GestaltX
++
++final class LocalPlistWorkspaceTests: XCTestCase {
++    func testEditDiffReadbackAndByteExactRestore() throws {
++        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
++        defer { try? FileManager.default.removeItem(at: root) }
++        let work = LocalPlistWorkspace(root: root)
++        let original = try plist(["name": "one", "enabled": true], .binary)
++        let record = try work.importCopy(original, name: "source.plist")
++        let candidate = try plist(["name": "two", "count": 42, "enabled": 1], .xml)
++        let change = try work.stage(xml: String(decoding: candidate, as: UTF8.self), for: record)
++        XCTAssertEqual(change.changedKeys, ["count", "enabled", "name"])
++        let applied = try work.apply(change)
++        XCTAssertEqual(applied.working, candidate)
++        XCTAssertEqual(applied.original, original)
++        XCTAssertEqual(try work.records(), [applied])
++        let restored = try work.restoreOriginal(id: applied.id, expectedSHA: applied.workingSHA)
++        XCTAssertEqual(restored.working, original)
++        XCTAssertEqual(restored.workingSHA, record.originalSHA)
++    }
++
++    func testSecondWriteCanRestoreToPreviousWorkingCopy() throws {
++        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
++        defer { try? FileManager.default.removeItem(at: root) }
++        let work = LocalPlistWorkspace(root: root)
++        let original = try plist(["name": "first"], .binary)
++        let starting = try work.importCopy(original, name: "source.plist")
++        let middle = try plist(["name": "middle"], .xml)
++        let applied = try work.apply(work.stage(xml: String(decoding: middle, as: UTF8.self), for: starting))
++        let last = try plist(["name": "last"], .xml)
++        let final = try work.apply(work.stage(xml: String(decoding: last, as: UTF8.self), for: applied))
++        XCTAssertEqual(final.previous, middle)
++        let undone = try work.restorePrevious(id: final.id, expectedSHA: final.workingSHA)
++        XCTAssertEqual(undone.working, middle)
++        XCTAssertEqual(undone.original, original)
++    }
++
++    func testOldProposalCannotOverwriteNewerRevision() throws {
++        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
++        defer { try? FileManager.default.removeItem(at: root) }
++        let work = LocalPlistWorkspace(root: root)
++        let record = try work.importCopy(plist(["name": "one"], .binary), name: "source.plist")
++        let bytes = try plist(["name": "two"], .xml)
++        let proposal = try work.stage(xml: String(decoding: bytes, as: UTF8.self), for: record)
++        let applied = try work.apply(proposal)
++        XCTAssertThrowsError(try work.apply(proposal)) {
++            XCTAssertEqual($0 as? LocalPlistWorkspace.Failure, .staleRevision)
++        }
++        XCTAssertThrowsError(try work.restoreOriginal(id: applied.id, expectedSHA: record.workingSHA)) {
++            XCTAssertEqual($0 as? LocalPlistWorkspace.Failure, .staleRevision)
++        }
++        XCTAssertEqual(try work.records(), [applied])
++    }
++
++    func testSameDataDoesNotCreateChanges() throws {
++        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
++        defer { try? FileManager.default.removeItem(at: root) }
++        let work = LocalPlistWorkspace(root: root)
++        let record = try work.importCopy(plist(["name": "one"], .binary), name: "source.plist")
++        XCTAssertThrowsError(try work.stage(xml: LocalPlistWorkspace.editableXML(record.working), for: record)) {
++            XCTAssertEqual($0 as? LocalPlistWorkspace.Failure, .noChange)
++        }
++    }
++
++    private func plist(_ value: [String: Any], _ format: PropertyListSerialization.PropertyListFormat) throws -> Data {
++        try PropertyListSerialization.data(fromPropertyList: value, format: format, options: 0)
++    }
++}
+diff --git a/tests/PrepareReleaseTests.py b/tests/PrepareReleaseTests.py
+index 7ec9c5a..7cec893 100644
+--- a/tests/PrepareReleaseTests.py
++++ b/tests/PrepareReleaseTests.py
+@@ -209,7 +209,7 @@ class ProjectVersionTests(unittest.TestCase):
+     def test_read_real_project_version(self):
+         self.assertEqual(
+             pr.read_project_version(),
+-            ("5.0.0", 50000000))
++            ("5.0.0", 50000002))
+ 
+     def test_bump_project_version_updates_all_occurrences(self):
+         with tempfile.TemporaryDirectory() as tmp:
+diff --git a/tests/VerifiedChangeTests.swift b/tests/VerifiedChangeTests.swift
+new file mode 100644
+index 0000000..41ac043
+--- /dev/null
++++ b/tests/VerifiedChangeTests.swift
+@@ -0,0 +1,69 @@
++// SPDX-License-Identifier: GPL-3.0-only
++import XCTest
++@testable import GestaltX
++
++final class VerifiedChangeTests: XCTestCase {
++    func testWriteAndRestoreBothReadBack() {
++        var change = VerifiedChange<Int>()
++        var value = 40
++        var reads = 0
++        let read: () -> Int? = { reads += 1; return value }
++        let write: (Int) -> Void = { value = $0 }
++        XCTAssertEqual(change.apply(70, read: read, write: write, equals: ==), .applied)
++        XCTAssertEqual(value, 70)
++        XCTAssertTrue(change.canRestore)
++        XCTAssertEqual(change.restore(read: read, write: write, equals: ==), .restored)
++        XCTAssertEqual(value, 40)
++        XCTAssertFalse(change.canRestore)
++        XCTAssertEqual(reads, 4)
++    }
++
++    func testRejectedWriteDoesNotReportSuccess() {
++        var change = VerifiedChange<Int>()
++        XCTAssertEqual(change.apply(70, read: { 40 }, write: { _ in }, equals: ==),
++                       .writeRejectedAndOriginalRecovered)
++        XCTAssertFalse(change.canRestore)
++    }
++
++    func testUnavailableReadingNeverWrites() {
++        var change = VerifiedChange<Int>()
++        XCTAssertEqual(change.apply(70, read: { nil }, write: { _ in XCTFail() }, equals: ==),
++                       .unavailable)
++    }
++
++    func testExternalChangeIsNotOverwritten() {
++        var change = VerifiedChange<Int>()
++        var value = 40
++        XCTAssertEqual(change.apply(70, read: { value }, write: { value = $0 }, equals: ==), .applied)
++        value = 55
++        XCTAssertEqual(change.restore(read: { value }, write: { _ in XCTFail() }, equals: ==),
++                       .externallyChanged)
++        XCTAssertEqual(value, 55)
++        XCTAssertTrue(change.canRestore)
++        change.discard()
++        XCTAssertFalse(change.canRestore)
++    }
++
++    func testRejectedRestoreRemainsRetryable() {
++        var change = VerifiedChange<Int>()
++        var value = 40
++        XCTAssertEqual(change.apply(70, read: { value }, write: { value = $0 }, equals: ==), .applied)
++        XCTAssertEqual(change.restore(read: { value }, write: { _ in }, equals: ==), .restoreUnverified)
++        XCTAssertTrue(change.canRestore)
++        XCTAssertEqual(change.restore(read: { value }, write: { value = $0 }, equals: ==), .restored)
++    }
++
++    func testPendingTransactionCannotBeOverwritten() {
++        var change = VerifiedChange<Int>()
++        var value = 40
++        XCTAssertEqual(change.apply(70, read: { value }, write: { value = $0 }, equals: ==), .applied)
++        XCTAssertEqual(change.apply(60, read: { value }, write: { _ in XCTFail() }, equals: ==), .busy)
++        value = 40
++        XCTAssertEqual(change.restore(read: { value }, write: { _ in XCTFail() }, equals: ==), .restored)
++    }
++
++    func testUnchangedValueDoesNotWrite() {
++        var change = VerifiedChange<Int>()
++        XCTAssertEqual(change.apply(40, read: { 40 }, write: { _ in XCTFail() }, equals: ==), .unchanged)
++    }
++}
+diff --git a/tests/W11AppearanceModeTests.swift b/tests/W11AppearanceModeTests.swift
+new file mode 100644
+index 0000000..216ae73
+--- /dev/null
++++ b/tests/W11AppearanceModeTests.swift
+@@ -0,0 +1,28 @@
++// SPDX-License-Identifier: GPL-3.0-only
++import XCTest
++@testable import GestaltX
++
++final class W11AppearanceModeTests: XCTestCase {
++    func testDefaultKeepsExistingLightAppearance() {
++        XCTAssertEqual(W11AppearanceMode.defaultMode, .light)
++        XCTAssertEqual(W11AppearanceMode.stored("").preferredScheme, .light)
++        XCTAssertEqual(W11AppearanceMode.stored("unknown-future-value").preferredScheme, .light)
++    }
++
++    func testExplicitModesResolveToSeparateSchemes() {
++        XCTAssertEqual(W11AppearanceMode.stored("light").preferredScheme, .light)
++        XCTAssertEqual(W11AppearanceMode.stored("dark").preferredScheme, .dark)
++    }
++
++    func testSystemModeClearsWindowOverride() {
++        XCTAssertEqual(W11AppearanceMode.stored("system"), .system)
++        XCTAssertNil(W11AppearanceMode.stored("system").preferredScheme)
++    }
++
++    func testStableStorageValuesRoundTrip() {
++        XCTAssertEqual(Set(W11AppearanceMode.allCases.map(\.rawValue)), ["light", "dark", "system"])
++        for mode in W11AppearanceMode.allCases {
++            XCTAssertEqual(W11AppearanceMode.stored(mode.rawValue).id, mode)
++        }
++    }
++}
+diff --git a/tests/W7IntelligenceReportTests.swift b/tests/W7IntelligenceReportTests.swift
+new file mode 100644
+index 0000000..9189286
+--- /dev/null
++++ b/tests/W7IntelligenceReportTests.swift
+@@ -0,0 +1,40 @@
++// SPDX-License-Identifier: GPL-3.0-only
++import Foundation
++import XCTest
++@testable import GestaltX
++
++final class W7IntelligenceReportTests: XCTestCase {
++    func testCountZeroDoesNotMeanMissing() throws {
++        let summary = try W7IntelligenceReport.decode(Data(#"{"privateCloudComputeRequests":[]}"#.utf8))
++        XCTAssertEqual(summary.privateCloudComputeRequests, 0)
++        XCTAssertNil(summary.modelRequests)
++    }
++
++    func testOnlyCountsRecognizedTopLevelSections() throws {
++        let data = Data(#"{"modelRequests":[{},{"nested":{"privateCloudComputeRequests":[{}]}}],"privateCloudComputeRequests":[{}]}"#.utf8)
++        let summary = try W7IntelligenceReport.decode(data)
++        XCTAssertEqual(summary.privateCloudComputeRequests, 1)
++        XCTAssertEqual(summary.modelRequests, 2)
++    }
++
++    func testRejectsWrongShapeInsteadOfShowingSuccess() {
++        XCTAssertThrowsError(try W7IntelligenceReport.decode(Data(#"{"privateCloudComputeRequests":[1]}"#.utf8))) { error in
++            XCTAssertEqual(error as? W7IntelligenceReport.Failure, .invalidRequestList)
++        }
++        XCTAssertThrowsError(try W7IntelligenceReport.decode(Data(#"{"unrelated":[]}"#.utf8))) { error in
++            XCTAssertEqual(error as? W7IntelligenceReport.Failure, .unrecognized)
++        }
++        XCTAssertThrowsError(try W7IntelligenceReport.decode(Data("{".utf8))) { error in
++            XCTAssertEqual(error as? W7IntelligenceReport.Failure, .malformedJSON)
++        }
++    }
++
++    func testReadRejectsLargeFile() throws {
++        let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
++        defer { try? FileManager.default.removeItem(at: url) }
++        try Data(repeating: 32, count: W7IntelligenceReport.maximumBytes + 1).write(to: url)
++        XCTAssertThrowsError(try W7IntelligenceReport.read(url)) { error in
++            XCTAssertEqual(error as? W7IntelligenceReport.Failure, .tooLarge)
++        }
++    }
++}
+diff --git a/tests/W8ResourceMetricsTests.swift b/tests/W8ResourceMetricsTests.swift
+new file mode 100644
+index 0000000..2a69f5e
+--- /dev/null
++++ b/tests/W8ResourceMetricsTests.swift
+@@ -0,0 +1,40 @@
++// SPDX-License-Identifier: GPL-3.0-only
++import Dispatch
++import XCTest
++@testable import GestaltX
++
++final class W8ResourceMetricsTests: XCTestCase {
++    func testUnobservedIsNotZeroAndCachedTransactionsAreIgnored() {
++        var totals = W8NetworkTotals()
++        XCTAssertNil(totals.sent)
++        XCTAssertNil(totals.received)
++        totals.include(isNetwork: false, sent: [20], received: [200])
++        XCTAssertNil(totals.sent)
++        XCTAssertNil(totals.received)
++    }
++
++    func testTotalsAddRealComponentsAndIgnoreNegativeValues() {
++        var totals = W8NetworkTotals()
++        totals.include(isNetwork: true, sent: [-1], received: [0])
++        XCTAssertNil(totals.sent)
++        XCTAssertEqual(totals.received, 0)
++        totals.include(isNetwork: true, sent: [10, 20], received: [30, -1])
++        totals.include(isNetwork: true, sent: [40], received: [5, 6])
++        XCTAssertEqual(totals.sent, 70)
++        XCTAssertEqual(totals.received, 41)
++    }
++
++    func testTotalsSaturateWithoutWrapping() {
++        var totals = W8NetworkTotals()
++        totals.include(isNetwork: true, sent: [Int64.max, Int64.max, 10], received: [])
++        XCTAssertEqual(totals.sent, UInt64.max)
++        XCTAssertNil(totals.received)
++    }
++
++    func testPressurePriorityAndUnknown() {
++        XCTAssertNil(W8PressureLevel(event: []))
++        XCTAssertEqual(W8PressureLevel(event: .normal), .normal)
++        XCTAssertEqual(W8PressureLevel(event: [.warning, .normal]), .warning)
++        XCTAssertEqual(W8PressureLevel(event: [.critical, .warning]), .critical)
++    }
++}
+diff --git a/tests/W9WallpaperStudioTests.swift b/tests/W9WallpaperStudioTests.swift
+new file mode 100644
+index 0000000..c859e31
+--- /dev/null
++++ b/tests/W9WallpaperStudioTests.swift
+@@ -0,0 +1,60 @@
++// SPDX-License-Identifier: GPL-3.0-only
++import CoreGraphics
++import Foundation
++import ImageIO
++import UniformTypeIdentifiers
++import XCTest
++@testable import GestaltX
++
++final class W9WallpaperStudioTests: XCTestCase {
++    func testNoUncoveredEdgeAtEitherExtreme() {
++        let size = CGSize(width: 1080, height: 1920)
++        for shift in [-1.0, 0, 1] {
++            let plan = W9WallpaperStudio.placement(
++                background: CGSize(width: 100, height: 300), foreground: nil, canvas: size, shift: shift
++            )
++            XCTAssertLessThanOrEqual(plan.background.minX, 1e-7)
++            XCTAssertGreaterThanOrEqual(plan.background.maxX, size.width - 1e-7)
++            XCTAssertLessThanOrEqual(plan.background.minY, 1e-7)
++            XCTAssertGreaterThanOrEqual(plan.background.maxY, size.height - 1e-7)
++        }
++    }
++
++    func testLayersMoveOppositelyAndClamp() throws {
++        let size = CGSize(width: 1080, height: 1920)
++        let source = CGSize(width: 1200, height: 1000)
++        let center = W9WallpaperStudio.placement(background: source, foreground: source, canvas: size, shift: 0)
++        let right = W9WallpaperStudio.placement(background: source, foreground: source, canvas: size, shift: 1)
++        let clamped = W9WallpaperStudio.placement(background: source, foreground: source, canvas: size, shift: 3)
++        XCTAssertLessThan(right.background.midX, center.background.midX)
++        XCTAssertGreaterThan(try XCTUnwrap(right.foreground).midX, try XCTUnwrap(center.foreground).midX)
++        XCTAssertEqual(right.background, clamped.background)
++        XCTAssertEqual(right.foreground, clamped.foreground)
++    }
++
++    func testPNGOutputHasExpectedFormatAndSize() throws {
++        let context = try XCTUnwrap(CGContext(
++            data: nil, width: 12, height: 12, bitsPerComponent: 8, bytesPerRow: 0,
++            space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
++        ))
++        context.setFillColor(CGColor(red: 1, green: 0, blue: 0, alpha: 1))
++        context.fill(CGRect(x: 0, y: 0, width: 12, height: 12))
++        let layer = try XCTUnwrap(context.makeImage())
++        let data = try W9WallpaperStudio.png(background: layer, foreground: nil, shift: 0)
++        let source = try XCTUnwrap(CGImageSourceCreateWithData(data as CFData, nil))
++        let identifier = try XCTUnwrap(CGImageSourceGetType(source))
++        XCTAssertEqual(identifier as String, UTType.png.identifier)
++        let image = try XCTUnwrap(CGImageSourceCreateImageAtIndex(source, 0, nil))
++        XCTAssertEqual(image.width, 1080)
++        XCTAssertEqual(image.height, 1920)
++    }
++
++    func testUnrecognizedContentCannotBeLoadedAsAnImage() throws {
++        let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".png")
++        defer { try? FileManager.default.removeItem(at: url) }
++        try Data("not an image".utf8).write(to: url)
++        XCTAssertThrowsError(try W9WallpaperStudio.loadImage(at: url, for: .foreground)) { error in
++            XCTAssertEqual(error as? W9WallpaperStudio.Failure, .unsupportedImage)
++        }
++    }
++}
+diff --git a/tests/WiringTests.swift b/tests/WiringTests.swift
+index 0d8aa80..1f7ddde 100644
+--- a/tests/WiringTests.swift
++++ b/tests/WiringTests.swift
+@@ -47,7 +47,7 @@ final class WiringTests: XCTestCase {
+             XCTAssertFalse(item.symbol.isEmpty, "Missing symbol for \(expected.id)")
+             XCTAssertNil(item.riskLevel, "Page item \(expected.id) must not carry a risk level")
+         }
+-        XCTAssertEqual(FeatureCatalog.pageItems.count, 18)
++        XCTAssertEqual(FeatureCatalog.pageItems.count, 25)
+     }
+ 
+     func testNewPageIDsAreUniqueAcrossTheCatalog() {
