@@ -1932,5 +1932,16 @@
   "bytes": "بایت",
   "hops.": "پرش.",
   "timeout": "پایان مهلت",
-  "unknown time": "زمان نامشخص"
+  "unknown time": "زمان نامشخص",
+  "Critical": "بحرانی",
+  "Memory in MiB": "حافظه بر حسب MiB",
+  "Monitor session": "نشست پایش",
+  "Normal": "عادی",
+  "Not measured": "اندازه‌گیری نشده",
+  "Resident memory": "حافظه مقیم",
+  "Sent": "ارسال شده",
+  "Session seconds": "ثانیه‌های نشست",
+  "sec": "ثانیه",
+  "Official API Tools": "ابزارهای رسمی API",
+  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "روشنایی صفحه، گزارش‌ها، پایش منابع، استودیوی تصویر زمینه و فضای کاری plist محلی — فقط APIهای رسمی."
 }

@@ -62,8 +62,8 @@ final class FeatureCatalogTests: XCTestCase {
     func testCatalogCounts() {
         XCTAssertEqual(PresetCatalog.all.count, 46)
         XCTAssertEqual(FeatureCatalog.presetItems.count, 46)
-        XCTAssertEqual(FeatureCatalog.pageItems.count, 18)
-        XCTAssertEqual(FeatureCatalog.allItems.count, 64)
+        XCTAssertEqual(FeatureCatalog.pageItems.count, 25)
+        XCTAssertEqual(FeatureCatalog.allItems.count, 71)
     }
 
     func testCatalogHasNoDuplicateIDsAndCoversEveryPreset() {
@@ -321,12 +321,12 @@ final class FeatureCatalogTests: XCTestCase {
 
     // MARK: - Home sections
 
-    func testHomeSectionsDefaultOrderIsTheEightSections() {
+    func testHomeSectionsDefaultOrderIsTheNineSections() {
         XCTAssertEqual(
             HomeSectionID.resolvedSections(""),
             [.deviceOverview, .commonFeatures, .chinaUnlock,
              .appleIntelligenceEsim, .securityDiagnosis, .backupRestore,
-             .presetManagement, .moreTools])
+             .presetManagement, .moreTools, .officialTools])
     }
 
     func testHomeSectionsFollowDestinationOrder() {
@@ -334,12 +334,13 @@ final class FeatureCatalogTests: XCTestCase {
             HomeSectionID.resolvedSections("restore,unlock"),
             [.deviceOverview, .commonFeatures, .backupRestore,
              .chinaUnlock, .appleIntelligenceEsim,
-             .securityDiagnosis, .presetManagement, .moreTools])
+             .securityDiagnosis, .presetManagement, .moreTools,
+             .officialTools])
     }
 
     func testHomeSectionsIgnoreUnknownAndDuplicateDestinations() {
         let sections = HomeSectionID.resolvedSections("unlock,invalid,unlock")
-        XCTAssertEqual(sections.count, 8)
+        XCTAssertEqual(sections.count, 9)
         XCTAssertEqual(Set(sections.map(\.rawValue)).count, sections.count)
     }
 
@@ -358,9 +359,10 @@ final class FeatureCatalogTests: XCTestCase {
         XCTAssertEqual(HomeSectionID.backupRestore.destination, .restore)
         XCTAssertEqual(HomeSectionID.presetManagement.destination, .presets)
         XCTAssertEqual(HomeSectionID.moreTools.destination, .advanced)
+        XCTAssertEqual(HomeSectionID.officialTools.destination, .officialTools)
     }
 
     func testHomeSectionCountMatchesTask() {
-        XCTAssertEqual(HomeSectionID.allCases.count, 8)
+        XCTAssertEqual(HomeSectionID.allCases.count, 9)
     }
 }

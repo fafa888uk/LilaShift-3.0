@@ -1932,5 +1932,16 @@
   "bytes": "바이트",
   "hops.": "홉.",
   "timeout": "시간 초과",
-  "unknown time": "알 수 없는 시간"
+  "unknown time": "알 수 없는 시간",
+  "Critical": "심각",
+  "Memory in MiB": "메모리(MiB)",
+  "Monitor session": "모니터 세션",
+  "Normal": "정상",
+  "Not measured": "측정 안 됨",
+  "Resident memory": "상주 메모리",
+  "Sent": "보냄",
+  "Session seconds": "세션 초",
+  "sec": "초",
+  "Official API Tools": "공식 API 도구",
+  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "화면 밝기, 보고서, 리소스 모니터링, 배경화면 스티디오, 로컬 plist 작업 공간 — 공식 API만 사용."
 }

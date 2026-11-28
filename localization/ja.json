@@ -1932,5 +1932,16 @@
   "bytes": "バイト",
   "hops.": "ホップ。",
   "timeout": "タイムアウト",
-  "unknown time": "不明な時刻"
+  "unknown time": "不明な時刻",
+  "Critical": "重大",
+  "Memory in MiB": "メモリ（MiB）",
+  "Monitor session": "監視セッション",
+  "Normal": "正常",
+  "Not measured": "未測定",
+  "Resident memory": "常駐メモリ",
+  "Sent": "送信済み",
+  "Session seconds": "セッション秒数",
+  "sec": "秒",
+  "Official API Tools": "公式 API ツール",
+  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "画面の明るさ、レポート、リソース監視、壁紙スタジオ、ローカル plist ワークスペース——公式 API のみ。"
 }

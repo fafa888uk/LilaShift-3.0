@@ -461,6 +461,20 @@ struct ContentView: View {
                     SystemHealthScoreCard()
                     DependencyAnalyzerCard()
                     DiagnosticsExpansionCard()
+                    // Merge (LilaShift 5.0.0): the four Wave 1 cards
+                    // belong on this page too. Before the merge the
+                    // catalog pages for device diagnostics, structured
+                    // log, IPA audit and network probe all pointed
+                    // here, but this page only held the five cards
+                    // above — the catalog entries were dead ends
+                    // (the real Wave 1 entry was the Tools home
+                    // diagnostics rows). The detail views are the
+                    // same instances HomeDiagnosticsSection mounts,
+                    // so no card is duplicated, only hosted twice.
+                    DeviceDiagnosticsCard()
+                    StructuredLogView()
+                    IPAAuditView()
+                    NetworkProbeCard()
                 }
                 .padding()
             }
@@ -504,6 +518,11 @@ struct ContentView: View {
             .navigationTitle(section.title)
         case .advanced:
             tools
+        case .officialTools:
+            // Merge (LilaShift 5.0.0): the merged official-API
+            // tools live on their own page, reached from the new
+            // home section and the seven new catalog pages.
+            OfficialToolsPage()
         }
     }
 

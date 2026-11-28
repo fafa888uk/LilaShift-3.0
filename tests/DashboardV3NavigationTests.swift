@@ -10,10 +10,10 @@
 //     by a home section, or — Stage 14 — by one of the four
 //     preset-group tiles in the common-features section. The
 //     Siri AI Mode and eSIM & region pages have no home section
-//     of their own (the home keeps its eight sections); they are
+//     of their own (the home keeps its nine sections); they are
 //     reached from their group tiles and from the catalog, so
 //     they are not orphans — the test asserts exactly that.
-//   - Every one of the 64 catalog items is reachable: it has a
+//   - Every one of the 71 catalog items is reachable: it has a
 //     non-empty id, names and symbol, and a destination that is
 //     a real dashboard destination.
 //   - Every dashboard destination is reached by at least one
@@ -23,10 +23,10 @@
 //     so the catalog never sends a preset to a page where it
 //     cannot be staged.
 //   - The home sections, the group tiles and the catalog agree
-//     on the destinations: the sections reach six destinations,
+//     on the destinations: the sections reach seven destinations,
 //     the group tiles add the remaining two (Siri AI Mode,
 //     eSIM & region), and together with the catalog they reach
-//     exactly the eight dashboard destinations, so no
+//     exactly the nine dashboard destinations, so no
 //     destination is reachable from one surface but missing
 //     from the other.
 import XCTest
@@ -60,7 +60,7 @@ final class DashboardV3NavigationTests: XCTestCase {
     }
 
     func testEveryCatalogItemIsReachable() {
-        XCTAssertEqual(FeatureCatalog.allItems.count, 64)
+        XCTAssertEqual(FeatureCatalog.allItems.count, 71)
         for item in FeatureCatalog.allItems {
             XCTAssertFalse(item.id.isEmpty, "Catalog item has an empty id")
             XCTAssertFalse(item.chineseName.isEmpty, "Missing name for \(item.id)")
@@ -113,12 +113,12 @@ final class DashboardV3NavigationTests: XCTestCase {
     func testHomeSectionsGroupTilesAndCatalogAgreeOnDestinations() {
         let sectionDestinations = Set(HomeSectionID.allCases.compactMap(\.destination))
         let catalogDestinations = Set(FeatureCatalog.allItems.map(\.destination))
-        // Six destinations have a home section; the other two
+        // Seven destinations have a home section; the other two
         // (Siri AI Mode, eSIM & region) are reached from the group
         // tiles instead — see testEveryDestinationIsReachedFromTheHome.
         XCTAssertEqual(
             sectionDestinations,
-            [.unlock, .aiOnly, .diagnostics, .restore, .presets, .advanced])
+            [.unlock, .aiOnly, .diagnostics, .restore, .presets, .advanced, .officialTools])
         XCTAssertEqual(catalogDestinations, Set(DashboardV3Destination.allCases))
         XCTAssertEqual(sectionDestinations.union(groupTileDestinations), catalogDestinations)
     }

@@ -1932,5 +1932,16 @@
   "bytes": "byte",
   "hops.": "bước nhảy.",
   "timeout": "hết thời gian chờ",
-  "unknown time": "thời gian không xác định"
+  "unknown time": "thời gian không xác định",
+  "Critical": "Nghiêm trọng",
+  "Memory in MiB": "Bộ nhớ theo MiB",
+  "Monitor session": "Phiên giám sát",
+  "Normal": "Bình thường",
+  "Not measured": "Chưa đo",
+  "Resident memory": "Bộ nhớ thường trú",
+  "Sent": "Đã gửi",
+  "Session seconds": "Giây phiên",
+  "sec": "giây",
+  "Official API Tools": "Công cụ API chính thức",
+  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "Độ sáng màn hình, báo cáo, giám sát tài nguyên, xưởng hình nền và không gian làm việc plist cục bộ — chỉ API chính thức."
 }

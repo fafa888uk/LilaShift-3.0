@@ -1936,6 +1936,17 @@ bytes	字节
 hops.	跳。
 timeout	超时
 unknown time	未知时间
+Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.	屏幕亮度、智能报告、资源监控、壁纸工坊与本地 plist 工作区——仅用官方 API。
+Official API Tools	官方接口工具
+Critical	严重
+Memory in MiB	内存（MiB）
+Monitor session	监控会话
+Normal	正常
+Not measured	未测得
+Resident memory	常驻内存
+Sent	已发送
+Session seconds	会话秒数
+sec	秒
 '''
 entries = {}
 for line in TRANSLATIONS.strip().splitlines():

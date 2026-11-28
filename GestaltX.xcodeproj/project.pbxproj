@@ -142,6 +142,12 @@
 		6EC27EA9D6B9B559F8FADE96 /* W4AppleWikiKeyTableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6F16064205BE1E172B832B1 /* W4AppleWikiKeyTableTests.swift */; };
 		424E9D51A52ED05AAC14DE71 /* W5NetworkProbeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1808E9EC5587C243C7092E34 /* W5NetworkProbeTests.swift */; };
 		B34B97871F7D7EC2D5D3461B /* W6FileBrowserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3123E00F77111BFA9541001 /* W6FileBrowserTests.swift */; };
+		FF46ABDC425AEBBFF43FCAD8 /* LocalPlistWorkspaceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47078458B9A33988346ED8AB /* LocalPlistWorkspaceTests.swift */; };
+		BBFA4AA230B83C214B572614 /* VerifiedChangeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C74280B5EA7FD7FAEB4D2ECD /* VerifiedChangeTests.swift */; };
+		92178F3572E73284E2A6CFF4 /* W11AppearanceModeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5684E0A962C8F74B88558BF9 /* W11AppearanceModeTests.swift */; };
+		83A0D5EF86B80B3339BCEFCD /* W7IntelligenceReportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C9F377525C84A88EF84BBC /* W7IntelligenceReportTests.swift */; };
+		930DE4E3A578066172F5C943 /* W8ResourceMetricsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2D0D51E010ED870C1C6A4D4 /* W8ResourceMetricsTests.swift */; };
+		B71BA9F6D13D4D96B363D635 /* W9WallpaperStudioTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEAB27FE89BD56931FD07266 /* W9WallpaperStudioTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -313,6 +319,12 @@
 		E6F16064205BE1E172B832B1 /* W4AppleWikiKeyTableTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = W4AppleWikiKeyTableTests.swift; sourceTree = "<group>"; };
 		1808E9EC5587C243C7092E34 /* W5NetworkProbeTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = W5NetworkProbeTests.swift; sourceTree = "<group>"; };
 		D3123E00F77111BFA9541001 /* W6FileBrowserTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = W6FileBrowserTests.swift; sourceTree = "<group>"; };
+		47078458B9A33988346ED8AB /* LocalPlistWorkspaceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LocalPlistWorkspaceTests.swift; sourceTree = "<group>"; };
+		C74280B5EA7FD7FAEB4D2ECD /* VerifiedChangeTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VerifiedChangeTests.swift; sourceTree = "<group>"; };
+		5684E0A962C8F74B88558BF9 /* W11AppearanceModeTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = W11AppearanceModeTests.swift; sourceTree = "<group>"; };
+		F8C9F377525C84A88EF84BBC /* W7IntelligenceReportTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = W7IntelligenceReportTests.swift; sourceTree = "<group>"; };
+		A2D0D51E010ED870C1C6A4D4 /* W8ResourceMetricsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = W8ResourceMetricsTests.swift; sourceTree = "<group>"; };
+		EEAB27FE89BD56931FD07266 /* W9WallpaperStudioTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = W9WallpaperStudioTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -551,6 +563,12 @@
 				D4E1320CF71EABD8197C0EF5 /* DashboardV3NavigationTests.swift */,
 				4E5F224BA529875D89FF6BDE /* DiagnosticsEngineTests.swift */,
 				DE7645FF99DB44D29B4CE01D /* DiagnosticsEquatableTests.swift */,
+				47078458B9A33988346ED8AB /* LocalPlistWorkspaceTests.swift */,
+				C74280B5EA7FD7FAEB4D2ECD /* VerifiedChangeTests.swift */,
+				5684E0A962C8F74B88558BF9 /* W11AppearanceModeTests.swift */,
+				F8C9F377525C84A88EF84BBC /* W7IntelligenceReportTests.swift */,
+				A2D0D51E010ED870C1C6A4D4 /* W8ResourceMetricsTests.swift */,
+				EEAB27FE89BD56931FD07266 /* W9WallpaperStudioTests.swift */,
 			);
 			name = Tests;
 			path = tests;
@@ -830,6 +848,12 @@
 				D43F6FE6E3F70F2FD3EC5873 /* DashboardV3NavigationTests.swift in Sources */,
 				F0BB5CA63302978160D3D647 /* DiagnosticsEngineTests.swift in Sources */,
 				1A7AD902F4504E46B9FC8038 /* DiagnosticsEquatableTests.swift in Sources */,
+				FF46ABDC425AEBBFF43FCAD8 /* LocalPlistWorkspaceTests.swift in Sources */,
+				BBFA4AA230B83C214B572614 /* VerifiedChangeTests.swift in Sources */,
+				92178F3572E73284E2A6CFF4 /* W11AppearanceModeTests.swift in Sources */,
+				83A0D5EF86B80B3339BCEFCD /* W7IntelligenceReportTests.swift in Sources */,
+				930DE4E3A578066172F5C943 /* W8ResourceMetricsTests.swift in Sources */,
+				B71BA9F6D13D4D96B363D635 /* W9WallpaperStudioTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -988,7 +1012,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = GestaltX/GestaltX.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 50000000;
+				CURRENT_PROJECT_VERSION = 50000002;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1032,7 +1056,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = GestaltX/GestaltX.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 50000000;
+				CURRENT_PROJECT_VERSION = 50000002;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1075,7 +1099,7 @@
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/GestaltXShare.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 50000000;
+				CURRENT_PROJECT_VERSION = 50000002;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
@@ -1107,7 +1131,7 @@
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_ENTITLEMENTS = ShareExtension/GestaltXShare.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 50000000;
+				CURRENT_PROJECT_VERSION = 50000002;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = ShareExtension/Info.plist;
@@ -1135,7 +1159,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 50000000;
+				CURRENT_PROJECT_VERSION = 50000002;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
@@ -1161,7 +1185,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 50000000;
+				CURRENT_PROJECT_VERSION = 50000002;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;

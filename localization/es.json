@@ -1932,5 +1932,16 @@
   "bytes": "bytes",
   "hops.": "saltos.",
   "timeout": "tiempo agotado",
-  "unknown time": "hora desconocida"
+  "unknown time": "hora desconocida",
+  "Critical": "Crítica",
+  "Memory in MiB": "Memoria en MiB",
+  "Monitor session": "Sesión de monitorización",
+  "Normal": "Normal",
+  "Not measured": "No medido",
+  "Resident memory": "Memoria residente",
+  "Sent": "Enviados",
+  "Session seconds": "Segundos de sesión",
+  "sec": "s",
+  "Official API Tools": "Herramientas de API oficiales",
+  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "Brillo, informes, monitorización de recursos, estudio de fondos y espacio de trabajo plist local; solo API oficiales."
 }

@@ -8,7 +8,7 @@
 
 | Channel | Version | Status |
 | --- | --- | --- |
-| Current source | **5.0.0** · build `50000000` | [Changes and verification](docs/RELEASE_5_0_0.md) · not a public release |
+| Current source | **5.0.0** · build `50000002` | [Changes and verification](docs/RELEASE_5_0_0.md) · not a public release |
 | Current public download | **4.2.0** · build `42000001` | Published version |
 
 CI passing does not imply real-device validation. Installation, device-specific features, and restore are not yet verified on devices for 5.0.0.
@@ -139,7 +139,7 @@ For 5.0.0, open a successful [Build LilaShift IPA run](https://github.com/fafa88
 - `LilaShift_5.0.0.ipa.sha256`
 - `build-manifest.json` (source commit, version, build, toolchain and IPA hash)
 
-Check the checksum and confirm that the manifest records version `5.0.0`, build `50000000`, and the intended source commit. Workflow artifacts are retained for 14 days. A downloadable workflow artifact is separate from a published release; published versions remain listed in [Releases](https://github.com/fafa888uk/LilaShift-3.0/releases).
+Check the checksum and confirm that the manifest records version `5.0.0`, build `50000002`, and the intended source commit. Workflow artifacts are retained for 14 days. A downloadable workflow artifact is separate from a published release; published versions remain listed in [Releases](https://github.com/fafa888uk/LilaShift-3.0/releases).
 
 The previous published artifact is [LilaShift 4.2.0](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0). The historical `LilaShift_3.0.0.ipa` is not a 4.x package. If a download is incomplete or its checksum differs, download it again before installing.
 

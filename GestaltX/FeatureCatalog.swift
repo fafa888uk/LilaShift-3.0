@@ -364,6 +364,40 @@ enum FeatureCatalog {
              title: "文件浏览器",
              subtitle: "浏览、多选与导入文件夹；跨应用浏览与缓存统计为只读，不清理。",
              destination: .advanced, symbol: "folder"),
+        // Merge wiring (LilaShift 5.0.0): one page per merged
+        // official-API feature. Titles follow the Wave 1 pattern
+        // (Chinese title, L() falls back to itself). All seven
+        // point at the new .officialTools destination, so every
+        // destination is reached by at least one catalog item and
+        // no catalog page is a dead end.
+        page(id: "page.brightnessWrite", category: .screenLock,
+             title: "屏幕亮度写入",
+             subtitle: "用公开 API 写屏幕亮度，写后读回核对，可恢复原始亮度；切后台自动恢复。",
+             destination: .officialTools, symbol: "sun.max"),
+        page(id: "page.intelligenceReport", category: .deviceDiagnostics,
+             title: "智能报告",
+             subtitle: "读取自选的 Apple Intelligence Report JSON，只数两类请求条数，不留存原文。",
+             destination: .officialTools, symbol: "doc.text.magnifyingglass"),
+        page(id: "page.resourceMonitor", category: .deviceDiagnostics,
+             title: "资源监控",
+             subtitle: "本进程常驻内存曲线、内存压力事件与累计流量统计；只计本应用，不含其他应用。",
+             destination: .officialTools, symbol: "waveform.path"),
+        page(id: "page.networkCheck", category: .deviceDiagnostics,
+             title: "网络出口检查",
+             subtitle: "查 RIPEstat 观测到的公网出口 IP；不含 Ping 与路由追踪（见网络探针）。",
+             destination: .officialTools, symbol: "network"),
+        page(id: "page.wallpaperStudio", category: .launchArtwork,
+             title: "壁纸工坊",
+             subtitle: "背景加透明前景双层合成，视差位移，导出静态 PNG；不设系统壁纸。",
+             destination: .officialTools, symbol: "photo.stack"),
+        page(id: "page.plistWorkspace", category: .advancedTools,
+             title: "本地 plist 工作区",
+             subtitle: "在应用内副本上编辑自选 plist，逐键差异、写后读回核对、可恢复原始或上次备份；绝不改来源文件。",
+             destination: .officialTools, symbol: "doc.badge.gearshape"),
+        page(id: "page.sessionLog", category: .advancedTools,
+             title: "会话日志",
+             subtitle: "本次会话的操作日志，可按级别筛选、搜索、导出 JSON；只记本应用的操作。",
+             destination: .officialTools, symbol: "list.bullet.rectangle"),
     ]
 
     private static func page(
@@ -586,6 +620,10 @@ enum HomeSectionID: String, CaseIterable, Identifiable, Sendable {
     case backupRestore
     case presetManagement
     case moreTools
+    // Merge (LilaShift 5.0.0): the merged official-API tools get
+    // their own home section. New cases go at the end so stored
+    // section orders never shift.
+    case officialTools
 
     var id: String { rawValue }
 
@@ -599,6 +637,7 @@ enum HomeSectionID: String, CaseIterable, Identifiable, Sendable {
         case .backupRestore: return L("Backup & Restore")
         case .presetManagement: return L("Preset Management")
         case .moreTools: return L("More Tools")
+        case .officialTools: return L("Official API Tools")
         }
     }
 
@@ -615,6 +654,7 @@ enum HomeSectionID: String, CaseIterable, Identifiable, Sendable {
         case .backupRestore: return L("Backups appear here before each write. You can also make one anytime.")
         case .presetManagement: return L("Search, filter and save presets — from the catalog only.")
         case .moreTools: return L("All tools")
+        case .officialTools: return L("Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.")
         }
     }
 
@@ -628,6 +668,7 @@ enum HomeSectionID: String, CaseIterable, Identifiable, Sendable {
         case .backupRestore: return "clock.arrow.circlepath"
         case .presetManagement: return "books.vertical"
         case .moreTools: return "slider.horizontal.3"
+        case .officialTools: return "hammer"
         }
     }
 
@@ -647,6 +688,7 @@ enum HomeSectionID: String, CaseIterable, Identifiable, Sendable {
         case .backupRestore: return .restore
         case .presetManagement: return .presets
         case .moreTools: return .advanced
+        case .officialTools: return .officialTools
         }
     }
 
@@ -671,6 +713,8 @@ enum HomeSectionID: String, CaseIterable, Identifiable, Sendable {
                 sections.append(.presetManagement)
             case .advanced:
                 sections.append(.moreTools)
+            case .officialTools:
+                sections.append(.officialTools)
             }
         }
         return sections

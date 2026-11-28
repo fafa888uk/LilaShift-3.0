@@ -9,11 +9,13 @@ final class DashboardV3Tests: XCTestCase {
     }
 
     func testCustomOrderingSurvivesReload() {
-        // Stage 14: eight destinations now — the stored order must
-        // cover all of them for the round-trip to be exact.
+        // Merge (LilaShift 5.0.0): nine destinations now — the
+        // stored order must cover all of them for the round-trip
+        // to be exact.
         let desired: [DashboardV3Destination] = [
             .esimRegion, .unlock, .aiOnly, .advanced,
             .siriAIMode, .diagnostics, .restore, .presets,
+            .officialTools,
         ]
         XCTAssertEqual(desired.count, DashboardV3Destination.allCases.count)
         let stored = desired.map(\.rawValue).joined(separator: ",")

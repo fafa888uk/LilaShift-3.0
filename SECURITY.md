@@ -2,11 +2,11 @@
 
 ## Version and report scope
 
-**Status checked 2026-11-28:** the current source is 5.0.0, build `50000000`, prepared as a major update (Wave 1 diagnostics and audit). [v4.2.0](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0) is the most recent published release verified when this record was prepared. See the [5.0.0 verification record](docs/RELEASE_5_0_0.md) for the integrated source and build evidence. Preparing source or passing CI does not publish a release or establish real-device safety.
+**Status checked 2026-11-28:** the current source is 5.0.0, build `50000002`, prepared as a major update (Wave 1 diagnostics and audit). [v4.2.0](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0) is the most recent published release verified when this record was prepared. See the [5.0.0 verification record](docs/RELEASE_5_0_0.md) for the integrated source and build evidence. Preparing source or passing CI does not publish a release or establish real-device safety.
 
 | Version | Reporting context |
 | --- | --- |
-| 5.0.0 source / build `50000000` | Include the exact source commit and workflow/build-manifest evidence; integration and real-device verification must be distinguished. |
+| 5.0.0 source / build `50000002` | Include the exact source commit and workflow/build-manifest evidence; integration and real-device verification must be distinguished. |
 | 4.2.1 source / build `42000002` | Previous source version (maintenance update, not separately published); include the exact source commit when reporting against it. |
 | Published 4.2.0 / build `42000001` | Source commit `3152fc7c49ccb00f80f97da90666a65fb66a6d89`; include this version when reporting against the published IPA. |
 | 3.x and older | Historical versions; identify the exact version and commit. The old support declarations do not establish an ongoing maintenance commitment for these versions. |

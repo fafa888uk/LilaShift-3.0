@@ -1932,5 +1932,16 @@
   "bytes": "位元組",
   "hops.": "跳。",
   "timeout": "逾時",
-  "unknown time": "未知時間"
+  "unknown time": "未知時間",
+  "Critical": "嚴重",
+  "Memory in MiB": "記憶體（MiB）",
+  "Monitor session": "監控工作階段",
+  "Normal": "正常",
+  "Not measured": "未測量",
+  "Resident memory": "常駐記憶體",
+  "Sent": "已傳送",
+  "Session seconds": "工作階段秒數",
+  "sec": "秒",
+  "Official API Tools": "官方介面工具",
+  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "螢幕亮度、智慧報告、資源監控、桌布工坊與本機 plist 工作區——僅使用官方 API。"
 }

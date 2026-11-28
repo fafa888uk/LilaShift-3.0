@@ -4,7 +4,7 @@ English | [简体中文](CHANGELOG_ZH-CN.md)
 
 ## [5.0.0] - Unreleased (prepared 2026-11-28)
 
-Major update from the 4.2.1 source lineage. In-app version `5.0.0`, build `50000000`; expected IPA file `LilaShift_5.0.0.ipa`. The exact source, CI and artifact evidence is tracked in [the 5.0.0 record](docs/RELEASE_5_0_0.md). This entry does not assert that a release has been published or a real device has been tested.
+Major update from the 4.2.1 source lineage. In-app version `5.0.0`, build `50000002`; expected IPA file `LilaShift_5.0.0.ipa`. The exact source, CI and artifact evidence is tracked in [the 5.0.0 record](docs/RELEASE_5_0_0.md). This entry does not assert that a release has been published or a real device has been tested.
 
 ### Added — Wave 1 diagnostics and audit (23 features)
 
@@ -18,9 +18,16 @@ Major update from the 4.2.1 source lineage. In-app version `5.0.0`, build `50000
 - Localization: 281 missing Wave 1 strings added across all 10 supported locales (1934 keys total); the localization suite is green again. Twelve fragment keys that carried a leading/trailing space inside `L(...)` were fixed in code (spaces moved into the concatenation); rendered English output is unchanged.
 - Licenses: Wave 1 third-party notices merged into `THIRD_PARTY_NOTICES.md` (§12) with three new bundled MIT texts (DeviceKit, WQGuard, ip-tools); the in-app notices stay byte-identical.
 
+### Added — Merge with 4.2.0 and the official-API build (build 50000002)
+
+- One IPA now holds the full 4.2.0 feature set (verified: all 425 files of the 4.2.0 release are present in this tree, so no 4.2.0 feature was missing or needed to be added back) plus the official-API features from the merged-offline build and the Wave 1 diagnostics. The isolated official-API tree was a stripped CI tree with 465 files removed; none of those deletions were carried into this merge — the merge is additive only.
+- Official-API tools (new "Official API Tools" page, 7 new catalog pages, 18 → 25 pages, 64 → 71 total items): screen-brightness write with read-back verification and automatic restore, an offline Apple Intelligence report reader, a resource monitor (own-process memory curve, pressure events, traffic totals), a network egress check via RIPEstat, a parallax wallpaper studio exporting static PNGs, a local plist workspace (edit in-app copies only, per-key diff, read-back verification, restore to original or last backup), a session operation log, and a three-mode app appearance switch (light / dark / follow system; default light, unchanged from 4.2.0).
+- Wiring fix: the four Wave 1 cards (device diagnostics, structured log, IPA audit, network probe) are now also hosted on the Advanced & Diagnostics page, so the catalog pages that pointed there are no longer dead ends.
+- Not merged: the parallel `LilaShift.xcodeproj` project, the standalone `LilaShiftApp.swift` entry point, the `UnavailableLegacyView` "unsupported" list (its claims are false in the full tree — every feature it lists works here), the incomplete `PrivacyInfo.xcprivacy`, the CI-only `check-merged-offline.yml` workflow, and the `Package.swift` second build system. None of these is a feature loss; the reasons are recorded in the merge record.
+
 ### Changed
 
-- Version 4.2.1 → 5.0.0, build 42000002 → 50000000. The README now carries a version badge checked by the license CI.
+- Version 4.2.1 → 5.0.0, build 42000002 → 50000002. The README now carries a version badge checked by the license CI.
 - The 4.2.1 maintenance changes (ZIPFoundation 0.9.21, localization completion, governance/CI) remain part of the baseline.
 
 ### Verification and limits

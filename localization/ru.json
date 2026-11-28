@@ -1932,5 +1932,16 @@
   "bytes": "байт",
   "hops.": "прыжков.",
   "timeout": "тайм-аут",
-  "unknown time": "неизвестное время"
+  "unknown time": "неизвестное время",
+  "Critical": "Критическое",
+  "Memory in MiB": "Память в МиБ",
+  "Monitor session": "Сеанс мониторинга",
+  "Normal": "Норма",
+  "Not measured": "Не измерено",
+  "Resident memory": "Резидентная память",
+  "Sent": "Отправлено",
+  "Session seconds": "Секунды сеанса",
+  "sec": "с",
+  "Official API Tools": "Официальные инструменты API",
+  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "Яркость экрана, отчёты, мониторинг ресурсов, студия обоев и локальная рабочая область plist — только официальные API."
 }

@@ -47,7 +47,7 @@ final class WiringTests: XCTestCase {
             XCTAssertFalse(item.symbol.isEmpty, "Missing symbol for \(expected.id)")
             XCTAssertNil(item.riskLevel, "Page item \(expected.id) must not carry a risk level")
         }
-        XCTAssertEqual(FeatureCatalog.pageItems.count, 18)
+        XCTAssertEqual(FeatureCatalog.pageItems.count, 25)
     }
 
     func testNewPageIDsAreUniqueAcrossTheCatalog() {

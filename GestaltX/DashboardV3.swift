@@ -19,7 +19,12 @@ import SwiftUI
 /// all four opened `.unlock`, so every home tile led to the same
 /// long page.
 enum DashboardV3Destination: String, CaseIterable, Identifiable, Hashable {
-    case unlock, aiOnly, siriAIMode, esimRegion, diagnostics, restore, presets, advanced
+    // Merge (LilaShift 5.0.0): .officialTools hosts the merged
+    // official-API features (brightness write, intelligence report,
+    // resource monitor, network egress check, wallpaper studio,
+    // local plist workspace, session log, appearance mode). New
+    // cases go at the end so stored destination orders never shift.
+    case unlock, aiOnly, siriAIMode, esimRegion, diagnostics, restore, presets, advanced, officialTools
 
     var id: String { rawValue }
 
@@ -33,6 +38,7 @@ enum DashboardV3Destination: String, CaseIterable, Identifiable, Hashable {
         case .restore: return L("Backups")
         case .presets: return L("Feature Categories")
         case .advanced: return L("Tools")
+        case .officialTools: return L("Official API Tools")
         }
     }
 
@@ -46,6 +52,7 @@ enum DashboardV3Destination: String, CaseIterable, Identifiable, Hashable {
         case .restore: return L("Restore pre-unlock state")
         case .presets: return L("Personalization")
         case .advanced: return L("All tools")
+        case .officialTools: return L("Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.")
         }
     }
 
@@ -59,6 +66,7 @@ enum DashboardV3Destination: String, CaseIterable, Identifiable, Hashable {
         case .restore: return "clock.arrow.circlepath"
         case .presets: return "square.grid.2x2"
         case .advanced: return "slider.horizontal.3"
+        case .officialTools: return "hammer"
         }
     }
 
@@ -73,7 +81,7 @@ enum DashboardV3Destination: String, CaseIterable, Identifiable, Hashable {
     }
 }
 
-/// The home, restructured (Phase D) into eight sections that show
+/// The home, restructured (Phase D) into nine sections that show
 /// summaries only — the full cards live on the destination pages:
 ///
 /// 1. Device overview — the read / re-read card (inline, unchanged).
@@ -127,12 +135,12 @@ struct DashboardV3Home<DestinationView: View>: View {
     }
     let destination: (DashboardV3Destination) -> DestinationView
 
-    /// The eight sections in display order.
+    /// The nine sections in display order.
     private var orderedSections: [HomeSectionID] {
         HomeSectionID.resolvedSections(savedOrder)
     }
 
-    /// The destination-backed sections (3–8), in display order.
+    /// The destination-backed sections (3–9), in display order.
     private var destinationSections: [HomeSectionID] {
         orderedSections.filter { $0.destination != nil }
     }
@@ -357,7 +365,7 @@ struct DashboardV3Home<DestinationView: View>: View {
     /// The caller then shows the section description instead.
     private func summaryText(for section: HomeSectionID) -> String? {
         switch section {
-        case .deviceOverview, .commonFeatures, .moreTools:
+        case .deviceOverview, .commonFeatures, .moreTools, .officialTools:
             return nil
         case .chinaUnlock:
             guard model.hasDocument else { return nil }
