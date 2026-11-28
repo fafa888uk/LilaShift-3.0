@@ -1,0 +1,28 @@
+name: Validate W11 app appearance in isolation
+on:
+  push:
+    branches: [codex/lilashift-w11-ci]
+permissions:
+  contents: read
+concurrency:
+  group: w11-appearance-isolated
+  cancel-in-progress: true
+jobs:
+  check:
+    if: github.event.repository.private == false
+    runs-on: macos-15
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check app-scoped preference declaration
+        run: plutil -lint iOS/PrivacyInfo.xcprivacy
+      - name: Type-check settings, scene root and glass styles against the iOS SDK
+        run: |
+          set -euo pipefail
+          sdk="$(xcrun --sdk iphoneos --show-sdk-path)"
+          xcrun --sdk iphoneos swiftc -swift-version 5 -typecheck -target arm64-apple-ios26.0 -sdk "$sdk" \
+            Sources/GestaltX/W11AppearanceMode.swift iOS/*.swift
+      - name: Run W11 tests only
+        run: swift test
