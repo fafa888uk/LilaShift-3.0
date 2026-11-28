@@ -1947,13 +1947,60 @@ Resident memory	常驻内存
 Sent	已发送
 Session seconds	会话秒数
 sec	秒
+app.title	紫序	LilaShift
+common.cancel	取消	Cancel
+screen.heading	屏幕亮度	Display brightness
+screen.actual	UIKit 当前读数	Current UIKit reading
+screen.unavailable	当前未找到可用的内置屏幕。	No active built-in display is available.
+screen.physicalOnly	模拟器和 Mac 不支持本功能的亮度写入。	Brightness writes are unavailable on simulators and Mac.
+screen.target	目标亮度	Target brightness
+screen.apply	应用到屏幕	Apply to screen
+screen.restore	恢复原亮度	Restore original brightness
+screen.discard	清除恢复记录（不改亮度）	Clear recovery record without changing brightness
+screen.footer	这会改变内置屏幕实际亮度，不会永久更改系统设置。原值在本次会话中保留，进入后台时尝试恢复。锁屏或强退可能中断会话。若无法确认恢复，请使用控制中心调整。	Applies to the built-in display, not a permanent Settings value. The app saves the original in memory and attempts recovery when backgrounded. A lock or app termination can end the session. Use Control Center if recovery cannot be verified.
+screen.confirmTitle	更改屏幕亮度？	Change display brightness?
+screen.confirmWrite	写入并读回	Write and verify
+screen.confirmBody	应用将先读取并保存原值，再写入目标值并从 UIKit 读回。	The app will read the current value, save it for recovery, write the requested value, then read it back from UIKit.
+device.heading	设备信息（只读）	Device information (read-only)
+device.system	系统版本	Operating system
+device.family	设备类别	Device family
+device.memory	物理内存	Physical memory
+device.cpu	逻辑处理器	Logical processors
+appearance.heading	应用外观	App appearance
+appearance.mode	模式（仅本应用）	Mode (this app only)
+appearance.system	跟随系统	Follow system
+appearance.light	浅色	Light
+appearance.dark	深色	Dark
+limits.heading	不支持的写入	Unsupported writes
+limits.body	本应用无法修改受保护的 MobileGestalt、eSIM 准入、Apple 智能资格、系统外观、钱包卡面或锁屏资源，也不提供这些操作的预览。	This app cannot change protected MobileGestalt values, eSIM availability, Apple Intelligence eligibility, system appearance, Wallet card art, or lock-screen assets. It does not offer previews of these actions.
+limits.test	预发布 · 尚未完成真机验证。	Prerelease · Real-device validation pending.
+status.applied	UIKit 读回值与目标一致。	UIKit readback matched the target.
+status.restored	UIKit 读回值与保存的原值一致。	UIKit readback matched the saved original.
+status.unchanged	当前读数与目标一致，没有写入。	The read value already matched the target; nothing was written.
+status.busy	请先恢复上一次修改。	Restore the previous change first.
+status.unavailable	无法获取读数，未记录成功。	Readback is unavailable; no success was recorded.
+status.rejected	未确认目标值；读回值仍是原值。	Target was not confirmed; the original value was read back.
+status.unverified	未能确认预期值，仍保留恢复记录。	The expected value could not be verified; the recovery record is still available.
+status.conflict	读回值不一致；应用没有覆盖意外值。	Readback diverged; the app did not overwrite the unexpected value.
+tools.heading	诊断与工具	Diagnostics and tools
+network.title	网络出口检查	Internet egress check
+network.check	使用 RIPEstat 检查	Check using RIPEstat
+network.result	服务观测到的公网地址	Observed public address
+network.scope	只有点检查才联网。RIPEstat 会看到此次请求的公网 IP；地址仅在本次会话显示。应用不会上传诊断报告或图片。	Only sends a request when you tap Check. RIPEstat sees your connection's public IP. The app displays it for this session; it does not upload your diagnostics or photos.
+network.failed	RIPEstat 未返回格式有效的公网地址，没有记录结果。	RIPEstat did not return a verified-format public address. No result was recorded.
 '''
 entries = {}
 for line in TRANSLATIONS.strip().splitlines():
     if not line.strip():
         continue
-    key, value = line.split('\t', 1)
-    entries[key] = {'localizations': {lang: {'stringUnit': {'state': 'translated', 'value': text}} for lang, text in [('en', key), ('zh-Hans', value)]}}
+    parts = line.split('\t')
+    if len(parts) not in (2, 3):
+        raise ValueError(f'bad TRANSLATIONS line: {line!r}')
+    key, value = parts[0], parts[1]
+    # Dotted keys (e.g. screen.heading) are not English text, so they carry
+    # an explicit en value as a third field; sentence keys default en to the key.
+    en_text = parts[2] if len(parts) == 3 else key
+    entries[key] = {'localizations': {lang: {'stringUnit': {'state': 'translated', 'value': text}} for lang, text in [('en', en_text), ('zh-Hans', value)]}}
 for translation_file in sorted((ROOT / 'localization').glob('*.json')):
     locale = translation_file.stem
     translations = json.loads(translation_file.read_text())

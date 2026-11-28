@@ -27,7 +27,7 @@ final class VerifiedChangeTests: XCTestCase {
 
     func testUnavailableReadingNeverWrites() {
         var change = VerifiedChange<Int>()
-        XCTAssertEqual(change.apply(70, read: { nil }, write: { _ in XCTFail() }, equals: ==),
+        XCTAssertEqual(change.apply(70, read: { nil }, write: { _ in XCTFail("write must not be called when the read is unavailable") }, equals: ==),
                        .unavailable)
     }
 
@@ -36,7 +36,7 @@ final class VerifiedChangeTests: XCTestCase {
         var value = 40
         XCTAssertEqual(change.apply(70, read: { value }, write: { value = $0 }, equals: ==), .applied)
         value = 55
-        XCTAssertEqual(change.restore(read: { value }, write: { _ in XCTFail() }, equals: ==),
+        XCTAssertEqual(change.restore(read: { value }, write: { _ in XCTFail("write must not be called when the value changed externally") }, equals: ==),
                        .externallyChanged)
         XCTAssertEqual(value, 55)
         XCTAssertTrue(change.canRestore)
@@ -57,13 +57,13 @@ final class VerifiedChangeTests: XCTestCase {
         var change = VerifiedChange<Int>()
         var value = 40
         XCTAssertEqual(change.apply(70, read: { value }, write: { value = $0 }, equals: ==), .applied)
-        XCTAssertEqual(change.apply(60, read: { value }, write: { _ in XCTFail() }, equals: ==), .busy)
+        XCTAssertEqual(change.apply(60, read: { value }, write: { _ in XCTFail("write must not be called while a change is pending") }, equals: ==), .busy)
         value = 40
-        XCTAssertEqual(change.restore(read: { value }, write: { _ in XCTFail() }, equals: ==), .restored)
+        XCTAssertEqual(change.restore(read: { value }, write: { _ in XCTFail("write must not be called when the value already matches the original") }, equals: ==), .restored)
     }
 
     func testUnchangedValueDoesNotWrite() {
         var change = VerifiedChange<Int>()
-        XCTAssertEqual(change.apply(40, read: { 40 }, write: { _ in XCTFail() }, equals: ==), .unchanged)
+        XCTAssertEqual(change.apply(40, read: { 40 }, write: { _ in XCTFail("write must not be called when the value is unchanged") }, equals: ==), .unchanged)
     }
 }
