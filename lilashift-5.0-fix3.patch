@@ -1,0 +1,29 @@
+diff --git a/GestaltX/MGKeysTable.swift b/GestaltX/MGKeysTable.swift
+index 1b7dee2..9efbf70 100644
+--- a/GestaltX/MGKeysTable.swift
++++ b/GestaltX/MGKeysTable.swift
+@@ -22,9 +22,9 @@ struct MGKeyEntry: Identifiable, Equatable {
+     /// when no reviewer has translated this key yet. Views must show
+     /// `MGKeyChineseNames.missingChineseNameLabel` ("暂无中文名") for
+     /// `nil`, never a guess.
+-    let chineseName: String? = nil
++    let chineseName: String?
+     /// Reviewed Simplified Chinese description, or `nil` with `chineseName`.
+-    let chineseDescription: String? = nil
++    let chineseDescription: String?
+ 
+     /// Spelled-out initialiser. The synthesised memberwise
+     /// initialiser does not accept the two defaulted `String?`
+@@ -32,6 +32,12 @@ struct MGKeyEntry: Identifiable, Equatable {
+     /// fails in CI ("Extra arguments at positions #5, #6").
+     /// This keeps the four-argument call sites working too: the
+     /// Chinese fields default to `nil`, exactly as before.
++    /// The two properties above must NOT carry `= nil` defaults
++    /// of their own: a defaulted `let` is already initialised at
++    /// declaration, so assigning it again in this init is a second
++    /// initialisation ("immutable value may only be initialised
++    /// once", MGKeysTable.swift:43/44, Tests #474 / IPA #480).
++    /// The defaults live on the init parameters only.
+     init(
+         name: String, key: String, meaning: String, source: String,
+         chineseName: String? = nil, chineseDescription: String? = nil
