@@ -1,0 +1,64 @@
+name: Extract Presets Snapshot Reference
+
+# One-shot: download the snapshot-references artifact from the
+# fix3 Tests run (run id 46171227138 — fill in after the run) and
+# commit the re-recorded presets PNG to the 5.0 branch, so the
+# next Tests run goes green. Artifact name is discovered
+# dynamically via the API; no hardcoded artifact name is assumed.
+# Dispatch with ref = feature/lilashift-5.0.
+#
+# This file must exist identically on main (so it can be dispatched)
+# and on feature/lilashift-5.0. It stays on main afterwards as scaffolding.
+#
+# TEMPLATE SOURCE: .github/workflows/extract-snapshots.yml on main
+# (used for the fix5 6-PNG re-record, commit 39e930a), trimmed to
+# the single presets PNG.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v7
+        with:
+          ref: feature/lilashift-5.0
+          fetch-depth: 0
+
+      - name: Find and download snapshot artifact
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "=== artifacts on run 46171227138 ==="
+          gh api repos/fafa888uk/LilaShift-3.0/actions/runs/46171227138/artifacts --jq '.artifacts[] | "\(.id) \(.name) expired=\(.expired)"'
+          ART_ID=$(gh api repos/fafa888uk/LilaShift-3.0/actions/runs/46171227138/artifacts --jq '.artifacts[] | select(.name | startswith("snapshot-references")) | .id' | head -n 1)
+          test -n "$ART_ID"
+          echo "artifact id: $ART_ID"
+          gh api repos/fafa888uk/LilaShift-3.0/actions/artifacts/$ART_ID/zip > snapshot.zip
+          ls -l snapshot.zip
+          mkdir -p snapshot-artifact
+          unzip -o -q snapshot.zip -d snapshot-artifact
+          echo "=== PNGs in artifact ==="
+          find snapshot-artifact -name "*.png" | sort
+
+      - name: Copy the presets PNG into place
+        run: |
+          src=$(find snapshot-artifact -name "testV3PresetsDestinationSnapshot.v3-presets-populated.png" -print -quit)
+          test -n "$src" || { echo "MISSING: presets PNG not in artifact"; exit 1; }
+          cp "$src" "tests/__Snapshots__/DashboardV3SnapshotTests/testV3PresetsDestinationSnapshot.v3-presets-populated.png"
+          ls -l tests/__Snapshots__/DashboardV3SnapshotTests/testV3PresetsDestinationSnapshot.v3-presets-populated.png
+          git status --porcelain
+
+      - name: Commit and push
+        run: |
+          git config user.name "fafa888uk"
+          git config user.email "fafa888uk@users.noreply.github.com"
+          git add tests/__Snapshots__/DashboardV3SnapshotTests/testV3PresetsDestinationSnapshot.v3-presets-populated.png
+          git commit -m "LilaShift 5.0.0: re-record presets snapshot reference"
+          git push origin feature/lilashift-5.0
