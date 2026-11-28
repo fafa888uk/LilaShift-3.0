@@ -1,0 +1,112 @@
+name: Publish v5.0.0 Apple official API prerelease
+on:
+  push:
+    branches: [codex/publish-v5-0-0-official-api]
+permissions: {}
+concurrency:
+  group: one-time-lilashift-v5-0-0-prerelease
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'fafa888uk/LilaShift-3.0' && github.event.repository.private == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: fafa888uk/LilaShift-3.0
+      BUILD_RUN: "46157113698"
+      SOURCE_SHA: e00e1a6fd2f18d4fbe62e6745404a22abbeba3e7
+      TAG: v5.0.0
+      IPA: LilaShift_5.0.0_Official_API.ipa
+      IPA_SHA: 929c552cbf477892a537452a3f3c478eb9a6f025fdad2855d63cf83e7de951c7
+      IPA_BYTES: "1648235"
+    steps:
+      - name: Verify the successful source run and protect existing versions
+        run: |
+          set -euo pipefail
+          gh api "repos/$GH_REPO/actions/runs/$BUILD_RUN" |
+            jq -e --arg sha "$SOURCE_SHA" '.conclusion == "success" and .head_sha == $sha and .head_branch == "codex/lilashift-5.0-ipa-delivery"' >/dev/null
+          existing="$(gh api --paginate "repos/$GH_REPO/releases?per_page=100" --jq ".[] | select(.tag_name == \"$TAG\") | .id")"
+          if [ -n "$existing" ]; then echo 'A draft or published release already uses v5.0.0.' >&2; exit 1; fi
+          if git ls-remote --exit-code --tags "https://github.com/$GH_REPO.git" "refs/tags/$TAG"; then
+            echo 'Existing v5.0.0 tag; refusing any replacement.' >&2
+            exit 1
+          else
+            code=$?
+            if [ "$code" -ne 2 ]; then exit "$code"; fi
+          fi
+      - uses: actions/download-artifact@v4
+        with:
+          name: LilaShift-5.0.0-Official-API
+          run-id: "46157113698"
+          github-token: ${{ github.token }}
+          path: deliverables
+      - name: Verify IPA and checksum before creating the release
+        working-directory: deliverables
+        run: |
+          set -euo pipefail
+          test "$(wc -c < "$IPA" | tr -d ' ')" = "$IPA_BYTES"
+          printf '%s  %s\n' "$IPA_SHA" "$IPA" | sha256sum -c -
+          printf '%s  %s\n' "$IPA_SHA" "$IPA" | cmp - "$IPA.sha256"
+          unzip -tq "$IPA"
+          unzip -Z1 "$IPA" > contents.txt
+          grep -Fx 'Payload/LilaShift.app/LilaShift' contents.txt
+          if grep -Fq 'embedded.mobileprovision' contents.txt; then exit 1; fi
+      - name: Upload the exact IPA and SHA256 to a draft
+        id: draft
+        working-directory: deliverables
+        run: |
+          set -euo pipefail
+          cat > notes.md <<EOF
+          **预发布：Apple 官方接口版｜5.0.0 · Build 50000001**
+
+          - 内置屏幕亮度写入、读回及恢复；离线 Apple 智能报告；资源监控及网络出口检查；静态壁纸 PNG 导出；三种应用外观。
+          - 不包含受保护的 MobileGestalt、钱包改写、锁屏写入或设备自配对。
+          - iOS / iPadOS 17.0+；arm64。IPA 未签名、未完成真机验证；下载后需使用合适的证书签名，不能直接安装。
+          - [构建与 23 项测试](https://github.com/$GH_REPO/actions/runs/$BUILD_RUN)；源码提交：$SOURCE_SHA。
+          - SHA256：$IPA_SHA（同时附独立校验文件）。
+          EOF
+          draft="$(gh api --method POST "repos/$GH_REPO/releases" -f tag_name="$TAG" -f target_commitish="$SOURCE_SHA" -f name='LilaShift 5.0.0 · 紫序 Apple 官方接口预发布' -F draft=true -F prerelease=true -f make_latest=false -F "body=@notes.md")"
+          id="$(jq -er '.id' <<< "$draft")"
+          [[ "$id" =~ ^[0-9]+$ ]]
+          jq -e --arg tag "$TAG" --arg sha "$SOURCE_SHA" '.draft and .prerelease and .tag_name == $tag and .target_commitish == $sha' <<< "$draft" >/dev/null
+          printf 'id=%s\n' "$id" >> "$GITHUB_OUTPUT"
+          upload="https://uploads.github.com/repos/$GH_REPO/releases/$id/assets"
+          for file in "$IPA" "$IPA.sha256"; do
+            result="$(curl --silent --show-error --fail --max-time 60 \
+              --request POST \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'Content-Type: application/octet-stream' \
+              --header 'Accept: application/vnd.github+json' \
+              --data-binary "@$file" "$upload?name=$file")"
+            sha="$(sha256sum "$file" | cut -d ' ' -f1)"
+            bytes="$(wc -c < "$file" | tr -d ' ')"
+            jq -e --arg name "$file" --arg sha "sha256:$sha" --argjson size "$bytes" \
+              '.name == $name and .state == "uploaded" and .digest == $sha and .size == $size' <<< "$result" >/dev/null
+          done
+      - name: Publish as a prerelease and verify public direct links
+        env:
+          RELEASE_ID: ${{ steps.draft.outputs.id }}
+        working-directory: deliverables
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE_ID" =~ ^[0-9]+$ ]]
+          gh api --method PATCH "repos/$GH_REPO/releases/$RELEASE_ID" -F draft=false -F prerelease=true -f make_latest=false > release.json
+          jq -e --arg tag "$TAG" --arg sha "$SOURCE_SHA" --arg ipa "$IPA" \
+            '.tag_name == $tag and .target_commitish == $sha and .prerelease and (.draft | not) and ([.assets[].name] | sort) == ([$ipa, ($ipa + ".sha256")] | sort)' release.json >/dev/null
+          actual="$(git ls-remote --tags "https://github.com/$GH_REPO.git" "refs/tags/$TAG" | cut -f1)"
+          test "$actual" = "$SOURCE_SHA"
+          ipa_url="$(jq -er --arg ipa "$IPA" '.assets[] | select(.name == $ipa) | .browser_download_url' release.json)"
+          sum_url="$(jq -er --arg name "$IPA.sha256" '.assets[] | select(.name == $name) | .browser_download_url' release.json)"
+          test "$ipa_url" = "https://github.com/$GH_REPO/releases/download/$TAG/$IPA"
+          test "$sum_url" = "$ipa_url.sha256"
+          mkdir http-verification
+          curl --silent --show-error --fail --location --retry 3 --max-time 60 "$ipa_url" --output "http-verification/$IPA"
+          curl --silent --show-error --fail --location --retry 3 --max-time 30 "$sum_url" --output "http-verification/$IPA.sha256"
+          cmp "$IPA" "http-verification/$IPA"
+          cmp "$IPA.sha256" "http-verification/$IPA.sha256"
+          (cd http-verification; sha256sum -c "$IPA.sha256")
+          printf 'Release: %s\nIPA: %s\nSHA256 file: %s\n' "$(jq -er .html_url release.json)" "$ipa_url" "$sum_url" | tee -a "$GITHUB_STEP_SUMMARY"
