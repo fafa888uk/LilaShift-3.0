@@ -1,0 +1,27 @@
+name: Validate W8 resource monitor in isolation
+on:
+  push:
+    branches: [codex/lilashift-w8-ci]
+permissions:
+  contents: read
+concurrency:
+  group: w8-isolated
+  cancel-in-progress: true
+jobs:
+  check:
+    if: github.event.repository.private == false
+    runs-on: macos-15
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Type-check W8 against the iOS SDK
+        run: |
+          set -euo pipefail
+          xcodebuild -version
+          sdk="$(xcrun --sdk iphoneos --show-sdk-path)"
+          xcrun --sdk iphoneos swiftc -swift-version 5 -typecheck -target arm64-apple-ios26.0 -sdk "$sdk" \
+            Sources/GestaltX/W8ResourceMetrics.swift iOS/W8ResourceMonitorView.swift
+      - name: Run W8 tests only
+        run: swift test

@@ -1,3 +1,0 @@
-▿ BatteryStatus
-  - level: Optional<Double>.none
-  - state: BatteryState.unknown
