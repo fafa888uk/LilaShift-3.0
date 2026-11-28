@@ -1,0 +1,120 @@
+name: Apply LilaShift 5.0 Wave 1
+
+# One-shot: apply lilashift-5.0-wave1.patch (Wave 1: W1 device
+# diagnostics, W2 structured log, W3 IPA audit, W4 MG key table,
+# W5 network probe, W6 file browser, navigation wiring, licenses,
+# localization, version bump to 5.0.0) to the 5.0 branch.
+# The patch file must already be uploaded to the branch root.
+# Patch SHA-256: 34c8447046aa04bf09d49995a7c079b7fca6edaec3dadaea494494ca436f24af
+# Base: main @ bcb3d82 ("docs: clarify source and download versions
+# on the homepage [skip ci]").
+# Dispatch with ref = feature/lilashift-5.0.
+#
+# This file must exist identically on main (so it can be dispatched)
+# and on feature/lilashift-5.0 (so the run checks out the branch
+# with the patch file). It stays on main afterwards as scaffolding.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v7
+        with:
+          ref: feature/lilashift-5.0
+
+      - name: Verify baseline is an ancestor
+        run: |
+          git merge-base --is-ancestor bcb3d82 HEAD
+          echo "base bcb3d82 is an ancestor of HEAD"
+
+      - name: Verify patch file
+        run: |
+          ls -l lilashift-5.0-wave1.patch
+          echo "34c8447046aa04bf09d49995a7c079b7fca6edaec3dadaea494494ca436f24af  lilashift-5.0-wave1.patch" | sha256sum -c -
+
+      - name: Apply patch
+        run: |
+          git config user.name "fafa888uk"
+          git config user.email "fafa888uk@users.noreply.github.com"
+          git apply --index lilashift-5.0-wave1.patch
+
+      - name: Verify staged files
+        run: |
+          echo "=== staged files ==="
+          git diff --cached --name-only
+          echo "=== staged stat ==="
+          git diff --cached --stat
+          # Expect exactly 65 files, +34992/-99
+          test "$(git diff --cached --name-only | wc -l)" -eq 65
+          git diff --cached --name-only | grep -qxF "GestaltX/DeviceDiagnostics.swift"
+          git diff --cached --name-only | grep -qxF "GestaltX/StructuredLog.swift"
+          git diff --cached --name-only | grep -qxF "GestaltX/IPAAuditScanner.swift"
+          git diff --cached --name-only | grep -qxF "GestaltX/AppleWikiKeyTable.swift"
+          git diff --cached --name-only | grep -qxF "GestaltX/W5NetworkProbe.swift"
+          git diff --cached --name-only | grep -qxF "GestaltX/W6FileBrowser.swift"
+          git diff --cached --name-only | grep -qxF "GestaltX/FeatureCatalog.swift"
+          git diff --cached --name-only | grep -qxF "GestaltX/ContentView.swift"
+          git diff --cached --name-only | grep -qxF "THIRD_PARTY_NOTICES.md"
+          git diff --cached --name-only | grep -qxF "GestaltX/Localizable.xcstrings"
+          git diff --cached --name-only | grep -qxF "GestaltX.xcodeproj/project.pbxproj"
+          git diff --cached --name-only | grep -qxF "README.md"
+          git diff --cached --name-only | grep -qxF "CHANGELOG.md"
+          git diff --cached --name-only | grep -qxF "docs/RELEASE_5_0_0.md"
+          git diff --cached --name-only | grep -qxF "W4NOTICES.md"
+          test "$(git diff --cached --numstat | awk '{s+=$1; d+=$2} END {print s}')" -eq 34992
+          test "$(git diff --cached --numstat | awk '{s+=$1; d+=$2} END {print d}')" -eq 99
+          # The branch also tracks the uploaded patch file and this
+          # workflow file, so the staged tree includes them and can
+          # never equal the expected tree. Remove them from the index
+          # (disk copies stay) before comparing the tree.
+          git rm --cached -q lilashift-5.0-wave1.patch .github/workflows/apply-lilashift-5.0-wave1.yml
+          # Expect tree e8961af492b9e42dd277263edd1006c1e5e5abac
+          # (base bcb3d82 + patch)
+          test "$(git write-tree)" = "e8961af492b9e42dd277263edd1006c1e5e5abac"
+
+      - name: Commit and push
+        run: |
+          git commit -m "LilaShift 5.0.0 Wave 1: diagnostics, audit, key table, probe, file browser
+
+          Wave 1 (23 features) on main @ bcb3d82:
+          - W1 DeviceKit diagnostics: live screen/biometrics/low-power/
+            brightness/disk readings + iPhone model table (MIT, no dep).
+          - W2 structured log: levelled, searchable, JSON/text export;
+            app's own events only, no network records.
+          - W3 IPA audit (WQGuard-inspired, MIT): Mach-O, CSBlob,
+            scanner, threat catalog, CVE radar (13 scores re-verified
+            against NVD), report export.
+          - W4 MG key table: 943 Apple Wiki keys (worstgestalt GPL-3.0,
+            not AGPL) + 122 reviewed Chinese names; own generator.
+          - W5 network probe (ip-tools-inspired, MIT): unprivileged
+            ICMP ping/traceroute + RIPEstat ASN/BGP; private refused.
+          - W6 file browser (Erosion-CN v1.0.8 / WQFiles, GPL-3.0):
+            multi-select, folder import, read-only cross-app browse,
+            splash-ad paths (all pending verification).
+          - Wiring: catalog 13 -> 18 pages (59 -> 64 items), home
+            diagnostics 11 -> 15 sections; 179 new XCTest + 7 Python
+            generator tests + 6 wiring tests.
+          - Licenses merged (THIRD_PARTY_NOTICES.md section 12, 3 new
+            MIT texts); 281 missing localization keys added (10
+            locales, 1934 total); version bumped to 5.0.0 (50000000).
+          No real-device verification yet: this is a pre-release
+          baseline; iPhone18,4 mapping, ICMP sandbox, splash-ad
+          paths and DER Slot 7 still need a real device."
+          git push origin feature/lilashift-5.0
+
+      - name: Clean up patch file
+        if: always()
+        # The patch file was already removed from the index by the
+        # verify step, so it is not in the fix commit; it is only an
+        # untracked file on disk in this ephemeral runner. Delete it
+        # from disk; there is nothing to commit.
+        run: |
+          rm -f lilashift-5.0-wave1.patch
+          git status --porcelain
