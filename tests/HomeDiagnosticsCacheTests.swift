@@ -92,15 +92,21 @@ final class HomeDiagnosticsCacheTests: XCTestCase {
 
     // MARK: - Helpers
 
-    /// Waits until no refresh is in flight. Bounded yield loop:
-    /// no sleep, no timing assertion — the budget only fails a
-    /// refresh that never finishes.
+    /// Waits until no refresh is in flight. Wall-clock deadline,
+    /// not a yield count: how many yields a background refresh needs
+    /// is unbounded under CI load, so a yield budget is
+    /// timing-fragile (the concurrency suite's identical helper
+    /// flaked on it in Tests #482). The deadline only fails a
+    /// refresh that genuinely never finishes, never a slow one.
     private func waitForIdle(_ cache: HomeDiagnosticsCache) async {
-        for _ in 0..<5000 {
-            if !cache.isComputing { return }
+        let deadline = ContinuousClock.now + .seconds(10)
+        while cache.isComputing {
+            if ContinuousClock.now >= deadline {
+                XCTFail("HomeDiagnosticsCache did not finish refreshing within the time budget")
+                return
+            }
             await Task.yield()
         }
-        XCTFail("HomeDiagnosticsCache did not finish refreshing within the yield budget")
     }
 
     private func refreshAndWait(
