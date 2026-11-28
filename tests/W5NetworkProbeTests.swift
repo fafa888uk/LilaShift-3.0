@@ -136,7 +136,10 @@ final class W5NetworkProbeTests: XCTestCase {
     }
 
     func testParseOtherType() {
-        let packet: [UInt8] = [13, 0, 0, 0, 0, 0, 0, 0]
+        // Bytes 2-3 are the checksum: parse() rejects IPv4 messages
+        // with a bad checksum (except types 11/3), so the packet must
+        // carry a valid one (checksum of this packet is 0xF2FF).
+        let packet: [UInt8] = [13, 0, 0xF2, 0xFF, 0, 0, 0, 0]
         guard let parsed = W5ICMPCodec.parse(packet, family: .v4) else {
             XCTFail("Unknown type must still parse as .other")
             return

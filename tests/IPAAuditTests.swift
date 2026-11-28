@@ -126,6 +126,12 @@ final class IPAAuditTests: XCTestCase {
         let codesignOffset = stroff + strtab.count
         let segmentFilesize = textBytes.count + cstringBytes.count + methnameBytes.count
 
+        // Section base address: a 32-bit Mach-O cannot carry a
+        // 64-bit vmaddr — `UInt32(0x1000_0000_0000)` traps
+        // ("Not enough bits to represent the passed value"), so
+        // 32-bit fixtures use a 32-bit address instead.
+        let sectionBaseAddress: UInt64 = is64Bit ? 0x1000_0000_0000 : 0x1000
+
         var commands = Data()
         // LC_SEGMENT(_64) __TEXT
         commands.append(u32le(is64Bit ? 0x19 : 0x1))
@@ -172,9 +178,9 @@ final class IPAAuditTests: XCTestCase {
                 commands.append(u32le(0))
             }
         }
-        section(sectname: "__text", address: 0x1000_0000_0000, size: textBytes.count, offset: textOffset)
-        section(sectname: "__cstring", address: 0x1000_0000_0000 + UInt64(textBytes.count), size: cstringBytes.count, offset: cstringOffset)
-        section(sectname: "__objc_methname", address: 0x1000_0000_0000 + UInt64(textBytes.count + cstringBytes.count), size: methnameBytes.count, offset: methnameOffset)
+        section(sectname: "__text", address: sectionBaseAddress, size: textBytes.count, offset: textOffset)
+        section(sectname: "__cstring", address: sectionBaseAddress + UInt64(textBytes.count), size: cstringBytes.count, offset: cstringOffset)
+        section(sectname: "__objc_methname", address: sectionBaseAddress + UInt64(textBytes.count + cstringBytes.count), size: methnameBytes.count, offset: methnameOffset)
         // LC_SYMTAB
         commands.append(u32le(0x2))
         commands.append(u32le(24))

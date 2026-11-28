@@ -592,7 +592,10 @@ struct W6SplashAdPathsView: View {
     }
 
     private var installedTableApps: [W6CrossAppTarget] {
-        let wanted = Set(tableApps.map(\.bundleID))
+        // All bundle IDs in the table, not just `apps`: an app with
+        // two bundle IDs (携程旅行: ctrip.com / ctrip.wireless) must
+        // still be recognised when only the second one is installed.
+        let wanted = Set(W6SplashAdPathTable.entries.map(\.bundleID))
         return W6CrossAppBrowser.installedApps().filter { wanted.contains($0.bundleID) }
     }
 

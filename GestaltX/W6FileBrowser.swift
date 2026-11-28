@@ -134,6 +134,15 @@ enum W6FileBrowser {
     /// huge container cannot hang the caller — a truncated total
     /// is labelled truncated, never presented as complete.
     static func measureDirectory(_ root: URL, maximumFiles: Int = 100_000) -> W6DirectoryMeasurement {
+        // `FileManager.enumerator(at:)` returns a non-nil enumerator
+        // for a missing directory (the failure only surfaces while
+        // iterating), so the enumerator alone cannot tell reachable
+        // from missing: check existence up front.
+        var isDirectory: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: root.path, isDirectory: &isDirectory),
+              isDirectory.boolValue else {
+            return W6DirectoryMeasurement(byteCount: 0, fileCount: 0, truncated: false, reachable: false)
+        }
         let keys: [URLResourceKey] = [.isRegularFileKey, .isDirectoryKey, .isSymbolicLinkKey, .fileSizeKey]
         guard let enumerator = FileManager.default.enumerator(
             at: root, includingPropertiesForKeys: keys,
@@ -786,7 +795,7 @@ struct W6SplashAdMatch: Equatable, Sendable {
 }
 
 /// The updatable splash-ad path table (Erosion-CN v1.0.6/v1.0.7).
-/// Seven apps, thirteen container-relative paths, all pending
+/// Seven apps, fourteen container-relative paths, all pending
 /// verification on LilaShift until a real-device check lands.
 /// Generic ad-SDK directory names (Erosion-CN v1.0.2) are kept
 /// separate from the per-app table: they match inside any app's
@@ -872,12 +881,15 @@ enum W6SplashAdPathTable {
             source: "Erosion-CN v1.0.7 (#58)", verification: .pendingVerification, note: ""),
     ]
 
-    /// The distinct apps in the table, in table order.
+    /// The distinct apps in the table, in table order. Deduped by
+    /// app name, not bundle ID: 携程旅行 ships under two bundle IDs
+    /// (`ctrip.com` / `ctrip.wireless`) with the same path, and it
+    /// is one app. The first bundle ID in table order is kept.
     static var apps: [(bundleID: String, appName: String)] {
         var seen: [String] = []
         var result: [(bundleID: String, appName: String)] = []
-        for entry in entries where !seen.contains(entry.bundleID) {
-            seen.append(entry.bundleID)
+        for entry in entries where !seen.contains(entry.appName) {
+            seen.append(entry.appName)
             result.append((bundleID: entry.bundleID, appName: entry.appName))
         }
         return result

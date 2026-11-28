@@ -132,9 +132,16 @@ enum IPAAuditScanner {
                 fixedVersionNote: entry.fixedVersionNote)
         }
         progress(1.0, L("Done"))
+        // Whole seconds: `jsonData()` encodes `auditedAt` with
+        // `.iso8601`, which drops fractional seconds, so a report
+        // built from `Date()` would not survive a JSON round trip
+        // (`decoded.auditedAt != report.auditedAt`). The audit is
+        // displayed at second precision everywhere, so nothing is
+        // lost by storing it truncated.
+        let auditedAt = Date(timeIntervalSince1970: Date().timeIntervalSince1970.rounded(.down))
         return IPAAuditReport(
             id: UUID().uuidString,
-            auditedAt: Date(),
+            auditedAt: auditedAt,
             scannerVersion: scannerVersion,
             fileName: fileName,
             fileSize: fileSize,

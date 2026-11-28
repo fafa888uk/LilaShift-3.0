@@ -49,7 +49,10 @@ final class W4AppleWikiKeyTableTests: XCTestCase {
         let curatedKeys = Set(MGKeysTable.all.map(\.key))
         let wikiKeys = Set(MGKeysTable.appleWikiEntries.map(\.key))
         XCTAssertTrue(curatedKeys.isDisjoint(with: wikiKeys))
-        XCTAssertEqual(curatedKeys.union(wikiKeys).count, 943)
+        // 77 curated + 878 non-curated wiki entries = 955. (943 is
+        // the wiki total including the 65 curated keys, which are
+        // excluded from `appleWikiEntries` by construction.)
+        XCTAssertEqual(curatedKeys.union(wikiKeys).count, 955)
         // Sorted by name, like `all`.
         let names = MGKeysTable.appleWikiEntries.map(\.name)
         XCTAssertEqual(names, names.sorted { $0.localizedCaseInsensitiveCompare($1) == .orderedAscending })
