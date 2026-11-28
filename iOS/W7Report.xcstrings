@@ -1,0 +1,149 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "A report section had an unsupported format.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "报告包含格式不受支持的字段。"
+          }
+        }
+      }
+    },
+    "A zero count describes this file only. The app does not verify the report's origin, server attestation, or device eligibility.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "零条仅描述此文件。本应用不核验报告来源、服务器证明或设备准入。"
+          }
+        }
+      }
+    },
+    "Apple Intelligence Report": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple 智能报告"
+          }
+        }
+      }
+    },
+    "Choose report JSON": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择报告 JSON"
+          }
+        }
+      }
+    },
+    "Could not open this file.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法打开此文件。"
+          }
+        }
+      }
+    },
+    "Export from Settings → Privacy & Security → Apple Intelligence Report. This app only reads the file you choose and does not upload or retain it.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请从「设置 → 隐私与安全性 → Apple 智能报告」导出。本应用只读你选中的文件，不上传、不留存原文。"
+          }
+        }
+      }
+    },
+    "Model request records": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模型请求记录"
+          }
+        }
+      }
+    },
+    "Not in this file": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此文件未提供"
+          }
+        }
+      }
+    },
+    "Private Cloud Compute records": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "私密云计算记录"
+          }
+        }
+      }
+    },
+    "Recognized report sections were not found.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "没有找到受支持的报告字段。"
+          }
+        }
+      }
+    },
+    "Records found in this file": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "文件内找到的记录"
+          }
+        }
+      }
+    },
+    "This file is larger than 4 MiB.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "文件超过 4 MiB。"
+          }
+        }
+      }
+    },
+    "This file is not valid JSON.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "文件不是有效的 JSON。"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

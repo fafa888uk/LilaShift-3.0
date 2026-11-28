@@ -1,0 +1,26 @@
+name: Validate W7 offline report import in isolation
+on:
+  push:
+    branches: [codex/lilashift-w7-ci]
+permissions:
+  contents: read
+concurrency:
+  group: w7-report-isolated
+  cancel-in-progress: true
+jobs:
+  check:
+    if: github.event.repository.private == false
+    runs-on: macos-15
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Type-check W7 against the iOS SDK
+        run: |
+          set -euo pipefail
+          sdk="$(xcrun --sdk iphoneos --show-sdk-path)"
+          xcrun --sdk iphoneos swiftc -swift-version 5 -typecheck -target arm64-apple-ios26.0 -sdk "$sdk" \
+            Sources/GestaltX/W7IntelligenceReport.swift iOS/W7IntelligenceReportView.swift
+      - name: Run W7 report tests only
+        run: swift test
