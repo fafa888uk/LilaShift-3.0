@@ -1,0 +1,25 @@
+name: Verify unified official target and local workspace
+on:
+  push:
+    branches: [codex/lilashift-merged-offline-ci]
+permissions:
+  contents: read
+jobs:
+  test:
+    if: github.repository == 'fafa888uk/LilaShift-3.0' && github.event.repository.private == false
+    runs-on: macos-26
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Swift tests for official modules and local backup
+        run: swift test
+      - name: Check Xcode target and type-check iOS views
+        run: |
+          set -euo pipefail
+          plutil -lint LilaShift.xcodeproj/project.pbxproj App/PrivacyInfo.xcprivacy
+          xcodebuild -version
+          sdk="$(xcrun --sdk iphoneos --show-sdk-path)"
+          xcrun --sdk iphoneos swiftc -swift-version 5 -typecheck \
+            -target arm64-apple-ios17.0 -sdk "$sdk" Sources/SettingsCore/*.swift App/*.swift App/Features/*.swift

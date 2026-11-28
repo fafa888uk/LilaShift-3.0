@@ -1,0 +1,171 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "Center Layers": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "图层居中"
+          }
+        }
+      }
+    },
+    "Choose Background": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择背景"
+          }
+        }
+      }
+    },
+    "Choose PNG Foreground": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择 PNG 前景"
+          }
+        }
+      }
+    },
+    "Could not open this image.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法打开此图像。"
+          }
+        }
+      }
+    },
+    "Could not render PNG.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法渲染 PNG。"
+          }
+        }
+      }
+    },
+    "Could not save PNG.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法保存 PNG。"
+          }
+        }
+      }
+    },
+    "Exports a static 1080 × 1920 PNG. It does not set your wallpaper or create a Live Photo.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "导出 1080 × 1920 的静态 PNG，不设置系统壁纸，也不会生成实况照片。"
+          }
+        }
+      }
+    },
+    "Horizontal Framing": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "水平取景"
+          }
+        }
+      }
+    },
+    "Parallax Wallpaper Studio": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "双层壁纸工坊"
+          }
+        }
+      }
+    },
+    "PNG saved.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PNG 已保存。"
+          }
+        }
+      }
+    },
+    "Remove Foreground": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "移除前景"
+          }
+        }
+      }
+    },
+    "Save PNG to Files": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "将 PNG 存到文件"
+          }
+        }
+      }
+    },
+    "The image format, dimensions, or foreground alpha channel are not supported.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "图像格式、尺寸或前景透明通道不受支持。"
+          }
+        }
+      }
+    },
+    "This image exceeds 20 MiB.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "图像文件超过 20 MiB。"
+          }
+        }
+      }
+    },
+    "Use a JPG, PNG, or HEIC background and an optional PNG with transparency. Images stay on this device.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "背景支持 JPG、PNG 或 HEIC，可添加带透明通道的 PNG 前景。图像仅在设备上处理。"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}
