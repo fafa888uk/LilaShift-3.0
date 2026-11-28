@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import CryptoKit
 import Foundation
 
 /// A local copy only. No stored path points back to the imported source or to a system file.
@@ -134,7 +133,8 @@ struct LocalPlistWorkspace {
     }
 
     private static func sha(_ bytes: Data) -> String {
-        SHA256.hash(data: bytes).map { String(format: "%02x", $0) }.joined()
+        // ADR-2-08: BackupEngine owns the only SHA-256 implementation.
+        BackupEngine.sha256Hex(of: bytes)
     }
 
     private func persistAndReadBack(_ record: Record) throws -> Record {

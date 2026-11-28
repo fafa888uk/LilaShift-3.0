@@ -79,14 +79,14 @@ final class FeatureCatalogTests: XCTestCase {
         XCTAssertEqual(counts[.smartUnlock], 1)
         XCTAssertEqual(counts[.appleIntelligence], 10)
         XCTAssertEqual(counts[.esimRegion], 4)
-        XCTAssertEqual(counts[.screenLock], 12)
+        XCTAssertEqual(counts[.screenLock], 13)
         XCTAssertEqual(counts[.systemSettings], 14)
         XCTAssertEqual(counts[.personalization], 1)
-        XCTAssertEqual(counts[.launchArtwork], 1)
-        XCTAssertEqual(counts[.deviceDiagnostics], 12)
+        XCTAssertEqual(counts[.launchArtwork], 2)
+        XCTAssertEqual(counts[.deviceDiagnostics], 15)
         XCTAssertEqual(counts[.modifiedRecords], 1)
         XCTAssertEqual(counts[.backupRestore], 2)
-        XCTAssertEqual(counts[.advancedTools], 6)
+        XCTAssertEqual(counts[.advancedTools], 8)
         XCTAssertEqual(FeatureCatalogCategory.allCases.count, 11)
     }
 
@@ -143,9 +143,9 @@ final class FeatureCatalogTests: XCTestCase {
 
     func testFilterByCategoryAndRisk() {
         XCTAssertEqual(
-            FeatureCatalog.filtered(FeatureCatalog.allItems, category: .screenLock).count, 12)
+            FeatureCatalog.filtered(FeatureCatalog.allItems, category: .screenLock).count, 13)
         XCTAssertEqual(
-            FeatureCatalog.filtered(FeatureCatalog.allItems, category: .deviceDiagnostics).count, 12)
+            FeatureCatalog.filtered(FeatureCatalog.allItems, category: .deviceDiagnostics).count, 15)
         // A risk filter excludes page items: they carry no risk.
         let high = FeatureCatalog.filtered(FeatureCatalog.allItems, riskLevel: .high)
         XCTAssertFalse(high.isEmpty)
