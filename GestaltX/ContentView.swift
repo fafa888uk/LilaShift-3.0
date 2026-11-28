@@ -1568,6 +1568,23 @@ struct ToolGroupView: View {
                     }
                 }
 
+                if group == .advancedDiagnostics {
+                    let chinese = Bundle.main.preferredLocalizations.first?.hasPrefix("zh-Hans") == true
+                    let title = chinese ? "屏幕亮度（系统接口）" : "Display Brightness (Apple API)"
+                    sectionCard(title: title) {
+                        NavigationLink { OfficialBrightnessView() } label: {
+                            HStack {
+                                Label(title, systemImage: "sun.max")
+                                Spacer(minLength: 8)
+                                Image(systemName: "chevron.right")
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(.tertiary)
+                            }
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+
                 ForEach(group.sections) { section in
                     sectionCard(title: section.title) {
                         if section.title == L("Display Effects") && group.showsDynamicIslandPicker {
