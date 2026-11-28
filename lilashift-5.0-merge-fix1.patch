@@ -1,0 +1,3251 @@
+diff --git a/GestaltX/Localizable.xcstrings b/GestaltX/Localizable.xcstrings
+index 01f52e2..9fd6a39 100644
+--- a/GestaltX/Localizable.xcstrings
++++ b/GestaltX/Localizable.xcstrings
+@@ -124480,6 +124480,2630 @@
+           }
+         }
+       }
++    },
++    "app.title": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "LilaShift"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "紫序"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "LilaShift"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "LilaShift"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "LilaShift"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "LilaShift"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "LilaShift"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "LilaShift"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "LilaShift"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "LilaShift"
++          }
++        }
++      }
++    },
++    "common.cancel": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Cancel"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "取消"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Cancelar"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "لغو"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "キャンセル"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "취소"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Отмена"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Hủy"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "取消"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "取消"
++          }
++        }
++      }
++    },
++    "screen.heading": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Display brightness"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "屏幕亮度"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Brillo de pantalla"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "روشنایی صفحه"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "画面の明るさ"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "화면 밝기"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Яркость экрана"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Độ sáng màn hình"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "螢幕亮度"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "螢幕亮度"
++          }
++        }
++      }
++    },
++    "screen.actual": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Current UIKit reading"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "UIKit 当前读数"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Lectura actual de UIKit"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "مقدار فعلی UIKit"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "UIKit の現在の読み取り値"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "현재 UIKit 읽기 값"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Текущее показание UIKit"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Giá trị đọc hiện tại từ UIKit"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "UIKit 目前讀數"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "UIKit 目前讀數"
++          }
++        }
++      }
++    },
++    "screen.unavailable": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "No active built-in display is available."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "当前未找到可用的内置屏幕。"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "No hay ninguna pantalla integrada disponible."
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "هیچ صفحه داخلی فعالی در دسترس نیست."
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "使用可能な内蔵ディスプレイがありません。"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "사용 가능한 내장 디스플레이가 없습니다."
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Нет доступного встроенного дисплея."
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Không có màn hình tích hợp nào đang hoạt động."
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "目前未找到可用的內建螢幕。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "目前未找到可用的內建螢幕。"
++          }
++        }
++      }
++    },
++    "screen.physicalOnly": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Brightness writes are unavailable on simulators and Mac."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "模拟器和 Mac 不支持本功能的亮度写入。"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "La escritura de brillo no está disponible en simuladores ni en Mac."
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "نوشتن روشنایی در شبیه‌سازها و Mac در دسترس نیست."
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "シミュレータと Mac では明るさの書き込みはできません。"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "시뮬레이터와 Mac에서는 밝기 쓰기가 지원되지 않습니다."
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Запись яркости недоступна в симуляторах и на Mac."
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Ghi độ sáng không khả dụng trên trình mô phỏng và Mac."
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "模擬器和 Mac 不支援亮度寫入。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "模擬器和 Mac 不支援亮度寫入。"
++          }
++        }
++      }
++    },
++    "screen.target": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Target brightness"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "目标亮度"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Brillo objetivo"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "روشنایی هدف"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "目標の明るさ"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "목표 밝기"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Целевая яркость"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Độ sáng mục tiêu"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "目標亮度"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "目標亮度"
++          }
++        }
++      }
++    },
++    "screen.apply": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Apply to screen"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "应用到屏幕"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Aplicar a la pantalla"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "اعمال روی صفحه"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "画面に適用"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "화면에 적용"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Применить к экрану"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Áp dụng cho màn hình"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "套用到螢幕"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "套用到螢幕"
++          }
++        }
++      }
++    },
++    "screen.restore": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Restore original brightness"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "恢复原亮度"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Restaurar el brillo original"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "بازگردانی روشنایی اصلی"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "元の明るさに戻す"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "원래 밝기로 복원"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Восстановить исходную яркость"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Khôi phục độ sáng gốc"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "還原原始亮度"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "還原原始亮度"
++          }
++        }
++      }
++    },
++    "screen.discard": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Clear recovery record without changing brightness"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "清除恢复记录（不改亮度）"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Borrar el registro de recuperación sin cambiar el brillo"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "پاک کردن سابقه بازیابی بدون تغییر روشنایی"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "明るさを変更せずに復旧記録を消去"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "밝기를 변경하지 않고 복구 기록 지우기"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Удалить запись восстановления, не меняя яркость"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Xóa bản ghi khôi phục mà không thay đổi độ sáng"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "清除還原記錄（不更改亮度）"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "清除還原記錄（不更改亮度）"
++          }
++        }
++      }
++    },
++    "screen.footer": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Applies to the built-in display, not a permanent Settings value. The app saves the original in memory and attempts recovery when backgrounded. A lock or app termination can end the session. Use Control Center if recovery cannot be verified."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "这会改变内置屏幕实际亮度，不会永久更改系统设置。原值在本次会话中保留，进入后台时尝试恢复。锁屏或强退可能中断会话。若无法确认恢复，请使用控制中心调整。"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Esto cambia el brillo real de la pantalla integrada, no un ajuste permanente del sistema. El valor original se guarda durante esta sesión y se intenta restaurar al pasar a segundo plano. Bloquear el dispositivo o cerrar la app puede interrumpir la sesión. Si no puedes confirmar la restauración, usa el Centro de control."
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "این کار روشنایی واقعی صفحه داخلی را تغییر می‌دهد، نه تنظیم دائمی سیستم را. مقدار اصلی در این نشست ذخیره می‌شود و هنگام رفتن به پس‌زمینه تلاش می‌شود آن را بازیابی کند. قفل کردن دستگاه یا بستن برنامه می‌تواند نشست را قطع کند. اگر نمی‌توانید بازیابی را تأیید کنید، از مرکز کنترل استفاده کنید."
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "内蔵ディスプレイの実際の明るさを変更します。システム設定を恒久的に変更するものではありません。元の値はこのセッション中に保存され、バックグラウンドに移行したときに復旧を試みます。ロックやアプリの終了によりセッションが中断される場合があります。復旧を確認できない場合は、コントロールセンターを使用してください。"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "내장 디스플레이의 실제 밝기를 변경합니다. 시스템 설정을 영구적으로 변경하지 않습니다. 원래 값은 이번 세션 동안 저장되며 백그라운드로 전환될 때 복원을 시도합니다. 잠금 또는 앱 종료로 세션이 중단될 수 있습니다. 복원을 확인할 수 없으면 제어 센터를 사용하세요."
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Это изменяет фактическую яркость встроенного дисплея, а не постоянную настройку системы. Исходное значение сохраняется на время сеанса, при переходе в фон будет предпринята попытка восстановления. Блокировка устройства или завершение приложения могут прервать сеанс. Если восстановление подтвердить не удаётся, используйте Пункт управления."
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Thao tác này thay đổi độ sáng thực tế của màn hình tích hợp, không phải cài đặt hệ thống vĩnh viễn. Giá trị gốc được giữ trong phiên này và sẽ được thử khôi phục khi chuyển sang nền. Khóa máy hoặc thoát ứng dụng có thể làm gián đoạn phiên. Nếu không thể xác nhận việc khôi phục, hãy dùng Trung tâm điều khiển."
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "這會改變內建螢幕實際亮度，不會永久更改系統設定。原始值會保留在本次工作階段中，進入背景時嘗試還原。鎖定螢幕或強制結束應用程式可能會中斷工作階段。如果無法確認還原，請使用控制中心調整。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "這會改變內建螢幕實際亮度，不會永久更改系統設定。原始值會保留在本次工作階段中，進入背景時嘗試還原。鎖定螢幕或強制結束應用程式可能會中斷工作階段。如果無法確認還原，請使用控制中心調整。"
++          }
++        }
++      }
++    },
++    "screen.confirmTitle": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Change display brightness?"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "更改屏幕亮度？"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "¿Cambiar el brillo de la pantalla?"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "روشنایی صفحه تغییر کند؟"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "画面の明るさを変更しますか？"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "화면 밝기를 변경하시겠습니까?"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Изменить яркость экрана?"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Thay đổi độ sáng màn hình?"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "要更改螢幕亮度嗎？"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "要更改螢幕亮度嗎？"
++          }
++        }
++      }
++    },
++    "screen.confirmWrite": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Write and verify"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "写入并读回"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Escribir y verificar"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "نوشتن و بازخوانی"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "書き込んで読み返す"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "쓰고 다시 읽기"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Записать и проверить чтением"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Ghi và đọc lại"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "寫入並讀回"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "寫入並讀回"
++          }
++        }
++      }
++    },
++    "screen.confirmBody": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "The app will read the current value, save it for recovery, write the requested value, then read it back from UIKit."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "应用将先读取并保存原值，再写入目标值并从 UIKit 读回。"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "La app leerá y guardará el valor original, escribirá el valor solicitado y lo leerá de nuevo desde UIKit."
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "برنامه ابتدا مقدار فعلی را می‌خواند و ذخیره می‌کند، سپس مقدار درخواستی را می‌نویسد و دوباره از UIKit می‌خواند."
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "アプリは現在の値を読み取って保存し、要求された値を書き込んでから UIKit から読み返します。"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "앱이 현재 값을 읽어 저장한 뒤 요청한 값을 쓰고 UIKit에서 다시 읽습니다."
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Приложение сначала прочитает и сохранит исходное значение, затем запишет запрошенное и прочитает его обратно из UIKit."
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Ứng dụng sẽ đọc và lưu giá trị gốc, ghi giá trị yêu cầu rồi đọc lại từ UIKit."
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "應用程式會先讀取並儲存原始值，再寫入目標值，並從 UIKit 讀回。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "應用程式會先讀取並儲存原始值，再寫入目標值，並從 UIKit 讀回。"
++          }
++        }
++      }
++    },
++    "device.heading": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Device information (read-only)"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "设备信息（只读）"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Información del dispositivo (solo lectura)"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "اطلاعات دستگاه (فقط خواندنی)"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "デバイス情報（読み取り専用）"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "기기 정보(읽기 전용)"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Информация об устройстве (только чтение)"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Thông tin thiết bị (chỉ đọc)"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "裝置資訊（唯讀）"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "裝置資訊（唯讀）"
++          }
++        }
++      }
++    },
++    "device.system": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Operating system"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "系统版本"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Sistema operativo"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "سیستم‌عامل"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "OS"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "운영체제"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Операционная система"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Hệ điều hành"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "系統版本"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "系統版本"
++          }
++        }
++      }
++    },
++    "device.family": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Device family"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "设备类别"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Familia de dispositivos"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "خانواده دستگاه"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "デバイスファミリー"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "기기 제품군"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Семейство устройств"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Dòng thiết bị"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "裝置類別"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "裝置類別"
++          }
++        }
++      }
++    },
++    "device.memory": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Physical memory"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "物理内存"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Memoria física"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "حافظه فیزیکی"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "物理メモリ"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "물리 메모리"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Физическая память"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Bộ nhớ vật lý"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "實體記憶體"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "實體記憶體"
++          }
++        }
++      }
++    },
++    "device.cpu": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Logical processors"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "逻辑处理器"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Procesadores lógicos"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "پردازنده‌های منطقی"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "論理プロセッサ"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "논리 프로세서"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Логические процессоры"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Bộ xử lý logic"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "邏輯處理器"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "邏輯處理器"
++          }
++        }
++      }
++    },
++    "appearance.heading": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "App appearance"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "应用外观"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Apariencia de la app"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "ظاهر برنامه"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "アプリの外観"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "앱 외관"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Оформление приложения"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Giao diện ứng dụng"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "應用程式外觀"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "應用程式外觀"
++          }
++        }
++      }
++    },
++    "appearance.mode": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Mode (this app only)"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "模式（仅本应用）"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Modo (solo esta app)"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "حالت (فقط این برنامه)"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "モード（このアプリのみ）"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "모드(이 앱만 해당)"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Режим (только это приложение)"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Chế độ (chỉ ứng dụng này)"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "模式（僅限此應用程式）"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "模式（僅限此應用程式）"
++          }
++        }
++      }
++    },
++    "appearance.system": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Follow system"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "跟随系统"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Seguir el sistema"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "پیروی از سیستم"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "システムに従う"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "시스템 설정 따르기"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Как в системе"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Theo hệ thống"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "跟隨系統"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "跟隨系統"
++          }
++        }
++      }
++    },
++    "appearance.light": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Light"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "浅色"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Claro"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "روشن"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "ライト"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "라이트"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Светлая"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Sáng"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "淺色"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "淺色"
++          }
++        }
++      }
++    },
++    "appearance.dark": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Dark"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "深色"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Oscuro"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "تیره"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "ダーク"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "다크"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Тёмная"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Tối"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "深色"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "深色"
++          }
++        }
++      }
++    },
++    "limits.heading": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Unsupported writes"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "不支持的写入"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Escrituras no compatibles"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "نوشتن‌های پشتیبانی‌نشده"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "対応していない書き込み"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "지원되지 않는 쓰기"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Неподдерживаемые записи"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Các thao tác ghi không được hỗ trợ"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "不支援的寫入"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "不支援的寫入"
++          }
++        }
++      }
++    },
++    "limits.body": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "This app cannot change protected MobileGestalt values, eSIM availability, Apple Intelligence eligibility, system appearance, Wallet card art, or lock-screen assets. It does not offer previews of these actions."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "本应用无法修改受保护的 MobileGestalt、eSIM 准入、Apple 智能资格、系统外观、钱包卡面或锁屏资源，也不提供这些操作的预览。"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Esta app no puede modificar los valores protegidos de MobileGestalt, la disponibilidad de eSIM, la elegibilidad de Apple Intelligence, la apariencia del sistema, el diseño de tarjetas de Wallet ni los recursos de la pantalla de bloqueo, ni ofrece vistas previas de estas acciones."
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "این برنامه نمی‌تواند مقادیر محافظت‌شده MobileGestalt، دسترسی eSIM، واجد شرایط بودن Apple Intelligence، ظاهر سیستم، طرح کارت Wallet یا منابع صفحه قفل را تغییر دهد و پیش‌نمایشی از این اقدامات ارائه نمی‌دهد."
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "このアプリは、保護された MobileGestalt 値、eSIM の利用可否、Apple Intelligence の利用資格、システムの外観、Wallet カードのデザイン、ロック画面のリソースを変更できません。これらの操作のプレビューも提供しません。"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "이 앱은 보호된 MobileGestalt 값, eSIM 사용 가능 여부, Apple Intelligence 이용 자격, 시스템 외관, Wallet 카드 디자인, 잠금 화면 리소스를 변경할 수 없으며 이러한 작업의 미리 보기도 제공하지 않습니다."
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Это приложение не может изменять защищённые значения MobileGestalt, доступность eSIM, право на использование Apple Intelligence, оформление системы, дизайн карт Wallet или ресурсы экрана блокировки, а также не показывает предпросмотр этих действий."
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Ứng dụng này không thể thay đổi các giá trị MobileGestalt được bảo vệ, khả năng dùng eSIM, điều kiện dùng Apple Intelligence, giao diện hệ thống, mẫu thẻ Wallet hoặc tài nguyên màn hình khóa, cũng không hiển thị bản xem trước của các thao tác này."
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "此應用程式無法修改受保護的 MobileGestalt、eSIM 准入、Apple 智能資格、系統外觀、錢包卡面或鎖定螢幕資源，亦不提供這些操作的預覽。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "此應用程式無法修改受保護的 MobileGestalt、eSIM 准入、Apple 智能資格、系統外觀、錢包卡面或鎖定螢幕資源，亦不提供這些操作的預覽。"
++          }
++        }
++      }
++    },
++    "limits.test": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Prerelease · Real-device validation pending."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "预发布 · 尚未完成真机验证。"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Versión preliminar · Validación en dispositivo real pendiente."
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "پیش‌انتشار · اعتبارسنجی روی دستگاه واقعی هنوز انجام نشده است."
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "プレリリース・実機での検証は未完了です。"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "프리릴리스 · 실제 기기 검증 대기 중입니다."
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Предварительная версия · Проверка на реальном устройстве ещё не выполнена."
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Bản phát hành trước · Chưa hoàn tất xác thực trên thiết bị thật."
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "預覽版 · 尚未完成實機驗證。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "預覽版 · 尚未完成實機驗證。"
++          }
++        }
++      }
++    },
++    "status.applied": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "UIKit readback matched the target."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "UIKit 读回值与目标一致。"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "La lectura de UIKit coincidió con el objetivo."
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "مقدار بازخوانی‌شده UIKit با هدف مطابقت داشت."
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "UIKit の読み返し値が目標と一致しました。"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "UIKit 다시 읽기 값이 목표와 일치했습니다."
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Прочитанное из UIKit значение совпало с целевым."
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Giá trị đọc lại từ UIKit khớp với mục tiêu."
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "UIKit 讀回值與目標一致。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "UIKit 讀回值與目標一致。"
++          }
++        }
++      }
++    },
++    "status.restored": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "UIKit readback matched the saved original."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "UIKit 读回值与保存的原值一致。"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "La lectura de UIKit coincidió con el original guardado."
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "مقدار بازخوانی‌شده UIKit با مقدار اصلی ذخیره‌شده مطابقت داشت."
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "UIKit の読み返し値が保存済みの元の値と一致しました。"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "UIKit 다시 읽기 값이 저장된 원래 값과 일치했습니다."
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Прочитанное из UIKit значение совпало с сохранённым исходным."
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Giá trị đọc lại từ UIKit khớp với giá trị gốc đã lưu."
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "UIKit 讀回值與儲存的原始值一致。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "UIKit 讀回值與儲存的原始值一致。"
++          }
++        }
++      }
++    },
++    "status.unchanged": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "The read value already matched the target; nothing was written."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "当前读数与目标一致，没有写入。"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "El valor leído ya coincidía con el objetivo; no se escribió nada."
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "مقدار خوانده‌شده از قبل با هدف مطابقت داشت؛ چیزی نوشته نشد."
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "読み取り値が既に目標と一致していたため、書き込みは行われませんでした。"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "읽은 값이 이미 목표와 일치하여 쓰지 않았습니다."
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Прочитанное значение уже совпадало с целевым; запись не выполнялась."
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Giá trị đã đọc vốn khớp với mục tiêu; không ghi gì cả."
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "目前讀數與目標一致，未寫入任何內容。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "目前讀數與目標一致，未寫入任何內容。"
++          }
++        }
++      }
++    },
++    "status.busy": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Restore the previous change first."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "请先恢复上一次修改。"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Restaura primero el cambio anterior."
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "ابتدا تغییر قبلی را بازیابی کنید."
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "まず前回の変更を復旧してください。"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "먼저 이전 변경을 복원하세요."
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Сначала восстановите предыдущее изменение."
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Hãy khôi phục thay đổi trước đó trước."
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "請先還原上一次修改。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "請先還原上一次修改。"
++          }
++        }
++      }
++    },
++    "status.unavailable": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Readback is unavailable; no success was recorded."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "无法获取读数，未记录成功。"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "No se pudo obtener la lectura; no se registró ningún éxito."
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "دریافت مقدار ممکن نیست؛ موفقیتی ثبت نشد."
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "読み取りができなかったため、成功は記録されませんでした。"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "읽을 수 없어 성공이 기록되지 않았습니다."
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Не удалось получить показание; успех не зарегистрирован."
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Không thể lấy giá trị đọc; không ghi nhận thành công."
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "無法取得讀數，未記錄成功。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "無法取得讀數，未記錄成功。"
++          }
++        }
++      }
++    },
++    "status.rejected": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Target was not confirmed; the original value was read back."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "未确认目标值；读回值仍是原值。"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "No se confirmó el objetivo; se leyó de nuevo el valor original."
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "هدف تأیید نشد؛ مقدار اصلی دوباره خوانده شد."
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "目標が確認できなかったため、元の値を読み返しました。"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "목표가 확인되지 않아 원래 값을 다시 읽었습니다."
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Цель не подтверждена; исходное значение прочитано повторно."
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Chưa xác nhận mục tiêu; đã đọc lại giá trị gốc."
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "未確認目標值；讀回值仍是原始值。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "未確認目標值；讀回值仍是原始值。"
++          }
++        }
++      }
++    },
++    "status.unverified": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "The expected value could not be verified; the recovery record is still available."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "未能确认预期值，仍保留恢复记录。"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "No se pudo verificar el valor esperado; el registro de recuperación sigue disponible."
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "مقدار مورد انتظار تأیید نشد؛ سابقه بازیابی هنوز در دسترس است."
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "期待される値を確認できませんでした。復旧記録は引き続き利用できます。"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "예상 값을 확인할 수 없었습니다. 복구 기록은 계속 사용할 수 있습니다."
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Ожидаемое значение подтвердить не удалось; запись восстановления по-прежнему доступна."
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Không thể xác minh giá trị mong đợi; bản ghi khôi phục vẫn còn."
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "未能確認預期值，仍保留還原記錄。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "未能確認預期值，仍保留還原記錄。"
++          }
++        }
++      }
++    },
++    "status.conflict": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Readback diverged; the app did not overwrite the unexpected value."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "读回值不一致；应用没有覆盖意外值。"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "La lectura no coincidió; la app no sobrescribió el valor inesperado."
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "مقدار بازخوانی‌شده متفاوت بود؛ برنامه مقدار غیرمنتظره را بازنویسی نکرد."
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "読み返し値が異なっていたため、アプリは予期しない値を上書きしませんでした。"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "다시 읽기 값이 달라 앱이 예상치 못한 값을 덮어쓰지 않았습니다."
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Прочитанное значение отличается; приложение не перезаписало неожиданное значение."
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Giá trị đọc lại khác biệt; ứng dụng không ghi đè giá trị bất ngờ."
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "讀回值不一致；應用程式沒有覆寫意外值。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "讀回值不一致；應用程式沒有覆寫意外值。"
++          }
++        }
++      }
++    },
++    "tools.heading": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Diagnostics and tools"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "诊断与工具"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Diagnóstico y herramientas"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "تشخیص و ابزارها"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "診断とツール"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "진단 및 도구"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Диагностика и инструменты"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Chẩn đoán và công cụ"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "診斷與工具"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "診斷與工具"
++          }
++        }
++      }
++    },
++    "network.title": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Internet egress check"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "网络出口检查"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Comprobación de salida a internet"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "بررسی خروج اینترنت"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "インターネット出口チェック"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "인터넷 송출 검사"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Проверка выхода в интернет"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Kiểm tra đầu ra internet"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "網路出口檢查"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "網路出口檢查"
++          }
++        }
++      }
++    },
++    "network.check": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Check using RIPEstat"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "使用 RIPEstat 检查"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Comprobar con RIPEstat"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "بررسی با RIPEstat"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "RIPEstat でチェック"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "RIPEstat으로 검사"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Проверить с помощью RIPEstat"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Kiểm tra bằng RIPEstat"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "使用 RIPEstat 檢查"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "使用 RIPEstat 檢查"
++          }
++        }
++      }
++    },
++    "network.result": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Observed public address"
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "服务观测到的公网地址"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Dirección pública observada por el servicio"
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "نشانی عمومی مشاهده‌شده توسط سرویس"
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "サービスが確認した公開アドレス"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "서비스에서 확인한 공용 주소"
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Публичный адрес, наблюдаемый сервисом"
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Địa chỉ công cộng mà dịch vụ quan sát được"
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "服務觀測到的公用位址"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "服務觀測到的公用位址"
++          }
++        }
++      }
++    },
++    "network.scope": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Only sends a request when you tap Check. RIPEstat sees your connection's public IP. The app displays it for this session; it does not upload your diagnostics or photos."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "只有点检查才联网。RIPEstat 会看到此次请求的公网 IP；地址仅在本次会话显示。应用不会上传诊断报告或图片。"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Solo se conecta cuando tocas Comprobar. RIPEstat verá la IP pública de esta conexión; la dirección solo se muestra en esta sesión. La app no sube tus informes de diagnóstico ni tus fotos."
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "فقط وقتی «بررسی» را لمس می‌کنید متصل می‌شود. RIPEstat نشانی IP عمومی این اتصال را می‌بیند؛ نشانی فقط در این نشست نمایش داده می‌شود. برنامه گزارش‌های تشخیصی یا عکس‌های شما را بارگذاری نمی‌کند."
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "「チェック」をタップしたときにのみ接続します。RIPEstat はこの接続の公開 IP を確認します。アドレスはこのセッションでのみ表示されます。アプリが診断レポートや写真をアップロードすることはありません。"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "검사 버튼을 눌렀을 때만 연결합니다. RIPEstat은 이 연결의 공용 IP를 봅니다. 주소는 이번 세션에만 표시됩니다. 앱이 진단 보고서나 사진을 업로드하지 않습니다."
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Подключение выполняется только при нажатии «Проверить». RIPEstat увидит публичный IP-адрес этого подключения; адрес отображается только в текущем сеансе. Приложение не загружает ваши диагностические отчёты или фотографии."
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "Chỉ kết nối khi bạn chạm vào Kiểm tra. RIPEstat sẽ thấy địa chỉ IP công cộng của kết nối này; địa chỉ chỉ hiển thị trong phiên này. Ứng dụng không tải lên báo cáo chẩn đoán hay ảnh của bạn."
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "只有點按檢查時才會連線。RIPEstat 會看到此次要求的公用 IP；位址僅在本次工作階段顯示。應用程式不會上傳診斷報告或圖片。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "只有點按檢查時才會連線。RIPEstat 會看到此次要求的公用 IP；位址僅在本次工作階段顯示。應用程式不會上傳診斷報告或圖片。"
++          }
++        }
++      }
++    },
++    "network.failed": {
++      "localizations": {
++        "en": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "RIPEstat did not return a verified-format public address. No result was recorded."
++          }
++        },
++        "zh-Hans": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "RIPEstat 未返回格式有效的公网地址，没有记录结果。"
++          }
++        },
++        "es": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "RIPEstat no devolvió una dirección pública con formato válido. No se registró ningún resultado."
++          }
++        },
++        "fa": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "RIPEstat نشانی عمومی با قالب معتبر برنگرداند. نتیجه‌ای ثبت نشد."
++          }
++        },
++        "ja": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "RIPEstat から有効な形式の公開アドレスが返されませんでした。結果は記録されませんでした。"
++          }
++        },
++        "ko": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "RIPEstat에서 유효한 형식의 공용 주소를 반환하지 않았습니다. 결과가 기록되지 않았습니다."
++          }
++        },
++        "ru": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "RIPEstat не вернул публичный адрес в допустимом формате. Результат не зарегистрирован."
++          }
++        },
++        "vi": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "RIPEstat không trả về địa chỉ công cộng có định dạng hợp lệ. Không ghi nhận kết quả."
++          }
++        },
++        "zh-Hant-HK": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "RIPEstat 未傳回格式有效的公用位址，未記錄結果。"
++          }
++        },
++        "zh-Hant-TW": {
++          "stringUnit": {
++            "state": "translated",
++            "value": "RIPEstat 未傳回格式有效的公用位址，未記錄結果。"
++          }
++        }
++      }
+     }
+   },
+   "version": "1.0"
+diff --git a/GestaltX/en.lproj/Localizable.strings b/GestaltX/en.lproj/Localizable.strings
+deleted file mode 100644
+index 2c1a632..0000000
+--- a/GestaltX/en.lproj/Localizable.strings
++++ /dev/null
+@@ -1,41 +0,0 @@
+-"app.title" = "LilaShift";
+-"common.cancel" = "Cancel";
+-"screen.heading" = "Display brightness";
+-"screen.actual" = "Current UIKit reading";
+-"screen.unavailable" = "No active built-in display is available.";
+-"screen.physicalOnly" = "Brightness writes are unavailable on simulators and Mac.";
+-"screen.target" = "Target brightness";
+-"screen.apply" = "Apply to screen";
+-"screen.restore" = "Restore original brightness";
+-"screen.discard" = "Clear recovery record without changing brightness";
+-"screen.footer" = "Applies to the built-in display, not a permanent Settings value. The app saves the original in memory and attempts recovery when backgrounded. A lock or app termination can end the session. Use Control Center if recovery cannot be verified.";
+-"screen.confirmTitle" = "Change display brightness?";
+-"screen.confirmWrite" = "Write and verify";
+-"screen.confirmBody" = "The app will read the current value, save it for recovery, write the requested value, then read it back from UIKit.";
+-"device.heading" = "Device information (read-only)";
+-"device.system" = "Operating system";
+-"device.family" = "Device family";
+-"device.memory" = "Physical memory";
+-"device.cpu" = "Logical processors";
+-"appearance.heading" = "App appearance";
+-"appearance.mode" = "Mode (this app only)";
+-"appearance.system" = "Follow system";
+-"appearance.light" = "Light";
+-"appearance.dark" = "Dark";
+-"limits.heading" = "Unsupported writes";
+-"limits.body" = "This app cannot change protected MobileGestalt values, eSIM availability, Apple Intelligence eligibility, system appearance, Wallet card art, or lock-screen assets. It does not offer previews of these actions.";
+-"limits.test" = "Prerelease · Real-device validation pending.";
+-"status.applied" = "UIKit readback matched the target.";
+-"status.restored" = "UIKit readback matched the saved original.";
+-"status.unchanged" = "The read value already matched the target; nothing was written.";
+-"status.busy" = "Restore the previous change first.";
+-"status.unavailable" = "Readback is unavailable; no success was recorded.";
+-"status.rejected" = "Target was not confirmed; the original value was read back.";
+-"status.unverified" = "The expected value could not be verified; the recovery record is still available.";
+-"status.conflict" = "Readback diverged; the app did not overwrite the unexpected value.";
+-"tools.heading" = "Diagnostics and tools";
+-"network.title" = "Internet egress check";
+-"network.check" = "Check using RIPEstat";
+-"network.result" = "Observed public address";
+-"network.scope" = "Only sends a request when you tap Check. RIPEstat sees your connection's public IP. The app displays it for this session; it does not upload your diagnostics or photos.";
+-"network.failed" = "RIPEstat did not return a verified-format public address. No result was recorded.";
+diff --git a/GestaltX/zh-Hans.lproj/Localizable.strings b/GestaltX/zh-Hans.lproj/Localizable.strings
+deleted file mode 100644
+index 916ea5f..0000000
+--- a/GestaltX/zh-Hans.lproj/Localizable.strings
++++ /dev/null
+@@ -1,41 +0,0 @@
+-"app.title" = "紫序";
+-"common.cancel" = "取消";
+-"screen.heading" = "屏幕亮度";
+-"screen.actual" = "UIKit 当前读数";
+-"screen.unavailable" = "当前未找到可用的内置屏幕。";
+-"screen.physicalOnly" = "模拟器和 Mac 不支持本功能的亮度写入。";
+-"screen.target" = "目标亮度";
+-"screen.apply" = "应用到屏幕";
+-"screen.restore" = "恢复原亮度";
+-"screen.discard" = "清除恢复记录（不改亮度）";
+-"screen.footer" = "这会改变内置屏幕实际亮度，不会永久更改系统设置。原值在本次会话中保留，进入后台时尝试恢复。锁屏或强退可能中断会话。若无法确认恢复，请使用控制中心调整。";
+-"screen.confirmTitle" = "更改屏幕亮度？";
+-"screen.confirmWrite" = "写入并读回";
+-"screen.confirmBody" = "应用将先读取并保存原值，再写入目标值并从 UIKit 读回。";
+-"device.heading" = "设备信息（只读）";
+-"device.system" = "系统版本";
+-"device.family" = "设备类别";
+-"device.memory" = "物理内存";
+-"device.cpu" = "逻辑处理器";
+-"appearance.heading" = "应用外观";
+-"appearance.mode" = "模式（仅本应用）";
+-"appearance.system" = "跟随系统";
+-"appearance.light" = "浅色";
+-"appearance.dark" = "深色";
+-"limits.heading" = "不支持的写入";
+-"limits.body" = "本应用无法修改受保护的 MobileGestalt、eSIM 准入、Apple 智能资格、系统外观、钱包卡面或锁屏资源，也不提供这些操作的预览。";
+-"limits.test" = "预发布 · 尚未完成真机验证。";
+-"status.applied" = "UIKit 读回值与目标一致。";
+-"status.restored" = "UIKit 读回值与保存的原值一致。";
+-"status.unchanged" = "当前读数与目标一致，没有写入。";
+-"status.busy" = "请先恢复上一次修改。";
+-"status.unavailable" = "无法获取读数，未记录成功。";
+-"status.rejected" = "未确认目标值；读回值仍是原值。";
+-"status.unverified" = "未能确认预期值，仍保留恢复记录。";
+-"status.conflict" = "读回值不一致；应用没有覆盖意外值。";
+-"tools.heading" = "诊断与工具";
+-"network.title" = "网络出口检查";
+-"network.check" = "使用 RIPEstat 检查";
+-"network.result" = "服务观测到的公网地址";
+-"network.scope" = "只有点检查才联网。RIPEstat 会看到此次请求的公网 IP；地址仅在本次会话显示。应用不会上传诊断报告或图片。";
+-"network.failed" = "RIPEstat 未返回格式有效的公网地址，没有记录结果。";
+diff --git a/localization/es.json b/localization/es.json
+index ac050a1..108ffde 100644
+--- a/localization/es.json
++++ b/localization/es.json
+@@ -1943,5 +1943,46 @@
+   "Session seconds": "Segundos de sesión",
+   "sec": "s",
+   "Official API Tools": "Herramientas de API oficiales",
+-  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "Brillo, informes, monitorización de recursos, estudio de fondos y espacio de trabajo plist local; solo API oficiales."
++  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "Brillo, informes, monitorización de recursos, estudio de fondos y espacio de trabajo plist local; solo API oficiales.",
++  "app.title": "LilaShift",
++  "common.cancel": "Cancelar",
++  "screen.heading": "Brillo de pantalla",
++  "screen.actual": "Lectura actual de UIKit",
++  "screen.unavailable": "No hay ninguna pantalla integrada disponible.",
++  "screen.physicalOnly": "La escritura de brillo no está disponible en simuladores ni en Mac.",
++  "screen.target": "Brillo objetivo",
++  "screen.apply": "Aplicar a la pantalla",
++  "screen.restore": "Restaurar el brillo original",
++  "screen.discard": "Borrar el registro de recuperación sin cambiar el brillo",
++  "screen.footer": "Esto cambia el brillo real de la pantalla integrada, no un ajuste permanente del sistema. El valor original se guarda durante esta sesión y se intenta restaurar al pasar a segundo plano. Bloquear el dispositivo o cerrar la app puede interrumpir la sesión. Si no puedes confirmar la restauración, usa el Centro de control.",
++  "screen.confirmTitle": "¿Cambiar el brillo de la pantalla?",
++  "screen.confirmWrite": "Escribir y verificar",
++  "screen.confirmBody": "La app leerá y guardará el valor original, escribirá el valor solicitado y lo leerá de nuevo desde UIKit.",
++  "device.heading": "Información del dispositivo (solo lectura)",
++  "device.system": "Sistema operativo",
++  "device.family": "Familia de dispositivos",
++  "device.memory": "Memoria física",
++  "device.cpu": "Procesadores lógicos",
++  "appearance.heading": "Apariencia de la app",
++  "appearance.mode": "Modo (solo esta app)",
++  "appearance.system": "Seguir el sistema",
++  "appearance.light": "Claro",
++  "appearance.dark": "Oscuro",
++  "limits.heading": "Escrituras no compatibles",
++  "limits.body": "Esta app no puede modificar los valores protegidos de MobileGestalt, la disponibilidad de eSIM, la elegibilidad de Apple Intelligence, la apariencia del sistema, el diseño de tarjetas de Wallet ni los recursos de la pantalla de bloqueo, ni ofrece vistas previas de estas acciones.",
++  "limits.test": "Versión preliminar · Validación en dispositivo real pendiente.",
++  "status.applied": "La lectura de UIKit coincidió con el objetivo.",
++  "status.restored": "La lectura de UIKit coincidió con el original guardado.",
++  "status.unchanged": "El valor leído ya coincidía con el objetivo; no se escribió nada.",
++  "status.busy": "Restaura primero el cambio anterior.",
++  "status.unavailable": "No se pudo obtener la lectura; no se registró ningún éxito.",
++  "status.rejected": "No se confirmó el objetivo; se leyó de nuevo el valor original.",
++  "status.unverified": "No se pudo verificar el valor esperado; el registro de recuperación sigue disponible.",
++  "status.conflict": "La lectura no coincidió; la app no sobrescribió el valor inesperado.",
++  "tools.heading": "Diagnóstico y herramientas",
++  "network.title": "Comprobación de salida a internet",
++  "network.check": "Comprobar con RIPEstat",
++  "network.result": "Dirección pública observada por el servicio",
++  "network.scope": "Solo se conecta cuando tocas Comprobar. RIPEstat verá la IP pública de esta conexión; la dirección solo se muestra en esta sesión. La app no sube tus informes de diagnóstico ni tus fotos.",
++  "network.failed": "RIPEstat no devolvió una dirección pública con formato válido. No se registró ningún resultado."
+ }
+diff --git a/localization/fa.json b/localization/fa.json
+index 0c5847c..e085166 100644
+--- a/localization/fa.json
++++ b/localization/fa.json
+@@ -1943,5 +1943,46 @@
+   "Session seconds": "ثانیه‌های نشست",
+   "sec": "ثانیه",
+   "Official API Tools": "ابزارهای رسمی API",
+-  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "روشنایی صفحه، گزارش‌ها، پایش منابع، استودیوی تصویر زمینه و فضای کاری plist محلی — فقط APIهای رسمی."
++  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "روشنایی صفحه، گزارش‌ها، پایش منابع، استودیوی تصویر زمینه و فضای کاری plist محلی — فقط APIهای رسمی.",
++  "app.title": "LilaShift",
++  "common.cancel": "لغو",
++  "screen.heading": "روشنایی صفحه",
++  "screen.actual": "مقدار فعلی UIKit",
++  "screen.unavailable": "هیچ صفحه داخلی فعالی در دسترس نیست.",
++  "screen.physicalOnly": "نوشتن روشنایی در شبیه‌سازها و Mac در دسترس نیست.",
++  "screen.target": "روشنایی هدف",
++  "screen.apply": "اعمال روی صفحه",
++  "screen.restore": "بازگردانی روشنایی اصلی",
++  "screen.discard": "پاک کردن سابقه بازیابی بدون تغییر روشنایی",
++  "screen.footer": "این کار روشنایی واقعی صفحه داخلی را تغییر می‌دهد، نه تنظیم دائمی سیستم را. مقدار اصلی در این نشست ذخیره می‌شود و هنگام رفتن به پس‌زمینه تلاش می‌شود آن را بازیابی کند. قفل کردن دستگاه یا بستن برنامه می‌تواند نشست را قطع کند. اگر نمی‌توانید بازیابی را تأیید کنید، از مرکز کنترل استفاده کنید.",
++  "screen.confirmTitle": "روشنایی صفحه تغییر کند؟",
++  "screen.confirmWrite": "نوشتن و بازخوانی",
++  "screen.confirmBody": "برنامه ابتدا مقدار فعلی را می‌خواند و ذخیره می‌کند، سپس مقدار درخواستی را می‌نویسد و دوباره از UIKit می‌خواند.",
++  "device.heading": "اطلاعات دستگاه (فقط خواندنی)",
++  "device.system": "سیستم‌عامل",
++  "device.family": "خانواده دستگاه",
++  "device.memory": "حافظه فیزیکی",
++  "device.cpu": "پردازنده‌های منطقی",
++  "appearance.heading": "ظاهر برنامه",
++  "appearance.mode": "حالت (فقط این برنامه)",
++  "appearance.system": "پیروی از سیستم",
++  "appearance.light": "روشن",
++  "appearance.dark": "تیره",
++  "limits.heading": "نوشتن‌های پشتیبانی‌نشده",
++  "limits.body": "این برنامه نمی‌تواند مقادیر محافظت‌شده MobileGestalt، دسترسی eSIM، واجد شرایط بودن Apple Intelligence، ظاهر سیستم، طرح کارت Wallet یا منابع صفحه قفل را تغییر دهد و پیش‌نمایشی از این اقدامات ارائه نمی‌دهد.",
++  "limits.test": "پیش‌انتشار · اعتبارسنجی روی دستگاه واقعی هنوز انجام نشده است.",
++  "status.applied": "مقدار بازخوانی‌شده UIKit با هدف مطابقت داشت.",
++  "status.restored": "مقدار بازخوانی‌شده UIKit با مقدار اصلی ذخیره‌شده مطابقت داشت.",
++  "status.unchanged": "مقدار خوانده‌شده از قبل با هدف مطابقت داشت؛ چیزی نوشته نشد.",
++  "status.busy": "ابتدا تغییر قبلی را بازیابی کنید.",
++  "status.unavailable": "دریافت مقدار ممکن نیست؛ موفقیتی ثبت نشد.",
++  "status.rejected": "هدف تأیید نشد؛ مقدار اصلی دوباره خوانده شد.",
++  "status.unverified": "مقدار مورد انتظار تأیید نشد؛ سابقه بازیابی هنوز در دسترس است.",
++  "status.conflict": "مقدار بازخوانی‌شده متفاوت بود؛ برنامه مقدار غیرمنتظره را بازنویسی نکرد.",
++  "tools.heading": "تشخیص و ابزارها",
++  "network.title": "بررسی خروج اینترنت",
++  "network.check": "بررسی با RIPEstat",
++  "network.result": "نشانی عمومی مشاهده‌شده توسط سرویس",
++  "network.scope": "فقط وقتی «بررسی» را لمس می‌کنید متصل می‌شود. RIPEstat نشانی IP عمومی این اتصال را می‌بیند؛ نشانی فقط در این نشست نمایش داده می‌شود. برنامه گزارش‌های تشخیصی یا عکس‌های شما را بارگذاری نمی‌کند.",
++  "network.failed": "RIPEstat نشانی عمومی با قالب معتبر برنگرداند. نتیجه‌ای ثبت نشد."
+ }
+diff --git a/localization/ja.json b/localization/ja.json
+index 9ab2ef9..488a911 100644
+--- a/localization/ja.json
++++ b/localization/ja.json
+@@ -1943,5 +1943,46 @@
+   "Session seconds": "セッション秒数",
+   "sec": "秒",
+   "Official API Tools": "公式 API ツール",
+-  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "画面の明るさ、レポート、リソース監視、壁紙スタジオ、ローカル plist ワークスペース——公式 API のみ。"
++  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "画面の明るさ、レポート、リソース監視、壁紙スタジオ、ローカル plist ワークスペース——公式 API のみ。",
++  "app.title": "LilaShift",
++  "common.cancel": "キャンセル",
++  "screen.heading": "画面の明るさ",
++  "screen.actual": "UIKit の現在の読み取り値",
++  "screen.unavailable": "使用可能な内蔵ディスプレイがありません。",
++  "screen.physicalOnly": "シミュレータと Mac では明るさの書き込みはできません。",
++  "screen.target": "目標の明るさ",
++  "screen.apply": "画面に適用",
++  "screen.restore": "元の明るさに戻す",
++  "screen.discard": "明るさを変更せずに復旧記録を消去",
++  "screen.footer": "内蔵ディスプレイの実際の明るさを変更します。システム設定を恒久的に変更するものではありません。元の値はこのセッション中に保存され、バックグラウンドに移行したときに復旧を試みます。ロックやアプリの終了によりセッションが中断される場合があります。復旧を確認できない場合は、コントロールセンターを使用してください。",
++  "screen.confirmTitle": "画面の明るさを変更しますか？",
++  "screen.confirmWrite": "書き込んで読み返す",
++  "screen.confirmBody": "アプリは現在の値を読み取って保存し、要求された値を書き込んでから UIKit から読み返します。",
++  "device.heading": "デバイス情報（読み取り専用）",
++  "device.system": "OS",
++  "device.family": "デバイスファミリー",
++  "device.memory": "物理メモリ",
++  "device.cpu": "論理プロセッサ",
++  "appearance.heading": "アプリの外観",
++  "appearance.mode": "モード（このアプリのみ）",
++  "appearance.system": "システムに従う",
++  "appearance.light": "ライト",
++  "appearance.dark": "ダーク",
++  "limits.heading": "対応していない書き込み",
++  "limits.body": "このアプリは、保護された MobileGestalt 値、eSIM の利用可否、Apple Intelligence の利用資格、システムの外観、Wallet カードのデザイン、ロック画面のリソースを変更できません。これらの操作のプレビューも提供しません。",
++  "limits.test": "プレリリース・実機での検証は未完了です。",
++  "status.applied": "UIKit の読み返し値が目標と一致しました。",
++  "status.restored": "UIKit の読み返し値が保存済みの元の値と一致しました。",
++  "status.unchanged": "読み取り値が既に目標と一致していたため、書き込みは行われませんでした。",
++  "status.busy": "まず前回の変更を復旧してください。",
++  "status.unavailable": "読み取りができなかったため、成功は記録されませんでした。",
++  "status.rejected": "目標が確認できなかったため、元の値を読み返しました。",
++  "status.unverified": "期待される値を確認できませんでした。復旧記録は引き続き利用できます。",
++  "status.conflict": "読み返し値が異なっていたため、アプリは予期しない値を上書きしませんでした。",
++  "tools.heading": "診断とツール",
++  "network.title": "インターネット出口チェック",
++  "network.check": "RIPEstat でチェック",
++  "network.result": "サービスが確認した公開アドレス",
++  "network.scope": "「チェック」をタップしたときにのみ接続します。RIPEstat はこの接続の公開 IP を確認します。アドレスはこのセッションでのみ表示されます。アプリが診断レポートや写真をアップロードすることはありません。",
++  "network.failed": "RIPEstat から有効な形式の公開アドレスが返されませんでした。結果は記録されませんでした。"
+ }
+diff --git a/localization/ko.json b/localization/ko.json
+index f4963e7..1b3922c 100644
+--- a/localization/ko.json
++++ b/localization/ko.json
+@@ -1943,5 +1943,46 @@
+   "Session seconds": "세션 초",
+   "sec": "초",
+   "Official API Tools": "공식 API 도구",
+-  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "화면 밝기, 보고서, 리소스 모니터링, 배경화면 스티디오, 로컬 plist 작업 공간 — 공식 API만 사용."
++  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "화면 밝기, 보고서, 리소스 모니터링, 배경화면 스티디오, 로컬 plist 작업 공간 — 공식 API만 사용.",
++  "app.title": "LilaShift",
++  "common.cancel": "취소",
++  "screen.heading": "화면 밝기",
++  "screen.actual": "현재 UIKit 읽기 값",
++  "screen.unavailable": "사용 가능한 내장 디스플레이가 없습니다.",
++  "screen.physicalOnly": "시뮬레이터와 Mac에서는 밝기 쓰기가 지원되지 않습니다.",
++  "screen.target": "목표 밝기",
++  "screen.apply": "화면에 적용",
++  "screen.restore": "원래 밝기로 복원",
++  "screen.discard": "밝기를 변경하지 않고 복구 기록 지우기",
++  "screen.footer": "내장 디스플레이의 실제 밝기를 변경합니다. 시스템 설정을 영구적으로 변경하지 않습니다. 원래 값은 이번 세션 동안 저장되며 백그라운드로 전환될 때 복원을 시도합니다. 잠금 또는 앱 종료로 세션이 중단될 수 있습니다. 복원을 확인할 수 없으면 제어 센터를 사용하세요.",
++  "screen.confirmTitle": "화면 밝기를 변경하시겠습니까?",
++  "screen.confirmWrite": "쓰고 다시 읽기",
++  "screen.confirmBody": "앱이 현재 값을 읽어 저장한 뒤 요청한 값을 쓰고 UIKit에서 다시 읽습니다.",
++  "device.heading": "기기 정보(읽기 전용)",
++  "device.system": "운영체제",
++  "device.family": "기기 제품군",
++  "device.memory": "물리 메모리",
++  "device.cpu": "논리 프로세서",
++  "appearance.heading": "앱 외관",
++  "appearance.mode": "모드(이 앱만 해당)",
++  "appearance.system": "시스템 설정 따르기",
++  "appearance.light": "라이트",
++  "appearance.dark": "다크",
++  "limits.heading": "지원되지 않는 쓰기",
++  "limits.body": "이 앱은 보호된 MobileGestalt 값, eSIM 사용 가능 여부, Apple Intelligence 이용 자격, 시스템 외관, Wallet 카드 디자인, 잠금 화면 리소스를 변경할 수 없으며 이러한 작업의 미리 보기도 제공하지 않습니다.",
++  "limits.test": "프리릴리스 · 실제 기기 검증 대기 중입니다.",
++  "status.applied": "UIKit 다시 읽기 값이 목표와 일치했습니다.",
++  "status.restored": "UIKit 다시 읽기 값이 저장된 원래 값과 일치했습니다.",
++  "status.unchanged": "읽은 값이 이미 목표와 일치하여 쓰지 않았습니다.",
++  "status.busy": "먼저 이전 변경을 복원하세요.",
++  "status.unavailable": "읽을 수 없어 성공이 기록되지 않았습니다.",
++  "status.rejected": "목표가 확인되지 않아 원래 값을 다시 읽었습니다.",
++  "status.unverified": "예상 값을 확인할 수 없었습니다. 복구 기록은 계속 사용할 수 있습니다.",
++  "status.conflict": "다시 읽기 값이 달라 앱이 예상치 못한 값을 덮어쓰지 않았습니다.",
++  "tools.heading": "진단 및 도구",
++  "network.title": "인터넷 송출 검사",
++  "network.check": "RIPEstat으로 검사",
++  "network.result": "서비스에서 확인한 공용 주소",
++  "network.scope": "검사 버튼을 눌렀을 때만 연결합니다. RIPEstat은 이 연결의 공용 IP를 봅니다. 주소는 이번 세션에만 표시됩니다. 앱이 진단 보고서나 사진을 업로드하지 않습니다.",
++  "network.failed": "RIPEstat에서 유효한 형식의 공용 주소를 반환하지 않았습니다. 결과가 기록되지 않았습니다."
+ }
+diff --git a/localization/ru.json b/localization/ru.json
+index 449d8a1..937946e 100644
+--- a/localization/ru.json
++++ b/localization/ru.json
+@@ -1943,5 +1943,46 @@
+   "Session seconds": "Секунды сеанса",
+   "sec": "с",
+   "Official API Tools": "Официальные инструменты API",
+-  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "Яркость экрана, отчёты, мониторинг ресурсов, студия обоев и локальная рабочая область plist — только официальные API."
++  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "Яркость экрана, отчёты, мониторинг ресурсов, студия обоев и локальная рабочая область plist — только официальные API.",
++  "app.title": "LilaShift",
++  "common.cancel": "Отмена",
++  "screen.heading": "Яркость экрана",
++  "screen.actual": "Текущее показание UIKit",
++  "screen.unavailable": "Нет доступного встроенного дисплея.",
++  "screen.physicalOnly": "Запись яркости недоступна в симуляторах и на Mac.",
++  "screen.target": "Целевая яркость",
++  "screen.apply": "Применить к экрану",
++  "screen.restore": "Восстановить исходную яркость",
++  "screen.discard": "Удалить запись восстановления, не меняя яркость",
++  "screen.footer": "Это изменяет фактическую яркость встроенного дисплея, а не постоянную настройку системы. Исходное значение сохраняется на время сеанса, при переходе в фон будет предпринята попытка восстановления. Блокировка устройства или завершение приложения могут прервать сеанс. Если восстановление подтвердить не удаётся, используйте Пункт управления.",
++  "screen.confirmTitle": "Изменить яркость экрана?",
++  "screen.confirmWrite": "Записать и проверить чтением",
++  "screen.confirmBody": "Приложение сначала прочитает и сохранит исходное значение, затем запишет запрошенное и прочитает его обратно из UIKit.",
++  "device.heading": "Информация об устройстве (только чтение)",
++  "device.system": "Операционная система",
++  "device.family": "Семейство устройств",
++  "device.memory": "Физическая память",
++  "device.cpu": "Логические процессоры",
++  "appearance.heading": "Оформление приложения",
++  "appearance.mode": "Режим (только это приложение)",
++  "appearance.system": "Как в системе",
++  "appearance.light": "Светлая",
++  "appearance.dark": "Тёмная",
++  "limits.heading": "Неподдерживаемые записи",
++  "limits.body": "Это приложение не может изменять защищённые значения MobileGestalt, доступность eSIM, право на использование Apple Intelligence, оформление системы, дизайн карт Wallet или ресурсы экрана блокировки, а также не показывает предпросмотр этих действий.",
++  "limits.test": "Предварительная версия · Проверка на реальном устройстве ещё не выполнена.",
++  "status.applied": "Прочитанное из UIKit значение совпало с целевым.",
++  "status.restored": "Прочитанное из UIKit значение совпало с сохранённым исходным.",
++  "status.unchanged": "Прочитанное значение уже совпадало с целевым; запись не выполнялась.",
++  "status.busy": "Сначала восстановите предыдущее изменение.",
++  "status.unavailable": "Не удалось получить показание; успех не зарегистрирован.",
++  "status.rejected": "Цель не подтверждена; исходное значение прочитано повторно.",
++  "status.unverified": "Ожидаемое значение подтвердить не удалось; запись восстановления по-прежнему доступна.",
++  "status.conflict": "Прочитанное значение отличается; приложение не перезаписало неожиданное значение.",
++  "tools.heading": "Диагностика и инструменты",
++  "network.title": "Проверка выхода в интернет",
++  "network.check": "Проверить с помощью RIPEstat",
++  "network.result": "Публичный адрес, наблюдаемый сервисом",
++  "network.scope": "Подключение выполняется только при нажатии «Проверить». RIPEstat увидит публичный IP-адрес этого подключения; адрес отображается только в текущем сеансе. Приложение не загружает ваши диагностические отчёты или фотографии.",
++  "network.failed": "RIPEstat не вернул публичный адрес в допустимом формате. Результат не зарегистрирован."
+ }
+diff --git a/localization/vi.json b/localization/vi.json
+index 4855de3..bb864d0 100644
+--- a/localization/vi.json
++++ b/localization/vi.json
+@@ -1943,5 +1943,46 @@
+   "Session seconds": "Giây phiên",
+   "sec": "giây",
+   "Official API Tools": "Công cụ API chính thức",
+-  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "Độ sáng màn hình, báo cáo, giám sát tài nguyên, xưởng hình nền và không gian làm việc plist cục bộ — chỉ API chính thức."
++  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "Độ sáng màn hình, báo cáo, giám sát tài nguyên, xưởng hình nền và không gian làm việc plist cục bộ — chỉ API chính thức.",
++  "app.title": "LilaShift",
++  "common.cancel": "Hủy",
++  "screen.heading": "Độ sáng màn hình",
++  "screen.actual": "Giá trị đọc hiện tại từ UIKit",
++  "screen.unavailable": "Không có màn hình tích hợp nào đang hoạt động.",
++  "screen.physicalOnly": "Ghi độ sáng không khả dụng trên trình mô phỏng và Mac.",
++  "screen.target": "Độ sáng mục tiêu",
++  "screen.apply": "Áp dụng cho màn hình",
++  "screen.restore": "Khôi phục độ sáng gốc",
++  "screen.discard": "Xóa bản ghi khôi phục mà không thay đổi độ sáng",
++  "screen.footer": "Thao tác này thay đổi độ sáng thực tế của màn hình tích hợp, không phải cài đặt hệ thống vĩnh viễn. Giá trị gốc được giữ trong phiên này và sẽ được thử khôi phục khi chuyển sang nền. Khóa máy hoặc thoát ứng dụng có thể làm gián đoạn phiên. Nếu không thể xác nhận việc khôi phục, hãy dùng Trung tâm điều khiển.",
++  "screen.confirmTitle": "Thay đổi độ sáng màn hình?",
++  "screen.confirmWrite": "Ghi và đọc lại",
++  "screen.confirmBody": "Ứng dụng sẽ đọc và lưu giá trị gốc, ghi giá trị yêu cầu rồi đọc lại từ UIKit.",
++  "device.heading": "Thông tin thiết bị (chỉ đọc)",
++  "device.system": "Hệ điều hành",
++  "device.family": "Dòng thiết bị",
++  "device.memory": "Bộ nhớ vật lý",
++  "device.cpu": "Bộ xử lý logic",
++  "appearance.heading": "Giao diện ứng dụng",
++  "appearance.mode": "Chế độ (chỉ ứng dụng này)",
++  "appearance.system": "Theo hệ thống",
++  "appearance.light": "Sáng",
++  "appearance.dark": "Tối",
++  "limits.heading": "Các thao tác ghi không được hỗ trợ",
++  "limits.body": "Ứng dụng này không thể thay đổi các giá trị MobileGestalt được bảo vệ, khả năng dùng eSIM, điều kiện dùng Apple Intelligence, giao diện hệ thống, mẫu thẻ Wallet hoặc tài nguyên màn hình khóa, cũng không hiển thị bản xem trước của các thao tác này.",
++  "limits.test": "Bản phát hành trước · Chưa hoàn tất xác thực trên thiết bị thật.",
++  "status.applied": "Giá trị đọc lại từ UIKit khớp với mục tiêu.",
++  "status.restored": "Giá trị đọc lại từ UIKit khớp với giá trị gốc đã lưu.",
++  "status.unchanged": "Giá trị đã đọc vốn khớp với mục tiêu; không ghi gì cả.",
++  "status.busy": "Hãy khôi phục thay đổi trước đó trước.",
++  "status.unavailable": "Không thể lấy giá trị đọc; không ghi nhận thành công.",
++  "status.rejected": "Chưa xác nhận mục tiêu; đã đọc lại giá trị gốc.",
++  "status.unverified": "Không thể xác minh giá trị mong đợi; bản ghi khôi phục vẫn còn.",
++  "status.conflict": "Giá trị đọc lại khác biệt; ứng dụng không ghi đè giá trị bất ngờ.",
++  "tools.heading": "Chẩn đoán và công cụ",
++  "network.title": "Kiểm tra đầu ra internet",
++  "network.check": "Kiểm tra bằng RIPEstat",
++  "network.result": "Địa chỉ công cộng mà dịch vụ quan sát được",
++  "network.scope": "Chỉ kết nối khi bạn chạm vào Kiểm tra. RIPEstat sẽ thấy địa chỉ IP công cộng của kết nối này; địa chỉ chỉ hiển thị trong phiên này. Ứng dụng không tải lên báo cáo chẩn đoán hay ảnh của bạn.",
++  "network.failed": "RIPEstat không trả về địa chỉ công cộng có định dạng hợp lệ. Không ghi nhận kết quả."
+ }
+diff --git a/localization/zh-Hant-HK.json b/localization/zh-Hant-HK.json
+index bc7a265..e1c4c63 100644
+--- a/localization/zh-Hant-HK.json
++++ b/localization/zh-Hant-HK.json
+@@ -1943,5 +1943,46 @@
+   "Session seconds": "工作階段秒數",
+   "sec": "秒",
+   "Official API Tools": "官方介面工具",
+-  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "螢幕亮度、智慧報告、資源監控、桌布工坊與本機 plist 工作區——僅使用官方 API。"
++  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "螢幕亮度、智慧報告、資源監控、桌布工坊與本機 plist 工作區——僅使用官方 API。",
++  "app.title": "LilaShift",
++  "common.cancel": "取消",
++  "screen.heading": "螢幕亮度",
++  "screen.actual": "UIKit 目前讀數",
++  "screen.unavailable": "目前未找到可用的內建螢幕。",
++  "screen.physicalOnly": "模擬器和 Mac 不支援亮度寫入。",
++  "screen.target": "目標亮度",
++  "screen.apply": "套用到螢幕",
++  "screen.restore": "還原原始亮度",
++  "screen.discard": "清除還原記錄（不更改亮度）",
++  "screen.footer": "這會改變內建螢幕實際亮度，不會永久更改系統設定。原始值會保留在本次工作階段中，進入背景時嘗試還原。鎖定螢幕或強制結束應用程式可能會中斷工作階段。如果無法確認還原，請使用控制中心調整。",
++  "screen.confirmTitle": "要更改螢幕亮度嗎？",
++  "screen.confirmWrite": "寫入並讀回",
++  "screen.confirmBody": "應用程式會先讀取並儲存原始值，再寫入目標值，並從 UIKit 讀回。",
++  "device.heading": "裝置資訊（唯讀）",
++  "device.system": "系統版本",
++  "device.family": "裝置類別",
++  "device.memory": "實體記憶體",
++  "device.cpu": "邏輯處理器",
++  "appearance.heading": "應用程式外觀",
++  "appearance.mode": "模式（僅限此應用程式）",
++  "appearance.system": "跟隨系統",
++  "appearance.light": "淺色",
++  "appearance.dark": "深色",
++  "limits.heading": "不支援的寫入",
++  "limits.body": "此應用程式無法修改受保護的 MobileGestalt、eSIM 准入、Apple 智能資格、系統外觀、錢包卡面或鎖定螢幕資源，亦不提供這些操作的預覽。",
++  "limits.test": "預覽版 · 尚未完成實機驗證。",
++  "status.applied": "UIKit 讀回值與目標一致。",
++  "status.restored": "UIKit 讀回值與儲存的原始值一致。",
++  "status.unchanged": "目前讀數與目標一致，未寫入任何內容。",
++  "status.busy": "請先還原上一次修改。",
++  "status.unavailable": "無法取得讀數，未記錄成功。",
++  "status.rejected": "未確認目標值；讀回值仍是原始值。",
++  "status.unverified": "未能確認預期值，仍保留還原記錄。",
++  "status.conflict": "讀回值不一致；應用程式沒有覆寫意外值。",
++  "tools.heading": "診斷與工具",
++  "network.title": "網路出口檢查",
++  "network.check": "使用 RIPEstat 檢查",
++  "network.result": "服務觀測到的公用位址",
++  "network.scope": "只有點按檢查時才會連線。RIPEstat 會看到此次要求的公用 IP；位址僅在本次工作階段顯示。應用程式不會上傳診斷報告或圖片。",
++  "network.failed": "RIPEstat 未傳回格式有效的公用位址，未記錄結果。"
+ }
+diff --git a/localization/zh-Hant-TW.json b/localization/zh-Hant-TW.json
+index 5bb9ccf..ec00266 100644
+--- a/localization/zh-Hant-TW.json
++++ b/localization/zh-Hant-TW.json
+@@ -1943,5 +1943,46 @@
+   "Session seconds": "工作階段秒數",
+   "sec": "秒",
+   "Official API Tools": "官方介面工具",
+-  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "螢幕亮度、智慧報告、資源監控、桌布工坊與本機 plist 工作區——僅使用官方 API。"
++  "Brightness, reports, resource monitoring, wallpaper studio and local plist workspace — official APIs only.": "螢幕亮度、智慧報告、資源監控、桌布工坊與本機 plist 工作區——僅使用官方 API。",
++  "app.title": "LilaShift",
++  "common.cancel": "取消",
++  "screen.heading": "螢幕亮度",
++  "screen.actual": "UIKit 目前讀數",
++  "screen.unavailable": "目前未找到可用的內建螢幕。",
++  "screen.physicalOnly": "模擬器和 Mac 不支援亮度寫入。",
++  "screen.target": "目標亮度",
++  "screen.apply": "套用到螢幕",
++  "screen.restore": "還原原始亮度",
++  "screen.discard": "清除還原記錄（不更改亮度）",
++  "screen.footer": "這會改變內建螢幕實際亮度，不會永久更改系統設定。原始值會保留在本次工作階段中，進入背景時嘗試還原。鎖定螢幕或強制結束應用程式可能會中斷工作階段。如果無法確認還原，請使用控制中心調整。",
++  "screen.confirmTitle": "要更改螢幕亮度嗎？",
++  "screen.confirmWrite": "寫入並讀回",
++  "screen.confirmBody": "應用程式會先讀取並儲存原始值，再寫入目標值，並從 UIKit 讀回。",
++  "device.heading": "裝置資訊（唯讀）",
++  "device.system": "系統版本",
++  "device.family": "裝置類別",
++  "device.memory": "實體記憶體",
++  "device.cpu": "邏輯處理器",
++  "appearance.heading": "應用程式外觀",
++  "appearance.mode": "模式（僅限此應用程式）",
++  "appearance.system": "跟隨系統",
++  "appearance.light": "淺色",
++  "appearance.dark": "深色",
++  "limits.heading": "不支援的寫入",
++  "limits.body": "此應用程式無法修改受保護的 MobileGestalt、eSIM 准入、Apple 智能資格、系統外觀、錢包卡面或鎖定螢幕資源，亦不提供這些操作的預覽。",
++  "limits.test": "預覽版 · 尚未完成實機驗證。",
++  "status.applied": "UIKit 讀回值與目標一致。",
++  "status.restored": "UIKit 讀回值與儲存的原始值一致。",
++  "status.unchanged": "目前讀數與目標一致，未寫入任何內容。",
++  "status.busy": "請先還原上一次修改。",
++  "status.unavailable": "無法取得讀數，未記錄成功。",
++  "status.rejected": "未確認目標值；讀回值仍是原始值。",
++  "status.unverified": "未能確認預期值，仍保留還原記錄。",
++  "status.conflict": "讀回值不一致；應用程式沒有覆寫意外值。",
++  "tools.heading": "診斷與工具",
++  "network.title": "網路出口檢查",
++  "network.check": "使用 RIPEstat 檢查",
++  "network.result": "服務觀測到的公用位址",
++  "network.scope": "只有點按檢查時才會連線。RIPEstat 會看到此次要求的公用 IP；位址僅在本次工作階段顯示。應用程式不會上傳診斷報告或圖片。",
++  "network.failed": "RIPEstat 未傳回格式有效的公用位址，未記錄結果。"
+ }
+diff --git a/scripts/generate_localization.py b/scripts/generate_localization.py
+index c1781db..2f20820 100644
+--- a/scripts/generate_localization.py
++++ b/scripts/generate_localization.py
+@@ -1947,13 +1947,60 @@ Resident memory	常驻内存
+ Sent	已发送
+ Session seconds	会话秒数
+ sec	秒
++app.title	紫序	LilaShift
++common.cancel	取消	Cancel
++screen.heading	屏幕亮度	Display brightness
++screen.actual	UIKit 当前读数	Current UIKit reading
++screen.unavailable	当前未找到可用的内置屏幕。	No active built-in display is available.
++screen.physicalOnly	模拟器和 Mac 不支持本功能的亮度写入。	Brightness writes are unavailable on simulators and Mac.
++screen.target	目标亮度	Target brightness
++screen.apply	应用到屏幕	Apply to screen
++screen.restore	恢复原亮度	Restore original brightness
++screen.discard	清除恢复记录（不改亮度）	Clear recovery record without changing brightness
++screen.footer	这会改变内置屏幕实际亮度，不会永久更改系统设置。原值在本次会话中保留，进入后台时尝试恢复。锁屏或强退可能中断会话。若无法确认恢复，请使用控制中心调整。	Applies to the built-in display, not a permanent Settings value. The app saves the original in memory and attempts recovery when backgrounded. A lock or app termination can end the session. Use Control Center if recovery cannot be verified.
++screen.confirmTitle	更改屏幕亮度？	Change display brightness?
++screen.confirmWrite	写入并读回	Write and verify
++screen.confirmBody	应用将先读取并保存原值，再写入目标值并从 UIKit 读回。	The app will read the current value, save it for recovery, write the requested value, then read it back from UIKit.
++device.heading	设备信息（只读）	Device information (read-only)
++device.system	系统版本	Operating system
++device.family	设备类别	Device family
++device.memory	物理内存	Physical memory
++device.cpu	逻辑处理器	Logical processors
++appearance.heading	应用外观	App appearance
++appearance.mode	模式（仅本应用）	Mode (this app only)
++appearance.system	跟随系统	Follow system
++appearance.light	浅色	Light
++appearance.dark	深色	Dark
++limits.heading	不支持的写入	Unsupported writes
++limits.body	本应用无法修改受保护的 MobileGestalt、eSIM 准入、Apple 智能资格、系统外观、钱包卡面或锁屏资源，也不提供这些操作的预览。	This app cannot change protected MobileGestalt values, eSIM availability, Apple Intelligence eligibility, system appearance, Wallet card art, or lock-screen assets. It does not offer previews of these actions.
++limits.test	预发布 · 尚未完成真机验证。	Prerelease · Real-device validation pending.
++status.applied	UIKit 读回值与目标一致。	UIKit readback matched the target.
++status.restored	UIKit 读回值与保存的原值一致。	UIKit readback matched the saved original.
++status.unchanged	当前读数与目标一致，没有写入。	The read value already matched the target; nothing was written.
++status.busy	请先恢复上一次修改。	Restore the previous change first.
++status.unavailable	无法获取读数，未记录成功。	Readback is unavailable; no success was recorded.
++status.rejected	未确认目标值；读回值仍是原值。	Target was not confirmed; the original value was read back.
++status.unverified	未能确认预期值，仍保留恢复记录。	The expected value could not be verified; the recovery record is still available.
++status.conflict	读回值不一致；应用没有覆盖意外值。	Readback diverged; the app did not overwrite the unexpected value.
++tools.heading	诊断与工具	Diagnostics and tools
++network.title	网络出口检查	Internet egress check
++network.check	使用 RIPEstat 检查	Check using RIPEstat
++network.result	服务观测到的公网地址	Observed public address
++network.scope	只有点检查才联网。RIPEstat 会看到此次请求的公网 IP；地址仅在本次会话显示。应用不会上传诊断报告或图片。	Only sends a request when you tap Check. RIPEstat sees your connection's public IP. The app displays it for this session; it does not upload your diagnostics or photos.
++network.failed	RIPEstat 未返回格式有效的公网地址，没有记录结果。	RIPEstat did not return a verified-format public address. No result was recorded.
+ '''
+ entries = {}
+ for line in TRANSLATIONS.strip().splitlines():
+     if not line.strip():
+         continue
+-    key, value = line.split('\t', 1)
+-    entries[key] = {'localizations': {lang: {'stringUnit': {'state': 'translated', 'value': text}} for lang, text in [('en', key), ('zh-Hans', value)]}}
++    parts = line.split('\t')
++    if len(parts) not in (2, 3):
++        raise ValueError(f'bad TRANSLATIONS line: {line!r}')
++    key, value = parts[0], parts[1]
++    # Dotted keys (e.g. screen.heading) are not English text, so they carry
++    # an explicit en value as a third field; sentence keys default en to the key.
++    en_text = parts[2] if len(parts) == 3 else key
++    entries[key] = {'localizations': {lang: {'stringUnit': {'state': 'translated', 'value': text}} for lang, text in [('en', en_text), ('zh-Hans', value)]}}
+ for translation_file in sorted((ROOT / 'localization').glob('*.json')):
+     locale = translation_file.stem
+     translations = json.loads(translation_file.read_text())
+diff --git a/tests/VerifiedChangeTests.swift b/tests/VerifiedChangeTests.swift
+index 41ac043..67c4c94 100644
+--- a/tests/VerifiedChangeTests.swift
++++ b/tests/VerifiedChangeTests.swift
+@@ -27,7 +27,7 @@ final class VerifiedChangeTests: XCTestCase {
+ 
+     func testUnavailableReadingNeverWrites() {
+         var change = VerifiedChange<Int>()
+-        XCTAssertEqual(change.apply(70, read: { nil }, write: { _ in XCTFail() }, equals: ==),
++        XCTAssertEqual(change.apply(70, read: { nil }, write: { _ in XCTFail("write must not be called when the read is unavailable") }, equals: ==),
+                        .unavailable)
+     }
+ 
+@@ -36,7 +36,7 @@ final class VerifiedChangeTests: XCTestCase {
+         var value = 40
+         XCTAssertEqual(change.apply(70, read: { value }, write: { value = $0 }, equals: ==), .applied)
+         value = 55
+-        XCTAssertEqual(change.restore(read: { value }, write: { _ in XCTFail() }, equals: ==),
++        XCTAssertEqual(change.restore(read: { value }, write: { _ in XCTFail("write must not be called when the value changed externally") }, equals: ==),
+                        .externallyChanged)
+         XCTAssertEqual(value, 55)
+         XCTAssertTrue(change.canRestore)
+@@ -57,13 +57,13 @@ final class VerifiedChangeTests: XCTestCase {
+         var change = VerifiedChange<Int>()
+         var value = 40
+         XCTAssertEqual(change.apply(70, read: { value }, write: { value = $0 }, equals: ==), .applied)
+-        XCTAssertEqual(change.apply(60, read: { value }, write: { _ in XCTFail() }, equals: ==), .busy)
++        XCTAssertEqual(change.apply(60, read: { value }, write: { _ in XCTFail("write must not be called while a change is pending") }, equals: ==), .busy)
+         value = 40
+-        XCTAssertEqual(change.restore(read: { value }, write: { _ in XCTFail() }, equals: ==), .restored)
++        XCTAssertEqual(change.restore(read: { value }, write: { _ in XCTFail("write must not be called when the value already matches the original") }, equals: ==), .restored)
+     }
+ 
+     func testUnchangedValueDoesNotWrite() {
+         var change = VerifiedChange<Int>()
+-        XCTAssertEqual(change.apply(40, read: { 40 }, write: { _ in XCTFail() }, equals: ==), .unchanged)
++        XCTAssertEqual(change.apply(40, read: { 40 }, write: { _ in XCTFail("write must not be called when the value is unchanged") }, equals: ==), .unchanged)
+     }
+ }
