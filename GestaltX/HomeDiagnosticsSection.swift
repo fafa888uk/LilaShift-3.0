@@ -31,6 +31,14 @@ enum HomeDiagnosticsSectionID: String, CaseIterable, Identifiable, Sendable {
     case presetCatalog
     case personalization
     case diagnosticsExpansion
+    // Wave 1 wiring (LilaShift 5.0.0): one row per Wave 1
+    // diagnostics view. New cases go at the end so the stored
+    // order keys of the existing sections never shift, and
+    // `defaultOrder` (= `allCases`) picks them up automatically.
+    case deviceDiagnostics
+    case structuredLog
+    case ipaAudit
+    case networkProbe
 
     var id: String { rawValue }
 
@@ -68,6 +76,10 @@ enum HomeDiagnosticsSectionID: String, CaseIterable, Identifiable, Sendable {
         case .presetCatalog: return L("Preset Catalog")
         case .personalization: return L("Personalization Center")
         case .diagnosticsExpansion: return L("Diagnostics Expansion")
+        case .deviceDiagnostics: return L("Device Diagnostics")
+        case .structuredLog: return L("Structured Log")
+        case .ipaAudit: return L("IPA Security Audit")
+        case .networkProbe: return L("Network Probe")
         }
     }
 
@@ -95,6 +107,14 @@ enum HomeDiagnosticsSectionID: String, CaseIterable, Identifiable, Sendable {
             return L("Custom presets, catalog sort and Tools page cards — saved on this device only.")
         case .diagnosticsExpansion:
             return L("Battery, app cache, connection status and the operation log — read-only.")
+        case .deviceDiagnostics:
+            return L("Screen, biometrics, Low Power Mode, brightness and disk space — read-only, from public iOS APIs.")
+        case .structuredLog:
+            return L("This app's own operation events and session log, with level and keyword filters; sharing exports the entries shown.")
+        case .ipaAudit:
+            return L("Audit an IPA file on this device: Mach-O and signature parsing, threat verdicts and CVE radar. Read-only — never installed or executed.")
+        case .networkProbe:
+            return L("Ping, traceroute and egress ASN — real measurements only.")
         }
     }
 
@@ -111,6 +131,10 @@ enum HomeDiagnosticsSectionID: String, CaseIterable, Identifiable, Sendable {
         case .presetCatalog: return "books.vertical"
         case .personalization: return "paintpalette"
         case .diagnosticsExpansion: return "waveform.path.ecg"
+        case .deviceDiagnostics: return "iphone"
+        case .structuredLog: return "text.alignleft"
+        case .ipaAudit: return "shield"
+        case .networkProbe: return "network"
         }
     }
 
@@ -130,6 +154,15 @@ enum HomeDiagnosticsSectionID: String, CaseIterable, Identifiable, Sendable {
         case .presetCatalog: PresetCatalogCard()
         case .personalization: PersonalizationCenterCard()
         case .diagnosticsExpansion: DiagnosticsExpansionCard()
+        case .deviceDiagnostics: DeviceDiagnosticsCard()
+        // StructuredLogView reads its GestaltManager from the
+        // environment, exactly like the other cards here
+        // (LilaIntelligenceCard, DependencyAnalyzerCard): the
+        // detail page is hosted inside ContentView, which injects
+        // `.environmentObject(model)`, so no model is passed.
+        case .structuredLog: StructuredLogView()
+        case .ipaAudit: IPAAuditView()
+        case .networkProbe: NetworkProbeCard()
         }
     }
 }

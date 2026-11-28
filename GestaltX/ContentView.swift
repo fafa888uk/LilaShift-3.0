@@ -1775,6 +1775,27 @@ struct ToolGroupView: View {
                                 }
                             }
                             .buttonStyle(.plain)
+                            Divider()
+                            // Wave 1 wiring (LilaShift 5.0.0, W6): the file
+                            // browser lives in this Diagnostics list, next
+                            // to AppGroup Browser — the same list already
+                            // hosts the other file tools, so no new
+                            // section was added. `osBuild` comes from
+                            // `SystemDeviceIdentitySource`, the same
+                            // call-site pattern used elsewhere in this
+                            // file; the home view forwards it to the
+                            // cross-app pages, which need it for the
+                            // version sentinel.
+                            NavigationLink { W6FileBrowserHomeView(osBuild: SystemDeviceIdentitySource().osBuild) } label: {
+                                HStack {
+                                    Label(L("File Browser"), systemImage: "folder")
+                                    Spacer(minLength: 8)
+                                    Image(systemName: "chevron.right")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
                 }

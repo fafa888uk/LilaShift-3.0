@@ -5,10 +5,10 @@
 // The catalog does not duplicate the preset database: every preset
 // item is a view of a `PresetEntry` from `PresetCatalog` (46 entries),
 // mapped onto one of the eleven feature categories below. Page items
-// are the thirteen non-preset destinations (diagnostics pages,
+// are the eighteen non-preset destinations (diagnostics pages,
 // backups, modified values, personalization, launch artwork) that
 // have no `PresetEntry` of their own. Together they are the whole
-// browsable surface of the app: 55 items, each with a Simplified
+// browsable surface of the app: 64 items, each with a Simplified
 // Chinese name and description.
 //
 // The eleven categories are the task's list, in the task's order
@@ -111,7 +111,10 @@ enum FeatureCatalogCategory: String, CaseIterable, Identifiable, Sendable {
     /// rank is their entry's `PresetCategory` index, which keeps
     /// preset-only `.byCategory` order identical to
     /// `PersonalizationCenter.sortedEntries`. Categories with no
-    /// page items return 0 (unused).
+    /// page items return 0 (unused). The one exception is
+    /// `.advancedTools`: its presets already sit at rank 6, so its
+    /// page sits just after them at 6.1 (before group, 7) instead
+    /// of at 0, which would sort it before every preset.
     var pageSortRank: Double {
         switch self {
         case .personalization: return 5.5
@@ -119,8 +122,9 @@ enum FeatureCatalogCategory: String, CaseIterable, Identifiable, Sendable {
         case .deviceDiagnostics: return 5.7
         case .modifiedRecords: return 5.8
         case .backupRestore: return 5.9
+        case .advancedTools: return 6.1
         case .smartUnlock, .appleIntelligence, .esimRegion,
-             .screenLock, .systemSettings, .advancedTools:
+             .screenLock, .systemSettings:
             return 0
         }
     }
@@ -161,7 +165,7 @@ struct FeatureCatalogItem: Equatable, Sendable, Identifiable {
 
 // MARK: - Catalog
 
-/// The unified catalog: 46 preset items + 13 page items = 59.
+/// The unified catalog: 46 preset items + 18 page items = 64.
 /// Built from `PresetCatalog.all` plus the explicit page table, so
 /// a preset added to the catalog appears here with no extra edit,
 /// and a preset dropped there disappears here (the count test fails
@@ -279,7 +283,7 @@ enum FeatureCatalog {
             categorySortRank: rank)
     }
 
-    /// The thirteen page items. Each reuses the localized title and
+    /// The eighteen page items. Each reuses the localized title and
     /// subtitle of the card or page it points at — no new strings,
     /// no invented descriptions.
     static let pageItems: [FeatureCatalogItem] = [
@@ -315,6 +319,27 @@ enum FeatureCatalog {
              title: "Diagnostics Expansion",
              subtitle: "Battery, app cache, connection status and the operation log — read-only.",
              destination: .diagnostics, symbol: "waveform.path.ecg"),
+        // Wave 1 wiring (LilaShift 5.0.0): one page per Wave 1 view.
+        // Titles and subtitles come from the Wave 1 registration
+        // files (W1/W2/W3/W5/W6): each subtitle states only what
+        // the page really contains. W4 adds no page: it extends
+        // the MG field editor search, so it has no destination.
+        page(id: "page.deviceDiagnostics", category: .deviceDiagnostics,
+             title: "设备诊断",
+             subtitle: "屏幕物理指标、生物识别硬件、低电量模式、屏幕亮度与可用磁盘容量——只读，来自公开 iOS API。",
+             destination: .diagnostics, symbol: "iphone"),
+        page(id: "page.structuredLog", category: .deviceDiagnostics,
+             title: "结构化日志",
+             subtitle: "本 App 本次会话的操作事件与会话日志，可按级别、关键字筛选；分享导出当前显示的条目。",
+             destination: .diagnostics, symbol: "text.alignleft"),
+        page(id: "page.ipaAudit", category: .deviceDiagnostics,
+             title: "IPA 安全审计",
+             subtitle: "导入 IPA 后做 Mach-O 与签名解析、安全拆包审查、威胁裁决与 CVE 雷达，导出审计报告；只读，不安装、不执行。",
+             destination: .diagnostics, symbol: "shield"),
+        page(id: "page.networkProbe", category: .deviceDiagnostics,
+             title: "网络探针",
+             subtitle: "Ping 测速、路由追踪与出口 ASN / BGP，均为实测值；ASN 在线时来自 RIPEstat，离线只显示本地测量。",
+             destination: .diagnostics, symbol: "network"),
         page(id: "page.restoreIntelligence", category: .backupRestore,
              title: "Restore Intelligence",
              subtitle: "Modification timeline and precise restore, from trusted records only.",
@@ -335,6 +360,10 @@ enum FeatureCatalog {
              title: "App Launch Images",
              subtitle: "Wallpapers, Lock Screen text and app launch images.",
              destination: .advanced, symbol: "photo"),
+        page(id: "page.fileBrowser", category: .advancedTools,
+             title: "文件浏览器",
+             subtitle: "浏览、多选与导入文件夹；跨应用浏览与缓存统计为只读，不清理。",
+             destination: .advanced, symbol: "folder"),
     ]
 
     private static func page(

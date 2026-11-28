@@ -8,16 +8,16 @@
 
 | チャネル | バージョン | 状態 |
 | --- | --- | --- |
-| 現在のソース | **4.2.1** · ビルド `42000002` | [変更と検証の記録](docs/RELEASE_4_2_1.md) · 未公開 |
+| 現在のソース | **5.0.0** · ビルド `50000000` | [変更と検証の記録](docs/RELEASE_5_0_0.md) · 未公開 |
 | 現在の公開ダウンロード版 | **4.2.0** · ビルド `42000001` | 公開済み |
 
-CI の成功は実機検証を意味しません。4.2.1 の実機へのインストール、デバイス固有の機能、復元は未検証です。
+CI の成功は実機検証を意味しません。5.0.0 の実機へのインストール、デバイス固有の機能、復元は未検証です。
 
 [互換性](docs/COMPATIBILITY_ZH-CN.md) · [ユーザーガイド](docs/USER_GUIDE_ZH-CN.md) · [バックアップと復元](docs/BACKUP_RESTORE_ZH-CN.md) · [問題を報告](https://github.com/fafa888uk/LilaShift-3.0/issues/new/choose) · [GPLv3](LICENSE)
 
 GestaltX をベースにしています。リポジトリ名 `LilaShift-3.0` はアプリのバージョンではありません。
 
-[![Build](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml) [![Swift Tests](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml) [![Licenses](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml) [![SwiftLint](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/swiftlint.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/swiftlint.yml)
+[![Version](https://img.shields.io/badge/version-5.0.0-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases) [![Build](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml) [![Swift Tests](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml) [![Licenses](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml) [![SwiftLint](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/swiftlint.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/swiftlint.yml)
 
 ---
 
@@ -25,7 +25,7 @@ GestaltX をベースにしています。リポジトリ名 `LilaShift-3.0` は
 
 - [検証済みの内容と未検証の内容](#検証済みの内容と未検証の内容)
 - [このリポジトリについて](#このリポジトリについて)
-- [4.2.1 の更新内容](#421-の更新内容)
+- [5.0.0 の更新内容](#500-の更新内容)
 - [3.0.0-rc.1 の過去の変更](#300-rc1-の新機能)
 - [4.1.0 の新機能](#410-の新機能)
 - [4.2.0 の新機能](#420-の新機能)
@@ -62,21 +62,25 @@ MobileGestalt のフラグを変更することと、その機能が実際に動
 
 ## このリポジトリについて
 
-これは **LilaShift 4.x（紫序）** の**フルソースプロジェクト**です。GestaltX の China Unlock 強化版です。変更済みの完全なソースがこのリポジトリにあります。別途パッチを適用する手順はありません。CI はこのソースから直接 IPA をビルドします。
+これは **LilaShift 5.x（紫序）** の**フルソースプロジェクト**です。GestaltX の China Unlock 強化版です。変更済みの完全なソースがこのリポジトリにあります。別途パッチを適用する手順はありません。CI はこのソースから直接 IPA をビルドします。
 
 - 上流 [huamidev/GestaltX](https://github.com/huami1314/GestaltX) `v1.0.7`（コミット `dfd4a7e`、ビルド `11130112`）を基にし、上流の壁紙削除修正 PR #126（コミット `c60519c`）を含みます。
 - 以前のパッチベースのビルドリポジトリ（[fafa888uk/LilaShift](https://github.com/fafa888uk/LilaShift)）はそのまま残されており、積極的な開発は行われていません。
 - LilaShift の機能強化は **`@steam8871`** がメンテナンスしています。上流 GestaltX の作業は引き続き huamidev のものです。
 
-## 4.2.1 の更新内容
+## 5.0.0 の更新内容
 
-- ZIPFoundation を 0.9.20 から [0.9.21](https://github.com/weichsel/ZIPFoundation/releases/tag/0.9.21) に更新し、不正なアーカイブとシンボリックリンクのパス検証に関する上流修正を取り込みます。既存のインポートパス、サイズ、整合性の検証は維持します。
-- 復元の警告、監視、アーカイブのメッセージなど、4.x 画面で不足していた翻訳を補います。ローカライズの検証も受け入れ条件に含めます。
-- PR #20–#25 のリポジトリ管理、3 言語の文書、CI 権限、About ページの変更を統合します。旧 `main` のみにあった 30 個の一時的なパッチワークフローは 4.x に再導入しません。
-- GitHub の標準無料ランナーを使用し、SwiftLint 0.65.1 を固定してチェックサムを検証します。IPA ごとにチェックサムとビルド元の記録を生成します。通常の CI は成果物をアップロードし、手動リリース処理は実際にチェックアウトしたコミットを対象にドラフトを作成します。
-- GestaltX と Erosion-CN の最新ソースを確認します。既存の 4.x 機能を維持し、新しい広告ブロック、ペアリング、音声キャプチャ機能を統合済みとは扱いません。[上流確認の記録](docs/RELEASE_4_2_1.md#开源更新核查)を参照してください。
+- **デバイス診断**——ライブの画面指標、生体認証の状態、低電力モード、輝度、空きディスク容量に加え、iPhone モデル表（iPhone 6 から iPhone 18 Pro Max、iPhone Air を含む）。読み取りは公開 iOS API のみを使用し、モデルデータは DeviceKit 5.10.0（MIT）から転記したもので、依存関係は追加していません。
+- **構造化ログ**——検索・フィルタ・JSON/テキスト出力に対応したレベル付き操作ログ。記録するのはこの App 自身の操作イベントのみで、ネットワーク要求の記録は含みません。
+- **IPA セキュリティ監査**——Mach-O 解析、コード署名 SuperBlob / Slot 5 XML / Slot 7 DER の分析、IPA パッケージ走査、4 段階判定の脅威カタログ、CVE レーダー（13 件のスコアをすべて NVD で再確認）、JSON/Markdown/テキスト形式のレポート出力。WQGuard v1.3.6（MIT）の設計を参考にしています。
+- **MobileGestalt キーテーブル**——Apple Wiki の 943 キー（読みやすい名称と説明付き、worstgestalt（GPL-3.0）とキーごとに照合済み）に加え、査読済みの簡体字中国語名 122 件。テーブルは LilaShift 独自の生成スクリプトで再生成しています。
+- **ネットワークプローブ**——非特権 ICMP ソケットによる ping と traceroute（ロス/ジッタ統計付き）、RIPEstat による Egress ASN/BGP 照会。プライベートアドレスは要求前に拒否されます。ip-tools（MIT）の設計を参考にしています。
+- **ファイルブラウザ**——複数選択による一括共有と ZIP 化、再帰フォルダインポート、読み取り専用のクロスアプリ閲覧とアプリごとのキャッシュ統計、スプラッシュ広告パス表（全パスを未確認として表示）。Erosion-CN v1.0.8 と WQFiles（GPL-3.0）の仕組みを参考にしています。一括削除、広告ロック、クロスアプリのクリーンアップは含みません。
+- **ナビゲーション**——5 つの新規ページが機能カタログ（ページ項目 13 → 18、合計 59 → 64）とホーム診断セクション（11 → 15）に加わりました。
+- **ローカライズ**——Wave 1 で不足していた 281 文字列を 10 言語すべてに追加し、ローカライズのテストが再び全て成功しています。
+- **ライセンス**——Wave 1 のサードパーティ表示を統合し、MIT テキスト 3 件（DeviceKit、WQGuard、ip-tools）を新たに同梱しました。[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) を参照してください。
 
-4.2.0 のナビゲーション分類、4.1.0 の App Audio Library とロック画面テキストの統合は 4.x 基盤に引き続き含まれます。バージョン履歴は [CHANGELOG.md](CHANGELOG.md) を参照してください。
+4.2.1 の保守変更（ZIPFoundation 0.9.21、ローカライズの補完、管理/CI）と 4.2.0 のナビゲーション変更は引き続き基盤に含まれます。バージョン履歴は [CHANGELOG.md](CHANGELOG.md) を参照してください。
 
 ## 3.0.0-rc.1 の新機能
 
@@ -148,13 +152,13 @@ MobileGestalt のフラグを変更することと、その機能が実際に動
 
 ## ダウンロード
 
-4.2.1 を取得するには、対象のソースコミットに対して成功した [Build LilaShift IPA の実行](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml)から、`LilaShift-4.2.1-<run_id>-<run_attempt>` 成果物をダウンロードしてください。GitHub のワークフロー成果物のダウンロードにはサインインが必要な場合があります。展開後は次のファイルを確認します。
+5.0.0 を取得するには、対象のソースコミットに対して成功した [Build LilaShift IPA の実行](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml)から、`LilaShift-5.0.0-<run_id>-<run_attempt>` 成果物をダウンロードしてください。GitHub のワークフロー成果物のダウンロードにはサインインが必要な場合があります。展開後は次のファイルを確認します。
 
-- `LilaShift_4.2.1.ipa`
-- `LilaShift_4.2.1.ipa.sha256`
+- `LilaShift_5.0.0.ipa`
+- `LilaShift_5.0.0.ipa.sha256`
 - `build-manifest.json`（ソースコミット、バージョン、ビルド番号、ツールチェーン、IPA ハッシュ）
 
-SHA-256 を照合し、manifest のバージョンが `4.2.1`、ビルド番号が `42000002`、ソースコミットが対象の更新と一致することを確認してください。ワークフロー成果物の保存期間は 14 日です。ビルド成果物と公開リリースは別に管理され、公開済みバージョンは [Releases](https://github.com/fafa888uk/LilaShift-3.0/releases) に表示されます。
+SHA-256 を照合し、manifest のバージョンが `5.0.0`、ビルド番号が `50000000`、ソースコミットが対象の更新と一致することを確認してください。ワークフロー成果物の保存期間は 14 日です。ビルド成果物と公開リリースは別に管理され、公開済みバージョンは [Releases](https://github.com/fafa888uk/LilaShift-3.0/releases) に表示されます。
 
 以前の公開版は [LilaShift 4.2.0](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0) です。過去の `LilaShift_3.0.0.ipa` は 4.x のパッケージではありません。ダウンロードが不完全、またはハッシュが一致しない場合は、インストール前に再取得してください。
 
@@ -182,7 +186,7 @@ SHA-256 を照合し、manifest のバージョンが `4.2.1`、ビルド番号�
 
 ## スクリーンショット
 
-4.2.1 の実機スクリーンショットはここにはまだ記録されていません。シミュレータのスナップショットはテスト用の参照画像であり、このバージョンの実機インストールやデバイス機能の動作を証明するものではありません。
+5.0.0 の実機スクリーンショットはここにはまだ記録されていません。シミュレータのスナップショットはテスト用の参照画像であり、このバージョンの実機インストールやデバイス機能の動作を証明するものではありません。
 
 ## よくある質問
 

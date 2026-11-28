@@ -18,6 +18,13 @@ struct MGKeyEntry: Identifiable, Equatable {
     let key: String
     let meaning: String
     let source: String
+    /// Reviewed Simplified Chinese name (`MGKeyChineseNames`), or `nil`
+    /// when no reviewer has translated this key yet. Views must show
+    /// `MGKeyChineseNames.missingChineseNameLabel` ("暂无中文名") for
+    /// `nil`, never a guess.
+    let chineseName: String? = nil
+    /// Reviewed Simplified Chinese description, or `nil` with `chineseName`.
+    let chineseDescription: String? = nil
 }
 
 enum MGKeysTable {
@@ -102,6 +109,12 @@ enum MGKeysTable {
     /// never changes. Previously this rebuilt (dedup + sort) on
     /// every access — including every keystroke of a search, since
     /// `matching` reads `all` first.
+    ///
+    /// This stays the 77 curated rows on purpose: `MGDatabaseSeed`
+    /// mirrors it exactly (see `MGDatabaseTests`), so the ~940-key
+    /// Apple Wiki table is *not* merged here. It lives in
+    /// `appleWikiEntries` and is searched together with `all` by
+    /// `matching`, which is the field editor's search entry point.
     static let all: [MGKeyEntry] = {
         var byKey: [String: MGKeyEntry] = [:]
         for (name, key, question, line) in erosionCNKeys {
@@ -121,22 +134,84 @@ enum MGKeysTable {
                     source: "LilaShift capability “\(capability.id)”")
             }
         }
-        return byKey.values.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        return byKey.values
+            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+            .map { withChinese($0) }
     }()
 
-    /// Rows matching a search string (name, key, or meaning).
-    /// Whitespace is ignored on both sides, so typing a camelCase
-    /// feature name such as "DynamicIsland" finds the
-    /// "Dynamic Island" row.
+    /// The Apple Wiki rows the curated table does not cover: 878 of the
+    /// 943 wiki keys (the other 65 are already curated rows above).
+    /// Name is the wiki plain key name; meaning is the wiki English
+    /// description, or a plain statement of the key when the wiki has
+    /// no description. Sorted by name, like `all`.
+    static let appleWikiEntries: [MGKeyEntry] = {
+        let curatedKeys = Set(all.map(\.key))
+        return AppleWikiKeyTable.names
+            .filter { !curatedKeys.contains($0.key) }
+            .sorted { $0.value.localizedCaseInsensitiveCompare($1.value) == .orderedAscending }
+            .map { key, plainName in
+                withChinese(MGKeyEntry(
+                    name: plainName, key: key,
+                    meaning: AppleWikiKeyTable.descriptions[key]
+                        ?? "MobileGestalt key “\(plainName)”.",
+                    source: "The Apple Wiki “List of MobileGestalt keys” (CC BY-SA 4.0)"))
+            }
+    }()
+
+    /// Rows `matching` can return: the curated table plus the Apple
+    /// Wiki-only rows (955 in total).
+    static var searchableCount: Int { all.count + appleWikiEntries.count }
+
+    /// A row with its reviewed Chinese name and description attached
+    /// (when one exists for its key).
+    private static func withChinese(_ entry: MGKeyEntry) -> MGKeyEntry {
+        MGKeyEntry(
+            name: entry.name, key: entry.key,
+            meaning: entry.meaning, source: entry.source,
+            chineseName: MGKeyChineseNames.chineseName(forKey: entry.key),
+            chineseDescription: MGKeyChineseNames.chineseDescription(forKey: entry.key))
+    }
+
+    /// Precomputed search text, one entry per searchable row, built
+    /// once: the English name, key and meaning, the reviewed Chinese
+    /// name and description when they exist, and the Apple Wiki plain
+    /// name and description for the key when the wiki knows it. The
+    /// label `MGKeyChineseNames.missingChineseNameLabel` is deliberately
+    /// *not* in the haystack: "暂无中文名" is a status, not a name, and
+    /// searching for it must return nothing.
+    private static let searchIndex: [(entry: MGKeyEntry, haystack: String)] = {
+        var index: [(entry: MGKeyEntry, haystack: String)] = []
+        index.reserveCapacity(all.count + appleWikiEntries.count)
+        for entry in all + appleWikiEntries {
+            var parts = [entry.name, entry.key, entry.meaning]
+            if let chineseName = entry.chineseName { parts.append(chineseName) }
+            if let chineseDescription = entry.chineseDescription { parts.append(chineseDescription) }
+            if let plainName = AppleWikiKeyTable.plainName(forHashedKey: entry.key) {
+                parts.append(plainName)
+            }
+            if let description = AppleWikiKeyTable.description(forHashedKey: entry.key) {
+                parts.append(description)
+            }
+            let haystack = parts.joined().lowercased().filter { !$0.isWhitespace }
+            index.append((entry: entry, haystack: haystack))
+        }
+        return index
+    }()
+
+    /// Rows matching a search string (name, key, meaning, Apple Wiki
+    /// plain name or description, or reviewed Chinese name or
+    /// description). Whitespace is ignored on both sides, so typing a
+    /// camelCase feature name such as "DynamicIsland" finds the
+    /// "Dynamic Island" row, and typing "灵动岛" finds it too.
+    ///
+    /// An empty query returns the 77 curated rows only: that is the
+    /// browse list, and `MGDatabaseSeed` mirrors it exactly. A
+    /// non-empty query searches the full 955-row index, deduplicated
+    /// by key (a curated row wins over the wiki row for the same key).
     static func matching(_ query: String) -> [MGKeyEntry] {
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return all }
         let squashed = trimmed.lowercased().filter { !$0.isWhitespace }
-        return all.filter {
-            let name = $0.name.lowercased().filter { !$0.isWhitespace }
-            let key = $0.key.lowercased().filter { !$0.isWhitespace }
-            let meaning = $0.meaning.lowercased().filter { !$0.isWhitespace }
-            return name.contains(squashed) || key.contains(squashed) || meaning.contains(squashed)
-        }
+        return searchIndex.filter { $0.haystack.contains(squashed) }.map(\.entry)
     }
 }

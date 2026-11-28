@@ -1655,6 +1655,287 @@ The archive source could not be resolved.	无法确定归档来源。
 Staging picked file…	正在暂存所选文件…
 Creating archive…	正在创建归档…
 Restoring archive…	正在恢复归档…
+%d entries	%d 条记录
+%d entries · %d errors · %d warnings · %d info	%d 条记录 · %d 个错误 · %d 个警告 · %d 条信息
+%d selected (%d files, %@)	已选 %d 项（%d 个文件，%@）
+(fat)	（通用二进制）
+). The iOS sandbox may block unprivileged ICMP on this version.	）。iOS 沙盒可能会在此版本中阻止无特权的 ICMP。
+A Mach-O load command is truncated.	Mach-O 加载命令被截断。
+A Mach-O section header is truncated.	Mach-O 节头被截断。
+A Mach-O section lies outside the file.	Mach-O 节超出了文件范围。
+A Mach-O segment command is truncated.	Mach-O 段命令被截断。
+A Mach-O segment declares too many sections.	Mach-O 段声明的节数量过多。
+A code signature blob lies outside the file.	代码签名数据块超出了文件范围。
+A dylib load command is truncated.	dylib 加载命令被截断。
+A fat binary slice lies outside the file.	通用二进制的一个架构切片超出了文件范围。
+A folder cannot be imported into itself.	文件夹不能导入到自身。
+A found path is still pending verification until a maintainer confirms the app version on a real device.	已找到的路径仍待验证，须由维护者在真机上确认 App 版本后才算完成。
+About this table	关于此表
+Ad-hoc signature.	临时签名。
+All kinds	全部类型
+All sources	全部来源
+An entry in the IPA exceeds the size limit.	IPA 中的一个条目超出了大小上限。
+An entry in the IPA failed its checksum.	IPA 中的一个条目校验和失败。
+An entry in the IPA looks like a decompression bomb.	IPA 中的一个条目疑似解压炸弹。
+Announced Prefix	已公布前缀
+Announced in BGP	已在 BGP 中公布
+App	应用
+App Groups:	应用组：
+Aspect ratio	宽高比
+Audit an IPA file on this device: Mach-O and signature parsing, threat verdicts and CVE radar. Read-only — never installed or executed.	审计本设备上的 IPA 文件：解析 Mach-O 与签名，给出威胁判定与 CVE 监测。只读——绝不安装或运行。
+Available (important)	可用（重要）
+Available (opportunistic)	可用（弹性）
+Available disk space	可用磁盘空间
+Avg	平均
+Batch delete is not in this workflow.	此流程不包含批量删除。
+Binaries	二进制文件
+Biometric hardware is not available on this device.	此设备没有生物识别硬件。
+Biometrics	生物识别
+Biometrics are locked out. Unlock with the device passcode first.	生物识别已被锁定。请先使用设备密码解锁。
+Brightness	亮度
+Browse, multi-select and import folders.	浏览、多选并导入文件夹。
+Bundle ID	Bundle ID
+CVE Radar	CVE 雷达
+Cache usage by app	各 App 缓存用量
+Caches %@ (%d files) · Temporary %@ (%d files).	缓存 %@（%d 个文件）· 临时文件 %@（%d 个文件）。
+Cannot open this container	无法打开此容器
+Check against a real container	对照真实容器检查
+Check against app	对照 App 检查
+Check paths in this app's container	检查此 App 容器中的路径
+Checking…	正在检查…
+Choose IPA…	选择 IPA…
+Choose an app	选择一个 App
+Container could not be opened — not measured.	容器无法打开，未进行测量。
+Container not located	未找到容器
+Copied %d files (%@).	已复制 %d 个文件（%@）。
+Could not pack the selection	无法打包所选内容
+Could not resolve	无法解析
+Count	次数
+Cross-App Cache Usage	跨 App 缓存用量
+Cross-App File Browser	跨 App 文件浏览器
+Cross-app access is unavailable on this iOS version.	在此 iOS 版本上无法使用跨 App 访问。
+Cross-app access works through iOS 27.3 beta 1. It is blocked from iOS 27.3 beta 2 on.	跨 App 访问在 iOS 27.3 beta 1 及更早版本上可用，自 iOS 27.3 beta 2 起被阻止。
+Deselect All	取消全选
+Destination	目标
+Destination unreachable at hop	目标在第
+Device Diagnostics	设备诊断
+Direct syscalls (svc #0x80):	直接系统调用 (svc #0x80)：
+Disk Space	磁盘空间
+Display Zoom	显示缩放
+Display Zoom is derived from the native scale exceeding the scale; verify it by toggling Display Zoom on the device.	显示缩放是根据原生缩放大于缩放比例推断得出的；请在设备上切换“显示缩放”加以验证。
+Documents	文稿
+Egress ASN / BGP	出口 ASN / BGP
+Entries that could not be verified carry no score.	未能核实的条目不计分。
+Export Report	导出报告
+Export as JSON	导出为 JSON
+Export as Text	导出为文本
+Exported at: %@	导出时间：%@
+Exposed	已暴露
+Failed: %d items.	失败：%d 项。
+FairPlay-encrypted binaries were skipped, so the verdict does not cover them.	已跳过 FairPlay 加密的二进制文件，因此判定结果不涵盖它们。
+FairPlay-encrypted — static analysis skipped.	已受 FairPlay 加密——已跳过静态分析。
+File Browser	文件浏览器
+Filter by date	按日期筛选
+Fixed:	已修复：
+Found	已找到
+Generic ad SDK	通用广告 SDK
+Generic ad SDK hints in this container:	此容器中的通用广告 SDK 迹象：
+High Risk	高风险
+Holder unknown	持有者未知
+Host or IP address	主机名或 IP 地址
+ICMP socket unavailable (errno	ICMP 套接字不可用（错误码
+IPA Security Audit	IPA 安全审计
+Import Files…	导入文件…
+Import Folder…	导入文件夹…
+Import finished	导入完成
+Info	信息
+Invalid target:	无效目标：
+Invert	反选
+JSON	JSON
+Jitter	抖动
+Keep both	全部保留
+Known Tool	已知工具
+Known splash-ad paths for 7 apps, pending verification.	7 个 App 的已知开屏广告路径，待验证。
+LilaShift operation log	LilaShift 操作日志
+Loading…	正在加载…
+Local network access denied. Allow local network access and try again.	本地网络访问被拒绝。请允许本地网络访问，然后重试。
+Locating the app bundle…	正在定位 App 包…
+Location	位置
+Look Up Egress Info	查询出口信息
+Loss	丢包
+Low Power Mode	低电量模式
+Max	最大
+Maximum hops reached without arriving at the destination.	已达最大跳数，仍未到达目标。
+Measure now	立即测量
+Measured	测量于
+Measured at %@.	测量于 %@。
+Measured total: %@.	测量总计：%@。
+Min	最小
+Model not in the screen table	该机型不在屏幕参数表中
+Needs Attention	需要注意
+Network Probe	网络探针
+Network unreachable. Check the connection or airplane mode.	网络不可达。请检查网络连接或飞行模式。
+No CMS signature blob. The chain is not verified by this scanner.	没有 CMS 签名数据块。本扫描器未验证该证书链。
+No Face ID or Touch ID hardware was detected.	未检测到面容 ID 或触控 ID 硬件。
+No Mach-O binary was found in the app bundle.	在 App 包中未找到 Mach-O 二进制文件。
+No Payload/*.app bundle was found in the IPA.	在 IPA 中未找到 Payload/*.app 包。
+No address found for	未找到地址：
+No apps found	未找到 App
+No biometric is enrolled on this device.	此设备未录入任何生物识别信息。
+No browsable folders	没有可浏览的文件夹
+No device passcode is set.	未设置设备密码。
+No egress information yet.	暂无出口信息。
+No findings.	未发现问题。
+No installed apps could be listed on this device.	无法列出此设备上已安装的 App。
+No log entries match the current filters.	没有日志记录符合当前筛选条件。
+No origin ASN reported for this IP.	未报告此 IP 的源 ASN。
+No replies received: no latency can be reported.	未收到任何回复：无法报告延迟。
+No table paths were found in this container. The app may have moved them in a newer version.	此容器中未找到任何表路径。该 App 可能已在新版本中移动了这些路径。
+None	无
+None of the 7 table apps are installed, or their containers could not be listed on this device.	7 个表 App 均未安装，或无法列出它们在此设备上的容器。
+Not announced in BGP	未在 BGP 中公布
+Not found	未找到
+Not part of this audit: listing installed apps, lockdownd pairing, container forensics, and proxy shields. Those need a paired Mac, an exported snapshot, or a proxy client, and are not iOS-app capabilities.	本次审计不包括：列出已安装 App、lockdownd 配对、容器取证和代理防护。这些需要配对的 Mac、导出的快照或代理客户端，不是 iOS App 能够实现的功能。
+Nothing selected.	未选择任何内容。
+Nothing to pack: the selection has no files.	没有可打包的内容：所选内容中没有文件。
+Nothing was found here, or the folder could not be read.	此处未找到任何内容，或无法读取该文件夹。
+Nothing was found here.	此处未找到任何内容。
+Offline	离线
+Offline: only local ping and traceroute results are shown.	离线：仅显示本地 ping 与 traceroute 结果。
+Online	在线
+Opening the IPA…	正在打开 IPA…
+Operation event	操作事件
+PPI and screen size come from the model table, which does not cover this model.	PPI 和屏幕尺寸来自机型参数表，该表未收录此机型。
+Pack as ZIP	打包为 ZIP
+Partially verified	部分已验证
+Patched	已修复
+Paths change with app versions. Every path below is pending verification until it is confirmed on a real device. This page only recognises paths; it never locks or clears anything.	路径会随 App 版本变化。以下每条路径都待验证，须在真机上确认后才算完成。本页仅识别路径，绝不会锁定或清理任何内容。
+Pending verification	待验证
+Pick an IPA file to audit it on this device. The audit is read-only: the IPA is never installed, never executed, and the extracted files are deleted when the scan finishes.	选择一个 IPA 文件，在本设备上进行审计。审计为只读：IPA 不会被安装、不会被执行，解压出的文件会在扫描结束后删除。
+Ping	Ping
+Ping, traceroute and egress ASN — real measurements only.	Ping、traceroute 与出口 ASN——仅为真实测量结果。
+Pinging a LAN address may ask for local-network permission. A full BGP AS-path map is not part of this card.	Ping 局域网地址时可能会请求本地网络权限。完整的 BGP AS 路径图不在本卡片的功能范围内。
+Points	点
+Public IP	公网 IP
+RIPEstat is offline:	RIPEstat 离线：
+RIPEstat returned HTTP	RIPEstat 返回了 HTTP
+RIPEstat returned an unexpected response.	RIPEstat 返回了意外响应。
+RTT chart	RTT 图表
+Reached the destination in	到达目的地共经过
+Read-only browsing of other apps' containers.	以只读方式浏览其他 App 的容器。
+Read-only cache statistics per app. No cleanup here.	各 App 的只读缓存统计。此处不做清理。
+Received	已接收
+Replace	替换
+Resolution	分辨率
+SHA-256	SHA-256
+Safe & Compliant	安全合规
+Scale	缩放比例
+Scan Failed	扫描失败
+Scanning	正在扫描
+Scanning binaries…	正在扫描二进制文件…
+Scanning…	正在扫描…
+Scores are the NVD-verified CVSS 3.1 values as of	分数是截至以下日期经 NVD 核实的 CVSS 3.1 值
+Screen	屏幕
+Screen Brightness	屏幕亮度
+Screen size	屏幕尺寸
+Screen, biometrics, Low Power Mode, brightness and disk space — read-only, from public iOS APIs.	屏幕、生物识别、低电量模式、亮度和磁盘空间——只读，来自公开 iOS API。
+Search logs	搜索日志
+Select All	全选
+Select…	选择…
+Send failed (errno	发送失败（错误码
+Sensor	传感器
+Session log	会话日志
+Share as JSON	以 JSON 格式分享
+Share as Markdown	以 Markdown 格式分享
+Share as Plain Text	以纯文本格式分享
+Skip	跳过
+Skipped %d items.	已跳过 %d 项。
+Splash Ad Cache Paths	开屏广告缓存路径
+Splash-ad paths found: %d of %d (%@).	已找到开屏广告路径：%d / %d（%@）。
+Standard	标准
+Start	开始
+Static analysis only reports what was found in this binary. It cannot prove an app is safe.	静态分析仅报告在此二进制文件中发现的内容，无法证明某个 App 是安全的。
+Statistics only. This page never deletes anything.	仅显示统计信息。本页绝不会删除任何内容。
+Stop	停止
+Structured Log	结构化日志
+Supported through %@.	支持至 %@。
+Symbolic links are not imported.	符号链接不会被导入。
+Text	文本
+That item is protected and cannot be imported.	该项目受保护，无法导入。
+The DER entitlements are truncated.	DER 权限数据被截断。
+The DER entitlements exceed the recursion limit.	DER 权限数据超出了递归层数上限。
+The DER entitlements have a malformed BOOLEAN.	DER 权限数据中有一个格式错误的 BOOLEAN。
+The DER entitlements have a malformed INTEGER.	DER 权限数据中有一个格式错误的 INTEGER。
+The DER entitlements have a malformed OID.	DER 权限数据中有一个格式错误的 OID。
+The DER entitlements have a malformed length.	DER 权限数据的长度字段格式错误。
+The DER entitlements have a malformed tag.	DER 权限数据的标签格式错误。
+The DER entitlements use forbidden indefinite length.	DER 权限数据使用了禁用的不定长编码。
+The IPA contains an unsafe entry path.	IPA 包含不安全的条目路径。
+The IPA contains duplicate entries.	IPA 包含重复条目。
+The IPA contains no entries.	IPA 不包含任何条目。
+The IPA contains too many entries.	IPA 包含的条目过多。
+The IPA could not be extracted.	无法解压 IPA。
+The IPA is invalid or exceeds the size limit.	IPA 无效或超出了大小上限。
+The IPA would extract to more than the size limit.	IPA 解压后的体积会超出大小上限。
+The Mach-O header is truncated.	Mach-O 文件头被截断。
+The Mach-O load commands lie outside the file.	Mach-O 加载命令超出了文件范围。
+The XML entitlements are not a dictionary.	XML 权限数据不是一个字典。
+The XML entitlements plist is malformed.	XML 权限 plist 格式错误。
+The app container could not be located on this device.	在此设备上找不到该 App 容器。
+The app container could not be opened on this device.	在此设备上无法打开 App 容器。
+The app container could not be opened.	无法打开 App 容器。
+The code signature command is truncated.	代码签名命令被截断。
+The code signature declares a length outside the file.	代码签名声明的长度超出了文件范围。
+The code signature header is truncated.	代码签名头被截断。
+The code signature index is truncated.	代码签名索引被截断。
+The code signature is not a SuperBlob.	代码签名不是 SuperBlob。
+The code signature lies outside the file.	代码签名超出了文件范围。
+The destination file could not be created.	无法创建目标文件。
+The destination folder is not available.	目标文件夹不可用。
+The device model could not be identified.	无法识别设备型号。
+The encryption info command is truncated.	加密信息命令被截断。
+The export folder is not available.	导出文件夹不可用。
+The exported file contains only this audit's findings. No data leaves the device except through the share destination you choose.	导出的文件仅包含本次审计的发现。除你选择的分享目标外，不会有任何数据离开本设备。
+The fat binary declares an impossible slice count.	通用二进制声明的切片数量不可能存在。
+The fat binary header is truncated.	通用二进制文件头被截断。
+The fat binary slice table is truncated.	通用二进制切片表被截断。
+The file is not a Mach-O binary.	该文件不是 Mach-O 二进制文件。
+The file is not a valid ZIP/IPA archive.	该文件不是有效的 ZIP/IPA 压缩包。
+The file is too small to be a Mach-O binary.	该文件太小，不可能是 Mach-O 二进制文件。
+The folder could not be read.	无法读取该文件夹。
+The import stopped at the item limit.	导入已达到项目数量上限而停止。
+The item could not be read.	无法读取该项目。
+The log could not be exported.	无法导出日志。
+The report could not be generated.	无法生成报告。
+The requested path is not inside the app container.	请求的路径不在 App 容器内。
+The scan was cancelled.	扫描已取消。
+The selection is too large to pack into one archive.	所选内容太大，无法打包为单个压缩包。
+The source is not a folder.	来源不是文件夹。
+The symbol table command is truncated.	符号表命令被截断。
+The symbol table lies outside the file.	符号表超出了文件范围。
+This app's own operation events and session log, with level and keyword filters; sharing exports the entries shown.	本 App 自身的操作事件与会话日志，支持按级别和关键词筛选；分享时会导出当前显示的条目。
+This folder is empty.	此文件夹为空。
+This is a LilaShift build. Rule needles are stored as plain strings in this app, so scanning LilaShift's own IPA can match string rules from the catalog itself; dylib and symbol rules cannot match that way.	这是 LilaShift 自身的构建。规则特征以纯文本形式存储在本 App 中，因此扫描 LilaShift 自身的 IPA 时，可能会命中规则库中的字符串规则；dylib 与符号规则不会以这种方式命中。
+This log contains only this app's own operation events and session log lines. It contains no network request records.	本日志仅包含本 App 自身的操作事件与会话日志行，不含任何网络请求记录。
+This log contains only this app's own operation events and session log lines. It contains no network request records: LilaShift makes almost no network requests of its own.	本日志仅包含本 App 自身的操作事件与会话日志行，不含任何网络请求记录：LilaShift 自身几乎不发出网络请求。
+Timeout	超时
+Total capacity	总容量
+Traceroute	路由追踪
+Unknown resolution error	未知的解析错误
+Unprivileged ICMP needs no entitlement, but whether the iOS sandbox allows it on this iOS version must be verified on a real device. Timeouts and failures are shown as-is.	非特权 ICMP 不需要 entitlement，但 iOS 沙盒是否允许在本 iOS 版本上使用，须在真机上验证。超时与失败将按原样显示。
+Unreachable	无法到达
+Up One Level	返回上一级
+Updated	已更新
+Verdict	结论
+Verified on device	已在设备上验证
+Waiting for hops…	正在等待跃点…
+Waiting for replies…	正在等待回复…
+Your public IP and the network (ASN) that announces it, from RIPEstat. Online only.	你的公网 IP 及发布该 IP 的网络（ASN），数据来自 RIPEstat。仅在线可用。
+Zoomed	放大
+bytes	字节
+hops.	跳。
+timeout	超时
+unknown time	未知时间
 '''
 entries = {}
 for line in TRANSLATIONS.strip().splitlines():

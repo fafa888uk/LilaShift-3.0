@@ -8,16 +8,16 @@
 
 | Channel | Version | Status |
 | --- | --- | --- |
-| Current source | **4.2.1** · build `42000002` | [Changes and verification](docs/RELEASE_4_2_1.md) · not a public release |
+| Current source | **5.0.0** · build `50000000` | [Changes and verification](docs/RELEASE_5_0_0.md) · not a public release |
 | Current public download | **4.2.0** · build `42000001` | Published version |
 
-CI passing does not imply real-device validation. Installation, device-specific features, and restore are not yet verified on devices for 4.2.1.
+CI passing does not imply real-device validation. Installation, device-specific features, and restore are not yet verified on devices for 5.0.0.
 
 [Compatibility](docs/COMPATIBILITY_ZH-CN.md) · [User guide](docs/USER_GUIDE_ZH-CN.md) · [Backup and restore](docs/BACKUP_RESTORE_ZH-CN.md) · [Report an issue](https://github.com/fafa888uk/LilaShift-3.0/issues/new/choose) · [GPLv3](LICENSE)
 
 Based on GestaltX. The repository name `LilaShift-3.0` is retained and is not the app version.
 
-[![Build](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml) [![Swift Tests](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml) [![Licenses](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml) [![SwiftLint](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/swiftlint.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/swiftlint.yml)
+[![Version](https://img.shields.io/badge/version-5.0.0-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases) [![Build](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml) [![Swift Tests](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml) [![Licenses](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml) [![SwiftLint](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/swiftlint.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/swiftlint.yml)
 
 ---
 
@@ -25,7 +25,7 @@ Based on GestaltX. The repository name `LilaShift-3.0` is retained and is not th
 
 - [What is verified, and what is not](#what-is-verified-and-what-is-not)
 - [What this repository is](#what-this-repository-is)
-- [What's new in 4.2.1](#whats-new-in-421)
+- [What's new in 5.0.0](#whats-new-in-500)
 - [Historical 3.0.0-rc.1 changes](#whats-new-in-300-rc1)
 - [Features](#features)
 - [Compatibility](#compatibility)
@@ -60,21 +60,25 @@ Changing a MobileGestalt flag is **not** the same as the feature working: a flag
 
 ## What this repository is
 
-This is the **full-source project** for LilaShift 4.x (紫序), the China Unlock enhanced version of GestaltX. The complete modified source lives in this repository — there is no separate patch step; CI builds the IPA straight from this source.
+This is the **full-source project** for LilaShift 5.x (紫序), the China Unlock enhanced version of GestaltX. The complete modified source lives in this repository — there is no separate patch step; CI builds the IPA straight from this source.
 
 - Based on upstream [huamidev/GestaltX](https://github.com/huami1314/GestaltX) `v1.0.7` (commit `dfd4a7e`, build `11130112`), plus the upstream wallpaper-delete fix in PR #126 (commit `c60519c`).
 - The previous patch-based build repository ([fafa888uk/LilaShift](https://github.com/fafa888uk/LilaShift)) is kept as-is and not actively developed.
 - LilaShift enhancements maintained by **`@steam8871`**. Upstream GestaltX work remains the work of huamidev.
 
-## What's new in 4.2.1
+## What's new in 5.0.0
 
-- Updates ZIPFoundation from 0.9.20 to [0.9.21](https://github.com/weichsel/ZIPFoundation/releases/tag/0.9.21), including upstream fixes for malformed archives and symlink containment. Existing import path, size and integrity checks remain in place.
-- Completes missing translations in the 4.x interfaces, including restore warnings, monitoring and archive messages; localization validation remains part of the acceptance checks.
-- Integrates the reviewed governance, trilingual documentation, CI permission and About-page changes from PRs #20–#25. The 30 retired one-shot workflows are not reintroduced from the old `main` history.
-- Uses standard free GitHub runners, a fixed SwiftLint 0.65.1 binary with checksum verification, and per-build IPA checksum and source metadata. Ordinary CI uploads artifacts; the separate manual release workflow creates a draft for the checked-out commit.
-- Reviews the current GestaltX and Erosion-CN sources. Existing 4.x features are retained; unrelated ad-blocking and pairing/capture features are not claimed as added. See the [source review](docs/RELEASE_4_2_1.md#开源更新核查).
+- **Device diagnostics** — live screen metrics, biometrics state, Low Power Mode, brightness and free disk space, plus an iPhone model table (iPhone 6 through iPhone 18 Pro Max, including iPhone Air). Readings use public iOS APIs; the model data is transcribed from DeviceKit 5.10.0 (MIT) with no added dependency.
+- **Structured log** — a levelled operation log with search, filtering and JSON/text export. It records only this app's own operation events; it contains no network request records.
+- **IPA security audit** — Mach-O parsing, code-signature SuperBlob / Slot 5 XML / Slot 7 DER analysis, IPA package scanning, a threat catalog with a four-level verdict, a CVE radar (all 13 scores re-verified against NVD), and JSON/Markdown/text report export. Design inspired by WQGuard v1.3.6 (MIT).
+- **MobileGestalt key table** — 943 Apple Wiki keys with readable names and descriptions, verified key-by-key against worstgestalt (GPL-3.0), plus 122 reviewed Simplified Chinese names. The table is regenerated by LilaShift's own generator.
+- **Network probe** — ping and traceroute over an unprivileged ICMP socket with loss/jitter statistics, plus egress ASN/BGP lookup via RIPEstat. Private addresses are refused before any request. Design inspired by ip-tools (MIT).
+- **File browser** — multi-select with batch share and pack-as-ZIP, recursive folder import, read-only cross-app browsing with per-app cache statistics, and a splash-ad path table (all paths marked pending verification). Mechanisms inspired by Erosion-CN v1.0.8 and WQFiles (GPL-3.0). No batch delete, no ad-cache locking, no cross-app cleanup.
+- **Navigation** — the five new pages join the feature catalog (13 → 18 page items, 59 → 64 total) and the home diagnostics sections (11 → 15).
+- **Localization** — 281 missing Wave 1 strings added across all 10 supported locales; the localization suite is green again.
+- **Licenses** — Wave 1 third-party notices merged with three new bundled MIT texts (DeviceKit, WQGuard, ip-tools). See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-The 4.2.0 navigation changes and 4.1.0 App Audio Library / lock-screen text integration remain part of the 4.x baseline. Full details are in [CHANGELOG.md](CHANGELOG.md).
+The 4.2.1 maintenance changes (ZIPFoundation 0.9.21, localization completion, governance/CI) and the 4.2.0 navigation changes remain part of the baseline. Full details are in [CHANGELOG.md](CHANGELOG.md).
 
 ## What's new in 3.0.0-rc.1
 
@@ -129,13 +133,13 @@ Full compatibility table: [docs/COMPATIBILITY_ZH-CN.md](docs/COMPATIBILITY_ZH-CN
 
 ## Download
 
-For 4.2.1, open a successful [Build LilaShift IPA run](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml) for the update's exact commit, then download its `LilaShift-4.2.1-<run_id>-<run_attempt>` artifact. GitHub may require sign-in for workflow-artifact downloads. Unzip the artifact to obtain:
+For 5.0.0, open a successful [Build LilaShift IPA run](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml) for the update's exact commit, then download its `LilaShift-5.0.0-<run_id>-<run_attempt>` artifact. GitHub may require sign-in for workflow-artifact downloads. Unzip the artifact to obtain:
 
-- `LilaShift_4.2.1.ipa`
-- `LilaShift_4.2.1.ipa.sha256`
+- `LilaShift_5.0.0.ipa`
+- `LilaShift_5.0.0.ipa.sha256`
 - `build-manifest.json` (source commit, version, build, toolchain and IPA hash)
 
-Check the checksum and confirm that the manifest records version `4.2.1`, build `42000002`, and the intended source commit. Workflow artifacts are retained for 14 days. A downloadable workflow artifact is separate from a published release; published versions remain listed in [Releases](https://github.com/fafa888uk/LilaShift-3.0/releases).
+Check the checksum and confirm that the manifest records version `5.0.0`, build `50000000`, and the intended source commit. Workflow artifacts are retained for 14 days. A downloadable workflow artifact is separate from a published release; published versions remain listed in [Releases](https://github.com/fafa888uk/LilaShift-3.0/releases).
 
 The previous published artifact is [LilaShift 4.2.0](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0). The historical `LilaShift_3.0.0.ipa` is not a 4.x package. If a download is incomplete or its checksum differs, download it again before installing.
 
@@ -163,7 +167,7 @@ Full step-by-step tutorial (Chinese): [docs/INSTALL_ZH-CN.md](docs/INSTALL_ZH-CN
 
 ## Screenshots
 
-No real-device screenshots for 4.2.1 are recorded here. Simulator snapshot references are test fixtures, not evidence that installation or device features work on this release.
+No real-device screenshots for 5.0.0 are recorded here. Simulator snapshot references are test fixtures, not evidence that installation or device features work on this release.
 
 ## Frequently asked questions
 

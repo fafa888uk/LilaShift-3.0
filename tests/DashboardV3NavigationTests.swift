@@ -13,7 +13,7 @@
 //     of their own (the home keeps its eight sections); they are
 //     reached from their group tiles and from the catalog, so
 //     they are not orphans — the test asserts exactly that.
-//   - Every one of the 59 catalog items is reachable: it has a
+//   - Every one of the 64 catalog items is reachable: it has a
 //     non-empty id, names and symbol, and a destination that is
 //     a real dashboard destination.
 //   - Every dashboard destination is reached by at least one
@@ -60,7 +60,7 @@ final class DashboardV3NavigationTests: XCTestCase {
     }
 
     func testEveryCatalogItemIsReachable() {
-        XCTAssertEqual(FeatureCatalog.allItems.count, 59)
+        XCTAssertEqual(FeatureCatalog.allItems.count, 64)
         for item in FeatureCatalog.allItems {
             XCTAssertFalse(item.id.isEmpty, "Catalog item has an empty id")
             XCTAssertFalse(item.chineseName.isEmpty, "Missing name for \(item.id)")

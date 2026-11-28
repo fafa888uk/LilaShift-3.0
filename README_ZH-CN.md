@@ -8,16 +8,16 @@
 
 | 渠道 | 版本 | 状态 |
 | --- | --- | --- |
-| 当前源码 | **4.2.1** · 构建 `42000002` | [变更与验证记录](docs/RELEASE_4_2_1.md) · 尚未公开发布 |
+| 当前源码 | **5.0.0** · 构建 `50000000` | [变更与验证记录](docs/RELEASE_5_0_0.md) · 尚未公开发布 |
 | 当前公开下载版 | **4.2.0** · 构建 `42000001` | 已发布 |
 
-CI 通过不等于真机验收。4.2.1 的真机安装、设备相关功能与恢复仍待验证。
+CI 通过不等于真机验收。5.0.0 的真机安装、设备相关功能与恢复仍待验证。
 
 [兼容性](docs/COMPATIBILITY_ZH-CN.md) · [使用指南](docs/USER_GUIDE_ZH-CN.md) · [备份与恢复](docs/BACKUP_RESTORE_ZH-CN.md) · [问题反馈](https://github.com/fafa888uk/LilaShift-3.0/issues/new/choose) · [GPLv3](LICENSE)
 
 项目基于 GestaltX。仓库名沿用 `LilaShift-3.0`，不代表应用版本。
 
-[![Build](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml) [![Swift Tests](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml) [![Licenses](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml) [![SwiftLint](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/swiftlint.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/swiftlint.yml)
+[![Version](https://img.shields.io/badge/version-5.0.0-purple)](https://github.com/fafa888uk/LilaShift-3.0/releases) [![Build](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml) [![Swift Tests](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/run-swift-tests.yml) [![Licenses](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/check-licenses.yml) [![SwiftLint](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/swiftlint.yml/badge.svg?branch=main)](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/swiftlint.yml)
 
 ---
 
@@ -25,7 +25,7 @@ CI 通过不等于真机验收。4.2.1 的真机安装、设备相关功能与�
 
 - [已验证内容与未验证内容](#已验证内容与未验证内容)
 - [本仓库是什么](#本仓库是什么)
-- [4.2.1 更新内容](#421-更新内容)
+- [5.0.0 更新内容](#500-更新内容)
 - [3.0.0-rc.1 历史内容](#300-rc1-新增内容)
 - [功能](#功能)
 - [兼容性](#兼容性)
@@ -60,21 +60,25 @@ CI 通过不等于真机验收。4.2.1 的真机安装、设备相关功能与�
 
 ## 本仓库是什么
 
-本仓库是 LilaShift 4.x（紫序）的**完整源码项目**，是 GestaltX 的国行解锁增强版本。完整的修改源码都在本仓库中——没有单独的补丁步骤，CI 直接基于这份源码构建 IPA。
+本仓库是 LilaShift 5.x（紫序）的**完整源码项目**，是 GestaltX 的国行解锁增强版本。完整的修改源码都在本仓库中——没有单独的补丁步骤，CI 直接基于这份源码构建 IPA。
 
 - 基于上游 [huamidev/GestaltX](https://github.com/huami1314/GestaltX) `v1.0.7`（提交 `dfd4a7e`，构建号 `11130112`），并合并了上游壁纸删除修复 PR #126（提交 `c60519c`）。
 - 旧的基于补丁的构建仓库（[fafa888uk/LilaShift](https://github.com/fafa888uk/LilaShift)）保持原样，不再积极维护。
 - 紫序增强功能维护者：**`@steam8871`**。上游 GestaltX 工作归功于 huamidev。
 
-## 4.2.1 更新内容
+## 5.0.0 更新内容
 
-- 将 ZIPFoundation 从 0.9.20 更新至 [0.9.21](https://github.com/weichsel/ZIPFoundation/releases/tag/0.9.21)，纳入上游对损坏压缩包和符号链接路径校验的修复，保留紫序已有的导入路径、体积和完整性检查。
-- 补齐 4.x 界面遗漏的多语言文本，包括恢复警告、监控和存档消息；本地化校验继续作为验收检查。
-- 整合 PR #20–#25 中已审查的仓库治理、三语文档、CI 权限和关于页改动。旧 `main` 独有的 30 个一次性补丁工作流不再引入 4.x 主线。
-- 采用 GitHub 标准免费运行环境，固定并校验 SwiftLint 0.65.1，随每个 IPA 生成校验文件和源码构建记录。普通 CI 上传构建产物；独立手动发布流程按实际检出的提交创建草稿。
-- 核查 GestaltX 与 Erosion-CN 最新源码，保留现有 4.x 功能；没有把新的去广告、配对或声音捕获功能写成已集成。详见[开源核查](docs/RELEASE_4_2_1.md#开源更新核查)。
+- **设备诊断**——实时屏幕指标、生物识别状态、低电量模式、亮度与可用磁盘空间，另有机型表（iPhone 6 至 iPhone 18 Pro Max，含 iPhone Air）。读数均用公开 iOS API；机型数据转录自 DeviceKit 5.10.0（MIT），无新增依赖。
+- **结构化日志**——分级操作日志，支持搜索、筛选与 JSON/纯文本导出。只记录本 App 自身的操作事件，不含任何网络请求记录。
+- **IPA 安全审计**——Mach-O 解析、代码签名 SuperBlob / Slot 5 XML / Slot 7 DER 分析、IPA 包扫描、四级裁决威胁库、CVE 雷达（13 项分数已按 NVD 逐条重核），以及 JSON/Markdown/纯文本报告导出。设计借鉴 WQGuard v1.3.6（MIT）。
+- **MobileGestalt 键值表**——943 个 Apple Wiki 键名与可读名及描述，已与 worstgestalt（GPL-3.0）逐键核对，另有 122 个已审校的简体中文名。键值表由紫序自有生成器重新生成。
+- **网络探针**——无特权 ICMP socket 的 ping 与 traceroute（含丢包/抖动统计），以及经 RIPEstat 的出口 ASN/BGP 查询。私网地址在请求前即被拒绝。设计借鉴 ip-tools（MIT）。
+- **文件浏览**——多选批量分享与打包 ZIP、递归文件夹导入、只读跨应用浏览与各应用缓存统计，以及开屏广告路径表（全部路径标注“待核实”）。机制借鉴 Erosion-CN v1.0.8 与 WQFiles（GPL-3.0）。未做批量删除、广告锁定与跨应用清理。
+- **导航**——5 个新页面加入功能目录（页面项 13 → 18，总数 59 → 64）与首页诊断分区（11 → 15）。
+- **本地化**——补齐 Wave 1 缺失的 281 个字符串，覆盖全部 10 个支持语种，本地化测试重新全绿。
+- **许可证**——Wave 1 第三方声明已合并，新增 3 份 bundled MIT 文本（DeviceKit、WQGuard、ip-tools）。见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
-4.2.0 的导航归类，以及 4.1.0 的 App Audio Library 与锁屏文字集成继续包含在 4.x 基线中。完整版本历史见 [CHANGELOG_ZH-CN.md](CHANGELOG_ZH-CN.md)。
+4.2.1 的维护改动（ZIPFoundation 0.9.21、本地化补齐、治理/CI）与 4.2.0 的导航改动继续包含在基线中。完整版本历史见 [CHANGELOG_ZH-CN.md](CHANGELOG_ZH-CN.md)。
 
 ## 3.0.0-rc.1 新增内容
 
@@ -129,13 +133,13 @@ CI 通过不等于真机验收。4.2.1 的真机安装、设备相关功能与�
 
 ## 下载
 
-获取 4.2.1 时，打开对应源码提交的成功 [Build LilaShift IPA 运行记录](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml)，下载其中的 `LilaShift-4.2.1-<run_id>-<run_attempt>` 产物。GitHub 工作流产物下载可能需要登录。解压后应包含：
+获取 5.0.0 时，打开对应源码提交的成功 [Build LilaShift IPA 运行记录](https://github.com/fafa888uk/LilaShift-3.0/actions/workflows/build.yml)，下载其中的 `LilaShift-5.0.0-<run_id>-<run_attempt>` 产物。GitHub 工作流产物下载可能需要登录。解压后应包含：
 
-- `LilaShift_4.2.1.ipa`
-- `LilaShift_4.2.1.ipa.sha256`
+- `LilaShift_5.0.0.ipa`
+- `LilaShift_5.0.0.ipa.sha256`
 - `build-manifest.json`（源码提交、版本、构建号、工具链与 IPA 摘要）
 
-校验 SHA-256，并确认 manifest 中版本为 `4.2.1`、构建号为 `42000002`、源码提交与本次更新一致。工作流产物保留 14 天。构建产物与正式 Release 分开管理，已发布版本以 [Releases 页面](https://github.com/fafa888uk/LilaShift-3.0/releases)为准。
+校验 SHA-256，并确认 manifest 中版本为 `5.0.0`、构建号为 `50000000`、源码提交与本次更新一致。工作流产物保留 14 天。构建产物与正式 Release 分开管理，已发布版本以 [Releases 页面](https://github.com/fafa888uk/LilaShift-3.0/releases)为准。
 
 此前已发布的版本为 [LilaShift 4.2.0](https://github.com/fafa888uk/LilaShift-3.0/releases/tag/v4.2.0)。历史文件 `LilaShift_3.0.0.ipa` 不是 4.x 安装包。如果下载不完整或摘要不一致，请重新下载后再安装。
 
@@ -163,7 +167,7 @@ CI 通过不等于真机验收。4.2.1 的真机安装、设备相关功能与�
 
 ## 截图
 
-此处尚未记录 4.2.1 的真机截图。模拟器快照参考图用于测试，不作为本版真机安装或设备功能正常的证明。
+此处尚未记录 5.0.0 的真机截图。模拟器快照参考图用于测试，不作为本版真机安装或设备功能正常的证明。
 
 ## 常见问题
 

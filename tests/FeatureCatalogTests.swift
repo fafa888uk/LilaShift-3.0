@@ -62,8 +62,8 @@ final class FeatureCatalogTests: XCTestCase {
     func testCatalogCounts() {
         XCTAssertEqual(PresetCatalog.all.count, 46)
         XCTAssertEqual(FeatureCatalog.presetItems.count, 46)
-        XCTAssertEqual(FeatureCatalog.pageItems.count, 13)
-        XCTAssertEqual(FeatureCatalog.allItems.count, 59)
+        XCTAssertEqual(FeatureCatalog.pageItems.count, 18)
+        XCTAssertEqual(FeatureCatalog.allItems.count, 64)
     }
 
     func testCatalogHasNoDuplicateIDsAndCoversEveryPreset() {
@@ -83,10 +83,10 @@ final class FeatureCatalogTests: XCTestCase {
         XCTAssertEqual(counts[.systemSettings], 14)
         XCTAssertEqual(counts[.personalization], 1)
         XCTAssertEqual(counts[.launchArtwork], 1)
-        XCTAssertEqual(counts[.deviceDiagnostics], 8)
+        XCTAssertEqual(counts[.deviceDiagnostics], 12)
         XCTAssertEqual(counts[.modifiedRecords], 1)
         XCTAssertEqual(counts[.backupRestore], 2)
-        XCTAssertEqual(counts[.advancedTools], 5)
+        XCTAssertEqual(counts[.advancedTools], 6)
         XCTAssertEqual(FeatureCatalogCategory.allCases.count, 11)
     }
 
@@ -145,7 +145,7 @@ final class FeatureCatalogTests: XCTestCase {
         XCTAssertEqual(
             FeatureCatalog.filtered(FeatureCatalog.allItems, category: .screenLock).count, 12)
         XCTAssertEqual(
-            FeatureCatalog.filtered(FeatureCatalog.allItems, category: .deviceDiagnostics).count, 8)
+            FeatureCatalog.filtered(FeatureCatalog.allItems, category: .deviceDiagnostics).count, 12)
         // A risk filter excludes page items: they carry no risk.
         let high = FeatureCatalog.filtered(FeatureCatalog.allItems, riskLevel: .high)
         XCTAssertFalse(high.isEmpty)

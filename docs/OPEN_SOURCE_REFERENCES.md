@@ -322,6 +322,29 @@
 
 ---
 
+## LilaShift 5.0.0 Wave 1 — 新增来源（2026-11-28）
+
+Wave 1 新增六项诊断/审计功能（W1 设备诊断、W2 结构化日志、W3 IPA 安全审计、
+W4 MG 键值表、W5 网络探针、W6 文件浏览）。审计记录见 `audit/`；以下来源均未逐行
+复制源码——机制用 LilaShift 自有 Swift 重写，数据表由自有生成器重新生成或逐值转录。
+完整声明见 `THIRD_PARTY_NOTICES.md` §12。
+
+| 来源 | 许可证 | 移植范围 |
+|---|---|---|
+| devicekit/DeviceKit 5.10.0 | MIT | 机型映射与屏幕参数转录（`DeviceDiagnostics.swift`）；无代码复制，无新增依赖 |
+| Kianuni/WQGuard v1.3.6 | MIT | Mach-O / CSBlob / IPA 扫描 / 威胁库 / CVE 雷达设计重写；13 项 CVE 分数已按 NVD 重核，上游分数未入库 |
+| GoldensHQ/worstgestalt | GPL-3.0（**不是 AGPL**） | 仅键值表数据，自有生成器从 The Apple Wiki 重新生成，943 键逐项核对一致 |
+| The Apple Wiki《List of MobileGestalt keys》 | CC BY-SA 4.0 | 943 键可读名 + 671 条英文描述；再分发须保留署名与相同方式共享 |
+| ahmadrezaei/ip-tools | MIT | NetCore 设计重写（ICMP 编解码、无特权 socket、ping/tracer、RIPEstat 端点）；无文件逐字复制 |
+| gewill/PingKit | MIT | 仅设计参考（发送失败计入丢包、局域网提示）；无代码复制 |
+| RIPEstat Data API | 数据源（无代码） | 出口 ASN 查询；仅发送公网出口 IP，私网地址事前拒绝 |
+| Kianuni/Erosion-CN v1.0.8（开屏路径 v1.0.6/v1.0.7） | GPL-3.0 | W6 文件浏览多选/导入/开屏路径表；开屏路径全部“待核实”，未移植批量删除、广告锁定与跨应用清理 |
+| kolbicz/WQFiles | GPL-3.0 | W6 只读跨应用浏览与缓存统计；未移植任何清理 |
+
+**暂缓（未进 5.0.0）**：GoldenNugget-mobile（AGPL，5 组须三项评审）、`bad_query` 后端
+（须 iOS 26.x 真机验证）、airlift 第二漏洞链（须产品决策）、idevice_pair 结构校验
+（仅 airlift 后有意义）。
+
 ## 已调研、未集成（仅作记录，防止未来误认）
 
 | 项目 | 许可证 | 状态 |
@@ -342,3 +365,4 @@
 2. **依赖图固定记录**：ZIPFoundation 0.9.21、SnapshotTesting 1.19.7 及 CI 已使用的 swift-custom-dump 1.7.3、swift-issue-reporting 2.1.2、swift-syntax 604.0.0 均写入 `Package.resolved`。所有 tag 的提交 SHA 已用上游 Git refs 核实；Xcode 首次解析可刷新 `originHash` 元数据，但不得漂移固定版本或提交。
 3. **worse_query 与 Ketamine 的引入提交尚未核实**（见 §2、§3）：低优先级，不影响许可证结论（文件自带完整声明）。
 4. **fa 语言的 32 个新增本地化键未经母语审校**（3.0 集成遗留）；本次新增的 21 个关于页键的 8 语种翻译同样未经母语审校，测试只校验格式与脚本，不校验翻译质量。
+5. **Wave 1（5.0.0）新增的 281 个本地化键的 8 语种翻译未经母语审校**（见 `records/localization-wave1.md`）；`tests/LocalizationTests.py` 只校验格式、占位符与脚本，不校验翻译质量。简体中文（主界面语言）由人工逐条审校，其余语种如发现不准确欢迎提 issue 修正。
