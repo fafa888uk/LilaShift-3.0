@@ -222,12 +222,17 @@ struct DeviceScreenMetrics: Equatable, Sendable {
 enum BiometricKind: String, Equatable, Codable, Sendable {
     case faceID
     case touchID
+    /// visionOS Optic ID (iris authentication). LilaShift runs on
+    /// iPhone, where this never occurs, but it is a real biometric
+    /// sensor — it must not be reported as "no hardware" (`.none`).
+    case opticID
     case none
 
     var title: String {
         switch self {
         case .faceID: return "Face ID"
         case .touchID: return "Touch ID"
+        case .opticID: return "Optic ID"
         case .none: return L("None")
         }
     }
@@ -251,6 +256,7 @@ struct BiometricStatus: Equatable, Sendable {
         switch biometryType {
         case .faceID: kind = .faceID
         case .touchID: kind = .touchID
+        case .opticID: kind = .opticID
         case .none: kind = .none
         @unknown default: kind = .none
         }
@@ -340,10 +346,17 @@ struct DiskCapacity: Equatable, Sendable {
                 .volumeAvailableCapacityForImportantUsageKey,
                 .volumeTotalCapacityKey,
             ])
+            // Split into locals first: the single nested
+            // `DiskCapacity(...)` expression is too complex for the
+            // type checker ("failed to produce diagnostic for
+            // expression"). Same values, same result.
+            let opportunistic = values.volumeAvailableCapacityForOpportunisticUsage.map(Int64.init)
+            let important = values.volumeAvailableCapacityForImportantUsage.map(Int64.init)
+            let total = values.volumeTotalCapacity.map(Int64.init)
             return DiskCapacity(
-                opportunisticBytes: values.volumeAvailableCapacityForOpportunisticUsage.map(Int64.init),
-                importantBytes: values.volumeAvailableCapacityForImportantUsage.map(Int64.init),
-                totalBytes: values.volumeTotalCapacity.map(Int64.init),
+                opportunisticBytes: opportunistic,
+                importantBytes: important,
+                totalBytes: total,
                 unavailableReason: nil)
         } catch {
             return DiskCapacity(

@@ -297,8 +297,8 @@ final class IPAAuditTests: XCTestCase {
     }
 
     private func makeCSBlob(
-        xml: [String: Any]?, der: Data?, adHoc: Bool, cms: Bool, ident: String
-    ) -> Data {
+        xml: [String: Any] = [:], der: Data?, adHoc: Bool, cms: Bool, ident: String
+    ) throws -> Data {
         var blobs: [(type: UInt32, data: Data)] = []
         var codeDirectory = Data()
         let identBytes = Data(ident.utf8) + Data([0])
@@ -313,8 +313,12 @@ final class IPAAuditTests: XCTestCase {
         codeDirectory.append(u32be(0))
         codeDirectory.append(identBytes)
         blobs.append((0, codeDirectory))
-        if let xml {
-            let plist = try! PropertyListSerialization.data(fromPropertyList: xml, format: .xml, options: 0)
+        // An empty dictionary means "no XML slot" (the callers
+        // pass a real dictionary or nothing); the parameter is a
+        // plain dictionary with a default instead of an optional
+        // collection (SwiftLint: discouraged_optional_collection).
+        if !xml.isEmpty {
+            let plist = try PropertyListSerialization.data(fromPropertyList: xml, format: .xml, options: 0)
             var blob = Data()
             blob.append(u32be(0xfade_7171))
             blob.append(u32be(UInt32(8 + plist.count)))
@@ -430,14 +434,14 @@ final class IPAAuditTests: XCTestCase {
         return out
     }
 
-    private func infoPlist(bundleID: String, executable: String) -> Data {
+    private func infoPlist(bundleID: String, executable: String) throws -> Data {
         let dict: [String: Any] = [
             "CFBundleIdentifier": bundleID,
             "CFBundleExecutable": executable,
             "CFBundleName": "TestApp",
             "CFBundleShortVersionString": "1.0",
         ]
-        return try! PropertyListSerialization.data(fromPropertyList: dict, format: .xml, options: 0)
+        return try PropertyListSerialization.data(fromPropertyList: dict, format: .xml, options: 0)
     }
 
     private func writeIPA(
@@ -534,7 +538,7 @@ final class IPAAuditTests: XCTestCase {
     }
 
     func testCodeSignaturePayloadIsHandedThrough() throws {
-        let blob = makeCSBlob(xml: ["get-task-allow": true], der: nil, adHoc: false, cms: false, ident: "com.test.app")
+        let blob = try makeCSBlob(xml: ["get-task-allow": true], der: nil, adHoc: false, cms: false, ident: "com.test.app")
         let data = makeMachO(codeSignature: blob)
         let reports = try IPAAuditMachOParser.parse(data)
         XCTAssertEqual(reports[0].codeSignature, blob)
@@ -547,7 +551,7 @@ final class IPAAuditTests: XCTestCase {
             "com.apple.security.application-groups": ["group.a"],
             "get-task-allow": true,
         ]
-        let blob = makeCSBlob(xml: xml, der: makeDEREntitlements(), adHoc: true, cms: true, ident: "com.test.app")
+        let blob = try makeCSBlob(xml: xml, der: makeDEREntitlements(), adHoc: true, cms: true, ident: "com.test.app")
         let parsed = try IPAAuditCSBlobParser.parse(blob)
         XCTAssertTrue(parsed.hasXMLEntitlements)
         XCTAssertTrue(parsed.hasDEREntitlements)
@@ -561,7 +565,7 @@ final class IPAAuditTests: XCTestCase {
     }
 
     func testCSBlobWithoutEntitlementsReportsNone() throws {
-        let blob = makeCSBlob(xml: nil, der: nil, adHoc: false, cms: false, ident: "com.test.app")
+        let blob = try makeCSBlob(der: nil, adHoc: false, cms: false, ident: "com.test.app")
         let parsed = try IPAAuditCSBlobParser.parse(blob)
         XCTAssertTrue(parsed.hasNoEntitlements)
         XCTAssertFalse(parsed.isAdHoc)
@@ -791,7 +795,7 @@ final class IPAAuditTests: XCTestCase {
         let framework = makeMachO(dylibs: ["/usr/lib/libhooker.dylib"])
         let ipa = try writeIPA(in: directory, name: "evil.ipa", entries: [
             ZipEntrySpec(path: "Payload/TestApp.app/TestApp", data: main),
-            ZipEntrySpec(path: "Payload/TestApp.app/Info.plist", data: infoPlist(bundleID: "com.test.evil", executable: "TestApp")),
+            ZipEntrySpec(path: "Payload/TestApp.app/Info.plist", data: try infoPlist(bundleID: "com.test.evil", executable: "TestApp")),
             ZipEntrySpec(path: "Payload/TestApp.app/Frameworks/Evil.framework/Evil", data: framework),
             ZipEntrySpec(path: "Payload/TestApp.app/Assets.txt", data: Data("hello".utf8)),
         ])
@@ -814,7 +818,7 @@ final class IPAAuditTests: XCTestCase {
         let main = makeMachO(symbols: ["_normal_symbol"], cstrings: ["hello"])
         let ipa = try writeIPA(in: directory, name: "clean.ipa", entries: [
             ZipEntrySpec(path: "Payload/TestApp.app/TestApp", data: main),
-            ZipEntrySpec(path: "Payload/TestApp.app/Info.plist", data: infoPlist(bundleID: "com.test.clean", executable: "TestApp")),
+            ZipEntrySpec(path: "Payload/TestApp.app/Info.plist", data: try infoPlist(bundleID: "com.test.clean", executable: "TestApp")),
         ])
         let report = try IPAAuditScanner.audit(
             ipaURL: ipa, deviceOSVersion: IPAAuditOSVersion(major: 27, minor: 2, patch: 0))
@@ -828,7 +832,7 @@ final class IPAAuditTests: XCTestCase {
         let main = makeMachO(symbols: ["_normal_symbol"])
         let ipa = try writeIPA(in: directory, name: "self.ipa", entries: [
             ZipEntrySpec(path: "Payload/TestApp.app/TestApp", data: main),
-            ZipEntrySpec(path: "Payload/TestApp.app/Info.plist", data: infoPlist(bundleID: "com.huami.gestultx", executable: "TestApp")),
+            ZipEntrySpec(path: "Payload/TestApp.app/Info.plist", data: try infoPlist(bundleID: "com.huami.gestultx", executable: "TestApp")),
         ])
         let report = try IPAAuditScanner.audit(
             ipaURL: ipa, deviceOSVersion: IPAAuditOSVersion(major: 27, minor: 0, patch: 1))
@@ -840,7 +844,7 @@ final class IPAAuditTests: XCTestCase {
         let main = makeMachO(symbols: ["_container_query_create"], cryptid: 1)
         let ipa = try writeIPA(in: directory, name: "encrypted.ipa", entries: [
             ZipEntrySpec(path: "Payload/TestApp.app/TestApp", data: main),
-            ZipEntrySpec(path: "Payload/TestApp.app/Info.plist", data: infoPlist(bundleID: "com.test.encrypted", executable: "TestApp")),
+            ZipEntrySpec(path: "Payload/TestApp.app/Info.plist", data: try infoPlist(bundleID: "com.test.encrypted", executable: "TestApp")),
         ])
         let report = try IPAAuditScanner.audit(
             ipaURL: ipa, deviceOSVersion: IPAAuditOSVersion(major: 27, minor: 0, patch: 1))
@@ -858,7 +862,7 @@ final class IPAAuditTests: XCTestCase {
         let main = makeMachO()
         let ipa = try writeIPA(in: directory, name: "slip.ipa", entries: [
             ZipEntrySpec(path: "Payload/TestApp.app/TestApp", data: main),
-            ZipEntrySpec(path: "Payload/TestApp.app/Info.plist", data: infoPlist(bundleID: "com.test.slip", executable: "TestApp")),
+            ZipEntrySpec(path: "Payload/TestApp.app/Info.plist", data: try infoPlist(bundleID: "com.test.slip", executable: "TestApp")),
             ZipEntrySpec(path: "../Escape.txt", data: Data("evil".utf8)),
         ])
         XCTAssertThrowsError(try IPAAuditScanner.audit(
@@ -876,7 +880,7 @@ final class IPAAuditTests: XCTestCase {
         let main = makeMachO()
         let ipa = try writeIPA(in: directory, name: "bomb.ipa", entries: [
             ZipEntrySpec(path: "Payload/TestApp.app/TestApp", data: main),
-            ZipEntrySpec(path: "Payload/TestApp.app/Info.plist", data: infoPlist(bundleID: "com.test.bomb", executable: "TestApp")),
+            ZipEntrySpec(path: "Payload/TestApp.app/Info.plist", data: try infoPlist(bundleID: "com.test.bomb", executable: "TestApp")),
             ZipEntrySpec(path: "Payload/TestApp.app/Big.bin", data: Data(count: 16), declaredUncompressedSize: 300_000_000),
         ])
         XCTAssertThrowsError(try IPAAuditScanner.audit(
@@ -888,7 +892,7 @@ final class IPAAuditTests: XCTestCase {
         let main = makeMachO()
         let ipa = try writeIPA(in: directory, name: "link.ipa", entries: [
             ZipEntrySpec(path: "Payload/TestApp.app/TestApp", data: main),
-            ZipEntrySpec(path: "Payload/TestApp.app/Info.plist", data: infoPlist(bundleID: "com.test.link", executable: "TestApp")),
+            ZipEntrySpec(path: "Payload/TestApp.app/Info.plist", data: try infoPlist(bundleID: "com.test.link", executable: "TestApp")),
             ZipEntrySpec(path: "Payload/TestApp.app/Frameworks/Link", data: Data("/etc/passwd".utf8), isSymlink: true),
         ])
         let report = try IPAAuditScanner.audit(
@@ -912,7 +916,7 @@ final class IPAAuditTests: XCTestCase {
         let main = makeMachO()
         let ipa = try writeIPA(in: directory, name: "cancel.ipa", entries: [
             ZipEntrySpec(path: "Payload/TestApp.app/TestApp", data: main),
-            ZipEntrySpec(path: "Payload/TestApp.app/Info.plist", data: infoPlist(bundleID: "com.test.cancel", executable: "TestApp")),
+            ZipEntrySpec(path: "Payload/TestApp.app/Info.plist", data: try infoPlist(bundleID: "com.test.cancel", executable: "TestApp")),
         ])
         XCTAssertThrowsError(try IPAAuditScanner.audit(
             ipaURL: ipa, deviceOSVersion: IPAAuditOSVersion(major: 27, minor: 0, patch: 1),
@@ -924,7 +928,7 @@ final class IPAAuditTests: XCTestCase {
         let main = makeMachO()
         let ipa = try writeIPA(in: directory, name: "n version.ipa", entries: [
             ZipEntrySpec(path: "Payload/TestApp.app/TestApp", data: main),
-            ZipEntrySpec(path: "Payload/TestApp.app/Info.plist", data: infoPlist(bundleID: "com.test.clean", executable: "TestApp")),
+            ZipEntrySpec(path: "Payload/TestApp.app/Info.plist", data: try infoPlist(bundleID: "com.test.clean", executable: "TestApp")),
         ])
         let report = try IPAAuditScanner.audit(ipaURL: ipa, deviceOSVersion: nil)
         XCTAssertTrue(report.cveExposure.allSatisfy { $0.exposure == .unknown })
@@ -937,7 +941,7 @@ final class IPAAuditTests: XCTestCase {
         let main = makeMachO(symbols: ["_container_query_create"])
         let ipa = try writeIPA(in: directory, name: "roundtrip.ipa", entries: [
             ZipEntrySpec(path: "Payload/TestApp.app/TestApp", data: main),
-            ZipEntrySpec(path: "Payload/TestApp.app/Info.plist", data: infoPlist(bundleID: "com.test.evil", executable: "TestApp")),
+            ZipEntrySpec(path: "Payload/TestApp.app/Info.plist", data: try infoPlist(bundleID: "com.test.evil", executable: "TestApp")),
         ])
         let report = try IPAAuditScanner.audit(
             ipaURL: ipa, deviceOSVersion: IPAAuditOSVersion(major: 27, minor: 0, patch: 1))
@@ -954,7 +958,7 @@ final class IPAAuditTests: XCTestCase {
         let main = makeMachO()
         let ipa = try writeIPA(in: directory, name: "export.ipa", entries: [
             ZipEntrySpec(path: "Payload/TestApp.app/TestApp", data: main),
-            ZipEntrySpec(path: "Payload/TestApp.app/Info.plist", data: infoPlist(bundleID: "com.test.clean", executable: "TestApp")),
+            ZipEntrySpec(path: "Payload/TestApp.app/Info.plist", data: try infoPlist(bundleID: "com.test.clean", executable: "TestApp")),
         ])
         let report = try IPAAuditScanner.audit(
             ipaURL: ipa, deviceOSVersion: IPAAuditOSVersion(major: 27, minor: 0, patch: 1))

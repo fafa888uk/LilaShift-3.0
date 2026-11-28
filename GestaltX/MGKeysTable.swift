@@ -25,6 +25,24 @@ struct MGKeyEntry: Identifiable, Equatable {
     let chineseName: String? = nil
     /// Reviewed Simplified Chinese description, or `nil` with `chineseName`.
     let chineseDescription: String? = nil
+
+    /// Spelled-out initialiser. The synthesised memberwise
+    /// initialiser does not accept the two defaulted `String?`
+    /// properties, so the six-argument call in `withChinese`
+    /// fails in CI ("Extra arguments at positions #5, #6").
+    /// This keeps the four-argument call sites working too: the
+    /// Chinese fields default to `nil`, exactly as before.
+    init(
+        name: String, key: String, meaning: String, source: String,
+        chineseName: String? = nil, chineseDescription: String? = nil
+    ) {
+        self.name = name
+        self.key = key
+        self.meaning = meaning
+        self.source = source
+        self.chineseName = chineseName
+        self.chineseDescription = chineseDescription
+    }
 }
 
 enum MGKeysTable {

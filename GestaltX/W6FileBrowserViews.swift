@@ -629,7 +629,7 @@ struct W6SplashAdPathsView: View {
                         .font(.subheadline).foregroundStyle(.secondary)
                 } else {
                     Picker(L("Check against app"), selection: $checkedAppID) {
-                        Text(L("Choose an app")).tag(Optional<String>(nil))
+                        Text(L("Choose an app")).tag(String?(nil))
                         ForEach(installedTableApps) { app in
                             Text(app.name).tag(Optional(app.bundleID))
                         }

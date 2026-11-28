@@ -90,13 +90,13 @@ enum IPAAuditCSBlobParser {
     /// result reports `hasNoEntitlements`).
     static func parse(_ data: Data) throws -> IPAAuditCodeSignature {
         let parsed = try parseDictionaries(data)
-        let merged = mergeEntitlementDictionaries(parsed.xml ?? [:], parsed.der ?? [:])
+        let merged = mergeEntitlementDictionaries(parsed.xml, parsed.der)
         let rendered = renderEntitlements(
-            merged, xmlKeys: Set(parsed.xml?.keys ?? []), derKeys: Set(parsed.der?.keys ?? []))
+            merged, xmlKeys: Set(parsed.xml.keys), derKeys: Set(parsed.der.keys))
         let appGroups = (merged[appGroupsKey] as? [String]) ?? []
         return IPAAuditCodeSignature(
-            hasXMLEntitlements: parsed.xml != nil,
-            hasDEREntitlements: parsed.der != nil,
+            hasXMLEntitlements: parsed.hasXML,
+            hasDEREntitlements: parsed.hasDER,
             mergedEntitlements: rendered,
             appGroups: appGroups,
             codeDirectoryIdent: parsed.codeDirectoryIdent,
@@ -110,8 +110,19 @@ enum IPAAuditCSBlobParser {
     /// fat slices merge with the anti-shadowing rules instead of
     /// being flattened to display strings first.
     struct ParsedSlots {
-        let xml: [String: Any]?
-        let der: [String: Any]?
+        /// Slot 5 XML entitlements, or `[:]` when the slot was
+        /// absent. Presence is tracked by `hasXML`, not by
+        /// optionality: an empty dictionary from a present-but-
+        /// empty slot is not the same as no slot (SwiftLint:
+        /// discouraged_optional_collection).
+        let xml: [String: Any]
+        /// Slot 7 DER entitlements, or `[:]` when the slot was
+        /// absent. Presence is tracked by `hasDER` (see `xml`).
+        let der: [String: Any]
+        /// Slot 5 was present, even if its dictionary is empty.
+        let hasXML: Bool
+        /// Slot 7 was present, even if its dictionary is empty.
+        let hasDER: Bool
         let codeDirectoryIdent: String?
         let isAdHoc: Bool
         let hasCMSSignature: Bool
@@ -135,8 +146,10 @@ enum IPAAuditCSBlobParser {
             throw IPAAuditError(L("The code signature index is truncated."))
         }
 
-        var xmlEntitlements: [String: Any]?
-        var derEntitlements: [String: Any]?
+        var xmlEntitlements: [String: Any] = [:]
+        var derEntitlements: [String: Any] = [:]
+        var hasXMLEntitlements = false
+        var hasDEREntitlements = false
         var codeDirectoryIdent: String?
         var isAdHoc = false
         var hasCMSSignature = false
@@ -167,10 +180,12 @@ enum IPAAuditCSBlobParser {
                 guard blobMagic == entitlementXMLMagic,
                       let payload = reader.subdata(offset: payloadOffset, size: payloadLength) else { continue }
                 xmlEntitlements = try parseXMLPlist(payload)
+                hasXMLEntitlements = true
             case slotEntitlementsDER:
                 guard blobMagic == entitlementDERMagic,
                       let payload = reader.subdata(offset: payloadOffset, size: payloadLength) else { continue }
                 derEntitlements = try parseDEREntitlements(payload)
+                hasDEREntitlements = true
             case slotCMSSignature:
                 if blobMagic == blobWrapperMagic { hasCMSSignature = true }
             default:
@@ -181,6 +196,8 @@ enum IPAAuditCSBlobParser {
         return ParsedSlots(
             xml: xmlEntitlements,
             der: derEntitlements,
+            hasXML: hasXMLEntitlements,
+            hasDER: hasDEREntitlements,
             codeDirectoryIdent: codeDirectoryIdent,
             isAdHoc: isAdHoc,
             hasCMSSignature: hasCMSSignature)

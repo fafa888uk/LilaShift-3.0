@@ -170,13 +170,13 @@ enum IPAAuditScanner {
     /// escaping targets become findings, the rest are counted.
     private struct ValidatedEntries {
         let appDirectory: String?
-        let all: [Archive.Entry]
+        let all: [Entry]
         let strippedSymlinkCount: Int
         let escapingSymlinks: [String]
     }
 
     private static func validatedEntries(of archive: Archive, isCancelled: () -> Bool) throws -> ValidatedEntries {
-        var all: [Archive.Entry] = []
+        var all: [Entry] = []
         var seen = Set<String>()
         var appDirectory: String?
         var strippedSymlinks = 0
@@ -261,7 +261,7 @@ enum IPAAuditScanner {
         return next
     }
 
-    private static func readSymlinkTarget(archive: Archive, entry: Archive.Entry) throws -> String {
+    private static func readSymlinkTarget(archive: Archive, entry: Entry) throws -> String {
         var bytes = Data()
         _ = try archive.extract(entry, bufferSize: 1_024) { chunk in
             bytes.append(chunk)
@@ -309,7 +309,7 @@ enum IPAAuditScanner {
     // MARK: - Binary candidates
 
     private struct BinaryCandidate {
-        let entry: Archive.Entry
+        let entry: Entry
     }
 
     /// On-demand candidate list: the main executable, every
@@ -319,9 +319,9 @@ enum IPAAuditScanner {
     private static func binaryCandidates(
         entries: ValidatedEntries, appDirectory: String, mainExecutable: String?
     ) -> [BinaryCandidate] {
-        var candidates: [Archive.Entry] = []
+        var candidates: [Entry] = []
         var seen = Set<String>()
-        func add(_ entry: Archive.Entry) {
+        func add(_ entry: Entry) {
             if seen.insert(entry.path).inserted { candidates.append(entry) }
         }
         let prefix = appDirectory + "/"
@@ -356,7 +356,7 @@ enum IPAAuditScanner {
     /// the cap is enforced across entries, not just per entry.
     /// Returns the extracted file and its byte count.
     private static func extractEntry(
-        archive: Archive, entry: Archive.Entry, into sandbox: URL, alreadyExtracted: UInt64
+        archive: Archive, entry: Entry, into sandbox: URL, alreadyExtracted: UInt64
     ) throws -> (url: URL, byteCount: UInt64) {
         let target = try checkedTarget(entry.path, in: sandbox)
         try FileManager.default.createDirectory(
@@ -424,8 +424,8 @@ enum IPAAuditScanner {
             guard let signatureData = slice.codeSignature else { continue }
             do {
                 let slots = try IPAAuditCSBlobParser.parseDictionaries(signatureData)
-                hasXMLEntitlements = hasXMLEntitlements || slots.xml != nil
-                hasDEREntitlements = hasDEREntitlements || slots.der != nil
+                hasXMLEntitlements = hasXMLEntitlements || slots.hasXML
+                hasDEREntitlements = hasDEREntitlements || slots.hasDER
                 isAdHoc = isAdHoc || slots.isAdHoc
                 hasCMSSignature = hasCMSSignature || slots.hasCMSSignature
                 codeDirectoryIdent = codeDirectoryIdent ?? slots.codeDirectoryIdent
@@ -434,11 +434,11 @@ enum IPAAuditScanner {
                 // merge with the anti-shadowing rules, so a second
                 // fat slice cannot hide a privilege.
                 let sliceMerged = IPAAuditCSBlobParser.mergeEntitlementDictionaries(
-                    slots.xml ?? [:], slots.der ?? [:])
+                    slots.xml, slots.der)
                 mergedEntitlements = IPAAuditCSBlobParser.mergeEntitlementDictionaries(
                     mergedEntitlements, sliceMerged)
-                xmlKeys.formUnion(slots.xml?.keys ?? [])
-                derKeys.formUnion(slots.der?.keys ?? [])
+                xmlKeys.formUnion(slots.xml.keys)
+                derKeys.formUnion(slots.der.keys)
             } catch {
                 // A malformed signature blob is evidence, not a
                 // reason to stop the whole scan: record it and

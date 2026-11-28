@@ -17,6 +17,7 @@
 // FeatureCatalog yet. `W5Registration.swift` carries the
 // directory metadata; the coordinator wires it in.
 import SwiftUI
+import Combine
 import Network
 
 /// Reachability from `NWPathMonitor`: drives the online/offline
