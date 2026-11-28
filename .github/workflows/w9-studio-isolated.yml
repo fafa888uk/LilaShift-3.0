@@ -1,0 +1,26 @@
+name: Validate W9 wallpaper studio in isolation
+on:
+  push:
+    branches: [codex/lilashift-w9-ci]
+permissions:
+  contents: read
+concurrency:
+  group: w9-studio-isolated
+  cancel-in-progress: true
+jobs:
+  check:
+    if: github.event.repository.private == false
+    runs-on: macos-15
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Type-check W9 against the iOS SDK
+        run: |
+          set -euo pipefail
+          sdk="$(xcrun --sdk iphoneos --show-sdk-path)"
+          xcrun --sdk iphoneos swiftc -swift-version 5 -typecheck -target arm64-apple-ios26.0 -sdk "$sdk" \
+            Sources/GestaltX/W9WallpaperStudio.swift iOS/W9WallpaperStudioView.swift
+      - name: Run W9 rendering and import tests
+        run: swift test
